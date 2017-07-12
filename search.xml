@@ -3,6 +3,38 @@
   
     
     <entry>
+      <title><![CDATA[第一个golang的restful类库]]></title>
+      <url>/2017/07/12/%E7%AC%AC%E4%B8%80%E4%B8%AAgolang%E7%9A%84restful%E7%B1%BB%E5%BA%93/</url>
+      <content type="html"><![CDATA[<h1 id="gorest"><a href="#gorest" class="headerlink" title="gorest"></a>gorest</h1><p><a href="https://travis-ci.org/ejunjsh/gorest" target="_blank" rel="external"><img src="https://travis-ci.org/ejunjsh/gorest.svg?branch=master" alt="Build Status"></a></p>
+<p><a href="http://www.babygopher.org" target="_blank" rel="external"><img src="https://raw.githubusercontent.com/drnic/babygopher-site/gh-pages/images/babygopher-badge.png" alt="baby-gopher"></a></p>
+<p>a restful go framework</p>
+<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">go get github.com/ejunjsh/gorest</div></pre></td></tr></table></figure>
+<h2 id="usage"><a href="#usage" class="headerlink" title="usage"></a>usage</h2><h3 id="import"><a href="#import" class="headerlink" title="import"></a>import</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> <span class="string">"github.com/ejunjsh/gorest"</span></div></pre></td></tr></table></figure>
+<h3 id="create-a-app-and-run-a-server"><a href="#create-a-app-and-run-a-server" class="headerlink" title="create a app and run a server"></a>create a app and run a server</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">app:=gorest.NewApp()</div><div class="line">app.[Get/Post/Delete/Put/Error]</div><div class="line">app.Run(<span class="string">":8081"</span>)</div></pre></td></tr></table></figure>
+<h3 id="supports-4-methods-of-http-request"><a href="#supports-4-methods-of-http-request" class="headerlink" title="supports 4 methods of http request"></a>supports 4 methods of http request</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">app.Get(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;...&#125;)</div><div class="line">app.Post(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;...&#125;)</div><div class="line">app.Delete(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;...&#125;)</div><div class="line">app.Put(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;...&#125;)</div></pre></td></tr></table></figure>
+<h3 id="supports-parameters-from-url-path"><a href="#supports-parameters-from-url-path" class="headerlink" title="supports parameters from url path"></a>supports parameters from url path</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">app.Get(<span class="string">"/:abc/:cba"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;</div><div class="line">		fmt.Println(w.PathParams[<span class="string">"abc"</span>],w.PathParams[<span class="string">"cba"</span>])</div><div class="line">		<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h3 id="supports-string-json-xml-file-template-as-result-of-return"><a href="#supports-string-json-xml-file-template-as-result-of-return" class="headerlink" title="supports string,json,xml,file,template as result of return"></a>supports string,json,xml,file,template as result of return</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">app.Get(<span class="string">"/"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;</div><div class="line">        <span class="keyword">return</span>  w.WriteJson(jsonObj)</div><div class="line">                <span class="comment">//w.WriteString(str)</span></div><div class="line">                <span class="comment">//w.WriteXml(xmlObj)</span></div><div class="line">                <span class="comment">//w.WriteFile("/Users/zhouff/file.txt")</span></div><div class="line">                <span class="comment">//w.WriteTemplates(data,"/Users/zhouff/index.html","/Users/zhouff/header.html")</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h3 id="supports-dealing-with-errors"><a href="#supports-dealing-with-errors" class="headerlink" title="supports dealing with errors"></a>supports dealing with errors</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">app.Error(<span class="function"><span class="keyword">func</span><span class="params">(err error, r *gorest.HttpRequest, w gorest.HttpResponse)</span></span>&#123;</div><div class="line">		<span class="keyword">if</span> e,ok:=err.(gorest.NoFoundError);ok &#123;</div><div class="line">			w.Write([]<span class="keyword">byte</span>(e.Error()))</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> e,ok:=err.(gorest.InternalError);ok &#123;</div><div class="line">			w.Write([]<span class="keyword">byte</span>(e.Error()))</div><div class="line">		&#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h3 id="see-example"><a href="#see-example" class="headerlink" title="see example"></a>see <a href="https://github.com/ejunjsh/gorest/blob/master/main/main.go" target="_blank" rel="external">example</a></h3>]]></content>
+      
+        <categories>
+            
+            <category> go </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> go </tag>
+            
+            <tag> gorest </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Hello World]]></title>
       <url>/2017/07/12/hello-world/</url>
       <content type="html"><![CDATA[<p>Welcome to my blog, This is my first post.so hello world</p>
