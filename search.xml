@@ -3,8 +3,8 @@
   
     
     <entry>
-      <title><![CDATA[第一个golang的restful类库]]></title>
-      <url>/2017/07/12/%E7%AC%AC%E4%B8%80%E4%B8%AAgolang%E7%9A%84restful%E7%B1%BB%E5%BA%93/</url>
+      <title><![CDATA[gorest]]></title>
+      <url>/2017/07/12/gorest/</url>
       <content type="html"><![CDATA[<h1 id="gorest"><a href="#gorest" class="headerlink" title="gorest"></a>gorest</h1><p><a href="https://travis-ci.org/ejunjsh/gorest" target="_blank" rel="external"><img src="https://travis-ci.org/ejunjsh/gorest.svg?branch=master" alt="Build Status"></a></p>
 <p><a href="http://www.babygopher.org" target="_blank" rel="external"><img src="https://raw.githubusercontent.com/drnic/babygopher-site/gh-pages/images/babygopher-badge.png" alt="baby-gopher"></a></p>
 <p>a restful go framework</p>
