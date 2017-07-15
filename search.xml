@@ -3,9 +3,9 @@
   
     
     <entry>
-      <title><![CDATA[one image desribe hashmap]]></title>
+      <title><![CDATA[一张图了解hashmap]]></title>
       <url>/2017/07/15/hashmap/</url>
-      <content type="html"><![CDATA[<p><img src="/images/hashmap.png" alt=""></p>
+      <content type="html"><![CDATA[<p><a href="/images/hashmap.png"><img src="/images/hashmap.png" alt="one image describes how hashmap works"></a></p>
 ]]></content>
       
         
