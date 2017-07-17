@@ -8,6 +8,12 @@
       <content type="html"><![CDATA[<p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a></p>
 ]]></content>
       
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
         
         <tags>
             
@@ -23,6 +29,12 @@
       <content type="html"><![CDATA[<p><a href="/images/hashmap.png"><img src="/images/hashmap.png" alt="one image describes how hashmap works"></a></p>
 ]]></content>
       
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
         
         <tags>
             
@@ -38,10 +50,18 @@
       <content type="html"><![CDATA[<p>Welcome to my blog, This is my first post.so hello world</p>
 ]]></content>
       
+        <categories>
+            
+            <category> life </category>
+            
+        </categories>
+        
         
         <tags>
             
-            <tag> life </tag>
+            <tag> hello </tag>
+            
+            <tag> world </tag>
             
         </tags>
         
