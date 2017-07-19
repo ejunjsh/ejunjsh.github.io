@@ -5,7 +5,7 @@
     <entry>
       <title><![CDATA[用树莓派实现一个能播放天气的闹钟]]></title>
       <url>/2017/07/18/raspberry-weather-clock/</url>
-      <content type="html"><![CDATA[<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>你要有个pi:)</p>
+      <content type="html"><![CDATA[<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>你要有个pi:)<br><a id="more"></a></p>
 ]]></content>
       
         <categories>
@@ -17,9 +17,9 @@
         
         <tags>
             
-            <tag> python </tag>
-            
             <tag> raspberrypi </tag>
+            
+            <tag> python </tag>
             
         </tags>
         
@@ -29,7 +29,7 @@
       <title><![CDATA[用go实现一个简单的restful接口]]></title>
       <url>/2017/07/18/go-first-rest/</url>
       <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>go的标准库<code>http</code>已经封装好很多接口，可以很简单实现一个web服务器。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">    <span class="string">"io"</span></div><div class="line">    <span class="string">"net/http"</span></div><div class="line">    <span class="string">"log"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="comment">// hello world, the web server</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">HelloServer</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</div><div class="line">    io.WriteString(w, <span class="string">"hello, world!\n"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    http.HandleFunc(<span class="string">"/hello"</span>, HelloServer)</div><div class="line">    err := http.ListenAndServe(<span class="string">":12345"</span>, <span class="literal">nil</span>)</div><div class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">        log.Fatal(<span class="string">"ListenAndServe: "</span>, err)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>所以以上面例子可以封装一个restful接口的类库。</p>
+<p>所以以上面例子可以封装一个restful接口的类库。<br><a id="more"></a></p>
 <h1 id="编写http入口"><a href="#编写http入口" class="headerlink" title="编写http入口"></a>编写http入口</h1><h1 id="github-地址"><a href="#github-地址" class="headerlink" title="github 地址"></a>github 地址</h1>]]></content>
       
         <categories>
@@ -52,7 +52,7 @@
     <entry>
       <title><![CDATA[一张图了解一致性hash]]></title>
       <url>/2017/07/16/consistent-hash/</url>
-      <content type="html"><![CDATA[<p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a></p>
+      <content type="html"><![CDATA[<p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a><br><a id="more"></a></p>
 ]]></content>
       
         <categories>
@@ -73,7 +73,7 @@
     <entry>
       <title><![CDATA[一张图了解hashmap]]></title>
       <url>/2017/07/15/hashmap/</url>
-      <content type="html"><![CDATA[<p><a href="/images/hashmap.png"><img src="/images/hashmap.png" alt="one image describes how hashmap works"></a></p>
+      <content type="html"><![CDATA[<p><a href="/images/hashmap.png"><img src="/images/hashmap.png" alt="one image describes how hashmap works"></a><br><a id="more"></a></p>
 ]]></content>
       
         <categories>
@@ -95,9 +95,9 @@
       <title><![CDATA[python在不同层级目录import模块的方法]]></title>
       <url>/2015/02/18/python-import-module/</url>
       <content type="html"><![CDATA[<blockquote>
-<p>使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的模块调用方法汇总下。</p>
-</blockquote>
+<p>使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的模块调用方法汇总下。<br><a id="more"></a></p>
 <h1 id="同级目录下的调有"><a href="#同级目录下的调有" class="headerlink" title="同级目录下的调有"></a>同级目录下的调有</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
+</blockquote>
 <p>若在程序test1.py中导入模块mod1, 则直接使用<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> mod1</div><div class="line">或</div><div class="line"><span class="keyword">from</span> mod1 <span class="keyword">import</span> *;</div></pre></td></tr></table></figure></p>
 <h1 id="调用子目录下的模块"><a href="#调用子目录下的模块" class="headerlink" title="调用子目录下的模块"></a>调用子目录下的模块</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- lib</div><div class="line">    |    |-- mod2.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
 <p>这时看到test1.py和lib目录（即mod2.py的父级目录），如果想在程序test1.py中导入模块mod2.py ，可以在lib件夹中建立空文件<strong>init</strong>.py文件(也可以在该文件中自定义输出模块接口)，然后使用：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> lib.mod2 <span class="keyword">import</span> *</div><div class="line">或</div><div class="line"><span class="keyword">import</span> lib.mod2</div></pre></td></tr></table></figure></p>
@@ -125,7 +125,7 @@
       <url>/2014/01/06/linux-awk/</url>
       <content type="html"><![CDATA[<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>awk是一个强大的文本分析工具，相对于grep的查找，sed的编辑，awk在其对数据分析并生成报告时，显得尤为强大。简单来说awk就是把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行各种分析处理。</p>
 <p>awk有3个不同版本: awk、nawk和gawk，未作特别说明，一般指gawk，gawk 是 AWK 的 GNU 版本。</p>
-<p>awk其名称得自于它的创始人 Alfred Aho 、Peter Weinberger 和 Brian Kernighan 姓氏的首个字母。实际上 AWK 的确拥有自己的语言： AWK 程序设计语言 ， 三位创建者已将它正式定义为“样式扫描和处理语言”。它允许您创建简短的程序，这些程序读取输入文件、为数据排序、处理数据、对输入执行计算以及生成报表，还有无数其他的功能。</p>
+<p>awk其名称得自于它的创始人 Alfred Aho 、Peter Weinberger 和 Brian Kernighan 姓氏的首个字母。实际上 AWK 的确拥有自己的语言： AWK 程序设计语言 ， 三位创建者已将它正式定义为“样式扫描和处理语言”。它允许您创建简短的程序，这些程序读取输入文件、为数据排序、处理数据、对输入执行计算以及生成报表，还有无数其他的功能。<br><a id="more"></a></p>
 <h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">awk &apos;&#123;pattern + action&#125;&apos; &#123;filenames&#125;</div></pre></td></tr></table></figure>
 <p>尽管操作可能会很复杂，但语法总是这样，其中 pattern 表示 AWK 在数据中查找的内容，而 action 是在找到匹配内容时所执行的一系列命令。花括号（{}）不需要在程序中始终出现，但它们用于根据特定的模式对一系列指令进行分组。 pattern就是要表示的正则表达式，用斜杠括起来。</p>
 <p>awk语言的最基本功能是在文件或者字符串中基于指定规则浏览和抽取信息，awk抽取信息后，才能进行其他文本操作。完整的awk脚本通常用来格式化文本文件中的信息。</p>
@@ -208,7 +208,7 @@
       <title><![CDATA[jQuery的.bind()、.live()和.delegate()之间区别]]></title>
       <url>/2014/01/04/jquery-bind-delegate/</url>
       <content type="html"><![CDATA[<p><code>摘要: jQuery的.bind()、.live()和.delegate()之间的区别并非总是那么明显的，然而，如果我们对所有的不同之处都有清晰的理解的话，那么这将会有助于我们编写出更加简洁的代码，以及防止在交互应用中弹出错误。</code></p>
-<p><a href="/images/jquery-1.jpg"><img src="/images/jquery-1.jpg" alt=""></a> </p>
+<p><a href="/images/jquery-1.jpg"><img src="/images/jquery-1.jpg" alt=""></a><br><a id="more"></a></p>
 <p>DOM树</p>
 <p>首先，可视化一个HMTL文档的DOM树是很有帮助的。一个简单的HTML页面看起来就像是这个样子：<br><a href="/images/jquery-2.png"><img src="/images/jquery-2.png" alt=""></a> </p>
 <p>事件冒泡(又称事件传播)</p>
@@ -275,8 +275,7 @@
       <title><![CDATA[正确理解ThreadLocal]]></title>
       <url>/2014/01/04/threadlocal-understanding/</url>
       <content type="html"><![CDATA[<p>首先，ThreadLocal 不是用来解决共享对象的多线程访问问题的，一般情况下，通过ThreadLocal.set() 到线程中的对象是该线程自己使用的对象，其他线程是不需要访问的，也访问不到的。 各个线程中访问的是不同的对象。  </p>
-<p>另外，说ThreadLocal使得各线程能够保持各自独立的一个对象，并不是通过ThreadLocal.set()来实现的，而是通过每个线程中的new 对象 的操作来创建的对象，每个线程创建一个，不是什么对象的拷贝或副本。 通过ThreadLocal.set()将这个新创建的对象的引用保存到各线程的自己的一个map中，每个线程都有这样一个map，执行ThreadLocal.get()时，各线程从自己的map中取出放进去的对象，因此取出来的是各自自己线程中的对象，ThreadLocal实例是作为map的key来使用的。  </p>
-<p>如果ThreadLocal.set()进去的东西本来就是多个线程共享的同一个对象，那么多个线程的ThreadLocal.get()取得的还是这个共享对象本身，还是有并发访问问题。  </p>
+<p>另外，说ThreadLocal使得各线程能够保持各自独立的一个对象，并不是通过ThreadLocal.set()来实现的，而是通过每个线程中的new 对象 的操作来创建的对象，每个线程创建一个，不是什么对象的拷贝或副本。 通过ThreadLocal.set()将这个新创建的对象的引用保存到各线程的自己的一个map中，每个线程都有这样一个map，执行ThreadLocal.get()时，各线程从自己的map中取出放进去的对象，因此取出来的是各自自己线程中的对象，ThreadLocal实例是作为map的key来使用的。<br><a id="more"></a><br>如果ThreadLocal.set()进去的东西本来就是多个线程共享的同一个对象，那么多个线程的ThreadLocal.get()取得的还是这个共享对象本身，还是有并发访问问题。  </p>
 <p>下面来看一个hibernate中典型的ThreadLocal的应用： </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal threadSession = <span class="keyword">new</span> ThreadLocal();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Session <span class="title">getSession</span><span class="params">()</span> <span class="keyword">throws</span> InfrastructureException </span>&#123;</div><div class="line">        Session s = (Session) threadSession.get();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</div><div class="line">                s = getSessionFactory().openSession();</div><div class="line">                threadSession.set(s);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (HibernateException ex) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InfrastructureException(ex);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> s;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
 <p>可以看到在getSession()方法中，首先判断当前线程中有没有放进去session，如果还没有，那么通过sessionFactory().openSession()来创建一个session，再将session set到线程中，实际是放到当前线程的ThreadLocalMap这个map中，这时，对于这个session的唯一引用就是当前线程中的那个ThreadLocalMap（下面会讲到），而threadSession作为这个值的key，要取得这个session可以通过threadSession.get()来得到，里面执行的操作实际是先取得当前线程中的ThreadLocalMap，然后将threadSession作为key将对应的值取出。这个session相当于线程的私有变量，而不是public的。<br>显然，其他线程中是取不到这个session的，他们也只能取到自己的ThreadLocalMap中的东西。要是session是多个线程共享使用的，那还不乱套了。<br>试想如果不用ThreadLocal怎么来实现呢？可能就要在action中创建session，然后把session一个个传到service和dao中，这可够麻烦的。或者可以自己定义一个静态的map，将当前thread作为key，创建的session作为值，put到map中，应该也行，这也是一般人的想法，但事实上，ThreadLocal的实现刚好相反，它是在每个线程中有一个map，而将ThreadLocal实例作为key，这样每个map中的项数很少，而且当线程销毁时相应的东西也一起销毁了，不知道除了这些还有什么其他的好处。  </p>
@@ -325,7 +324,7 @@
     <entry>
       <title><![CDATA[Hello World]]></title>
       <url>/2014/01/01/hello-world/</url>
-      <content type="html"><![CDATA[<p>Welcome to my blog, This is my first post.so hello world</p>
+      <content type="html"><![CDATA[<p>Welcome to my blog, This is my first post.so hello world<br><a id="more"></a></p>
 ]]></content>
       
         <categories>
