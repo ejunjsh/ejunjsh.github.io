@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,sed," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
+<meta name="keywords" content="linux,sed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux-sed">
+<meta property="og:url" content="http://idiotsky.me/2014/01/06/linux-sed/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
+<meta property="og:updated_time" content="2017-07-19T12:49:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux-sed">
+<meta name="twitter:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2014/01/06/linux-sed/"/>
+
+
+
+
+
+  <title>linux-sed | IdiotSky</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/01/06/linux-sed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux-sed</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-01-06T23:53:22+08:00">
+                06 Jan 14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>功能说明：</p>
+<p>利用script来处理文本文件。 </p>
+<p>语　　法：</p>
+<p>sed [-hnV][-e<script>][-f<script文件>][文本文件]<br><a id="more"></a></p>
+<p>补充说明：</p>
+<p>sed可依照script的指令，来处理、编辑文本文件。 </p>
+<p>参　　数：<br>-e<script>或—expression=<script>   以选项中指定的script来处理输入的文本文件。<br>-f<script文件>或—file=<script文件>   以选项中指定的script文件来处理输入的文本文件。<br>-h或—help 显示帮助。<br>-n或—quiet或–silent 仅显示script处理后的结果。<br>-V或—version 显示版本信息。  </p>
+<p>例      子：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'s/123/1234/'</span> a.txt</div></pre></td></tr></table></figure></p>
+<p>将a.txt文件中所有行中的123用1234替换（-e表示命令以命令行的方式执行；参数s，表示执行替换操作） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'3,5 a4'</span> a.txt</div></pre></td></tr></table></figure>
+<p>将a.txt文件中的3行到5行之间所有行的后面添加一行内容为4的行（参数a，表示添加行，参数a后面指定添加的内容） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'1 s/12/45/'</span> a.txt</div></pre></td></tr></table></figure>
+<p>把第一行的12替换成45 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -i <span class="string">"s/oldstring/newstring/g"</span> `grep oldstring -rl yourdir`</div></pre></td></tr></table></figure>
+<p>批量处理通过grep搜索出来的所有文档，将这些文档中所有的oldstring用newstring替换（-i参数表示直接对目标文件操作） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -n <span class="string">'s/^test/mytest/p'</span> example.file</div></pre></td></tr></table></figure>
+<p>(-n)选项和p标志一起使用表示只打印那些发生替换的行。也就是说，如果某一行开头的test被替换成mytest，就打印它。(^这是正则表达式中表示开头，该符号后面跟的就是开头的字符串)（参数p表示打印行） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'s/^wangpan/&amp;19850715/'</span> example.file</div></pre></td></tr></table></figure>
+<p>表示被替换换字符串被找到后，被替换的字符串通过＆符号连接给出的字符串组成新字符传替换被替换的字符串,所有以wangpan开头的行都会被替换成它自已加19850715，变成wangpan19850715 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -n <span class="string">'s/\(love\)able/\1rs/p'</span> example.file</div></pre></td></tr></table></figure>
+<p>love被标记为1，所有loveable会被替换成lovers，而且替换的行会被打印出来。需要将这条命令分解，s/是表示替换操作，(love)表示选中love字符串，(love)able/表示包含loveable的行，(love)able/\l表示love字符串标记为1，表示在替换过程中不变。rs/表示替换的目标字符串。这条命令的操作含义：只打印替换了的行 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'s#10#100#g'</span> example.file</div></pre></td></tr></table></figure>
+<p>不论什么字符，紧跟着s命令的都被认为是新的分隔符，所以，“#”在这里是分隔符，代替了默认的“/”分隔符。表示把所有10替换成100。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -n <span class="string">'/love/,/unlove/p'</span> example.file</div></pre></td></tr></table></figure>
+<p>只打印包含love字符串行到包含unlove字符串行之间的所有行（确定行的范围就是通过逗号实现的） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -n <span class="string">'5,/^wang/p'</span> example</div></pre></td></tr></table></figure>
+<p>只打印从第五行开始到第一个包含以wang开始的行之间的所有行 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'/love/,/unlove/s/$/wangpan/'</span> example.file</div></pre></td></tr></table></figure>
+<p>对于包含love字符串的行到包含unlove字符串之间的行，每行的末尾用字符串wangpan替换。<br>字符串$/表示以字符串结尾的行，$/表示每一行的结尾，s/$/wangpan/表示每一行的结尾添加wangpan字符串 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'11,53d'</span> -e <span class="string">'s/wang/pan/'</span> example.file</div></pre></td></tr></table></figure>
+<p>(-e)选项允许在同一行里执行多条命令。如例子所示，第一条命令删除11至53行，第二条命令用pan替换wang。命令的执行顺序对结果有影响。如果两个命令都是替换命令，那么第一个替换命令将影响第二个替换命令的结果。(参数d，表示删除指定的行) </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed --expression=<span class="string">'s/wang/pan/'</span> --expression=<span class="string">'/love/d'</span> example.file</div></pre></td></tr></table></figure>
+<p>一个比-e更好的命令是–expression。它能给sed表达式赋值。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'/wangpan/r file'</span> example.file</div></pre></td></tr></table></figure>
+<p>file里的内容被读进来，显示在与wangpan匹配的行后面，如果匹配多行，则file的内容将显示在所有匹配行的下面。参数r，表示读出文件，后面空格紧跟文件名称 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -n <span class="string">'/test/w file'</span> example.file</div></pre></td></tr></table></figure>
+<p>在example.file中所有包含test的行都被写入file里。参数w，表示将匹配的行写入到指定的文件file中 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'/^test/a\oh! My god!'</span> example.file</div></pre></td></tr></table></figure>
+<p>‘oh! My god!’被追加到以test开头的行的后面，sed要求参数a后面有一个反斜杠。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'/test/i\oh! My god!'</span> example.file</div></pre></td></tr></table></figure>
+<p>‘oh! My god!’被追加到包含test字符串行的前面，参数i表示添加指定内容到匹配行的前面，sed要求参数i后面有一个反斜杠 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'/test/&#123; n; s/aa/bb/; &#125;'</span> example.file</div></pre></td></tr></table></figure>
+<p>如果test被匹配，则移动到匹配行的下一行，替换这一行的aa，变为bb。参数n，表示读取匹配行的下一个输入行，用下一个命令处理新的行而不是匹配行。Sed要求参数n后跟分号 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'1,10y/abcde/ABCDE/'</span> example.file</div></pre></td></tr></table></figure>
+<p>把1—10行内所有abcde转变为大写，注意，正则表达式元字符不能使用这个命令。参数y，表示把一个字符翻译为另外的字符（但是不用于正则表达式） </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -i <span class="string">'s/now/right now/g'</span> test_sed_command.txt</div></pre></td></tr></table></figure>
+<p>表示直接操作文件test_sed_command.txt，将文件test_sed_command.txt中所有的now用right now替换。参数-i，表示直接操作修改文件，不输出。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed <span class="string">'2q'</span> test_sed_command.txt</div></pre></td></tr></table></figure>
+<p>在打印完第2行后，就直接退出sed。参数q，表示退出 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'/old/h'</span> -e <span class="string">'/girl-friend/G'</span> test_sed_command.txt</div></pre></td></tr></table></figure>
+<p>首先了解参数h，拷贝匹配成功行的内容到内存中的缓冲区。在了解参数G，获得内存缓冲区的内容，并追加到当前模板块文本的后面。上面命令行的含义：将包含old字符串的行的内容保存在缓冲区中，然后将缓冲区的内容拿出来添加到包含girl-friend字符串行的后面。隐含要求搜集到缓冲区的匹配行在需要添加行的前面。 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'/test/h'</span> -e <span class="string">'/wangpan/x'</span> example.file</div></pre></td></tr></table></figure>
+<p>将包含test字符串的行的内容保存在缓冲区中，然后再将缓冲区的内容替换包含wangpan字符串的行。参数x，表示行替换操作。隐含要求搜集到缓冲区的匹配行在需要被替换行的前面。 </p>
+<p>原文地址：<a href="http://www.cnblogs.com/shineshqw/articles/1978122.html">http://www.cnblogs.com/shineshqw/articles/1978122.html</a></p>
+</script></p>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/sed/" rel="tag"># sed</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/01/06/linux-awk/" rel="next" title="linux awk命令详解">
+                <i class="fa fa-chevron-left"></i> linux awk命令详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/02/18/python-import-module/" rel="prev" title="python在不同层级目录import模块的方法">
+                python在不同层级目录import模块的方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
