@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
+<meta name="description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
 <meta name="keywords" content="linux,sed">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux-sed">
+<meta property="og:title" content="linux sed命令详解">
 <meta property="og:url" content="http://idiotsky.me/2014/01/06/linux-sed/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
-<meta property="og:updated_time" content="2017-07-19T12:49:50.000Z">
+<meta property="og:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
+<meta property="og:updated_time" content="2017-07-19T12:58:41.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux-sed">
-<meta name="twitter:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e][-f][文本文件]">
+<meta name="twitter:title" content="linux sed命令详解">
+<meta name="twitter:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
 
 
 
@@ -137,7 +137,7 @@
 
 
 
-  <title>linux-sed | IdiotSky</title>
+  <title>linux sed命令详解 | IdiotSky</title>
   
 
 
@@ -293,7 +293,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">linux-sed</h1>
+          <h1 class="post-title" itemprop="name headline">linux sed命令详解</h1>
         
 
         <div class="post-meta">
@@ -365,10 +365,10 @@
         <p>功能说明：</p>
 <p>利用script来处理文本文件。 </p>
 <p>语　　法：</p>
-<p>sed [-hnV][-e<script>][-f<script文件>][文本文件]<br><a id="more"></a></p>
+<p>sed [-hnV][-e script][-f script文件][文本文件]<br><a id="more"></a></p>
 <p>补充说明：</p>
 <p>sed可依照script的指令，来处理、编辑文本文件。 </p>
-<p>参　　数：<br>-e<script>或—expression=<script>   以选项中指定的script来处理输入的文本文件。<br>-f<script文件>或—file=<script文件>   以选项中指定的script文件来处理输入的文本文件。<br>-h或—help 显示帮助。<br>-n或—quiet或–silent 仅显示script处理后的结果。<br>-V或—version 显示版本信息。  </p>
+<p>参　　数：<br>-e script或—expression=script   以选项中指定的script来处理输入的文本文件。<br>-f script文件或—file=script文件   以选项中指定的script文件来处理输入的文本文件。<br>-h或—help 显示帮助。<br>-n或—quiet或–silent 仅显示script处理后的结果。<br>-V或—version 显示版本信息。  </p>
 <p>例      子：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'s/123/1234/'</span> a.txt</div></pre></td></tr></table></figure></p>
 <p>将a.txt文件中所有行中的123用1234替换（-e表示命令以命令行的方式执行；参数s，表示执行替换操作） </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'3,5 a4'</span> a.txt</div></pre></td></tr></table></figure>
@@ -415,8 +415,7 @@
 <p>首先了解参数h，拷贝匹配成功行的内容到内存中的缓冲区。在了解参数G，获得内存缓冲区的内容，并追加到当前模板块文本的后面。上面命令行的含义：将包含old字符串的行的内容保存在缓冲区中，然后将缓冲区的内容拿出来添加到包含girl-friend字符串行的后面。隐含要求搜集到缓冲区的匹配行在需要添加行的前面。 </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'/test/h'</span> -e <span class="string">'/wangpan/x'</span> example.file</div></pre></td></tr></table></figure>
 <p>将包含test字符串的行的内容保存在缓冲区中，然后再将缓冲区的内容替换包含wangpan字符串的行。参数x，表示行替换操作。隐含要求搜集到缓冲区的匹配行在需要被替换行的前面。 </p>
-<p>原文地址：<a href="http://www.cnblogs.com/shineshqw/articles/1978122.html">http://www.cnblogs.com/shineshqw/articles/1978122.html</a></p>
-</script></p>
+
       
     </div>
 
@@ -460,8 +459,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/01/06/linux-awk/" rel="next" title="linux awk命令详解">
-                <i class="fa fa-chevron-left"></i> linux awk命令详解
+              <a href="/2014/01/06/linux-grep/" rel="next" title="linux grep命令详解">
+                <i class="fa fa-chevron-left"></i> linux grep命令详解
               </a>
             
           </div>
@@ -536,7 +535,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -558,7 +557,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
