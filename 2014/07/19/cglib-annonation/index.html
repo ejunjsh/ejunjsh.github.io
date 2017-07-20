@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
+<meta name="description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用cglib生成的代理类取不到注解的问题">
 <meta property="og:url" content="http://idiotsky.me/2014/07/19/cglib-annonation/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
-<meta property="og:updated_time" content="2017-07-20T13:49:25.000Z">
+<meta property="og:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
+<meta property="og:updated_time" content="2017-07-20T14:13:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用cglib生成的代理类取不到注解的问题">
-<meta name="twitter:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
+<meta name="twitter:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
 
 
 
@@ -363,8 +363,7 @@
 
       
         <p>百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好）</p>
-<p>直接在注解上面加@Inherited</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inherited</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.TYPE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>直接在注解上面加@Inherited<br><a id="more"></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inherited</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.TYPE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可以令子类继承这个注解（唉，基础啊）<br>链接<a href="http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies" target="_blank" rel="external">http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies</a></p>
 
       

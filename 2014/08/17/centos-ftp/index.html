@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
+<meta name="description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
 <meta name="keywords" content="linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="centos 启用ftp功能">
 <meta property="og:url" content="http://idiotsky.me/2014/08/17/centos-ftp/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
-<meta property="og:updated_time" content="2017-07-20T13:55:47.000Z">
+<meta property="og:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
+<meta property="og:updated_time" content="2017-07-20T14:12:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="centos 启用ftp功能">
-<meta name="twitter:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
+<meta name="twitter:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
 
 
 
@@ -363,6 +363,7 @@
 
       
         <p>1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>可以用下面命令查看用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd</div></pre></td></tr></table></figure></p>
 <p>默认ftp服务是没有启动的，用下面命令启动<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd start</div></pre></td></tr></table></figure></p>
 <p>2.安装ftp客户端组件（用来验证是否vsftpd）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install ftp</div></pre></td></tr></table></figure></p>
