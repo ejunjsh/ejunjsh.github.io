@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="python,raspberrypi," />
+  <meta name="keywords" content="python,raspberrypi,NAS," />
 
 
 
@@ -93,17 +93,19 @@
 
 
 
-<meta name="description" content="前提你要有个pi😄">
-<meta name="keywords" content="python,raspberrypi">
+<meta name="description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
+<meta name="keywords" content="python,raspberrypi,NAS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="用树莓派实现一个能播放天气的闹钟">
-<meta property="og:url" content="http://idiotsky.me/2017/07/18/raspberry-weather-clock/index.html">
+<meta property="og:title" content="利用raspberry PI 搭建一个简易的NAS">
+<meta property="og:url" content="http://idiotsky.me/2017/07/20/raspberry-nas/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="前提你要有个pi😄">
-<meta property="og:updated_time" content="2017-07-20T14:29:22.000Z">
+<meta property="og:description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
+<meta property="og:image" content="http://idiotsky.me/images/nas-screenshot.png">
+<meta property="og:updated_time" content="2017-07-20T15:00:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="用树莓派实现一个能播放天气的闹钟">
-<meta name="twitter:description" content="前提你要有个pi😄">
+<meta name="twitter:title" content="利用raspberry PI 搭建一个简易的NAS">
+<meta name="twitter:description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
+<meta name="twitter:image" content="http://idiotsky.me/images/nas-screenshot.png">
 
 
 
@@ -131,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/07/18/raspberry-weather-clock/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/07/20/raspberry-nas/"/>
 
 
 
 
 
-  <title>用树莓派实现一个能播放天气的闹钟 | IdiotSky</title>
+  <title>利用raspberry PI 搭建一个简易的NAS | IdiotSky</title>
   
 
 
@@ -276,7 +278,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/18/raspberry-weather-clock/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/20/raspberry-nas/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -293,7 +295,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">用树莓派实现一个能播放天气的闹钟</h1>
+          <h1 class="post-title" itemprop="name headline">利用raspberry PI 搭建一个简易的NAS</h1>
         
 
         <div class="post-meta">
@@ -305,8 +307,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-18T01:12:25+08:00">
-                18 Jul 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-20T22:39:35+08:00">
+                20 Jul 17
               </time>
             
 
@@ -362,12 +364,19 @@
       
 
       
-        <h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>你要有个pi😄<br><a id="more"></a></p>
-<h1 id="获取天气接口"><a href="#获取天气接口" class="headerlink" title="获取天气接口"></a>获取天气接口</h1><p>这里我是用图灵机器人来获取天气的接口，你可以自己上去注册一个，下面代码URL的Key是我注册的机器人给的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getWeatherText</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        response = requests.get(</div><div class="line">            <span class="string">"http://www.tuling123.com/openapi/api?key=652ae4a714794fe6b01faa990d7a981f&amp;info=%s"</span> % <span class="string">"广州今日天气"</span>)</div><div class="line">        json = response.json()</div><div class="line">        <span class="keyword">if</span> json[<span class="string">"code"</span>] == <span class="number">100000</span>:</div><div class="line">            <span class="keyword">return</span> json[<span class="string">"text"</span>]</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">return</span> <span class="string">""</span></div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        <span class="keyword">return</span> <span class="string">""</span></div></pre></td></tr></table></figure></p>
-<h1 id="播放文字"><a href="#播放文字" class="headerlink" title="播放文字"></a>播放文字</h1><p>利用百度的接口可以转换文本为语音。默认只有女声<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">text2voice</span><span class="params">(text)</span>:</span></div><div class="line">    url = <span class="string">'http://tts.baidu.com/text2audio?idx=1&amp;tex=&#123;0&#125;&amp;cuid=baidu_speech_'</span> \</div><div class="line">          <span class="string">'demo&amp;cod=2&amp;lan=zh&amp;ctp=1&amp;pdt=1&amp;spd=4&amp;per=4&amp;vol=5&amp;pit=5'</span>.format(text)</div><div class="line">    <span class="comment"># 用mplayer播放语音</span></div><div class="line">    os.system(<span class="string">'mplayer "%s"'</span> % url)</div></pre></td></tr></table></figure></p>
-<h1 id="安装播放媒体软件"><a href="#安装播放媒体软件" class="headerlink" title="安装播放媒体软件"></a>安装播放媒体软件</h1><p>上面代码你看到的<code>mplayer</code>,就是用来播放语音的，传个url作为参数<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mplayer</div><div class="line">usage: mplayer [url]</div></pre></td></tr></table></figure></p>
-<h1 id="播放音乐"><a href="#播放音乐" class="headerlink" title="播放音乐"></a>播放音乐</h1><p>有了上面这个神器，你可以给播报语音前后加一首音乐😄<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">playMusic</span><span class="params">(path)</span>:</span></div><div class="line">    os.system(<span class="string">'mplayer %s'</span> % path)</div></pre></td></tr></table></figure></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>利用上面的东东，可以组合些好玩的东西了，至于闹钟的唤醒，可以crob job 做，也可以代码里面实现，enjoy…😄<br>全部代码地址 <a href="https://github.com/ejunjsh/raspberrypi-code/blob/master/clock/weather.py" target="_blank" rel="external">https://github.com/ejunjsh/raspberrypi-code/blob/master/clock/weather.py</a></p>
+        <h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
+<li>raspberry pi 3</li>
+<li>硬盘（格式化过ext4的）</li>
+<li>连接raspberry用的终端<a id="more"></a>
+</li>
+</ul>
+<h1 id="安装samba"><a href="#安装samba" class="headerlink" title="安装samba"></a>安装samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install samba samba-common-bin</div></pre></td></tr></table></figure>
+<h1 id="配置samba"><a href="#配置samba" class="headerlink" title="配置samba"></a>配置samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.back</div><div class="line">sudo vim /etc/samba/smb.conf</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 在末尾加入如下内容</span></div><div class="line"><span class="comment"># 分享名称</span></div><div class="line">[MyNAS]</div><div class="line">    <span class="comment"># 说明信息</span></div><div class="line">    comment = NAS Storage</div><div class="line">    <span class="comment"># 可以访问的用户</span></div><div class="line">    valid users = pi,root</div><div class="line">    <span class="comment"># 共享文件的路径,raspberry pi 会自动将连接到其上的外接存储设备挂载到/media/pi/目录下。</span></div><div class="line">    path = /media/pi/</div><div class="line">    <span class="comment"># 可被其他人看到资源名称（非内容）</span></div><div class="line">    browseable = yes</div><div class="line">    <span class="comment"># 可写</span></div><div class="line">    writable = yes</div><div class="line">    <span class="comment"># 新建文件的权限为 664</span></div><div class="line">    create mask = 0664</div><div class="line">    <span class="comment"># 新建目录的权限为 775</span></div><div class="line">    directory mask = 0775</div></pre></td></tr></table></figure>
+<p>可以把配置文件中你不需要的分享名称删除，例如 [homes], [printers] 等。<br>测试配置文件是否有错误，根据提示做相应修改<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">testparm</div></pre></td></tr></table></figure></p>
+<p>添加登陆账户并创建密码，必须是 linux 已存在的用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo smbpasswd -a pi</div></pre></td></tr></table></figure></p>
+<p>重启 samba 服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/samba restart</div></pre></td></tr></table></figure></p>
+<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>一般树莓派跟你的WiFi相连的话，你的网络就能看到跟上面配置一样的分享名称，如mac上面这样的显示：<br><a href="/images/nas-screenshot.png"><img src="/images/nas-screenshot.png" alt=""></a><br>如果显示没权限，可以断开连接，用你上面添加的账号登录。</p>
 
       
     </div>
@@ -401,6 +410,8 @@
           
             <a href="/tags/raspberrypi/" rel="tag"># raspberrypi</a>
           
+            <a href="/tags/NAS/" rel="tag"># NAS</a>
+          
         </div>
       
 
@@ -412,8 +423,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/18/go-first-rest/" rel="next" title="用go实现一个简单的restful接口">
-                <i class="fa fa-chevron-left"></i> 用go实现一个简单的restful接口
+              <a href="/2017/07/18/raspberry-weather-clock/" rel="next" title="用树莓派实现一个能播放天气的闹钟">
+                <i class="fa fa-chevron-left"></i> 用树莓派实现一个能播放天气的闹钟
               </a>
             
           </div>
@@ -421,10 +432,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/07/20/raspberry-nas/" rel="prev" title="利用raspberry PI 搭建一个简易的NAS">
-                利用raspberry PI 搭建一个简易的NAS <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -583,7 +590,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#获取天气接口"><span class="nav-number">2.</span> <span class="nav-text">获取天气接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#播放文字"><span class="nav-number">3.</span> <span class="nav-text">播放文字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装播放媒体软件"><span class="nav-number">4.</span> <span class="nav-text">安装播放媒体软件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#播放音乐"><span class="nav-number">5.</span> <span class="nav-text">播放音乐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装samba"><span class="nav-number">2.</span> <span class="nav-text">安装samba</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置samba"><span class="nav-number">3.</span> <span class="nav-text">配置samba</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#连接"><span class="nav-number">4.</span> <span class="nav-text">连接</span></a></li></ol></div>
             
 
           </div>
