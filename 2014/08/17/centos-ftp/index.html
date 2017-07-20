@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="linux," />
 
 
 
@@ -93,16 +93,17 @@
 
 
 
-<meta name="keywords" content="java">
+<meta name="description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
+<meta name="keywords" content="linux">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一张图了解一致性hash">
-<meta property="og:url" content="http://idiotsky.me/2017/07/16/consistent-hash/index.html">
+<meta property="og:title" content="centos 启用ftp功能">
+<meta property="og:url" content="http://idiotsky.me/2014/08/17/centos-ftp/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:image" content="http://idiotsky.me/images/consistent-hash.png">
-<meta property="og:updated_time" content="2017-07-19T12:39:16.000Z">
+<meta property="og:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
+<meta property="og:updated_time" content="2017-07-20T13:55:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一张图了解一致性hash">
-<meta name="twitter:image" content="http://idiotsky.me/images/consistent-hash.png">
+<meta name="twitter:title" content="centos 启用ftp功能">
+<meta name="twitter:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd 可以用下面命令查看用户1cat /etc/passwd 默认ftp服务是没有启动的，用下面命令启动1service vsftpd start">
 
 
 
@@ -130,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/07/16/consistent-hash/"/>
+  <link rel="canonical" href="http://idiotsky.me/2014/08/17/centos-ftp/"/>
 
 
 
 
 
-  <title>一张图了解一致性hash | IdiotSky</title>
+  <title>centos 启用ftp功能 | IdiotSky</title>
   
 
 
@@ -275,7 +276,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/16/consistent-hash/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/08/17/centos-ftp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -292,7 +293,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一张图了解一致性hash</h1>
+          <h1 class="post-title" itemprop="name headline">centos 启用ftp功能</h1>
         
 
         <div class="post-meta">
@@ -304,8 +305,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-16T20:39:20+08:00">
-                16 Jul 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-08-17T21:50:01+08:00">
+                17 Aug 14
               </time>
             
 
@@ -327,8 +328,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
                   </a>
                 </span>
 
@@ -361,7 +362,32 @@
       
 
       
-        <p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a><br><a id="more"></a></p>
+        <p>1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
+<p>可以用下面命令查看用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd</div></pre></td></tr></table></figure></p>
+<p>默认ftp服务是没有启动的，用下面命令启动<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd start</div></pre></td></tr></table></figure></p>
+<p>2.安装ftp客户端组件（用来验证是否vsftpd）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install ftp</div></pre></td></tr></table></figure></p>
+<p>执行命令尝试登录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ftp localhost</div></pre></td></tr></table></figure></p>
+<p>输入用户名ftp，密码随便（因为默认是允许匿名的）</p>
+<p>登录成功，就代表ftp服务可用了。</p>
+<p>但是，外网是访问不了的，所以还要继续配置。</p>
+<p>3.取消匿名登陆<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/vsftpd/vsftpd.conf</div></pre></td></tr></table></figure></p>
+<p>把第一行的 anonymous_enable=YES ，改为NO<br>重启<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd restart</div></pre></td></tr></table></figure></p>
+<p>4.新建一个用户(ftpuser为用户名，随便就可以)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">useradd ftpuser</div></pre></td></tr></table></figure></p>
+<p>修改密码（输入两次）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">passwd ftpuser</div></pre></td></tr></table></figure></p>
+<p>这样一个用户建完，可以用这个登录，记得用普通登录不要用匿名了。登录后默认的路径为 /home/ftpuser.</p>
+<p>5.开放21端口</p>
+<p>因为ftp默认的端口为21，而centos默认是没有开启的，所以要修改iptables文件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /etc/sysconfig/iptables</div></pre></td></tr></table></figure></p>
+<p>在行上面有22 -j ACCEPT 下面另起一行输入跟那行差不多的，只是把22换成21，然后：wq保存。<br>还要运行下,重启iptables<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service iptables restart</div></pre></td></tr></table></figure></p>
+<p>外网是可以访问上去了，可是发现没法返回目录，也上传不了，因为selinux作怪了。<br>6.修改selinux<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">getsebool -a | grep ftp</div></pre></td></tr></table></figure></p>
+<p>执行上面命令，再返回的结果看到两行都是off，代表，没有开启外网的访问<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">.... </div><div class="line">allow_ftpd_full_access off </div><div class="line">....</div><div class="line">....</div><div class="line">ftp_home_dir off</div></pre></td></tr></table></figure></p>
+<p>只要把上面都变成on就行<br>执行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">setsebool -P allow_ftpd_full_access 1 </div><div class="line">setsebool -P ftp_home_dir off 1</div></pre></td></tr></table></figure></p>
+<p>再重启一下vsftpd<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd restart</div></pre></td></tr></table></figure></p>
+<p>这样应该没问题了（如果，还是不行，看看是不是用了ftp客户端工具用了passive模式访问了，如提示Entering Passive mode，就代表是passive模式，默认是不行的，因为ftp passive模式被iptables挡住了，下面会讲怎么开启，如果懒得开的话，就看看你客户端ftp是否有port模式的选项，或者把passive模式的选项去掉。如果客户端还是不行，看看客户端上的主机的电脑是否开了防火墙，关吧）</p>
+<p>7.开启passive模式</p>
+<p>默认是开启的，但是要指定一个端口范围，打开vsftpd.conf文件，在后面加上<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pasv_min_port=30000</div><div class="line"></div><div class="line">pasv_max_port=30999</div></pre></td></tr></table></figure></p>
+<p>表示端口范围为30000~30999，这个可以随意改。<br>改完重启一下vsftpd</p>
+<p>由于指定这段端口范围，iptables也要相应的开启这个范围，所以像上面那样打开iptables文件</p>
+<p>也是在21上下面另起一行，更那行差不多，只是把21 改为30000:30999,然后:wq保存，重启下iptables。这样就搞定了。</p>
 
       
     </div>
@@ -391,7 +417,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
+            <a href="/tags/linux/" rel="tag"># linux</a>
           
         </div>
       
@@ -404,8 +430,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/15/hashmap/" rel="next" title="一张图了解hashmap">
-                <i class="fa fa-chevron-left"></i> 一张图了解hashmap
+              <a href="/2014/07/19/cglib-annonation/" rel="next" title="用cglib生成的代理类取不到注解的问题">
+                <i class="fa fa-chevron-left"></i> 用cglib生成的代理类取不到注解的问题
               </a>
             
           </div>
@@ -414,8 +440,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/18/go-first-rest/" rel="prev" title="用go实现一个简单的restful接口">
-                用go实现一个简单的restful接口 <i class="fa fa-chevron-right"></i>
+              <a href="/2015/02/18/python-import-module/" rel="prev" title="python在不同层级目录import模块的方法">
+                python在不同层级目录import模块的方法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

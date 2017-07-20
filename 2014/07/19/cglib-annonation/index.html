@@ -93,16 +93,17 @@
 
 
 
+<meta name="description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一张图了解一致性hash">
-<meta property="og:url" content="http://idiotsky.me/2017/07/16/consistent-hash/index.html">
+<meta property="og:title" content="用cglib生成的代理类取不到注解的问题">
+<meta property="og:url" content="http://idiotsky.me/2014/07/19/cglib-annonation/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:image" content="http://idiotsky.me/images/consistent-hash.png">
-<meta property="og:updated_time" content="2017-07-19T12:39:16.000Z">
+<meta property="og:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
+<meta property="og:updated_time" content="2017-07-20T13:49:25.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一张图了解一致性hash">
-<meta name="twitter:image" content="http://idiotsky.me/images/consistent-hash.png">
+<meta name="twitter:title" content="用cglib生成的代理类取不到注解的问题">
+<meta name="twitter:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited 12345@Inherited@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MyAnnotation &amp;#123;&amp;#125; 原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可">
 
 
 
@@ -130,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/07/16/consistent-hash/"/>
+  <link rel="canonical" href="http://idiotsky.me/2014/07/19/cglib-annonation/"/>
 
 
 
 
 
-  <title>一张图了解一致性hash | IdiotSky</title>
+  <title>用cglib生成的代理类取不到注解的问题 | IdiotSky</title>
   
 
 
@@ -275,7 +276,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/16/consistent-hash/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/07/19/cglib-annonation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -292,7 +293,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一张图了解一致性hash</h1>
+          <h1 class="post-title" itemprop="name headline">用cglib生成的代理类取不到注解的问题</h1>
         
 
         <div class="post-meta">
@@ -304,8 +305,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-16T20:39:20+08:00">
-                16 Jul 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-07-19T21:47:51+08:00">
+                19 Jul 14
               </time>
             
 
@@ -361,7 +362,10 @@
       
 
       
-        <p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a><br><a id="more"></a></p>
+        <p>百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好）</p>
+<p>直接在注解上面加@Inherited</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inherited</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.TYPE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可以令子类继承这个注解（唉，基础啊）<br>链接<a href="http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies" target="_blank" rel="external">http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies</a></p>
 
       
     </div>
@@ -404,8 +408,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/15/hashmap/" rel="next" title="一张图了解hashmap">
-                <i class="fa fa-chevron-left"></i> 一张图了解hashmap
+              <a href="/2014/01/06/linux-awk/" rel="next" title="linux awk命令详解">
+                <i class="fa fa-chevron-left"></i> linux awk命令详解
               </a>
             
           </div>
@@ -414,8 +418,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/18/go-first-rest/" rel="prev" title="用go实现一个简单的restful接口">
-                用go实现一个简单的restful接口 <i class="fa fa-chevron-right"></i>
+              <a href="/2014/08/17/centos-ftp/" rel="prev" title="centos 启用ftp功能">
+                centos 启用ftp功能 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
