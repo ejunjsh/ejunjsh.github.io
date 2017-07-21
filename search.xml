@@ -29,9 +29,9 @@
         
         <tags>
             
-            <tag> python </tag>
-            
             <tag> raspberrypi </tag>
+            
+            <tag> python </tag>
             
             <tag> NAS </tag>
             
@@ -59,9 +59,9 @@
         
         <tags>
             
-            <tag> python </tag>
-            
             <tag> raspberrypi </tag>
+            
+            <tag> python </tag>
             
         </tags>
         
@@ -228,6 +228,31 @@
         <tags>
             
             <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[maven resource 记录]]></title>
+      <url>/2014/02/20/maven-resouce/</url>
+      <content type="html"><![CDATA[<p>今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。</p>
+<p>上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">resources</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>src/main/java<span class="tag">&lt;/<span class="name">directory</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.properties<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.xml<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tld<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">filtering</span>&gt;</span>true<span class="tag">&lt;/<span class="name">filtering</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span> </div><div class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span> </div><div class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>搞定收工。。。不知道有没有更好到方法呢？</p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> maven </tag>
             
         </tags>
         
