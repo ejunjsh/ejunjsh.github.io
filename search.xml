@@ -110,8 +110,8 @@
     ...
 }
 </code></pre>
-<h1 id="github-地址"><a href="#github-地址" class="headerlink" title="github 地址"></a>github 地址</h1><p>所有代码见<a href="https://github.com/ejunjsh/gorest" target="_blank" rel="external">https://github.com/ejunjsh/gorest</a></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>go的标准库封装了很多了，所以实现这个其实还是比较轻松的😄</p>
+<p>收工😄</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>go的标准库封装了很多了，所以实现这个其实还是比较轻松的😄<br>详细代码见<a href="https://github.com/ejunjsh/gorest" target="_blank" rel="external">https://github.com/ejunjsh/gorest</a></p>
 ]]></content>
       
         <categories>
