@@ -29,9 +29,9 @@
         
         <tags>
             
-            <tag> raspberrypi </tag>
-            
             <tag> python </tag>
+            
+            <tag> raspberrypi </tag>
             
             <tag> NAS </tag>
             
@@ -59,9 +59,9 @@
         
         <tags>
             
-            <tag> raspberrypi </tag>
-            
             <tag> python </tag>
+            
+            <tag> raspberrypi </tag>
             
         </tags>
         
@@ -180,6 +180,20 @@
 <p>原文地址 <a href="http://www.cnblogs.com/paddix/p/5309550.html" target="_blank" rel="external">http://www.cnblogs.com/paddix/p/5309550.html</a></p>
 ]]></content>
       
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> jvm </tag>
+            
+        </tags>
         
     </entry>
     
