@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,jvm," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="HelloWorld 字节码生成众所周知，Java 程序是在 JVM 上运行的，不过 JVM 运行的其实不是 Java 语言本身，而是 Java 程序编译成的字节码文件。可能一开始 JVM 是为 Java 语言服务的，不过随着编译技术和 JVM 自身的不断发展和成熟，JVM 已经不仅仅只运行 Java 程序。任何能编译成为符合 JVM 字节码规范的语言都可以在 JVM 上运行，比较常见的 Scal">
+<meta name="keywords" content="java,jvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从字节码层面看“HelloWorld”">
+<meta property="og:url" content="http://idiotsky.me/2016/07/23/bytecode-hello-world/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="HelloWorld 字节码生成众所周知，Java 程序是在 JVM 上运行的，不过 JVM 运行的其实不是 Java 语言本身，而是 Java 程序编译成的字节码文件。可能一开始 JVM 是为 Java 语言服务的，不过随着编译技术和 JVM 自身的不断发展和成熟，JVM 已经不仅仅只运行 Java 程序。任何能编译成为符合 JVM 字节码规范的语言都可以在 JVM 上运行，比较常见的 Scal">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-1.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-2.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-3.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-4.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-5.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-6.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-7.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-8.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-9.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-10.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/bytecode-hello-world-11.jpg">
+<meta property="og:updated_time" content="2017-07-27T14:54:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从字节码层面看“HelloWorld”">
+<meta name="twitter:description" content="HelloWorld 字节码生成众所周知，Java 程序是在 JVM 上运行的，不过 JVM 运行的其实不是 Java 语言本身，而是 Java 程序编译成的字节码文件。可能一开始 JVM 是为 Java 语言服务的，不过随着编译技术和 JVM 自身的不断发展和成熟，JVM 已经不仅仅只运行 Java 程序。任何能编译成为符合 JVM 字节码规范的语言都可以在 JVM 上运行，比较常见的 Scal">
+<meta name="twitter:image" content="http://idiotsky.me/images/bytecode-hello-world-1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2016/07/23/bytecode-hello-world/"/>
+
+
+
+
+
+  <title>从字节码层面看“HelloWorld” | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/07/23/bytecode-hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">从字节码层面看“HelloWorld”</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-07-23T20:28:09+08:00">
+                23 Jul 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="HelloWorld-字节码生成"><a href="#HelloWorld-字节码生成" class="headerlink" title="HelloWorld 字节码生成"></a>HelloWorld 字节码生成</h1><p>众所周知，Java 程序是在 JVM 上运行的，不过 JVM 运行的其实不是 Java 语言本身，而是 Java 程序编译成的字节码文件。可能一开始 JVM 是为 Java 语言服务的，不过随着编译技术和 JVM 自身的不断发展和成熟，JVM 已经不仅仅只运行 Java 程序。任何能编译成为符合 JVM 字节码规范的语言都可以在 JVM 上运行，比较常见的 Scala、Groove、JRuby等。今天，我就从大家最熟悉的程序“HelloWorld”程序入手，分析整个 Class 文件的结构。虽然这个程序比较简单，但是基本上包含了字节码规范中的所有内容，因此即使以后要分析更复杂的程序，那也只是“量”上的变化，本质上没有区别。<br><a id="more"></a><br>　　我们先直观的看下源码与字节码之间的对应关系:<br>HelloWorld的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.asm;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Hello,World!"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>编译器采用JDK 1.7：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></div><div class="line">              <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.7<span class="tag">&lt;/<span class="name">source</span>&gt;</span></div><div class="line">              <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.7<span class="tag">&lt;/<span class="name">target</span>&gt;</span></div><div class="line">          <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></div><div class="line"> <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>编译以后的字节码文件（使用UltraEdit的16进制模式打开）：<br><a href="/images/bytecode-hello-world-1.jpg"><img src="/images/bytecode-hello-world-1.jpg" alt=""></a><br>红色框内的部分就是HelloWorld.class的内容，其他部分是UltraEdit自动生成的：红色框顶部的0~f代表列号，左边部分代表行号，右侧部分是二进制码对应的字符（utf-8编码）。</p>
+<h1 id="字节码解析"><a href="#字节码解析" class="headerlink" title="字节码解析"></a>字节码解析</h1><p>要弄明白 HelloWorld.java 和 HelloWorld.class 文件是如何对应的，我们必须对 JVM 的字节码规范有所了解。字节码文件的结构非常紧凑，没有任何冗余的信息，连分隔符都没有，它采用的是固定的文件结构和数据类型来实现对内容的分割的。字节码中包括两种数据类型：无符号数和表。无符号数又包括 u1，u2，u4，u8四种，分别代表1个字节、2个字节、4个字节和8个字节。而表结构则是由无符号数据组成的。</p>
+<p>字节码文件的格式固定如下：</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>descriptor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u4</td>
+<td>magic</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>minor_version</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>major_version</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>constant_pool_count</td>
+</tr>
+<tr>
+<td>cp_info</td>
+<td>constant_pool[cosntant_pool_count – 1]</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>access_flags</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>this_class</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>super_class</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>interfaces_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>interfaces[interfaces_count]</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>fields_count</td>
+</tr>
+<tr>
+<td>field_info</td>
+<td>fields[fields_count]</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>methods_count</td>
+</tr>
+<tr>
+<td>method_info</td>
+<td>methods[methods_count]</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>attributes_count</td>
+</tr>
+<tr>
+<td>attribute_info</td>
+<td>attributes[attributes_count]</td>
+</tr>
+</tbody>
+</table>
+<p>现在，我们就按这个格式对上述HelloWorld.class文件进行分析：</p>
+<p>magic（u4）：CA FE BA BE ，代表该文件是一个字节码文件，我们平时区分文件类型都是通过后缀名来区分的，不过后缀名是可以随便修改的，所以仅靠后缀名不能真正区分一个文件的类型。区分文件类型的另个办法就是magic数字，JVM 就是通过 CA FE BA BE 来判断该文件是不是class文件。</p>
+<p>minor_version（u2）：00 00，小版本号，因为我这里采用的1.7，所以小版本号为0.</p>
+<p>major_version（u2）：00 33，大版本号，x033转换为十进制为51，下表是jdk 1.6 以后对应支持的 Class 文件版本号：</p>
+<table>
+<thead>
+<tr>
+<th>编译器版本</th>
+<th>-target参数</th>
+<th>十六进制版本</th>
+<th>十进制版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JDK 1.6.0_01</td>
+<td>不带（默认 -target 1.6）</td>
+<td>00 00 00 32</td>
+<td>50.0</td>
+</tr>
+<tr>
+<td>JDK 1.6.0_01</td>
+<td>-target 1.5</td>
+<td>00 00 00 31</td>
+<td>49.0</td>
+</tr>
+<tr>
+<td>JDK 1.6.0_01</td>
+<td>-target 1.4 -source 1.4</td>
+<td>00 00 00 30</td>
+<td>48.0</td>
+</tr>
+<tr>
+<td>JDK 1.7.0</td>
+<td>不带（默认 -target 1.7）</td>
+<td>00 00 00 33</td>
+<td>51.0</td>
+</tr>
+<tr>
+<td>JDK 1.7.0</td>
+<td>-target 1.6</td>
+<td>00 00 00 32</td>
+<td>50.0</td>
+</tr>
+<tr>
+<td>JDK 1.7.0</td>
+<td>-target 1.4 -source 1.4</td>
+<td>00 00 00 30</td>
+<td>48.0</td>
+</tr>
+<tr>
+<td>JDK 1.8.0</td>
+<td>不带（默认 -target 1.8）</td>
+<td>00 00 00 34</td>
+<td>52.0</td>
+</tr>
+</tbody>
+</table>
+<p>constant_pool_count（u2）：00 22，常量池数量，转换为十进制后为34，这里需要注意的是，字节码的常量池是从1开始计数的，所以34表示为（34-1）=33项。</p>
+<p>TAG（u1）：0A，常量池的数据类型是表，每一项的开始都有一个tag（u1），表示常量的类型，常量池的表的类型包括如下14种，这里A（10）表示CONSTANT_Methodref，代表方法引用。</p>
+<table>
+<thead>
+<tr>
+<th>常量类型</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CONSTANT_Utf8_info</td>
+<td>1</td>
+</tr>
+<tr>
+<td>CONSTANT_Integer_info</td>
+<td>3</td>
+</tr>
+<tr>
+<td>CONSTANT_Float_info</td>
+<td>4</td>
+</tr>
+<tr>
+<td>CONSTANT_Long_info</td>
+<td>5</td>
+</tr>
+<tr>
+<td>CONSTANT_Double_info</td>
+<td>6</td>
+</tr>
+<tr>
+<td>CONSTANT_Class_info</td>
+<td>7</td>
+</tr>
+<tr>
+<td>CONSTANT_String_info</td>
+<td>8</td>
+</tr>
+<tr>
+<td>CONSTANT_Fieldref_info</td>
+<td>9</td>
+</tr>
+<tr>
+<td>CONSTANT_Methodref_info</td>
+<td>10</td>
+</tr>
+<tr>
+<td>CONSTANT_InterfaceMethodref_info</td>
+<td>11</td>
+</tr>
+<tr>
+<td>CONSTANT_NameAndType_info</td>
+<td>12</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodHandle_info</td>
+<td>15</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodType_info</td>
+<td>16</td>
+</tr>
+<tr>
+<td>CONSTANT_InvokeDynamic_info</td>
+<td>18</td>
+</tr>
+</tbody>
+</table>
+<p>每种常量类型对应表结构：</p>
+<table>
+<thead>
+<tr>
+<th>常量</th>
+<th style="text-align:right">项目</th>
+<th style="text-align:right">类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CONSTANT_Utf8_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>1</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">length</td>
+<td style="text-align:right">u2</td>
+<td>字节数</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bytes</td>
+<td style="text-align:right">u1</td>
+<td>utf-8编码的字符串</td>
+</tr>
+<tr>
+<td>CONSTANT_Integer_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>3</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bytes</td>
+<td style="text-align:right">u4</td>
+<td>int值</td>
+</tr>
+<tr>
+<td>CONSTANT_Float_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u4</td>
+<td>4</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bytes</td>
+<td style="text-align:right">u1</td>
+<td>float值</td>
+</tr>
+<tr>
+<td>CONSTANT_Long_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>5</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bytes</td>
+<td style="text-align:right">u8</td>
+<td>long值</td>
+</tr>
+<tr>
+<td>CONSTANT_Double_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>6</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bytes</td>
+<td style="text-align:right">u8</td>
+<td>double值</td>
+</tr>
+<tr>
+<td>CONSTANT_Class_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>7</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向全限定名常量项的索引</td>
+</tr>
+<tr>
+<td>CONSTANT_String_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>8</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向字符串常量的索引</td>
+</tr>
+<tr>
+<td>CONSTANT_Fieldref_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>9</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向声明字段的类或接口描述符CONSTANT_Class_info的索引值</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向CONSTANT_NameAndType_info的索引值</td>
+</tr>
+<tr>
+<td>CONSTANT_Methodref_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>10</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向声明方法的类描述符CONSTANT_Class_info的索引值</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向CONSTANT_NameAndType_info的索引值</td>
+</tr>
+<tr>
+<td>CONSTANT_InterfaceMethodref_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>11</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向声明方法的接口描述符CONSTANT_Class_info的索引值</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向CONSTANT_NameAndType_info的索引值</td>
+</tr>
+<tr>
+<td>CONSTANT_NameAndType_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>12</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向该字段或方法名称常量的索引值</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">index</td>
+<td style="text-align:right">u2</td>
+<td>指向该字段或方法描述符常量的索引值</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodHandle_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>15</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">reference_kind</td>
+<td style="text-align:right">u1</td>
+<td>值必须1~9，它决定了方法句柄的的类型</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">reference_index</td>
+<td style="text-align:right">u2</td>
+<td>对常量池的索引</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodType_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>16</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">description_index</td>
+<td style="text-align:right">u2</td>
+<td>对常量池中方法描述符的索引</td>
+</tr>
+<tr>
+<td>CONSTANT_InvokeDynamic_info</td>
+<td style="text-align:right">tag</td>
+<td style="text-align:right">u1</td>
+<td>18</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">bootstap_method_attr_index</td>
+<td style="text-align:right">u2</td>
+<td>对引导方法表的索引</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:right">name_and_type_index</td>
+<td style="text-align:right">u2</td>
+<td>对CONSTANT_NameAndType_info的索引</td>
+</tr>
+</tbody>
+</table>
+<p>CONSTANT_Methodref_info（u2):00 06，因为tag为A，代表一个方法引用表（CONSTANT_Methodref_info），所以第二项（u2）应该是指向常量池的位置，即常量池的第六项，表示一个CONSTANT_Class_info表的索引，用类似的方法往下分析，可以发现常量池的第六项如下，tag类型为07，查询上表可知道其即为CONSTANT_Class_info。<br><a href="/images/bytecode-hello-world-2.jpg"><img src="/images/bytecode-hello-world-2.jpg" alt=""></a><br> 07之后的00 1B表示对常量池地27项（CONSTANT_Utf8_info）的引用，查看第27项如下图，即（java/lang/Object）：<br> <a href="/images/bytecode-hello-world-3.jpg"><img src="/images/bytecode-hello-world-3.jpg" alt=""></a><br> CONSTANT_NameAndType_info（u2）：00 14,方法引用表的第三项（u2），常量池索引，指向第20项。</p>
+<p>CONSTANT_Fieldref_info（u1）：tag为09。</p>
+<p>…..</p>
+<p>常量池的分析都类似，其他的分析由于篇幅问题就不在此一一讲述了。跳过常量池就到了访问标识（u2）：<br> <a href="/images/bytecode-hello-world-4.jpg"><img src="/images/bytecode-hello-world-4.jpg" alt=""></a><br>  JVM 对访问标示符的规范如下：</p>
+<table>
+<thead>
+<tr>
+<th>Flag Name</th>
+<th>Value</th>
+<th>Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACC_PUBLIC</td>
+<td>0x0001</td>
+<td>pubilc</td>
+</tr>
+<tr>
+<td>ACC_FINAL</td>
+<td>0x0010</td>
+<td>final</td>
+</tr>
+<tr>
+<td>ACC_SUPER</td>
+<td>0x0020</td>
+<td>用于兼容早期编译器，新编译器都设置该标记，以在使用 invokespecial指令时对子类方法做特定处理。</td>
+</tr>
+<tr>
+<td>ACC_INTERFACE</td>
+<td>0x0200</td>
+<td>接口，同时需要设置：ACC_ABSTRACT。不可同时设置：ACC_FINAL、ACC_SUPER、ACC_ENUM</td>
+</tr>
+</tbody>
+</table>
+<p>ACC_ABSTRACT    |0x0400    |抽象类，无法实例化。不可与ACC_FINAL同时设置。<br>ACC_SYNTHETIC|    0x1000|    synthetic，由编译器产生，不存在于源代码中。<br>ACC_ANNOTATION|    0x2000|注解类型（annotation），需同时设置：ACC_INTERFACE、ACC_ABSTRACT<br>ACC_ENUM|    0x4000    枚举类型</p>
+<p> 这个表里面无法直接查询到0021这个值，原因是0021=0020+0001，即public+invokespecial指令，源码中的方法main是public的，而invokespecial是现在的版本都有的，所以值为0021。</p>
+<p>接着往下是this_class（u2）：是指向constant pool的索引值，该值必须是CONSTANT_Class_info类型，值为00 05，即指向常量池中的第五项，第五项指向常量池中的第26项，即com/paddx/test/asm/HelloWorld：<br> <a href="/images/bytecode-hello-world-5.jpg"><img src="/images/bytecode-hello-world-5.jpg" alt=""></a></p>
+<p>super_class(u2)）：super_class是指向constant pool的索引值，该值必须是CONSTANT_Class_info类型，指定当前字节码定义的类或接口的直接父类。这里的取值为00 06，根据上面的分析，对应的指向的全限定性类名为java/lang/object，即当前类的父类为Object类。</p>
+<p>interfaces_count（u2）：接口的数量，因为这里没有实现接口，所以值为 00 00。</p>
+<p>interfaces[interfaces_count]：因为没有接口，所以就不存在interfces选项。</p>
+<p>field_count：属性数量，00 00。</p>
+<p>field_info：因为没有属性，所以不存在这个选项。</p>
+<p>method_count：00 02，为什么会有两个方法呢？我们明明只写了一个方法，这是因为JVM 会自动生成一个 <init>的方法。</init></p>
+<p>method_info：方法表，其结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Descriptor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u2</td>
+<td>access_flag</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>name_index</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>descriptor_index</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>attributes_count</td>
+</tr>
+<tr>
+<td>attribute_info</td>
+<td>attribute_info[attributes_count]</td>
+</tr>
+</tbody>
+</table>
+<p>HelloWorld.class文件中对应的数据：<br> <a href="/images/bytecode-hello-world-6.jpg"><img src="/images/bytecode-hello-world-6.jpg" alt=""></a></p>
+<p> access_flag（u2）: 00 01</p>
+<p>name_index（u2）:00 07</p>
+<p>descriptor_index（u2）:00 08</p>
+<p>可以看看 07、08对应的常量池里面的值：<br> <a href="/images/bytecode-hello-world-7.jpg"><img src="/images/bytecode-hello-world-7.jpg" alt=""></a></p>
+<p>即 07 对应的是 <init>，08 对应的是()；</init></p>
+<p>attributes_count:00 01，表示包含一个属性</p>
+<p>attribute_info：属性表，该表的结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Descriptor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u2</td>
+<td>attribute_name_index</td>
+</tr>
+<tr>
+<td>u4</td>
+<td>attribute_length</td>
+</tr>
+<tr>
+<td>u1</td>
+<td>bytes</td>
+</tr>
+</tbody>
+</table>
+<p> <a href="/images/bytecode-hello-world-8.jpg"><img src="/images/bytecode-hello-world-8.jpg" alt=""></a></p>
+<p>attribute_name_index（u2）: 00 09，指向常量池中的索引。</p>
+<p>attribute_length（u4）：00 00 00 2F，属性的长度47。</p>
+<p>attribute_info:具体属性的分析与上面类似，大家可以对着JVM的规范自己尝试分析一下。</p>
+<p>第一个方法结束后，接着进入第二个方法：<br> <a href="/images/bytecode-hello-world-9.jpg"><img src="/images/bytecode-hello-world-9.jpg" alt=""></a><br> 第二个方法的属性长度为x037，转换为十进制为55个字节。两个方法之后紧跟着的是attribute_count和attributes：<br>  <a href="/images/bytecode-hello-world-10.jpg"><img src="/images/bytecode-hello-world-10.jpg" alt=""></a><br>attribute_count（u2）:值为 00 01，即有一个属性。</p>
+<p>attribute_name_index（u2）：指向常量池中的第十二项。</p>
+<p>attribute_length（u4）：00 00 00 02，长度为2。</p>
+<p>分析完毕！</p>
+<h1 id="基于字节码的操作"><a href="#基于字节码的操作" class="headerlink" title="基于字节码的操作"></a>基于字节码的操作</h1><p>　　通过对HelloWorld这个程序的字节码分析，我们应该能够比较清楚的认识到整个字节码的结构。那我们通过字节码，可以做些什么呢？其实通过字节码能做很多平时我们无法完成的工作。比如，在类加载之前添加某些操作或者直接动态的生成字节码，CGlib就是通过这种方式来实现动态代理的。现在，我们就来完成另一个版本的HelloWorld：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.asm;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld2</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span></span>&#123;</div><div class="line"> </div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们有个空的方法 sayHello()，现在要实现调该方法的时候打印出“HelloWorld”，怎么处理？如果我们手动去修改字节码文件，将打印“HelloWorld”的代码插入到sayHello方法中，原理上肯定没问题，不过操作过程还是比较复杂的。Java 的最大优势就在于只要你能想到的功能，基本上就有第三方开源的库实现过。字节码操作的开源库也比较多，这里我就用 ASM 4.0来实现该功能：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.asm;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> org.objectweb.asm.*;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsmDemo</span> <span class="keyword">extends</span> <span class="title">ClassLoader</span></span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, IllegalAccessException, InstantiationException, InvocationTargetException </span>&#123;</div><div class="line">        ClassReader classReader = <span class="keyword">new</span> ClassReader(<span class="string">"com.paddx.test.asm.HelloWorld2"</span>);</div><div class="line">        ClassWriter cw=<span class="keyword">new</span> ClassWriter(ClassWriter.COMPUTE_MAXS);</div><div class="line">        CustomVisitor myv=<span class="keyword">new</span> CustomVisitor(Opcodes.ASM4,cw);</div><div class="line">        classReader.accept(myv, <span class="number">0</span>);</div><div class="line"> </div><div class="line">        <span class="keyword">byte</span>[] code=cw.toByteArray();</div><div class="line"> </div><div class="line">        AsmDemo loader=<span class="keyword">new</span> AsmDemo();</div><div class="line">        Class&lt;?&gt; appClass=loader.defineClass(<span class="keyword">null</span>, code, <span class="number">0</span>,code.length);</div><div class="line">        appClass.getMethods()[<span class="number">0</span>].invoke(appClass.newInstance(), <span class="keyword">new</span> Object[]&#123;&#125;);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">&#125;</div><div class="line"> </div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomVisitor</span> <span class="keyword">extends</span> <span class="title">ClassVisitor</span> <span class="keyword">implements</span> <span class="title">Opcodes</span> </span>&#123;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CustomVisitor</span><span class="params">(<span class="keyword">int</span> api, ClassVisitor cv)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(api, cv);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> MethodVisitor <span class="title">visitMethod</span><span class="params">(<span class="keyword">int</span> access, String name, String desc, String signature, String[] exceptions)</span> </span>&#123;</div><div class="line">        MethodVisitor mv = <span class="keyword">super</span>.visitMethod(access, name, desc, signature, exceptions);</div><div class="line">        <span class="keyword">if</span> (name.equals(<span class="string">"sayHello"</span>)) &#123;</div><div class="line">            mv.visitFieldInsn(GETSTATIC, <span class="string">"java/lang/System"</span>, <span class="string">"out"</span>, <span class="string">"Ljava/io/PrintStream;"</span>);</div><div class="line">            mv.visitLdcInsn(<span class="string">"HelloWorld!"</span>);</div><div class="line">            mv.visitMethodInsn(INVOKEVIRTUAL, <span class="string">"java/io/PrintStream"</span>, <span class="string">"println"</span>, <span class="string">"(Ljava/lang/String;)V"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> mv;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行结果如下：<br>  <a href="/images/bytecode-hello-world-11.jpg"><img src="/images/bytecode-hello-world-11.jpg" alt=""></a></p>
+<p>关于 ASM 4的操作在这就不细说了。有兴趣的朋友可以自己去研究一下，有机会，我也可以再后续的博文中跟大家分享。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>　　本文通过HelloWorld这样一个大家都非常熟悉的例子，深入的分析了字节码文件的结构。利用这些特性，我们可以完成一些相对高级的功能，如动态代理等。这些例子虽然都很简单，但是“麻雀虽小五脏俱全”，即使再复杂的程序也逃离不了这些最基本的东西。技术层面的东西就是这样子，只要你能了解一个简单的程序的原理，举一反三，就能很容易的理解更复杂的程序，这就是技术“易”的方面。同时，反过来说，即使“HelloWorld”这样一个简单的程序，如果我们深入探究，也不一定能特别理解其原理，这就是技术“难”的方面。总之，技术这种东西只要你用心深入地去研究，总是能带给你意想不到的惊喜~</p>
+<p>原文地址 <a href="http://www.cnblogs.com/paddix/p/5282004.html" target="_blank" rel="external">http://www.cnblogs.com/paddix/p/5282004.html</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/22/redis-trib/" rel="next" title="redis cluster管理工具redis-trib.rb详解">
+                <i class="fa fa-chevron-left"></i> redis cluster管理工具redis-trib.rb详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/26/java8-permgen-metaspace/" rel="prev" title="Java8内存模型—永久代(PermGen)和元空间(Metaspace)">
+                Java8内存模型—永久代(PermGen)和元空间(Metaspace) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HelloWorld-字节码生成"><span class="nav-number">1.</span> <span class="nav-text">HelloWorld 字节码生成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字节码解析"><span class="nav-number">2.</span> <span class="nav-text">字节码解析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于字节码的操作"><span class="nav-number">3.</span> <span class="nav-text">基于字节码的操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
