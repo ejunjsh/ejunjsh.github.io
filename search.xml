@@ -661,9 +661,28 @@
 <td>0x0200</td>
 <td>接口，同时需要设置：ACC_ABSTRACT。不可同时设置：ACC_FINAL、ACC_SUPER、ACC_ENUM</td>
 </tr>
+<tr>
+<td>ACC_ABSTRACT</td>
+<td>0x0400</td>
+<td>抽象类，无法实例化。不可与ACC_FINAL同时设置。</td>
+</tr>
+<tr>
+<td>ACC_SYNTHETIC</td>
+<td>0x1000</td>
+<td>synthetic，由编译器产生，不存在于源代码中。</td>
+</tr>
+<tr>
+<td>ACC_ANNOTATION</td>
+<td>0x2000</td>
+<td>注解类型（annotation），需同时设置：ACC_INTERFACE、ACC_ABSTRACT</td>
+</tr>
+<tr>
+<td>ACC_ENUM</td>
+<td>0x4000</td>
+<td>枚举类型</td>
+</tr>
 </tbody>
 </table>
-<p>ACC_ABSTRACT    |0x0400    |抽象类，无法实例化。不可与ACC_FINAL同时设置。<br>ACC_SYNTHETIC|    0x1000|    synthetic，由编译器产生，不存在于源代码中。<br>ACC_ANNOTATION|    0x2000|注解类型（annotation），需同时设置：ACC_INTERFACE、ACC_ABSTRACT<br>ACC_ENUM|    0x4000    枚举类型</p>
 <p> 这个表里面无法直接查询到0021这个值，原因是0021=0020+0001，即public+invokespecial指令，源码中的方法main是public的，而invokespecial是现在的版本都有的，所以值为0021。</p>
 <p>接着往下是this_class（u2）：是指向constant pool的索引值，该值必须是CONSTANT_Class_info类型，值为00 05，即指向常量池中的第五项，第五项指向常量池中的第26项，即com/paddx/test/asm/HelloWorld：<br> <a href="/images/bytecode-hello-world-5.jpg"><img src="/images/bytecode-hello-world-5.jpg" alt=""></a></p>
 <p>super_class(u2)）：super_class是指向constant pool的索引值，该值必须是CONSTANT_Class_info类型，指定当前字节码定义的类或接口的直接父类。这里的取值为00 06，根据上面的分析，对应的指向的全限定性类名为java/lang/object，即当前类的父类为Object类。</p>
@@ -708,7 +727,7 @@
 <p>name_index（u2）:00 07</p>
 <p>descriptor_index（u2）:00 08</p>
 <p>可以看看 07、08对应的常量池里面的值：<br> <a href="/images/bytecode-hello-world-7.jpg"><img src="/images/bytecode-hello-world-7.jpg" alt=""></a></p>
-<p>即 07 对应的是 <init>，08 对应的是()；</init></p>
+<p>即 07 对应的是 &#60;init&#62;，08 对应的是()；</p>
 <p>attributes_count:00 01，表示包含一个属性</p>
 <p>attribute_info：属性表，该表的结构如下：</p>
 <table>
