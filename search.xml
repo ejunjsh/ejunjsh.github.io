@@ -950,9 +950,9 @@
     <entry>
       <title><![CDATA[centos 启用ftp功能]]></title>
       <url>/2014/08/17/centos-ftp/</url>
-      <content type="html"><![CDATA[<p>1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
+      <content type="html"><![CDATA[<p>1.安装vsftpd组件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
-<p>可以用下面命令查看用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd</div></pre></td></tr></table></figure></p>
+<p>安装完后，有个/etc/vsftpd/vsftpd.conf 文件，用来配置<br>还有自动新建了一个ftp用户和ftp的组，home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd | grep ftp</div></pre></td></tr></table></figure></p>
 <p>默认ftp服务是没有启动的，用下面命令启动<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd start</div></pre></td></tr></table></figure></p>
 <p>2.安装ftp客户端组件（用来验证是否vsftpd）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install ftp</div></pre></td></tr></table></figure></p>
 <p>执行命令尝试登录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ftp localhost</div></pre></td></tr></table></figure></p>
@@ -989,6 +989,73 @@
         <tags>
             
             <tag> linux </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[javascript在浏览器跨域访问的几种处理方式]]></title>
+      <url>/2014/08/02/jquery-cross-domain-ajax/</url>
+      <content type="html"><![CDATA[<p>这里说的js跨域是指通过js在不同的域之间进行数据传输或通信，比如用ajax向一个不同的域请求数据。只要协议、域名、端口有任何一个不同，都被当作是不同的域。<br>下表给出了相对<a href="http://store.company.com/dir/page.html" target="_blank" rel="external">http://store.company.com/dir/page.html</a> 同源检测的结果:</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>结果</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="http://store.company.com/dir2/other.html" target="_blank" rel="external">http://store.company.com/dir2/other.html</a></td>
+<td>成功</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="http://store.company.com/dir/inner/another.html" target="_blank" rel="external">http://store.company.com/dir/inner/another.html</a></td>
+<td>成功</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://store.company.com/dir/inner/another.html" target="_blank" rel="external">https://store.company.com/dir/inner/another.html</a></td>
+<td>失败</td>
+<td>协议不同</td>
+</tr>
+<tr>
+<td><a href="http://store.company.com:81/dir/inner/another.html" target="_blank" rel="external">http://store.company.com:81/dir/inner/another.html</a></td>
+<td>失败</td>
+<td>端口不同</td>
+</tr>
+<tr>
+<td><a href="http://news.company.com/dir/inner/another.html" target="_blank" rel="external">http://news.company.com/dir/inner/another.html</a></td>
+<td>失败</td>
+<td>域名不同</td>
+</tr>
+</tbody>
+</table>
+<a id="more"></a>
+<p>要解决跨域的问题，我们可以使用以下几种方法：</p>
+<h1 id="通过jsonp"><a href="#通过jsonp" class="headerlink" title="通过jsonp"></a>通过jsonp</h1><p>在js中，我们直接用XMLHttpRequest请求不同域上的数据时，是不可以的。但是，在页面上引入不同域上的js脚本文件却是可以的，jsonp正是利用这个特性来实现的。<br>比如，有个a.html页面，它里面的代码需要利用ajax获取一个不同域上的json数据，假设这个json数据地址是<a href="http://example.com/data.php" target="_blank" rel="external">http://example.com/data.php</a>, 那么a.html中的代码就可以这样：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">scirpt</span>&gt;</span></div><div class="line">function dosomething(jsondata)&#123;</div><div class="line">    //处理获得的json数据</div><div class="line">&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">scirpt</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">scirpt</span> <span class="attr">src</span>=<span class="string">"http://example.com/data.php?callback=dosomething"</span>&gt;</span><span class="tag">&lt;/<span class="name">scirpt</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>我们看到获取数据的地址后面还有一个callback参数，按惯例是用这个参数名，但是你用其他的也一样。当然如果获取数据的jsonp地址页面不是你自己能控制的，就得按照提供数据的那一方的规定格式来操作了。<br>因为是当做一个js文件来引入的，所以<a href="http://example.com/data.php返回的必须是一个能执行的js文件，所以这个页面的php代码可能是这样的" target="_blank" rel="external">http://example.com/data.php返回的必须是一个能执行的js文件，所以这个页面的php代码可能是这样的</a>:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$callback=&amp;_GET[`callback`];<span class="comment">//获得回调函数名</span></div><div class="line">$data=<span class="keyword">array</span>(<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>);<span class="comment">//要返回的数据</span></div><div class="line"><span class="keyword">echo</span> $callback.<span class="string">'('</span>.json_encode($data).<span class="string">')'</span>;<span class="comment">//输出</span></div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure></p>
+<p>最终那个页面输出的结果是:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dosomething([<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>])</div></pre></td></tr></table></figure></p>
+<p>所以通过<a href="http://example.com/data.php?callback=dosomething得到的js文件，就是我们之前定义的dosomething函数,并且它的参数就是我们需要的json数据，这样我们就跨域获得了我们需要的数据。" target="_blank" rel="external">http://example.com/data.php?callback=dosomething得到的js文件，就是我们之前定义的dosomething函数,并且它的参数就是我们需要的json数据，这样我们就跨域获得了我们需要的数据。</a></p>
+<p>这样jsonp的原理就很清楚了，通过script标签引入一个js文件，这个js文件载入成功后会执行我们在url参数中指定的函数，并且会把我们需要的json数据作为参数传入。所以jsonp是需要服务器端的页面进行相应的配合的。</p>
+<p>知道jsonp跨域的原理后我们就可以用js动态生成script标签来进行跨域操作了，而不用特意的手动的书写那些script标签。如果你的页面使用jquery，那么通过它封装的方法就能很方便的来进行jsonp操作了。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">scirpt</span>&gt;</span></div><div class="line">$.getJSON('http://example.com/data.php?callback=?',function(jsondata)&#123;</div><div class="line">    ////处理获得的json数据</div><div class="line">&#125;);</div><div class="line"><span class="tag">&lt;/<span class="name">scirpt</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>原理是一样的，只不过我们不需要手动的插入script标签以及定义回掉函数。jquery会自动生成一个全局函数来替换callback=?中的问号，之后获取到数据后又会自动销毁，实际上就是起一个临时代理函数的作用。$.getJSON方法会自动判断是否跨域，不跨域的话，就调用普通的ajax方法；跨域的话，则会以异步加载js文件的形式来调用jsonp的回调函数。</p>
+<h1 id="通过XHR2"><a href="#通过XHR2" class="headerlink" title="通过XHR2"></a>通过XHR2</h1><p>HTML5中提供的XMLHTTPREQUEST Level2（及XHR2）已经实现了跨域访问。但ie10以下不支持<br>只需要在服务端填上响应头<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">header(&quot;Access-Control-Allow-Origin:*&quot;);</div><div class="line">/*星号表示所有的域都可以接受，*/</div><div class="line">header(&quot;Access-Control-Allow-Methods:GET,POST&quot;);</div></pre></td></tr></table></figure></p>
+]]></content>
+      
+        <categories>
+            
+            <category> javascript </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> javascirpt </tag>
             
         </tags>
         

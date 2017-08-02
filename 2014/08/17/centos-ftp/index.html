@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
+<meta name="description" content="1.安装vsftpd组件1yum -y install vsftpd">
 <meta name="keywords" content="linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="centos 启用ftp功能">
 <meta property="og:url" content="http://idiotsky.me/2014/08/17/centos-ftp/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
-<meta property="og:updated_time" content="2017-07-20T14:12:51.000Z">
+<meta property="og:description" content="1.安装vsftpd组件1yum -y install vsftpd">
+<meta property="og:updated_time" content="2017-08-02T17:05:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="centos 启用ftp功能">
-<meta name="twitter:description" content="1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）1yum -y install vsftpd">
+<meta name="twitter:description" content="1.安装vsftpd组件1yum -y install vsftpd">
 
 
 
@@ -372,9 +372,9 @@
       
 
       
-        <p>1.安装vsftpd组件，安装完后，有/etc/vsftpd/vsftpd.conf 文件，用来配置，还有新建了一个ftp用户和ftp的组，指向home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
+        <p>1.安装vsftpd组件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install vsftpd</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
-<p>可以用下面命令查看用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd</div></pre></td></tr></table></figure></p>
+<p>安装完后，有个/etc/vsftpd/vsftpd.conf 文件，用来配置<br>还有自动新建了一个ftp用户和ftp的组，home目录为/var/ftp,默认是nologin（不能登录系统）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat /etc/passwd | grep ftp</div></pre></td></tr></table></figure></p>
 <p>默认ftp服务是没有启动的，用下面命令启动<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service vsftpd start</div></pre></td></tr></table></figure></p>
 <p>2.安装ftp客户端组件（用来验证是否vsftpd）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum -y install ftp</div></pre></td></tr></table></figure></p>
 <p>执行命令尝试登录<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ftp localhost</div></pre></td></tr></table></figure></p>
@@ -441,8 +441,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/07/19/cglib-annonation/" rel="next" title="用cglib生成的代理类取不到注解的问题">
-                <i class="fa fa-chevron-left"></i> 用cglib生成的代理类取不到注解的问题
+              <a href="/2014/08/02/jquery-cross-domain-ajax/" rel="next" title="javascript在浏览器跨域访问的几种处理方式">
+                <i class="fa fa-chevron-left"></i> javascript在浏览器跨域访问的几种处理方式
               </a>
             
           </div>
@@ -517,7 +517,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -528,7 +528,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -539,7 +539,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
