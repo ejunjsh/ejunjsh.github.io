@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java,maven," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -93,17 +93,15 @@
 
 
 
-<meta name="description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
-<meta name="keywords" content="java,maven">
-<meta property="og:type" content="article">
-<meta property="og:title" content="maven resource 记录">
-<meta property="og:url" content="http://idiotsky.me/2014/02/20/maven-resouce/index.html">
+<meta name="description" content="code freak">
+<meta property="og:type" content="website">
+<meta property="og:title" content="IdiotSky">
+<meta property="og:url" content="http://idiotsky.me/archives/2016/09/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
-<meta property="og:updated_time" content="2017-07-21T15:17:29.000Z">
+<meta property="og:description" content="code freak">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="maven resource 记录">
-<meta name="twitter:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
+<meta name="twitter:title" content="IdiotSky">
+<meta name="twitter:description" content="code freak">
 
 
 
@@ -131,13 +129,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2014/02/20/maven-resouce/"/>
+  <link rel="canonical" href="http://idiotsky.me/archives/2016/09/"/>
 
 
 
 
 
-  <title>maven resource 记录 | IdiotSky</title>
+  <title>Archive | IdiotSky</title>
   
 
 
@@ -172,7 +170,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail ">
+  <div class="container sidebar-position-left  page-archive  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -276,178 +274,66 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  <section id="posts" class="posts-collapse">
+    <span class="archive-move-on"></span>
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/02/20/maven-resouce/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
+    <span class="archive-page-counter">
+      
+      
+      
+        
+      
+      Um..! 21 posts in total. Keep on posting.
     </span>
 
     
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">maven resource 记录</h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-02-20T23:15:58+08:00">
-                20 Feb 14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
 
       
       
-
       
-        <p>今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。</p>
-<p>上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">resources</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>src/main/java<span class="tag">&lt;/<span class="name">directory</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.properties<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.xml<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tld<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">filtering</span>&gt;</span>true<span class="tag">&lt;/<span class="name">filtering</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span> </div><div class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span> </div><div class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>搞定收工。。。不知道有没有更好到方法呢？</p>
 
-      
-    </div>
-
-    <div>
       
         
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/java/" rel="tag"># java</a>
-          
-            <a href="/tags/maven/" rel="tag"># maven</a>
-          
+        <div class="collection-title">
+          <h2 class="archive-year motion-element" id="archive-year-2016">2016</h2>
         </div>
       
-
-      
-      
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2014/01/06/linux-awk/" rel="next" title="linux awk命令详解">
-                <i class="fa fa-chevron-left"></i> linux awk命令详解
-              </a>
-            
-          </div>
 
-          <span class="post-nav-divider"></span>
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
 
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2014/07/19/cglib-annonation/" rel="prev" title="用cglib生成的代理类取不到注解的问题">
-                用cglib生成的代理类取不到注解的问题 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
+      <h2 class="post-title">
+        
+            <a class="post-title-link" href="/2016/09/03/redis-transaction-watch/" itemprop="url">
+              
+                <span itemprop="name">redis的事务和watch</span>
+              
+            </a>
+        
+      </h2>
 
-      
-      
-    </footer>
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2016-09-03T22:43:12+08:00"
+              content="03 Sep 16" >
+          09-03
+        </time>
+      </div>
+
+    </header>
   </article>
 
 
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+    
+
+  </section>
+
+  
+
 
 
           </div>
@@ -455,10 +341,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-  </div>
-
 
         </div>
         
@@ -686,9 +568,11 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
-
+  
+    <script type="text/javascript" id="motion.page.archive">
+      $('.archive-year').velocity('transition.slideLeftIn');
+    </script>
+  
 
 
   
