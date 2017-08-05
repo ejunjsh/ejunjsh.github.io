@@ -84,7 +84,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="python," />
+  <meta name="keywords" content="jquery," />
 
 
 
@@ -100,17 +100,17 @@
 
 
 
-<meta name="description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
-<meta name="keywords" content="python">
+<meta name="description" content="本篇文章介绍了，关于jQuery新的事件绑定机制on()的使用技巧。需要的朋友参考下今天浏览jQuery的deprecated列表，发现live()和die()在里面了，赶紧看了一下，发现从jQuery1.7开始，jQuery引入了全新的事件绑定机制，on()和off()两个函数统一处理事件绑定。因为在此之前有bind(), live(), delegate()等方法来处理事件绑定，jQuery">
+<meta name="keywords" content="jquery">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python在不同层级目录import模块的方法">
-<meta property="og:url" content="http://idiotsky.me/2015/02/18/python-import-module/index.html">
+<meta property="og:title" content="关于jQuery新的事件绑定机制on()的使用技巧">
+<meta property="og:url" content="http://idiotsky.me/2014/01/11/jquery-on/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
-<meta property="og:updated_time" content="2017-07-19T12:43:08.000Z">
+<meta property="og:description" content="本篇文章介绍了，关于jQuery新的事件绑定机制on()的使用技巧。需要的朋友参考下今天浏览jQuery的deprecated列表，发现live()和die()在里面了，赶紧看了一下，发现从jQuery1.7开始，jQuery引入了全新的事件绑定机制，on()和off()两个函数统一处理事件绑定。因为在此之前有bind(), live(), delegate()等方法来处理事件绑定，jQuery">
+<meta property="og:updated_time" content="2017-08-05T14:37:59.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python在不同层级目录import模块的方法">
-<meta name="twitter:description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
+<meta name="twitter:title" content="关于jQuery新的事件绑定机制on()的使用技巧">
+<meta name="twitter:description" content="本篇文章介绍了，关于jQuery新的事件绑定机制on()的使用技巧。需要的朋友参考下今天浏览jQuery的deprecated列表，发现live()和die()在里面了，赶紧看了一下，发现从jQuery1.7开始，jQuery引入了全新的事件绑定机制，on()和off()两个函数统一处理事件绑定。因为在此之前有bind(), live(), delegate()等方法来处理事件绑定，jQuery">
 
 
 
@@ -138,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2015/02/18/python-import-module/"/>
+  <link rel="canonical" href="http://idiotsky.me/2014/01/11/jquery-on/"/>
 
 
 
 
 
-  <title>python在不同层级目录import模块的方法 | IdiotSky</title>
+  <title>关于jQuery新的事件绑定机制on()的使用技巧 | IdiotSky</title>
   
 
 
@@ -293,7 +293,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2015/02/18/python-import-module/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/01/11/jquery-on/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -310,7 +310,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">python在不同层级目录import模块的方法</h1>
+          <h1 class="post-title" itemprop="name headline">关于jQuery新的事件绑定机制on()的使用技巧</h1>
         
 
         <div class="post-meta">
@@ -322,8 +322,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-02-18T22:32:02+08:00">
-                18 Feb 15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-01-11T22:30:29+08:00">
+                11 Jan 14
               </time>
             
 
@@ -345,8 +345,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python基础/" itemprop="url" rel="index">
-                    <span itemprop="name">python基础</span>
+                  <a href="/categories/jquery/" itemprop="url" rel="index">
+                    <span itemprop="name">jquery</span>
                   </a>
                 </span>
 
@@ -380,15 +380,21 @@
 
       
         <blockquote>
-<p>使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的模块调用方法汇总下。</p>
+<p>本篇文章介绍了，关于jQuery新的事件绑定机制on()的使用技巧。需要的朋友参考下<br>今天浏览jQuery的deprecated列表，发现live()和die()在里面了，赶紧看了一下，发现从jQuery1.7开始，jQuery引入了全新的事件绑定机制，on()和off()两个函数统一处理事件绑定。因为在此之前有bind(), live(), delegate()等方法来处理事件绑定，jQuery从性能优化以及方式统一方面考虑决定推出新的函数来统一事件绑定方法并且替换掉以前的方法。</p>
 </blockquote>
 <a id="more"></a>
-<h1 id="同级目录下的调有"><a href="#同级目录下的调有" class="headerlink" title="同级目录下的调有"></a>同级目录下的调有</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
-<p>若在程序test1.py中导入模块mod1, 则直接使用<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> mod1</div><div class="line">或</div><div class="line"><span class="keyword">from</span> mod1 <span class="keyword">import</span> *;</div></pre></td></tr></table></figure></p>
-<h1 id="调用子目录下的模块"><a href="#调用子目录下的模块" class="headerlink" title="调用子目录下的模块"></a>调用子目录下的模块</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- lib</div><div class="line">    |    |-- mod2.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
-<p>这时看到test1.py和lib目录（即mod2.py的父级目录），如果想在程序test1.py中导入模块mod2.py ，可以在lib件夹中建立空文件<strong>init</strong>.py文件(也可以在该文件中自定义输出模块接口)，然后使用：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> lib.mod2 <span class="keyword">import</span> *</div><div class="line">或</div><div class="line"><span class="keyword">import</span> lib.mod2</div></pre></td></tr></table></figure></p>
-<h1 id="调用上级目录下的文件"><a href="#调用上级目录下的文件" class="headerlink" title="调用上级目录下的文件"></a>调用上级目录下的文件</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- lib</div><div class="line">    |    |-- mod2.py</div><div class="line">    |-- sub</div><div class="line">    |    |-- test2.py</div></pre></td></tr></table></figure></p>
-<p>这里想要实现test2.py调用mod1.py和mod2.py ，做法是我们先跳到src目录下面，直接可以调用mod1，然后在lib上当下建一个空文件<strong>init</strong>.py ，就可以像第二步调用子目录下的模块一样，通过import  lib.mod2进行调用了。具体代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line">sys.path.append(<span class="string">".."</span>)</div><div class="line"><span class="keyword">import</span> mod1</div><div class="line"><span class="keyword">import</span> lib.mod2</div></pre></td></tr></table></figure></p>
+<h1 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">on(events,[selector],[data],fn)</div></pre></td></tr></table></figure>
+<p>events:一个或多个用空格分隔的事件类型和可选的命名空间，如”click”或”keydown.myPlugin” 。<br>selector:一个选择器字符串用于过滤器的触发事件的选择器元素的后代。如果选择器为null或省略，当它到达选定的元素，事件总是触发。<br>data:当一个事件被触发时要传递event.data给事件处理函数。<br>fn:该事件被触发时执行的函数。 false 值也可以做一个函数的简写，返回false。</p>
+<h1 id="替换bind"><a href="#替换bind" class="headerlink" title="替换bind()"></a>替换bind()</h1><p>当第二个参数’selector’为null时，on()和bind()其实在用法上基本上没有任何区别了，所以我们可以认为on()只是比bind()多了一个可选的’selector’参数，所以on()可以非常方便的换掉bind()</p>
+<h1 id="替换live"><a href="#替换live" class="headerlink" title="替换live()"></a>替换live()</h1><p>在1.4之前相信大家非常喜欢使用live(),因为它可以把事件绑定到当前以及以后添加的元素上面，当然在1.4之后delegate()也可以做类似的事情了。live()的原理很简单，它是通过document进行事件委派的，因此我们也可以使用on()通过将事件绑定到document来达到live()一样的效果。</p>
+<p>live()写法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> $(<span class="string">'#list li'</span>).live(<span class="string">'click'</span>, <span class="string">'#list li'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </div><div class="line">     <span class="comment">//function code here. </span></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>on()写法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$(<span class="built_in">document</span>).on(<span class="string">'click'</span>, <span class="string">'#list li'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">//function code here.</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>这里的关键就是第二个参数’selector’在起作用了。它是一个过滤器的作用，只有被选中元素的后代元素才会触发事件。</p>
+<h1 id="替换delegate"><a href="#替换delegate" class="headerlink" title="替换delegate()"></a>替换delegate()</h1><p>delegate()是1.4引入的，目的是通过祖先元素来代理委派后代元素的事件绑定问题，某种程度上和live()优点相似。只不过live()是通过document元素委派，而delegate则可以是任意的祖先节点。使用on()实现代理的写法和delegate()基本一致。</p>
+<p>delegate()的写法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$(<span class="string">'#list'</span>).delegate(<span class="string">'li'</span>, <span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </div><div class="line">    <span class="comment">//function code here. </span></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>on()写法<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$(<span class="string">'#list'</span>).on(<span class="string">'click'</span>, <span class="string">'li'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">//function code here.</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>貌似第一个和第二个参数的顺序颠倒了一下，别的基本一样。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>jQuery推出on()的目的有2个，一是为了统一接口，二是为了提高性能，所以从现在开始用on()替换bind(), live(), delegate吧。尤其是不要再用live()了，因为它已经处于不推荐使用列表了，随时会被干掉。如果只绑定一次事件，那接着用one()吧，这个没有变化。</p>
 
       
     </div>
@@ -418,7 +424,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/python/" rel="tag"># python</a>
+            <a href="/tags/jquery/" rel="tag"># jquery</a>
           
         </div>
       
@@ -431,8 +437,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/08/17/centos-ftp/" rel="next" title="centos 启用ftp功能">
-                <i class="fa fa-chevron-left"></i> centos 启用ftp功能
+              <a href="/2014/01/06/linux-awk/" rel="next" title="linux awk命令详解">
+                <i class="fa fa-chevron-left"></i> linux awk命令详解
               </a>
             
           </div>
@@ -441,8 +447,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/04/22/redis-trib/" rel="prev" title="redis cluster管理工具redis-trib.rb详解">
-                redis cluster管理工具redis-trib.rb详解 <i class="fa fa-chevron-right"></i>
+              <a href="/2014/02/20/maven-resouce/" rel="prev" title="maven resource 记录">
+                maven resource 记录 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -602,7 +608,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#同级目录下的调有"><span class="nav-number">1.</span> <span class="nav-text">同级目录下的调有</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用子目录下的模块"><span class="nav-number">2.</span> <span class="nav-text">调用子目录下的模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用上级目录下的文件"><span class="nav-number">3.</span> <span class="nav-text">调用上级目录下的文件</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#用法"><span class="nav-number">1.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#替换bind"><span class="nav-number">2.</span> <span class="nav-text">替换bind()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#替换live"><span class="nav-number">3.</span> <span class="nav-text">替换live()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#替换delegate"><span class="nav-number">4.</span> <span class="nav-text">替换delegate()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
