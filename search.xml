@@ -1717,11 +1717,11 @@
 <li>在命令模式中输入<code>x</code> 删除后一个字符，<code>X</code>删除前一个字符</li>
 <li>在命令模式中输入<code>u</code> undo最后一次修改</li>
 <li>在命令模式中输入<code>yy</code> 复制当前行</li>
-<li>在命令模式中输入<code>p</code> 粘贴到光标后面，<code>P</code>粘贴到光标前面<blockquote>
+<li>在命令模式中输入<code>p</code> 粘贴到光标后面，<code>P</code>粘贴到光标前面</li>
+</ul>
+<blockquote>
 <p>未完待续…</p>
 </blockquote>
-</li>
-</ul>
 ]]></content>
       
         <categories>
