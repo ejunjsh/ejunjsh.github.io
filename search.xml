@@ -1198,6 +1198,118 @@
     </entry>
     
     <entry>
+      <title><![CDATA[find 命令]]></title>
+      <url>/2014/02/14/linux-find/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>mark一下，当笔记，以后忘了查看</p>
+</blockquote>
+<a id="more"></a>
+<p>查找文件<br>find ./ -type f</p>
+<p>查找目录<br>find ./ -type d</p>
+<p>查找名字为test的文件或目录<br>find ./ -name test</p>
+<p>查找名字符合正则表达式的文件,注意前面的‘.<em>’(查找到的文件带有目录)<br>find ./ -regex .</em>so.*.gz</p>
+<p>查找目录并列出目录下的文件(为找到的每一个目录单独执行ls命令，没有选项-print时文件列表前一行不会显示目录名称)<br>find ./ -type d -print -exec ls {} \;</p>
+<p>查找目录并列出目录下的文件(为找到的每一个目录单独执行ls命令,执行命令前需要确认)<br>find ./ -type d -ok ls {} \;</p>
+<p>查找目录并列出目录下的文件(将找到的目录添加到ls命令后一次执行，参数过长时会分多次执行)<br>find ./ -type d -exec ls {} +</p>
+<p>查找文件名匹配<em>.c的文件<br>find ./ -name \</em>.c</p>
+<p>打印test文件名后，打印test文件的内容<br>find ./ -name test -print -exec cat {} \;</p>
+<p>不打印test文件名，只打印test文件的内容<br>find ./ -name test -exec cat {} \;</p>
+<p>查找文件更新日时在距现在时刻二天以内的文件<br>find ./ -mtime -2</p>
+<p>查找文件更新日时在距现在时刻二天以上的文件<br>find ./ -mtime +2</p>
+<p>查找文件更新日时在距现在时刻一天以上二天以内的文件<br>find ./ -mtime 2</p>
+<p>查找文件更新日时在距现在时刻二分以内的文件<br>find ./ -mmin -2</p>
+<p>查找文件更新日时在距现在时刻二分以上的文件<br>find ./ -mmin +2</p>
+<p>查找文件更新日时在距现在时刻一分以上二分以内的文件<br>find ./ -mmin 2</p>
+<p>查找文件更新时间比文件abc的内容更新时间新的文件<br>find ./ -newer abc</p>
+<p>查找文件访问时间比文件abc的内容更新时间新的文件<br>find ./ -anewer abc</p>
+<p>查找空文件或空目录<br>find ./ -empty</p>
+<p>查找空文件并删除<br>find ./ -empty -type f -print -delete</p>
+<p>查找权限为644的文件或目录(需完全符合)<br>find ./ -perm 664</p>
+<p>查找用户/组权限为读写，其他用户权限为读(其他权限不限)的文件或目录<br>find ./ -perm -664</p>
+<p>查找用户有写权限或者组用户有写权限的文件或目录<br>find ./ -perm /220<br>find ./ -perm /u+w,g+w<br>find ./ -perm /u=w,g=w</p>
+<p>查找所有者权限有读权限的目录或文件<br>find ./ -perm -u=r</p>
+<p>查找用户组权限有读权限的目录或文件<br>find ./ -perm -g=r</p>
+<p>查找其它用户权限有读权限的目录或文件<br>find ./ -perm -o=r</p>
+<p>查找所有者为lzj的文件或目录<br>find ./ -user lzj</p>
+<p>查找组名为gname的文件或目录<br>find ./ -group gname</p>
+<p>查找文件的用户ID不存在的文件<br>find ./ -nouser</p>
+<p>查找文件的组ID不存在的文件<br>find ./ -nogroup</p>
+<p>查找有执行权限但没有可读权限的文件<br>find ./ -executable ! -readable</p>
+<p>查找文件size小于10个字节的文件或目录<br>find ./ -size -10c</p>
+<p>查找文件size等于10个字节的文件或目录<br>find ./ -size 10c</p>
+<p>查找文件size大于10个字节的文件或目录<br>find ./ -size +10c</p>
+<p>查找文件size小于10k的文件或目录<br>find ./ -size -10k</p>
+<p>查找文件size小于10M的文件或目录<br>find ./ -size -10M</p>
+<p>查找文件size小于10G的文件或目录<br>find ./ -size -10G</p>
+]]></content>
+      
+        <categories>
+            
+            <category> linux命令 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> find </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[crontab 命令]]></title>
+      <url>/2014/02/13/linux-crontab/</url>
+      <content type="html"><![CDATA[<p>一般编写调度让系统帮你定时做事情有两种方式：</p>
+<ul>
+<li>在<code>/etc</code>目录下有一个<code>crontab</code>文件，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
+<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/usr/spool/cron/crontabs/username</code>。  <a id="more"></a>
+</li>
+</ul>
+<p><code>crontab</code>命令有三种形式的命令行结构： </p>
+<ul>
+<li>crontab [-u user] [file]  </li>
+<li>crontab [-u user] [-e|-l|-r]  </li>
+<li>crontab -l -u [-e|-l|-r] </li>
+</ul>
+<p>第一个命令行中，<code>file</code>是命令文件的名字。如果在命令行中指定了这个文件，那么执行<code>crontab</code>命令，则将这个文件拷贝到<code>crontabs</code>目录下；如果在命令行中没有制定这个文件，<code>crontab</code>命令将接受标准输入（键盘）上键入的命令，并将他们也存放在<code>crontab</code>目录下。  </p>
+<p>命令行中<code>-r</code>选项的作用是从<code>/usr/spool/cron/crontabs</code>目录下删除用户定义的文件crontab；  </p>
+<p>命令行中<code>-l</code>选项的作用是显示用户<code>crontab</code>文件的内容。  </p>
+<p>使用命令<code>crontab -u user -e</code>命令编辑用户user的cron(c)作业。用户通过编辑文件来增加或修改任何作业请求。  </p>
+<p>执行命令<code>crontab -u user -r</code>即可删除当前用户的所有的cron作业。  </p>
+<p>作业与它们预定的时间储存在文件<code>/usr/spool/cron/crontabs/username</code>里。username使用户名，在相应的文件中存放着该用户所要运行的命令。命令执行的结果，无论是标准输出还是错误输出，都将以邮件形式发给用户。文件里的每一个请求必须包含以spaces和tabs分割的六个域。前五个字段可以取整数值，指定何时开始工作，第六个域是字符串，称为命令字段，其中包括了crontab调度执行的命令。  </p>
+<p>第一道第五个字段的整数取值范围及意义是：  </p>
+<ul>
+<li>0～59 表示分  </li>
+<li>1～23 表示小时  </li>
+<li>1～31 表示日  </li>
+<li>1～12 表示月份  </li>
+<li>0～6 表示星期（其中0表示星期日）  </li>
+</ul>
+<p><code>/usr/lib/cron/cron.allow</code>表示谁能使用<code>crontab</code>命令。如果它是一个空文件表明没有一个用户能安排作业。如果这个文件不存在，而有另外一个文件<code>/usr/lib/cron/cron.deny</code>,则只有不包括在这个文件中的用户才可以使用<code>crontab</code>命令。如果它是一个空文件表明任何用户都可安排作业。两个文件同时存在时<code>cron.allow</code>优先，如果都不存在，只有超级用户可以安排作业。 </p>
+]]></content>
+      
+        <categories>
+            
+            <category> linux命令 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> crontab </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[关于jQuery新的事件绑定机制on()的使用技巧]]></title>
       <url>/2014/01/11/jquery-on/</url>
       <content type="html"><![CDATA[<blockquote>
@@ -1581,6 +1693,51 @@
             <tag> java </tag>
             
             <tag> threadlocal </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[vi/vim 编辑器命令]]></title>
+      <url>/2014/01/03/linux-vi/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>vi/vim 用法笔记。</p>
+</blockquote>
+<a id="more"></a>
+<ul>
+<li>按 <code>i</code> 进入编辑模式 （一开始是命令模式的）</li>
+<li>按 <code>esc</code> 进入命令模式</li>
+<li>在命令模式中输入<code>:wq</code> 保存 （write and quit）</li>
+<li>在命令模式中输入<code>:q</code> 退出</li>
+<li>在命令模式中输入<code>:q!</code> 强制退出 (不保存)</li>
+<li>在命令模式中输入<code>/</code>后接<code>关键字</code>搜索，<code>n</code>下一个匹配，<code>N</code>上一个匹配</li>
+<li>在命令模式中输入<code>gg</code> 回到顶部，<code>GG</code>到底部</li>
+<li>在命令模式中输入<code>dd</code> 删除当前行</li>
+<li>在命令模式中输入<code>x</code> 删除后一个字符，<code>X</code>删除前一个字符</li>
+<li>在命令模式中输入<code>u</code> undo最后一次修改</li>
+<li>在命令模式中输入<code>yy</code> 复制当前行</li>
+<li>在命令模式中输入<code>p</code> 粘贴到光标后面，<code>P</code>粘贴到光标前面<blockquote>
+<p>未完待续…</p>
+</blockquote>
+</li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> linux命令 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> linux </tag>
+            
+            <tag> vi </tag>
+            
+            <tag> vim </tag>
             
         </tags>
         
