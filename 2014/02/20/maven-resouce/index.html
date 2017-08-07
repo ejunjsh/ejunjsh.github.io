@@ -100,17 +100,17 @@
 
 
 
-<meta name="description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
+<meta name="description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。">
 <meta name="keywords" content="java,maven">
 <meta property="og:type" content="article">
 <meta property="og:title" content="maven resource 记录">
 <meta property="og:url" content="http://idiotsky.me/2014/02/20/maven-resouce/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
-<meta property="og:updated_time" content="2017-07-21T15:17:29.000Z">
+<meta property="og:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。">
+<meta property="og:updated_time" content="2017-08-07T12:54:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="maven resource 记录">
-<meta name="twitter:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&amp;lt;build&amp;gt;  &amp;lt;resources&amp;gt;             &amp;lt;resource&amp;gt;                 &amp;lt;dire">
+<meta name="twitter:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。">
 
 
 
@@ -379,7 +379,10 @@
       
 
       
-        <p>今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。</p>
+        <blockquote>
+<p>今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。</p>
+</blockquote>
+<a id="more"></a>
 <p>上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">resources</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>src/main/java<span class="tag">&lt;/<span class="name">directory</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.properties<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.xml<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tld<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">filtering</span>&gt;</span>true<span class="tag">&lt;/<span class="name">filtering</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span> </div><div class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span> </div><div class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>搞定收工。。。不知道有没有更好到方法呢？</p>
 
@@ -426,8 +429,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/02/14/linux-find/" rel="next" title="find 命令">
-                <i class="fa fa-chevron-left"></i> find 命令
+              <a href="/2014/02/20/jenkins-jenkins-git-maven/" rel="next" title="jenkins + git+maven做持续集成">
+                <i class="fa fa-chevron-left"></i> jenkins + git+maven做持续集成
               </a>
             
           </div>
@@ -436,7 +439,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2014/07/19/cglib-annonation/" rel="prev" title="用cglib生成的代理类取不到注解的问题">
+              <a href="/2014/07/19/java-cglib/" rel="prev" title="用cglib生成的代理类取不到注解的问题">
                 用cglib生成的代理类取不到注解的问题 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -502,7 +505,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -513,7 +516,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -524,7 +527,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -84,7 +84,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -100,17 +100,15 @@
 
 
 
-<meta name="description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
-<meta name="keywords" content="java">
-<meta property="og:type" content="article">
-<meta property="og:title" content="用cglib生成的代理类取不到注解的问题">
-<meta property="og:url" content="http://idiotsky.me/2014/07/19/cglib-annonation/index.html">
+<meta name="description" content="code freak">
+<meta property="og:type" content="website">
+<meta property="og:title" content="IdiotSky">
+<meta property="og:url" content="http://idiotsky.me/tags/git/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
-<meta property="og:updated_time" content="2017-07-20T14:13:03.000Z">
+<meta property="og:description" content="code freak">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="用cglib生成的代理类取不到注解的问题">
-<meta name="twitter:description" content="百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好） 直接在注解上面加@Inherited">
+<meta name="twitter:title" content="IdiotSky">
+<meta name="twitter:description" content="code freak">
 
 
 
@@ -138,13 +136,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2014/07/19/cglib-annonation/"/>
+  <link rel="canonical" href="http://idiotsky.me/tags/git/"/>
 
 
 
 
 
-  <title>用cglib生成的代理类取不到注解的问题 | IdiotSky</title>
+  <title>Tag: git | IdiotSky</title>
   
 
 
@@ -179,7 +177,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail ">
+  <div class="container sidebar-position-left  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -283,176 +281,44 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/07/19/cglib-annonation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
+  <div id="posts" class="posts-collapse">
+    <div class="collection-title">
+      <h1>git<small>Tag</small>
+      </h1>
+    </div>
 
     
-      <header class="post-header">
+      
 
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <h2 class="post-title">
         
+            <a class="post-title-link" href="/2014/02/20/jenkins-jenkins-git-maven/" itemprop="url">
+              
+                <span itemprop="name">jenkins + git+maven做持续集成</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">用cglib生成的代理类取不到注解的问题</h1>
-        
+      </h2>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-07-19T21:47:51+08:00">
-                19 Jul 14
-              </time>
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2014-02-20T21:02:27+08:00"
+              content="20 Feb 14" >
+          02-20
+        </time>
+      </div>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>百度找了一下没找到，谷歌搜一下就出来了（会点英语就是好）</p>
-<p>直接在注解上面加@Inherited<br><a id="more"></a><br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inherited</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.TYPE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>原来CGLIB 返回的代理类是基于原来类的子类的，加上这个标志就可以令子类继承这个注解（唉，基础啊）<br>链接<a href="http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies" target="_blank" rel="external">http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies</a></p>
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/java/" rel="tag"># java</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2014/02/20/maven-resouce/" rel="next" title="maven resource 记录">
-                <i class="fa fa-chevron-left"></i> maven resource 记录
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2014/08/02/jquery-cross-domain-ajax/" rel="prev" title="javascript在浏览器跨域访问的几种处理方式">
-                javascript在浏览器跨域访问的几种处理方式 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
-      
-    </div>
+    
   </div>
+
+  
 
 
           </div>
@@ -460,10 +326,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-  </div>
-
 
         </div>
         
@@ -500,7 +362,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -511,7 +373,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -522,7 +384,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -691,10 +553,10 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
 
-
+  
 
   
 
