@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="记录，汇总">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java多线程(二) 同步和锁">
+<meta property="og:url" content="http://idiotsky.me/2016/08/20/java-thread-2-md/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="记录，汇总">
+<meta property="og:image" content="http://idiotsky.me/images/java-thread-2-1.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-thread-2-2.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-thread-2-3.png">
+<meta property="og:updated_time" content="2017-08-09T15:27:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java多线程(二) 同步和锁">
+<meta name="twitter:description" content="记录，汇总">
+<meta name="twitter:image" content="http://idiotsky.me/images/java-thread-2-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2016/08/20/java-thread-2-md/"/>
+
+
+
+
+
+  <title>Java多线程(二) 同步和锁 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/20/java-thread-2-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java多线程(二) 同步和锁</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-20T22:55:34+08:00">
+                20 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>记录，汇总</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="线程同步问题的产生"><a href="#线程同步问题的产生" class="headerlink" title="线程同步问题的产生"></a>线程同步问题的产生</h1><p>什么是线程同步问题，我们先来看一段卖票系统的代码，然后再分析这个问题：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.thread;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TicketSeller</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span>  <span class="keyword">int</span> num = <span class="number">100</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">if</span>(num&gt;<span class="number">0</span>)</div><div class="line">            &#123;</div><div class="line">                <span class="keyword">try</span>&#123;</div><div class="line">                    Thread.sleep(<span class="number">10</span>);</div><div class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e)</div><div class="line">                &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">                <span class="comment">//输出卖票信息</span></div><div class="line">                System.out.println(Thread.currentThread().getName()+<span class="string">".....sale...."</span>+num--);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面是卖票线程类，下来再来看看执行类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.thread;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TickeDemo</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></div><div class="line">    &#123;</div><div class="line">        TicketSeller t = <span class="keyword">new</span> TicketSeller();<span class="comment">//创建一个线程任务对象。</span></div><div class="line"></div><div class="line">        <span class="comment">//创建4个线程同时卖票</span></div><div class="line">        Thread t1 = <span class="keyword">new</span> Thread(t);</div><div class="line">        Thread t2 = <span class="keyword">new</span> Thread(t);</div><div class="line">        Thread t3 = <span class="keyword">new</span> Thread(t);</div><div class="line">        Thread t4 = <span class="keyword">new</span> Thread(t);</div><div class="line">        <span class="comment">//启动线程</span></div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">        t3.start();</div><div class="line">        t4.start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行程序结果如下（仅截取部分数据）：<br><a href="/images/java-thread-2-1.png"><img src="/images/java-thread-2-1.png" alt=""></a><br>从运行结果，我们就可以看出我们3个售票窗口同时卖出了96号票，这显然是不合逻辑的，其实这个问题就是我们前面所说的线程同步问题。不同的线程都对同一个数据进了操作这就容易导致数据错乱的问题，也就是线程不同步。那么这个问题该怎么解决呢？在给出解决思路之前我们先来分析一下这个问题是怎么产生的？我们声明一个线程类TicketSeller，在这个类中我们又声明了一个成员变量num也就是票的数量，然后我们通过run方法不断的去获取票数并输出，最后我们在外部类TicketDemo中创建了四个线程同时操作这个数据，运行后就出现我们刚才所说的线程同步问题，从这里我们可以看出产生线程同步(线程安全)问题的条件有两个：1.多个线程在操作共享的数据（num），2.操作共享数据的线程代码有多条（4条线程）；既然原因知道了，那该怎么解决？</p>
+<blockquote>
+<p>解决思路：将多条操作共享数据的线程代码封装起来，当有线程在执行这些代码的时候，其他线程时不可以参与运算的。必须要当前线程把这些代码都执行完毕后，其他线程才可以参与运算。 好了，思路知道了，我们就用java代码的方式来解决这个问题。</p>
+</blockquote>
+<h1 id="解决线程同步的两种典型方案"><a href="#解决线程同步的两种典型方案" class="headerlink" title="解决线程同步的两种典型方案"></a>解决线程同步的两种典型方案</h1><p>在java中有两种机制可以防止线程安全的发生，Java语言提供了一个synchronized关键字来解决这问题，同时在Java SE5.0引入了Lock锁对象的相关类，接下来我们分别介绍这两种方法</p>
+<h2 id="通过锁（Lock）对象的方式解决线程安全问题"><a href="#通过锁（Lock）对象的方式解决线程安全问题" class="headerlink" title="通过锁（Lock）对象的方式解决线程安全问题"></a>通过锁（Lock）对象的方式解决线程安全问题</h2><p>在给出解决代码前我们先来介绍一个知识点：Lock，锁对象。在java中锁是用来控制多个线程访问共享资源的方式，一般来说，一个锁能够防止多个线程同时访问共享资源（但有的锁可以允许多个线程并发访问共享资源，比如读写锁，后面我们会分析）。在Lock接口出现之前，java程序是靠synchronized关键字（后面分析）实现锁功能的，而JAVA SE5.0之后并发包中新增了Lock接口用来实现锁的功能，它提供了与synchronized关键字类似的同步功能，只是在使用时需要显式地获取和释放锁，缺点就是缺少像synchronized那样隐式获取释放锁的便捷性，但是却拥有了锁获取与释放的可操作性，可中断的获取锁以及超时获取锁等多种synchronized关键字所不具备的同步特性。接下来我们就来介绍Lock接口的主要API方便我们学习</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>相关描述内容 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void lock()</td>
+<td>获取锁，调用该方法当前线程会获取锁，当获取锁后。从该方法返回</td>
+</tr>
+<tr>
+<td>void lockInterruptibly() throws InterruptedException</td>
+<td>可中断获取锁和lock()方法不同的是该方法会响应中断，即在获取锁中可以中断当前线程。例如某个线程在等待一个锁的控制权的这段时间需要中断。</td>
+</tr>
+<tr>
+<td>boolean tryLock()</td>
+<td>尝试非阻塞获取锁，调用该方法后立即返回，如果能够获取锁则返回true，否则返回false。</td>
+</tr>
+<tr>
+<td>boolean tryLock(long time,TimeUnit unit) throws  InterruptedException</td>
+<td>超时获取锁，当前线程在以下3种情况返回：1.当前线程在超时时间内获取了锁2.当前线程在超时时间被中断3.当前线程超时时间结束，返回false</td>
+</tr>
+<tr>
+<td>void unlock()</td>
+<td>释放锁</td>
+</tr>
+<tr>
+<td>Condition newCondition()</td>
+<td>条件对象，获取等待通知组件。该组件和当前的锁绑定，当前线程只有获取了锁，才能调用该组件的await()方法，而调用后，当前线程将释放锁。</td>
+</tr>
+</tbody>
+</table>
+<p>这里先介绍一下API，接下来我们将结合Lock接口的实现子类ReentrantLock来讲解下他的几个方法。</p>
+<h3 id="ReentrantLock（重入锁"><a href="#ReentrantLock（重入锁" class="headerlink" title="ReentrantLock（重入锁)"></a>ReentrantLock（重入锁)</h3><p>重入锁，顾名思义就是支持重新进入的锁，它表示该锁能够支持一个线程对资源的重复加锁，也就是说在调用lock()方法时，已经获取到锁的线程，能够再次调用lock()方法获取锁而不被阻塞，同时还支持获取锁的公平性和非公平性。这里的公平是在绝对时间上，先对锁进行获取的请求一定先被满足，那么这个锁是公平锁，反之，是不公平的(但是如果不是需要，建议不要用公平锁，因为会造成一些资源的没必要等待，浪费性能)。那么该如何使用呢？看范例代码：<br>1.同步执行的代码跟synchronized类似功能：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(); <span class="comment">//参数默认false，不公平锁    </span></div><div class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>); <span class="comment">//公平锁    </span></div><div class="line">    </div><div class="line">lock.lock(); <span class="comment">//如果被其它资源锁定，会在此等待锁释放，达到暂停的效果    </span></div><div class="line"><span class="keyword">try</span> &#123;    </div><div class="line">    <span class="comment">//操作    </span></div><div class="line">&#125; <span class="keyword">finally</span> &#123;    </div><div class="line">    lock.unlock();  <span class="comment">//释放锁  </span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>2.防止重复执行代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();    </div><div class="line"><span class="keyword">if</span> (lock.tryLock()) &#123;  <span class="comment">//如果已经被lock，则立即返回false不会等待，达到忽略操作的效果     </span></div><div class="line">    <span class="keyword">try</span> &#123;    </div><div class="line">        <span class="comment">//操作    </span></div><div class="line">    &#125; <span class="keyword">finally</span> &#123;    </div><div class="line">        lock.unlock();    </div><div class="line">   &#125;    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>3.尝试等待执行的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>); <span class="comment">//公平锁    </span></div><div class="line"><span class="keyword">try</span> &#123;    </div><div class="line">    <span class="keyword">if</span> (lock.tryLock(<span class="number">5</span>, TimeUnit.SECONDS)) &#123;        </div><div class="line">        <span class="comment">//如果已经被lock，尝试等待5s，看是否可以获得锁，如果5s后仍然无法获得锁则返回false继续执行    </span></div><div class="line">       <span class="keyword">try</span> &#123;    </div><div class="line">            <span class="comment">//操作    </span></div><div class="line">        &#125; <span class="keyword">finally</span> &#123;    </div><div class="line">            lock.unlock();    </div><div class="line">        &#125;    </div><div class="line">    &#125;    </div><div class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;    </div><div class="line">    e.printStackTrace(); <span class="comment">//当前线程被中断时(interrupt)，会抛InterruptedException                     </span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里有点需要特别注意的，把解锁操作放在finally代码块内这个十分重要。如果在临界区的代码抛出异常，锁必须被释放。否则，其他线程将永远阻塞。好了，ReentrantLock我们就简单介绍到这里，接下来我们通过ReentrantLock来解决前面卖票线程的线程同步（安全）问题，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.thread;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</div><div class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TicketSellerWithLock</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">//创建锁对象</span></div><div class="line">    <span class="keyword">private</span> Lock ticketLock = <span class="keyword">new</span> ReentrantLock();</div><div class="line"></div><div class="line">    <span class="comment">//创建锁对象(公平锁)</span></div><div class="line">    <span class="comment">//private Lock ticketLock = new ReentrantLock(true);</span></div><div class="line"></div><div class="line">    <span class="keyword">private</span>  <span class="keyword">int</span> num = <span class="number">100</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)</div><div class="line">        &#123;</div><div class="line">            ticketLock.lock();<span class="comment">//获取锁</span></div><div class="line">            <span class="keyword">if</span>(num&gt;<span class="number">0</span>)</div><div class="line">            &#123;</div><div class="line">                <span class="keyword">try</span>&#123;</div><div class="line">                    Thread.sleep(<span class="number">10</span>);</div><div class="line">                    <span class="comment">//输出卖票信息</span></div><div class="line">                    System.out.println(Thread.currentThread().getName()+<span class="string">".....sale...."</span>+num--);</div><div class="line">                &#125;<span class="keyword">catch</span> (InterruptedException e)</div><div class="line">                &#123;</div><div class="line">                    Thread.currentThread().interrupt();<span class="comment">//继续中断异常</span></div><div class="line">                &#125;<span class="keyword">finally</span> &#123;</div><div class="line">                    ticketLock.unlock();<span class="comment">//释放锁</span></div><div class="line">                &#125;</div><div class="line"></div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span> &#123;</div><div class="line">                ticketLock.unlock();<span class="comment">//释放锁</span></div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>TicketDemo类无需变化，线程安全问题就此解决。<br>但是还是要说一下公平锁的问题，上面例子，不开公平锁的结果如下：<br><a href="/images/java-thread-2-2.png"><img src="/images/java-thread-2-2.png" alt=""></a><br>开公平锁的结果如下：<br><a href="/images/java-thread-2-3.png"><img src="/images/java-thread-2-3.png" alt=""></a><br><em>你会发现不开公平锁，cpu钟爱用第一个线程做事情，而开了公平锁后，基本是各个线程交替执行。上面提到公平锁是会消耗性能的，如果CPU调度的时候选择的不是公平调度的那个线程，CPU会放弃本次调度，干别的事情，如果老是调度不到的话，是浪费CPU调度的。</em></p>
+<h2 id="通过synchronied关键字的方式解决线程安全问题"><a href="#通过synchronied关键字的方式解决线程安全问题" class="headerlink" title="通过synchronied关键字的方式解决线程安全问题"></a>通过synchronied关键字的方式解决线程安全问题</h2><p>在Java中内置了语言级的同步原语－synchronized，这个可以大大简化了Java中多线程同步的使用。从JAVA SE1.0开始，java中的每一个对象都有一个内部锁，如果一个方法使用synchronized关键字进行声明，那么这个对象将保护整个方法，也就是说调用该方法线程必须获得内部的对象锁。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> method&#123;  </div><div class="line">  <span class="comment">//method body  </span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>等价于<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> Lock ticketLock = <span class="keyword">new</span> ReentrantLock();  </div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> method&#123;  </div><div class="line"> ticketLock.lock();  </div><div class="line"> <span class="keyword">try</span>&#123;  </div><div class="line">  <span class="comment">//.......  </span></div><div class="line"> &#125;<span class="keyword">finally</span>&#123;  </div><div class="line">   ticketLock.unlock();  </div><div class="line"> &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从这里可以看出使用synchronized关键字来编写代码要简洁得多了。当然，要理解这一代码，我们必须知道每个对象有一个内部锁，并且该锁有一个内部条件。由锁来管理那些试图进入synchronized方法的线程，由条件来管那些调用wait的线程(wait()/notifyAll/notify())。同时我们必须明白一旦有一个线程通过synchronied方法获取到内部锁，该类的所有synchronied方法或者代码块都无法被其他线程访问直到当前线程释放了内部锁。刚才上面说的是同步方法，synchronized还有一种同步代码块的实现方式：</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/08/java-thread-1-md/" rel="next" title="Java多线程(一)基础">
+                <i class="fa fa-chevron-left"></i> Java多线程(一)基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/03/redis-transaction-watch/" rel="prev" title="redis的事务和watch">
+                redis的事务和watch <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线程同步问题的产生"><span class="nav-number">1.</span> <span class="nav-text">线程同步问题的产生</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决线程同步的两种典型方案"><span class="nav-number">2.</span> <span class="nav-text">解决线程同步的两种典型方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通过锁（Lock）对象的方式解决线程安全问题"><span class="nav-number">2.1.</span> <span class="nav-text">通过锁（Lock）对象的方式解决线程安全问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReentrantLock（重入锁"><span class="nav-number">2.1.1.</span> <span class="nav-text">ReentrantLock（重入锁)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过synchronied关键字的方式解决线程安全问题"><span class="nav-number">2.2.</span> <span class="nav-text">通过synchronied关键字的方式解决线程安全问题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
