@@ -103,14 +103,14 @@
 <meta name="description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
 <meta name="keywords" content="python,raspberrypi,NAS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="利用raspberry PI 搭建一个简易的NAS">
+<meta property="og:title" content="利用树莓派搭建一个简易的NAS">
 <meta property="og:url" content="http://idiotsky.me/2017/07/20/raspberry-nas/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
 <meta property="og:image" content="http://idiotsky.me/images/nas-screenshot.png">
-<meta property="og:updated_time" content="2017-07-22T16:15:35.000Z">
+<meta property="og:updated_time" content="2017-08-09T16:13:49.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="利用raspberry PI 搭建一个简易的NAS">
+<meta name="twitter:title" content="利用树莓派搭建一个简易的NAS">
 <meta name="twitter:description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
 <meta name="twitter:image" content="http://idiotsky.me/images/nas-screenshot.png">
 
@@ -146,7 +146,7 @@
 
 
 
-  <title>利用raspberry PI 搭建一个简易的NAS | IdiotSky</title>
+  <title>利用树莓派搭建一个简易的NAS | IdiotSky</title>
   
 
 
@@ -312,7 +312,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">利用raspberry PI 搭建一个简易的NAS</h1>
+          <h1 class="post-title" itemprop="name headline">利用树莓派搭建一个简易的NAS</h1>
         
 
         <div class="post-meta">
@@ -384,9 +384,9 @@
         <h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
 <li>raspberry pi 3</li>
 <li>硬盘（格式化过ext4的）</li>
-<li>连接raspberry用的终端<a id="more"></a>
-</li>
+<li>连接raspberry用的终端</li>
 </ul>
+<a id="more"></a>
 <h1 id="安装samba"><a href="#安装samba" class="headerlink" title="安装samba"></a>安装samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install samba samba-common-bin</div></pre></td></tr></table></figure>
 <h1 id="配置samba"><a href="#配置samba" class="headerlink" title="配置samba"></a>配置samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.back</div><div class="line">sudo vim /etc/samba/smb.conf</div></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 在末尾加入如下内容</span></div><div class="line"><span class="comment"># 分享名称</span></div><div class="line">[MyNAS]</div><div class="line"><span class="comment"># 说明信息</span></div><div class="line">comment = NAS Storage</div><div class="line"><span class="comment"># 可以访问的用户</span></div><div class="line">valid users = pi,root</div><div class="line"><span class="comment"># 共享文件的路径,raspberry pi 会自动将连接到其上的外接存储设备挂载到/media/pi/目录下。</span></div><div class="line">path = /media/pi/</div><div class="line"><span class="comment"># 可被其他人看到资源名称（非内容）</span></div><div class="line">browseable = yes</div><div class="line"><span class="comment"># 可写</span></div><div class="line">writable = yes</div><div class="line"><span class="comment"># 新建文件的权限为 664</span></div><div class="line">create mask = 0664</div><div class="line"><span class="comment"># 新建目录的权限为 775</span></div><div class="line">directory mask = 0775</div></pre></td></tr></table></figure>
@@ -440,8 +440,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/18/raspberry-weather-clock/" rel="next" title="用树莓派实现一个能播放天气的闹钟">
-                <i class="fa fa-chevron-left"></i> 用树莓派实现一个能播放天气的闹钟
+              <a href="/2017/07/18/raspberry-weather-clock/" rel="next" title="利用树莓派实现一个能播放天气的闹钟">
+                <i class="fa fa-chevron-left"></i> 利用树莓派实现一个能播放天气的闹钟
               </a>
             
           </div>
@@ -525,7 +525,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-count">34</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -536,7 +536,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -547,7 +547,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
