@@ -212,6 +212,84 @@
     </entry>
     
     <entry>
+      <title><![CDATA[简单理解Java GC与幽灵引用]]></title>
+      <url>/2016/09/11/java-gc-reference/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>Java中一共有4种类型的引用:StrongReference、SoftReference、WeakReference以及PhantomReference (幽灵引用), 这 4 种类型的引用与Java GC有着密切的关系, 让我们逐一来看它们的定义和使用场景。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Strong-Reference"><a href="#Strong-Reference" class="headerlink" title="Strong Reference"></a>Strong Reference</h1><p>StrongReference 是 Java 的默认引用实现,它会尽可能长时间的存活于 JVM 内， 当没有任何对象指向它时Java GC 执行后将会被回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">strongReference</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 通过赋值创建 StrongReference   </div><div class="line"> */  </div><div class="line">Object strongReference = referent;   </div><div class="line">   </div><div class="line">assertSame(referent, strongReference);   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * StrongReference 在 GC 后不会被回收  </div><div class="line"> */  </div><div class="line">assertNotNull(strongReference);   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="WeakReference-amp-WeakHashMap"><a href="#WeakReference-amp-WeakHashMap" class="headerlink" title="WeakReference &amp; WeakHashMap"></a>WeakReference &amp; WeakHashMap</h1><p>WeakReference， 顾名思义,是一个弱引用,当所引用的对象在 JVM 内不再有强引用时, Java GC 后 weak reference 将会被自动回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">weakReference</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">WeakReference&lt;Object&gt; weakRerference = <span class="keyword">new</span> WeakReference&lt;Object&gt;(referent);   </div><div class="line"> </div><div class="line">assertSame(referent, weakRerference.get());   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 一旦没有指向 referent 的强引用, weak reference 在 GC 后会被自动回收  </div><div class="line"> */  </div><div class="line">assertNull(weakRerference.get());   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>WeakHashMap 使用 WeakReference 作为 key， 一旦没有指向 key 的强引用, WeakHashMap 在Java GC 后将自动删除相关的 entry<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">weakHashMap</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;   </div><div class="line">Map&lt;Object, Object&gt; weakHashMap = <span class="keyword">new</span> WeakHashMap&lt;Object, Object&gt;();   </div><div class="line">Object key = <span class="keyword">new</span> Object();   </div><div class="line">Object value = <span class="keyword">new</span> Object();   </div><div class="line">weakHashMap.put(key, value);   </div><div class="line"> </div><div class="line">assertTrue(weakHashMap.containsValue(value));   </div><div class="line">   </div><div class="line">key = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 等待无效 entries 进入 ReferenceQueue 以便下一次调用 getTable 时被清理  </div><div class="line"> */  </div><div class="line">Thread.sleep(<span class="number">1000</span>);   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 一旦没有指向 key 的强引用, WeakHashMap 在 GC 后将自动删除相关的 entry  </div><div class="line"> */  </div><div class="line">assertFalse(weakHashMap.containsValue(value));   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="SoftReference"><a href="#SoftReference" class="headerlink" title="SoftReference"></a>SoftReference</h1><p>SoftReference 于 WeakReference 的特性基本一致， 最大的区别在于 SoftReference 会尽可能长的保留引用直到 JVM 内存不足时才会被回收(虚拟机保证), 这一特性使得 SoftReference 非常适合缓存应用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">softReference</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">SoftReference&lt;Object&gt; softRerference = <span class="keyword">new</span> SoftReference&lt;Object&gt;(referent);   </div><div class="line"> </div><div class="line">assertNotNull(softRerference.get());   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> *soft references 只有在 jvm OutOfMemory 之前才会被回收, 所以它非常适合缓存应用  </div><div class="line"> */  </div><div class="line">assertNotNull(softRerference.get());   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Phantom-Reference"><a href="#Phantom-Reference" class="headerlink" title="Phantom Reference"></a>Phantom Reference</h1><p>作为本文主角， Phantom Reference(幽灵引用) 与 WeakReference 和 SoftReference 有很大的不同,因为它的 get() 方法永远返回 null, 这也正是它名字的由来<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">phantomReferenceAlwaysNull</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">PhantomReference&lt;Object&gt; phantomReference = <span class="keyword">new</span> PhantomReference&lt;Object&gt;(referent, <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;());   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * phantom reference 的 get 方法永远返回 null   </div><div class="line"> */  </div><div class="line">assertNull(phantomReference.get());   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>诸位可能要问, 一个永远返回 null 的 reference 要来何用,请注意构造 PhantomReference 时的第二个参数 ReferenceQueue(事实上 WeakReference &amp; SoftReference 也可以有这个参数)，<br>PhantomReference 唯一的用处就是跟踪 referent何时被 enqueue 到 ReferenceQueue 中.</p>
+<h1 id="RererenceQueue"><a href="#RererenceQueue" class="headerlink" title="RererenceQueue"></a>RererenceQueue</h1><p>当一个 WeakReference 开始返回 null 时， 它所指向的对象已经准备被回收， 这时可以做一些合适的清理工作. 将一个 ReferenceQueue 传给一个 Reference 的构造函数， 当对象被回收时， 虚拟机会自动将这个对象插入到 ReferenceQueue 中， WeakHashMap 就是利用 ReferenceQueue 来清除 key 已经没有强引用的 entries.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">referenceQueue</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();  </div><div class="line">ReferenceQueue&lt;Object&gt; referenceQueue = <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;();   </div><div class="line">WeakReference&lt;Object&gt; weakReference = <span class="keyword">new</span> WeakReference&lt;Object&gt;(referent, referenceQueue);   </div><div class="line">   </div><div class="line">assertFalse(weakReference.isEnqueued());   </div><div class="line">Reference&lt;? extends Object&gt; polled = referenceQueue.poll();   </div><div class="line">assertNull(polled);   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line"> </div><div class="line">assertTrue(weakReference.isEnqueued());   </div><div class="line">Reference&lt;? extends Object&gt; removed = referenceQueue.remove();   </div><div class="line">assertNotNull(removed);   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Phantom-Reference-vs-Weak-Reference"><a href="#Phantom-Reference-vs-Weak-Reference" class="headerlink" title="Phantom Reference vs Weak Reference"></a>Phantom Reference vs Weak Reference</h1><p>PhantomReference有两个好处， 其一， 它可以让我们准确地知道对象何时被从内存中删除， 这个特性可以被用于一些特殊的需求中(例如 Distributed GC，XWork 和 google-guice 中也使用 PhantomReference 做了一些清理性工作).</p>
+<p>其二， 它可以避免 finalization 带来的一些根本性问题, 上文提到 PhantomReference 的唯一作用就是跟踪 referent 何时被 enqueue 到 ReferenceQueue 中,但是 WeakReference 也有对应的功能, 两者的区别到底在哪呢 ?<br>这就要说到 Object 的 finalize 方法, 此方法将在 gc 执行前被调用, 如果某个对象重载了 finalize 方法并故意在方法内创建本身的强引用,这将导致这一轮的 GC 无法回收这个对象并有可能<br>引起任意次 GC， 最后的结果就是明明 JVM 内有很多 Garbage 却 OutOfMemory， 使用 PhantomReference 就可以避免这个问题， 因为 PhantomReference 是在 finalize 方法执行后回收的，也就意味着此时已经不可能拿到原来的引用,也就不会出现上述问题,当然这是一个很极端的例子, 一般不会出现.</p>
+<h1 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h1><p><strong>Soft vs Weak vs Phantom References</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Use</th>
+<th>When GCed</th>
+<th>Implementing Class</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Strong Reference</td>
+<td>An ordinary reference. Keeps objects alive as long as they are referenced.</td>
+<td>normal reference.</td>
+<td>Any object not pointed to can be reclaimed.</td>
+<td>default</td>
+</tr>
+<tr>
+<td>Soft Reference</td>
+<td>Keeps objects alive provided there’s enough memory.</td>
+<td>to keep objects alive even after clients have removed their references (memory-sensitive caches), in case clients start asking for them again by key.</td>
+<td>After a first gc pass, the JVM decides it still needs to reclaim more space.</td>
+<td>java.lang.ref.SoftReference</td>
+</tr>
+<tr>
+<td>Weak Reference</td>
+<td>Keeps objects alive only while they’re in use (reachable) by clients.</td>
+<td>Containers that automatically delete objects no longer in use.</td>
+<td>After gc determines the object is only weakly reachable</td>
+<td>java.lang.ref.WeakReference java.util.WeakHashMap</td>
+</tr>
+<tr>
+<td>Phantom Reference</td>
+<td>Lets you clean up after finalization but before the space is reclaimed (replaces or augments the use offinalize())</td>
+<td>Special clean up processing</td>
+<td>After finalization.</td>
+<td>java.lang.ref.PhantomReference</td>
+</tr>
+</tbody>
+</table>
+<h1 id="Java-GC小结"><a href="#Java-GC小结" class="headerlink" title="Java GC小结"></a>Java GC小结</h1><p>一般的应用程序不会涉及到 Reference 编程， 但是了解这些知识会对理解Java GC 的工作原理以及性能调优有一定帮助, 在实现一些基础性设施比如缓存时也可能会用到， 希望本文能有所帮助.</p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> gc </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[redis的事务和watch]]></title>
       <url>/2016/09/03/redis-transaction-watch/</url>
       <content type="html"><![CDATA[<h1 id="redis的事务"><a href="#redis的事务" class="headerlink" title="redis的事务"></a>redis的事务</h1><p>严格意义来讲,redis的事务和我们理解的传统数据库(如mysql)的事务是不一样的。<br><a id="more"></a></p>
