@@ -95,9 +95,9 @@
         
         <tags>
             
-            <tag> python </tag>
-            
             <tag> raspberrypi </tag>
+            
+            <tag> python </tag>
             
             <tag> NAS </tag>
             
@@ -125,9 +125,9 @@
         
         <tags>
             
-            <tag> python </tag>
-            
             <tag> raspberrypi </tag>
+            
+            <tag> python </tag>
             
         </tags>
         
@@ -242,8 +242,6 @@
         <categories>
             
             <category> java </category>
-            
-            <category> go </category>
             
         </categories>
         
@@ -1793,9 +1791,9 @@
       <content type="html"><![CDATA[<p>一般编写调度让系统帮你定时做事情有两种方式：</p>
 <ul>
 <li>在<code>/etc</code>目录下有一个<code>crontab</code>文件，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
-<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/usr/spool/cron/crontabs/username</code>。  <a id="more"></a>
-</li>
+<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/usr/spool/cron/crontabs/username</code>。 </li>
 </ul>
+<a id="more"></a>
 <p><code>crontab</code>命令有三种形式的命令行结构： </p>
 <ul>
 <li>crontab [-u user] [file]  </li>
