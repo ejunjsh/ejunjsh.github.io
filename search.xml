@@ -212,6 +212,51 @@
     </entry>
     
     <entry>
+      <title><![CDATA[常见 GC 算法]]></title>
+      <url>/2017/01/12/gc/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>GC,(garbage collection)，很多高级语言都有的一种特性,是自动内存管理的一种形式，所以今天说说常用的几种GC算法:引用计数法、Mark-Sweep法、三色标记法、分代收集法</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h1><p>原理是在每个对象内部维护一个整数值，叫做这个对象的引用计数，当对象被引用时引用计数加一，当对象不被引用时引用计数减一。当引用计数为 0 时，自动销毁对象。<br>但是引用计数法有个缺陷就是不能解决循环引用的问题。循环引用是指对象 A 和对象 B 互相持有对方的引用。这样两个对象的引用计数都不是 0 ，因此永远不能被收集。<br>另外的缺陷是，每次对象的赋值都要将引用计数加一，增加了消耗。</p>
+<h1 id="Mark-Sweep法（标记清除法）"><a href="#Mark-Sweep法（标记清除法）" class="headerlink" title="Mark-Sweep法（标记清除法）"></a>Mark-Sweep法（标记清除法）</h1><p>这个算法分为两步，标记和清除。</p>
+<ul>
+<li>标记：从程序的根节点开始， 递归地 遍历所有对象，将能遍历到的对象打上标记。</li>
+<li>清除：讲所有未标记的的对象当作垃圾销毁。</li>
+</ul>
+<p><a href="/images/gc.gif"><img src="/images/gc.gif" alt=""></a><br>但是这个算法也有一个缺陷，就是人们常常说的 STW 问题（Stop The World）。因为算法在标记时必须暂停整个程序，否则其他线程的代码可能会改变对象状态，从而可能把不应该回收的对象当做垃圾收集掉。<br>当程序中的对象逐渐增多时，递归遍历整个对象树会消耗很多的时间，在大型程序中这个时间可能会是毫秒级别的。让所有的用户等待几百毫秒的 GC 时间这是不能容忍的。</p>
+<h1 id="三色标记法"><a href="#三色标记法" class="headerlink" title="三色标记法"></a>三色标记法</h1><p>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，<br>1.首先创建三个集合：白、灰、黑。<br>2.将所有对象放入白色集合中。<br>3.然后从根节点开始遍历所有对象（注意这里并不<strong>递归遍历</strong>），把遍历到的对象从白色集合放入灰色集合。<br>4.之后遍历灰色集合，将灰色对象引用的对象从白色集合放入灰色集合，之后将此灰色对象放入黑色集合<br>5.重复 4 直到灰色中无任何对象<br>6.通过write-barrier检测对象有变化，重复以上操作<br>7.收集所有白色对象（垃圾）</p>
+<p><a href="/images/gc-1.gif"><img src="/images/gc-1.gif" alt=""></a><br>这个算法可以实现 “on-the-fly”，也就是在程序执行的同时进行收集，并不需要暂停整个程序。<br>但是也会有一个缺陷，可能程序中的垃圾产生的速度会大于垃圾收集的速度，这样会导致程序中的垃圾越来越多无法被收集掉。</p>
+<h1 id="分代收集"><a href="#分代收集" class="headerlink" title="分代收集"></a>分代收集</h1><p>分代收集也是传统 Mark-Sweep 的一个改进。这个算法是基于一个经验：绝大多数对象的生命周期都很短。所以按照对象的生命周期长短来进行分代。</p>
+<p>一般 GC 都会分三代，在 java 中称之为新生代（Young Generation）、年老代（Tenured Generation）和永久代（Permanent Generation）</p>
+<p>原理如下：</p>
+<ul>
+<li>新对象放入新生代</li>
+<li>当内存用量超过一个较小的阈值时，触发新生代收集</li>
+<li>新生代幸存的对象（未被收集）放入年老代</li>
+<li>只有当内存用量超过一个较高的阈值时，才会触发年老代收集</li>
+</ul>
+<p>因为新生代中的对象十分少，所以每次收集时遍历都会非常快（比年老代收集快几个数量级）。只有内存消耗过于大的时候才会触发较慢的年老代收集。<br>因此，分代收集是目前比较好的垃圾回收方式。使用的语言（平台）有 jvm、.NET 。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+            <category> go </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> gc </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[简单理解Java GC与幽灵引用]]></title>
       <url>/2016/09/11/java-gc-reference/</url>
       <content type="html"><![CDATA[<blockquote>
@@ -1237,6 +1282,97 @@
         <tags>
             
             <tag> redis </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[JVM监控与调优]]></title>
+      <url>/2015/09/12/java-jvm-monitor-optimization/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>JVM监控与调优主要的着眼点在于如何配置、如何监控、如何优化3点上。下面就将针对这3点进行学习</p>
+</blockquote>
+<a id="more"></a>
+<p><a href="http://www.cnblogs.com/zhguang/p/Java-JVM-GC.html" target="_blank" rel="external">http://www.cnblogs.com/zhguang/p/Java-JVM-GC.html</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> jvm </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[java的内存分配和回收]]></title>
+      <url>/2015/08/12/java-memory-gc/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>java的内存分配和回收，主要都在堆中分配和回收，所以堆内存是本文讲解的重点。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Java内存分配机制"><a href="#Java内存分配机制" class="headerlink" title="Java内存分配机制"></a>Java内存分配机制</h1><p>Java内存分配和回收的机制概括的说，就是：分代分配，分代回收。对象将根据存活的时间被分为：年轻代（Young Generation）、年老代（Old Generation）、永久代（Permanent Generation，也就是方法区）。<br>如下图<br><a href="/images/java-memory-gc.png"><img src="/images/java-memory-gc.png" alt=""></a></p>
+<h2 id="年轻代（Young-Generation）"><a href="#年轻代（Young-Generation）" class="headerlink" title="年轻代（Young Generation）"></a>年轻代（Young Generation）</h2><p>对象被创建时，内存的分配首先发生在年轻代（大对象可以直接 被创建在年老代），大部分的对象在创建后很快就不再使用，因此很快变得不可达，于是被年轻代的GC机制清理掉（IBM的研究表明，98%的对象都是很快消 亡的），这个GC机制被称为Minor GC或叫Young GC。注意，Minor GC并不代表年轻代内存不足，它事实上只表示在Eden区上的GC。<br>年轻代上的内存分配是这样的，年轻代可以分为3个区域：Eden区和两个存活区（Survivor 0 、Survivor 1）。内存分配过程如下图<br><a href="/images/java-memory-gc-1.png"><img src="/images/java-memory-gc-1.png" alt=""></a></p>
+<ul>
+<li>绝大多数刚创建的对象会被分配在Eden区，其中的大多数对象很快就会消亡。Eden区是连续的内存空间，因此在其上分配内存极快；</li>
+<li>当Eden区满的时候，执行Minor GC，将消亡的对象清理掉，并将剩余的对象复制到一个存活区Survivor0（此时，Survivor1是空白的，两个Survivor总有一个是空白的）；</li>
+<li>此后，每次Eden区满了，就执行一次Minor GC，并将剩余的对象都添加到Survivor0；</li>
+<li>当Survivor0也满的时候，将其中仍然活着的对象直接复制到Survivor1，以后Eden区执行Minor GC后，就将剩余的对象添加Survivor1（此时，Survivor0是空白的）。</li>
+<li>当两个存活区切换了几次（HotSpot虚拟机默认15次，用-XX:MaxTenuringThreshold控制，大于该值进入老年代）之后，仍然存活的对象（其实只有一小部分，比如，我们自己定义的对象），将被复制到老年代。</li>
+</ul>
+<p>从上面的过程可以看出，Eden区是连续的空间，且Survivor总有一个为空。经过一次GC和复制，一个Survivor中保存着当前还活 着的对象，而Eden区和另一个Survivor区的内容都不再需要了，可以直接清空，到下一次GC时，两个Survivor的角色再互换。因此，这种方式分配内存和清理内存的效率都极高，这种垃圾回收的方式就是著名的“停止-复制（Stop-and-copy）”清理法（将Eden区和一个Survivor中仍然存活的对象拷贝到另一个Survivor中），这不代表着停止复制清理法很高效，其实，它也只在这种情况下高效，如果在老年代采用停止复制，则挺悲剧的。<br>在Eden区，HotSpot虚拟机使用了两种技术来加快内存分配。分别是bump-the-pointer和TLAB（Thread-Local Allocation Buffers），这两种技术的做法分别是：由于Eden区是连续的，因此bump-the-pointer技术的核心就是跟踪最后创建的一个对象，在对象创建时，只需要检查最后一个对象后面是否有足够的内存即可，从而大大加快内存分配速度；而对于TLAB技术是对于多线程而言的，将Eden区分为若干段，每个线程使用独立的一段，避免相互影响。TLAB结合bump-the-pointer技术，将保证每个线程都使用Eden区的一段，并快速的分配内存。</p>
+<h2 id="年老代（Old-Generation）"><a href="#年老代（Old-Generation）" class="headerlink" title="年老代（Old Generation）"></a>年老代（Old Generation）</h2><p>对象如果在年轻代存活了足够长的时间而没有被清理掉（即在几次 Young GC后存活了下来），则会被复制到年老代，年老代的空间一般比年轻代大，能存放更多的对象，在年老代上发生的GC次数也比年轻代少。当年老代内存不足时， 将执行Major GC，也叫 Full GC。　　<br> 　　可以使用-XX:+UseAdaptiveSizePolicy开关来控制是否采用动态控制策略，如果动态控制，则动态调整Java堆中各个区域的大小以及进入老年代的年龄。<br>　　如果对象比较大（比如长字符串或大数组），Young空间不足，则大对象会直接分配到老年代上（大对象可能触发提前GC，应少用，更应避免使用短命的大对象）。用-XX:PretenureSizeThreshold来控制直接升入老年代的对象大小，大于这个值的对象会直接分配在老年代上。<br>　　可能存在年老代对象引用新生代对象的情况，如果需要执行Young GC，则可能需要查询整个老年代以确定是否可以清理回收，这显然是低效的。解决的方法是，年老代中维护一个512 byte的块——”card table“，所有老年代对象引用新生代对象的记录都记录在这里。Young GC时，只要查这里即可，不用再去查全部老年代，因此性能大大提高。</p>
+<h1 id="Java-GC机制"><a href="#Java-GC机制" class="headerlink" title="Java GC机制"></a>Java GC机制</h1><p>GC机制的基本算法是：分代收集，这个不用赘述。下面阐述每个分代的收集方法。</p>
+<h2 id="年轻代"><a href="#年轻代" class="headerlink" title="年轻代"></a>年轻代</h2><p>事实上，在上一节，已经介绍了新生代的主要垃圾回收方法，在新生代中，使用“停止-复制”算法进行清理，将新生代内存分为2部分，1部分 Eden区较大，1部分Survivor比较小，并被划分为两个等量的部分。每次进行清理时，将Eden区和一个Survivor中仍然存活的对象拷贝到 另一个Survivor中，然后清理掉Eden和刚才的Survivor。</p>
+<p>　　<strong>这里也可以发现，停止复制算法中，用来复制的两部分并不总是相等的（传统的停止复制算法两部分内存相等，但新生代中使用1个大的Eden区和2个小的Survivor区来避免这个问题）</strong></p>
+<p>　　由于绝大部分的对象都是短命的，甚至存活不到Survivor中，所以，Eden区与Survivor的比例较大，HotSpot默认是 8:1，即分别占新生代的80%，10%，10%。如果一次回收中，Survivor+Eden中存活下来的内存超过了10%，则需要将一部分对象分配到 老年代。用-XX:SurvivorRatio参数来配置Eden区域Survivor区的容量比值，默认是8，代表Eden：Survivor1：Survivor2=8:1:1.</p>
+<h2 id="老年代"><a href="#老年代" class="headerlink" title="老年代"></a>老年代</h2><p>老年代存储的对象比年轻代多得多，而且不乏大对象，对老年代进行内存清理时，如果使用停止-复制算法，则相当低效。一般，老年代用的算法是标记-整理算法，即：标记出仍然存活的对象（存在引用的），将所有存活的对象向一端移动，以保证内存的连续。<br>在发生Minor GC时，虚拟机会检查每次晋升进入老年代的大小是否大于老年代的剩余空间大小，如果大于，则直接触发一次Full GC，否则，就查看是否设 置了-XX:+HandlePromotionFailure（允许担保失败），如果允许，则只会进行MinorGC，此时可以容忍内存分配失败；如果不允许，则仍然进行Full GC（这代表着如果设置-XX:+HandlePromotionFailure，则触发MinorGC就会同时触发Full GC，哪怕老年代还有很多内存，所以，最好不要这样做）。</p>
+<h2 id="方法区（永久代）"><a href="#方法区（永久代）" class="headerlink" title="方法区（永久代）"></a>方法区（永久代）</h2><p>永久代的回收有两种：常量池中的常量(<strong>1.7 已移出方法区</strong>)，无用的类信息，常量的回收很简单，没有引用了就可以被回收。对于无用的类进行回收，必须保证3点：</p>
+<ul>
+<li>类的所有实例都已经被回收</li>
+<li>加载类的ClassLoader已经被回收</li>
+<li>类对象的Class对象没有被引用（即没有通过反射引用该类的地方）</li>
+</ul>
+<p>永久代的回收并不是必须的，可以通过参数来设置是否对类进行回收。HotSpot提供-Xnoclassgc进行控制<br>使用-verbose，-XX:+TraceClassLoading、-XX:+TraceClassUnLoading可以查看类加载和卸载信息<br>-verbose、-XX:+TraceClassLoading可以在Product版HotSpot中使用；<br>-XX:+TraceClassUnLoading需要fastdebug版HotSpot支持</p>
+<h1 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h1><p>在GC机制中，起重要作用的是垃圾收集器，垃圾收集器是GC的具体实现，Java虚拟机规范中对于垃圾收集器没有任何规定，所以不同厂商实现的垃圾 收集器各不相同，HotSpot 1.6版使用的垃圾收集器如下图（图来源于《深入理解Java虚拟机：JVM高级特效与最佳实现》，图中两个收集器之间有连线，说明它们可以配合使用）：<br><a href="/images/java-memory-gc-2.jpg"><img src="/images/java-memory-gc-2.jpg" alt=""></a><br><strong>在介绍垃圾收集器之前，需要明确一点，就是在新生代采用的停止复制算法中，“停 止（Stop-the-world）”的意义是在回收内存时，需要暂停其他所 有线程的执行。这个是很低效的，现在的各种新生代收集器越来越优化这一点，但仍然只是将停止的时间变短，并未彻底取消停止。</strong></p>
+<ul>
+<li>Serial收集器：新生代收集器，使用停止复制算法，使用一个线程进行GC，其它工作线程暂停。使用-XX:+UseSerialGC可以使用Serial+Serial Old模式运行进行内存回收（这也是虚拟机在Client模式下运行的默认值）</li>
+<li>ParNew收集器：新生代收集器，使用停止复制算法，Serial收集器的多线程版，用多个线程进行GC，其它工作线程暂停，关注缩短垃圾收集时间。使用-XX:+UseParNewGC开关来控制使用ParNew+Serial Old收集器组合收集内存；使用-XX:ParallelGCThreads来设置执行内存回收的线程数。</li>
+<li>Parallel Scavenge 收集器：新生代收集器，使用停止复制算法，关注CPU吞吐量，即运行用户代码的时间/总时间，比如：JVM运行100分钟，其中运行用户代码99分钟，垃圾收集1分钟，则吞吐量是99%，这种收集器能最高效率的利用CPU，适合运行后台运算（关注缩短垃圾收集时间的收集器，如CMS，等待时间很少，所以适合用户交互，提高用户体验）。使用-XX:+UseParallelGC开关控制使用 Parallel Scavenge+Serial Old收集器组合回收垃圾（这也是在Server模式下的默认值）；使用-XX:GCTimeRatio来设置用户执行时间占总时间的比例，默认99，即 1%的时间用来进行垃圾回收。使用-XX:MaxGCPauseMillis设置GC的最大停顿时间（这个参数只对Parallel Scavenge有效）</li>
+<li>Serial Old收集器：老年代收集器，单线程收集器，使用标记整理（整理的方法是Sweep（清理）和Compact（压缩），清理是将废弃的对象干掉，只留幸存的对象，压缩是将移动对象，将空间填满保证内存分为2块，一块全是对象，一块空闲）算法，使用单线程进行GC，其它工作线程暂停（注意，在老年代中进行标记整理算法清理，也需要暂停其它线程），在JDK1.5之前，Serial </li>
+<li>Parallel Old收集器：老年代收集器，多线程，多线程机制与Parallel Scavenge差不错，使用标记整理（与Serial Old不同，这里的整理是Summary（汇总）和Compact（压缩），汇总的意思就是将幸存的对象复制到预先准备好的区域，而不是像Sweep（清 理）那样清理废弃的对象）算法，在Parallel Old执行时，仍然需要暂停其它线程。Parallel Old在多核计算中很有用。Parallel Old出现后（JDK 1.6），与Parallel Scavenge配合有很好的效果，充分体现Parallel Scavenge收集器吞吐量优先的效果。使用-XX:+UseParallelOldGC开关控制使用Parallel Scavenge +Parallel Old组合收集器进行收集。</li>
+<li><p>CMS（Concurrent Mark Sweep）收集器：老年代收集器，致力于获取最短回收停顿时间，使用标记清除算法，多线程，优点是并发收集（用户线程可以和GC线程同时工作），停顿小。使用-XX:+UseConcMarkSweepGC进行ParNew+CMS+Serial Old进行内存回收，优先使用ParNew+CMS（原因见后面），当用户线程内存不足时，采用备用方案Serial Old收集。<br><strong>CMS收集的方法是：先3次标记，再1次清除，3次标记中前两次是初始标记和重新标记（此时仍然需要停止（stop the world））， 初始标记（Initial Remark）是标记GC Roots能关联到的对象（即有引用的对象），停顿时间很短；并发标记（Concurrent remark）是执行GC Roots查找引用的过程，不需要用户线程停顿；重新标记（Remark）是在初始标记和并发标记期间，有标记变动的那部分仍需要标记，所以加上这一部分 标记的过程，停顿时间比并发标记小得多，但比初始标记稍长。在完成标记之后，就开始并发清除，不需要用户线程停顿。<br>所以在CMS清理过程中，只有初始标记和重新标记需要短暂停顿，并发标记和并发清除都不需要暂停用户线程，因此效率很高，很适合高交互的场合。<br>CMS也有缺点，它需要消耗额外的CPU和内存资源，在CPU和内存资源紧张，CPU较少时，会加重系统负担（CMS默认启动线程数为(CPU数量+3)/4）。<br>另外，在并发收集过程中，用户线程仍然在运行，仍然产生内存垃圾，所以可能产生“浮动垃圾”，本次无法清理，只能下一次Full GC才清理，因此在GC期间，需要预留足够的内存给用户线程使用。所以使用CMS的收集器并不是老年代满了才触发Full GC，而是在使用了一大半（默认68%，即2/3，使用-XX:CMSInitiatingOccupancyFraction来设置）的时候就要进行Full GC，如果用户线程消耗内存不是特别大，可以适当调高-XX:CMSInitiatingOccupancyFraction以降低GC次数，提高性能，如果预留的用户线程内存不够，则会触发Concurrent Mode Failure，此时，将触发备用方案：使用Serial Old 收集器进行收集，但这样停顿时间就长了，因此-XX:CMSInitiatingOccupancyFraction不宜设的过大。<br>还有，CMS采用的是标记清除算法，会导致内存碎片的产生，可以使用-XX：+UseCMSCompactAtFullCollection来设置是否在Full GC之后进行碎片整理，用-XX：CMSFullGCsBeforeCompaction来设置在执行多少次不压缩的Full GC之后，来一次带压缩的Full GC。</strong></p>
+</li>
+<li><p>G1收集器：在JDK1.7中正式发布，与现状的新生代、老年代概念有很大不同，目前使用较少，不做介绍。</p>
+</li>
+</ul>
+<p>参考：<a href="http://www.cnblogs.com/zhguang/p/3257367.html" target="_blank" rel="external">http://www.cnblogs.com/zhguang/p/3257367.html</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> jvm </tag>
+            
+            <tag> gc </tag>
             
         </tags>
         
