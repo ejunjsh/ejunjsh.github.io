@@ -84,7 +84,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="gc," />
+  <meta name="keywords" content="gc,go," />
 
 
 
@@ -100,20 +100,16 @@
 
 
 
-<meta name="description" content="GC,(garbage collection)，很多高级语言都有的一种特性,是自动内存管理的一种形式，所以今天说说常用的几种GC算法:引用计数法、Mark-Sweep法、三色标记法、分代收集法">
-<meta name="keywords" content="gc">
+<meta name="keywords" content="gc,go">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常见 GC 算法">
-<meta property="og:url" content="http://idiotsky.me/2017/01/12/gc/index.html">
+<meta property="og:title" content="一张图了解三色标记法">
+<meta property="og:url" content="http://idiotsky.me/2017/08/16/gc-three-color/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="GC,(garbage collection)，很多高级语言都有的一种特性,是自动内存管理的一种形式，所以今天说说常用的几种GC算法:引用计数法、Mark-Sweep法、三色标记法、分代收集法">
-<meta property="og:image" content="http://idiotsky.me/images/gc.gif">
 <meta property="og:image" content="http://idiotsky.me/images/gc-1.gif">
-<meta property="og:updated_time" content="2017-08-12T09:56:39.000Z">
+<meta property="og:updated_time" content="2017-08-15T17:06:11.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="常见 GC 算法">
-<meta name="twitter:description" content="GC,(garbage collection)，很多高级语言都有的一种特性,是自动内存管理的一种形式，所以今天说说常用的几种GC算法:引用计数法、Mark-Sweep法、三色标记法、分代收集法">
-<meta name="twitter:image" content="http://idiotsky.me/images/gc.gif">
+<meta name="twitter:title" content="一张图了解三色标记法">
+<meta name="twitter:image" content="http://idiotsky.me/images/gc-1.gif">
 
 
 
@@ -141,13 +137,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/01/12/gc/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/08/16/gc-three-color/"/>
 
 
 
 
 
-  <title>常见 GC 算法 | IdiotSky</title>
+  <title>一张图了解三色标记法 | IdiotSky</title>
   
 
 
@@ -296,7 +292,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/01/12/gc/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/16/gc-three-color/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -313,7 +309,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">常见 GC 算法</h1>
+          <h1 class="post-title" itemprop="name headline">一张图了解三色标记法</h1>
         
 
         <div class="post-meta">
@@ -325,8 +321,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-12T14:42:37+08:00">
-                12 Jan 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-16T01:02:35+08:00">
+                16 Aug 17
               </time>
             
 
@@ -348,8 +344,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
                   </a>
                 </span>
 
@@ -382,29 +378,7 @@
       
 
       
-        <blockquote>
-<p>GC,(garbage collection)，很多高级语言都有的一种特性,是自动内存管理的一种形式，所以今天说说常用的几种GC算法:引用计数法、Mark-Sweep法、三色标记法、分代收集法</p>
-</blockquote>
-<a id="more"></a>
-<h1 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h1><p>原理是在每个对象内部维护一个整数值，叫做这个对象的引用计数，当对象被引用时引用计数加一，当对象不被引用时引用计数减一。当引用计数为 0 时，自动销毁对象。<br>但是引用计数法有个缺陷就是不能解决循环引用的问题。循环引用是指对象 A 和对象 B 互相持有对方的引用。这样两个对象的引用计数都不是 0 ，因此永远不能被收集。<br>另外的缺陷是，每次对象的赋值都要将引用计数加一，增加了消耗。</p>
-<h1 id="Mark-Sweep法（标记清除法）"><a href="#Mark-Sweep法（标记清除法）" class="headerlink" title="Mark-Sweep法（标记清除法）"></a>Mark-Sweep法（标记清除法）</h1><p>这个算法分为两步，标记和清除。</p>
-<ul>
-<li>标记：从程序的根节点开始， 递归地 遍历所有对象，将能遍历到的对象打上标记。</li>
-<li>清除：讲所有未标记的的对象当作垃圾销毁。</li>
-</ul>
-<p><a href="/images/gc.gif"><img src="/images/gc.gif" alt=""></a><br>但是这个算法也有一个缺陷，就是人们常常说的 STW 问题（Stop The World）。因为算法在标记时必须暂停整个程序，否则其他线程的代码可能会改变对象状态，从而可能把不应该回收的对象当做垃圾收集掉。<br>当程序中的对象逐渐增多时，递归遍历整个对象树会消耗很多的时间，在大型程序中这个时间可能会是毫秒级别的。让所有的用户等待几百毫秒的 GC 时间这是不能容忍的。</p>
-<h1 id="三色标记法"><a href="#三色标记法" class="headerlink" title="三色标记法"></a>三色标记法</h1><p>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，<br>1.首先创建三个集合：白、灰、黑。<br>2.将所有对象放入白色集合中。<br>3.然后从根节点开始遍历所有对象（注意这里并不<strong>递归遍历</strong>），把遍历到的对象从白色集合放入灰色集合。<br>4.之后遍历灰色集合，将灰色对象引用的对象从白色集合放入灰色集合，之后将此灰色对象放入黑色集合<br>5.重复 4 直到灰色中无任何对象<br>6.通过write-barrier检测对象有变化，重复以上操作<br>7.收集所有白色对象（垃圾）</p>
-<p><a href="/images/gc-1.gif"><img src="/images/gc-1.gif" alt=""></a><br>这个算法可以实现 “on-the-fly”，也就是在程序执行的同时进行收集，并不需要暂停整个程序。<br>但是也会有一个缺陷，可能程序中的垃圾产生的速度会大于垃圾收集的速度，这样会导致程序中的垃圾越来越多无法被收集掉。</p>
-<h1 id="分代收集"><a href="#分代收集" class="headerlink" title="分代收集"></a>分代收集</h1><p>分代收集也是传统 Mark-Sweep 的一个改进。这个算法是基于一个经验：绝大多数对象的生命周期都很短。所以按照对象的生命周期长短来进行分代。</p>
-<p>一般 GC 都会分三代，在 java 中称之为新生代（Young Generation）、年老代（Tenured Generation）和永久代（Permanent Generation）</p>
-<p>原理如下：</p>
-<ul>
-<li>新对象放入新生代</li>
-<li>当内存用量超过一个较小的阈值时，触发新生代收集</li>
-<li>新生代幸存的对象（未被收集）放入年老代</li>
-<li>只有当内存用量超过一个较高的阈值时，才会触发年老代收集</li>
-</ul>
-<p>因为新生代中的对象十分少，所以每次收集时遍历都会非常快（比年老代收集快几个数量级）。只有内存消耗过于大的时候才会触发较慢的年老代收集。<br>因此，分代收集是目前比较好的垃圾回收方式。使用的语言（平台）有 jvm、.NET 。</p>
+        <p><a href="/images/gc-1.gif"><img src="/images/gc-1.gif" alt=""></a><br><a id="more"></a><br>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，<br>1.首先创建三个集合：白、灰、黑。<br>2.将所有对象放入白色集合中。<br>3.然后从根节点开始遍历所有对象（注意这里并不<strong>递归遍历</strong>），把遍历到的对象从白色集合放入灰色集合。<br>4.之后遍历灰色集合，将灰色对象引用的对象从白色集合放入灰色集合，之后将此灰色对象放入黑色集合<br>5.重复 4 直到灰色中无任何对象<br>6.通过write-barrier检测对象有变化，重复以上操作<br>7.收集所有白色对象（垃圾）<br>这个算法可以实现 “on-the-fly”，也就是在程序执行的同时进行收集，并不需要暂停整个程序。<br>但是也会有一个缺陷，可能程序中的垃圾产生的速度会大于垃圾收集的速度，这样会导致程序中的垃圾越来越多无法被收集掉。</p>
 
       
     </div>
@@ -436,6 +410,8 @@
           
             <a href="/tags/gc/" rel="tag"># gc</a>
           
+            <a href="/tags/go/" rel="tag"># go</a>
+          
         </div>
       
 
@@ -447,8 +423,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/09/11/java-gc-reference/" rel="next" title="简单理解Java GC与幽灵引用">
-                <i class="fa fa-chevron-left"></i> 简单理解Java GC与幽灵引用
+              <a href="/2017/08/16/gc-mark-sweep/" rel="next" title="一张图了解标记清除算法">
+                <i class="fa fa-chevron-left"></i> 一张图了解标记清除算法
               </a>
             
           </div>
@@ -456,10 +432,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/07/15/hashmap/" rel="prev" title="一张图了解hashmap">
-                一张图了解hashmap <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -507,17 +479,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -532,7 +495,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">40</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -608,22 +571,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用计数法"><span class="nav-number">1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mark-Sweep法（标记清除法）"><span class="nav-number">2.</span> <span class="nav-text">Mark-Sweep法（标记清除法）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三色标记法"><span class="nav-number">3.</span> <span class="nav-text">三色标记法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分代收集"><span class="nav-number">4.</span> <span class="nav-text">分代收集</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
