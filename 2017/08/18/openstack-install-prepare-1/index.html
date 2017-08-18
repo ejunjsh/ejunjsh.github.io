@@ -84,7 +84,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="python," />
+  <meta name="keywords" content="openstack," />
 
 
 
@@ -100,17 +100,17 @@
 
 
 
-<meta name="description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
-<meta name="keywords" content="python">
+<meta name="description" content="正在写。。。">
+<meta name="keywords" content="openstack">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python在不同层级目录import模块的方法">
-<meta property="og:url" content="http://idiotsky.me/2015/02/18/python-import-module/index.html">
+<meta property="og:title" content="openstack安装准备(一)">
+<meta property="og:url" content="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
-<meta property="og:updated_time" content="2017-07-19T12:43:08.000Z">
+<meta property="og:description" content="正在写。。。">
+<meta property="og:updated_time" content="2017-08-18T14:52:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python在不同层级目录import模块的方法">
-<meta name="twitter:description" content="使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的">
+<meta name="twitter:title" content="openstack安装准备(一)">
+<meta name="twitter:description" content="正在写。。。">
 
 
 
@@ -138,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2015/02/18/python-import-module/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/"/>
 
 
 
 
 
-  <title>python在不同层级目录import模块的方法 | IdiotSky</title>
+  <title>openstack安装准备(一) | IdiotSky</title>
   
 
 
@@ -293,7 +293,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2015/02/18/python-import-module/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -310,7 +310,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">python在不同层级目录import模块的方法</h1>
+          <h1 class="post-title" itemprop="name headline">openstack安装准备(一)</h1>
         
 
         <div class="post-meta">
@@ -322,8 +322,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-02-18T22:32:02+08:00">
-                18 Feb 15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-18T22:50:07+08:00">
+                18 Aug 17
               </time>
             
 
@@ -345,8 +345,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python基础/" itemprop="url" rel="index">
-                    <span itemprop="name">python基础</span>
+                  <a href="/categories/openstack/" itemprop="url" rel="index">
+                    <span itemprop="name">openstack</span>
                   </a>
                 </span>
 
@@ -380,16 +380,9 @@
 
       
         <blockquote>
-<p>使用python进行程序编写时，经常会使用第三方模块包。这种包我们可以通过python setup install 进行安装后，通过import XXX或from XXX import yyy 进行导入。不过如果是自己遍写的依赖包，又不想安装到python的相应目录，可以放到本目录里进行import进行调用；为了更清晰的理清程序之间的关系，例如我们会把这种包放到lib目录再调用。本篇就针对常见的模块调用方法汇总下。</p>
+<p>正在写。。。</p>
 </blockquote>
 <a id="more"></a>
-<h1 id="同级目录下的调有"><a href="#同级目录下的调有" class="headerlink" title="同级目录下的调有"></a>同级目录下的调有</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
-<p>若在程序test1.py中导入模块mod1, 则直接使用<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> mod1</div><div class="line">或</div><div class="line"><span class="keyword">from</span> mod1 <span class="keyword">import</span> *;</div></pre></td></tr></table></figure></p>
-<h1 id="调用子目录下的模块"><a href="#调用子目录下的模块" class="headerlink" title="调用子目录下的模块"></a>调用子目录下的模块</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- lib</div><div class="line">    |    |-- mod2.py</div><div class="line">    |-- test1.py</div></pre></td></tr></table></figure></p>
-<p>这时看到test1.py和lib目录（即mod2.py的父级目录），如果想在程序test1.py中导入模块mod2.py ，可以在lib件夹中建立空文件<strong>init</strong>.py文件(也可以在该文件中自定义输出模块接口)，然后使用：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> lib.mod2 <span class="keyword">import</span> *</div><div class="line">或</div><div class="line"><span class="keyword">import</span> lib.mod2</div></pre></td></tr></table></figure></p>
-<h1 id="调用上级目录下的文件"><a href="#调用上级目录下的文件" class="headerlink" title="调用上级目录下的文件"></a>调用上级目录下的文件</h1><p>程序结构如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">-- src</div><div class="line">    |-- mod1.py</div><div class="line">    |-- lib</div><div class="line">    |    |-- mod2.py</div><div class="line">    |-- sub</div><div class="line">    |    |-- test2.py</div></pre></td></tr></table></figure></p>
-<p>这里想要实现test2.py调用mod1.py和mod2.py ，做法是我们先跳到src目录下面，直接可以调用mod1，然后在lib上当下建一个空文件<strong>init</strong>.py ，就可以像第二步调用子目录下的模块一样，通过import  lib.mod2进行调用了。具体代码如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line">sys.path.append(<span class="string">".."</span>)</div><div class="line"><span class="keyword">import</span> mod1</div><div class="line"><span class="keyword">import</span> lib.mod2</div></pre></td></tr></table></figure></p>
-
       
     </div>
 
@@ -418,7 +411,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/python/" rel="tag"># python</a>
+            <a href="/tags/openstack/" rel="tag"># openstack</a>
           
         </div>
       
@@ -431,8 +424,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/10/12/nginx-status-monitor/" rel="next" title="启用Nginx状态监控">
-                <i class="fa fa-chevron-left"></i> 启用Nginx状态监控
+              <a href="/2017/08/16/openstack-install-index/" rel="next" title="openstack安装索引">
+                <i class="fa fa-chevron-left"></i> openstack安装索引
               </a>
             
           </div>
@@ -440,10 +433,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/08/12/java-memory-gc/" rel="prev" title="java的内存分配和回收">
-                java的内存分配和回收 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -491,17 +480,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -592,22 +572,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#同级目录下的调有"><span class="nav-number">1.</span> <span class="nav-text">同级目录下的调有</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用子目录下的模块"><span class="nav-number">2.</span> <span class="nav-text">调用子目录下的模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用上级目录下的文件"><span class="nav-number">3.</span> <span class="nav-text">调用上级目录下的文件</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

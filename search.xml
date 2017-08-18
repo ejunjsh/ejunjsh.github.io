@@ -3,12 +3,36 @@
   
     
     <entry>
-      <title><![CDATA[openstack-install-index]]></title>
+      <title><![CDATA[openstack安装准备(一)]]></title>
+      <url>/2017/08/18/openstack-install-prepare-1/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>正在写。。。</p>
+</blockquote>
+<a id="more"></a>]]></content>
+      
+        <categories>
+            
+            <category> openstack </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> openstack </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[openstack安装索引]]></title>
       <url>/2017/08/16/openstack-install-index/</url>
       <content type="html"><![CDATA[<blockquote>
 <p>索引页</p>
 </blockquote>
-<a id="more"></a>]]></content>
+<p><a href="/2017/08/18/openstack-install-prepare-1/">openstack安装准备(一)</a><br><a id="more"></a></p>
+]]></content>
       
         <categories>
             
