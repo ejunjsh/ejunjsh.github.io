@@ -110,7 +110,22 @@
 <meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization.png">
 <meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-1.png">
 <meta property="og:image" content="http://idiotsky.me/images/java-memory-gc-2.jpg">
-<meta property="og:updated_time" content="2017-08-18T14:33:49.000Z">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-2.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-3.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-4.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-5.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-6.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-7.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-8.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-9.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-10.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-11.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-12.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-13.jpg">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-14.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-15.png">
+<meta property="og:image" content="http://idiotsky.me/images/java-monitor-optimization-16.png">
+<meta property="og:updated_time" content="2017-08-19T12:27:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM监控与调优">
 <meta name="twitter:description" content="JVM监控与调优主要的着眼点在于如何配置、如何监控、如何优化3点上。下面就将针对这3点进行学习">
@@ -666,6 +681,103 @@
 <li>-XX:MaxTenuringThreshold默认为15，也就是说，经过15次Survivor轮换（即15次minor GC），就进入老年代， 如果设置的小的话，则年轻代对象在survivor中存活的时间减小，提前进入年老代，对于年老代比较多的应用，可以提高效率。如果将此值设置为一个较大值，则年轻代对象会在Survivor区进行多次复制，这样可以增加对象在年轻代的存活时间，增加在年轻代即被回收的概率。<strong>需要注意的是，设置了 -XX:MaxTenuringThreshold，并不代表着，对象一定在年轻代存活15次才被晋升进入老年代，它只是一个最大值，事实上，存在一个动态计算机制，计算每次晋入老年代的阈值，取阈值和MaxTenuringThreshold中较小的一个为准</strong>。</li>
 <li>-XX:PretenureSizeThreshold一般采用默认值即可。</li>
 </ol>
+<h1 id="监控工具和方法"><a href="#监控工具和方法" class="headerlink" title="监控工具和方法"></a>监控工具和方法</h1><p>在JVM运行的过程中，为保证其稳定、高效，或在出现GC问题时分析问题原因，我们需要对GC进行监控。所谓监控，其实就是分析清楚当前GC的情况。其目的是鉴别JVM是否在高效的进行垃圾回收，以及有没有必要进行调优。<br>通过监控GC，我们可以搞清楚很多问题，如：</p>
+<ol>
+<li>minor GC和full GC的频率；</li>
+<li>执行一次GC所消耗的时间；</li>
+<li>新生代的对象何时被移到老生代以及花费了多少时间；</li>
+<li>每次GC中，其它线程暂停（Stop the world）的时间；</li>
+<li>每次GC的效果如何，是否不理想；</li>
+</ol>
+<p>监控GC的工具分为2种：命令行工具和图形工具；<br>常用的命令行工具有：<font style="color:red"><br>注：下面的命令都在JAVA_HOME/bin中，是java自带的命令。如果您发现无法使用，请直接进入Java安装目录调用或者先设置Java的环境变量，一个简单的办法为：直接运行命令 <code>export PATH=$JAVA_HOME/bin:$PATH；</code>另外，一般的，在Linux下，下面的命令需要sudo权限，在windows下，部分命令的部分选项不能使用。还是无法使用，要保证你装的是否是jdk还是jre，jre是不带很多工具的。<br></font></p>
+<h2 id="jps"><a href="#jps" class="headerlink" title="jps"></a>jps</h2><p>jps命令用于查询正在运行的JVM进程，常用的参数为：<br>    -q:只输出LVMID，省略主类的名称<br>    -m:输出虚拟机进程启动时传给主类main()函数的参数<br>    -l:输出主类的全类名，如果进程执行的是Jar包，输出Jar路径<br>    -v:输出虚拟机进程启动时JVM参数<br>命令格式:jps [option] [hostid]<br>一个简单的例子：<br><a href="/images/java-monitor-optimization-2.png"><img src="/images/java-monitor-optimization-2.png" alt=""></a><br>在上图中，有一个vid为309的apache进程在提供web服务。</p>
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><p>jstat可以实时显示本地或远程JVM进程中类装载、内存、垃圾收集、JIT编译等数据（如果要显示远程JVM信息，需要远程主机开启RMI支持）。如果在服务启动时没有指定启动参数-verbose:gc，则可以用jstat实时查看gc情况。<br>jstat有如下选项：<br>   -class:监视类装载、卸载数量、总空间及类装载所耗费的时间<br>   -gc:监听Java堆状况，包括Eden区、两个Survivor区、老年代、永久代等的容量，以用空间、GC时间合计等信息<br>   -gccapacity:监视内容与-gc基本相同，但输出主要关注java堆各个区域使用到的最大和最小空间<br>   -gcutil:监视内容与-gc基本相同，但输出主要关注已使用空间占总空间的百分比<br>   -gccause:与-gcutil功能一样，但是会额外输出导致上一次GC产生的原因<br>   -gcnew:监视新生代GC状况<br>   -gcnewcapacity:监视内同与-gcnew基本相同，输出主要关注使用到的最大和最小空间<br>   -gcold:监视老年代GC情况<br>   -gcoldcapacity:监视内同与-gcold基本相同，输出主要关注使用到的最大和最小空间<br>   -gcpermcapacity:输出永久代使用到最大和最小空间<br>   -compiler:输出JIT编译器编译过的方法、耗时等信息<br>   -printcompilation:输出已经被JIT编译的方法<br>命令格式:jstat [option vmid [interval[s|ms] [count]]]<br>jstat可以监控远程机器，命令格式中VMID和LVMID特别说明：如果是本地虚拟机进程，VMID和LVMID是一致的，如果是远程虚拟机进程，那么VMID格式是: [protocol:][//]lvmid[@hostname[:port]/servername]，如果省略interval和count，则只查询一次<br>查看gc情况的例子：<br><a href="/images/java-monitor-optimization-3.png"><img src="/images/java-monitor-optimization-3.png" alt=""></a><br>在图中，命令sudo jstat -gc 309 1000 5代表着：搜集vid为309的java进程的整体gc状态， 每1000ms收集一次，共收集5次；XXXC表示该区容量，XXXU表示该区使用量，各列解释如下：<br>S0C：S0区容量（S1区相同，略）<br>S0U：S0区已使用<br>EC：E区容量<br>EU：E区已使用<br>OC：老年代容量<br>OU：老年代已使用<br>PC：Perm容量<br>PU：Perm区已使用<br>YGC：Young GC（Minor GC）次数<br>YGCT：Young GC总耗时<br>FGC：Full GC次数<br>FGCT：Full GC总耗时<br>GCT：GC总耗时</p>
+<p>用gcutil查看内存的例子：<br><a href="/images/java-monitor-optimization-4.png"><img src="/images/java-monitor-optimization-4.png" alt=""></a><br>图中的各列与用gc参数时基本一致，不同的是这里显示的是已占用的百分比，如S0为86.53，代表着S0区已使用了86.53%</p>
+<h2 id="jinfo"><a href="#jinfo" class="headerlink" title="jinfo"></a>jinfo</h2><p>用于查询当前运行这的JVM属性和参数的值。<br>jinfo可以使用如下选项：<br>   -flag:显示未被显示指定的参数的系统默认值<br>   -flag [+|-]name或-flag name=value: 修改部分参数<br>   -sysprops:打印虚拟机进程的System.getProperties()<br> 命令格式:jinfo [option] pid </p>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><p>用于显示当前Java堆和永久代的详细信息（如当前使用的收集器，当前的空间使用率等）<br>   -dump:生成java堆转储快照<br>   -heap:显示java堆详细信息(只在Linux/Solaris下有效)<br>   -F:当虚拟机进程对-dump选项没有响应时，可使用这个选项强制生成dump快照(只在Linux/Solaris下有效)<br>   -finalizerinfo:显示在F-Queue中等待Finalizer线程执行finalize方法的对象(只在Linux/Solaris下有效)<br>   -histo:显示堆中对象统计信息<br>   -permstat:以ClassLoader为统计口径显示永久代内存状态(只在Linux/Solaris下有效)<br> 命令格式:jmap [option] vmid<br>其中前面3个参数最重要，如：<br>查看对详细信息：<code>sudo jmap -heap 309</code><br>生成dump文件： <code>sudo jmap -dump:file=./test.prof 309</code><br>部分用户没有权限时，采用admin用户：<code>sudo -u admin -H  jmap -dump:format=b,file=文件名.hprof pid</code><br>查看当前堆中对象统计信息：<code>sudo  jmap -histo 309</code>：该命令显示3列，分别为对象数量，对象大小，对象名称，通过该命令可以查看是否内存中有大对象；<br>有的用户可能没有jmap权限：<code>sudo -u admin -H jmap -histo 309 | less</code></p>
+<h2 id="jhat"><a href="#jhat" class="headerlink" title="jhat"></a>jhat</h2><p>用于分析使用jmap生成的dump文件，是JDK自带的工具，使用方法为：<code>jhat -J -Xmx512m [file]</code><br>不过jhat没有mat好用，推荐使用mat（Eclipse插件： <a href="http://www.eclipse.org/mat" target="_blank" rel="external">http://www.eclipse.org/mat</a> ），mat速度更快，而且是图形界面。</p>
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p>用于生成当前JVM的所有线程快照，线程快照是虚拟机每一条线程正在执行的方法,目的是定位线程出现长时间停顿的原因。<br>   -F:当正常输出的请求不被响应时，强制输出线程堆栈<br>   -l:除堆栈外，显示关于锁的附加信息<br>   -m:如果调用到本地方法的话，可以显示C/C++的堆栈<br>命令格式:<code>jstack [option] vmid</code></p>
+<h2 id="verbosegc"><a href="#verbosegc" class="headerlink" title="-verbosegc"></a>-verbosegc</h2><p>-verbosegc是一个比较重要的启动参数，记录每次gc的日志，下面的表格对比了jstat和-verbosegc：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>jstat</th>
+<th>-verbosegc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>监控对象</td>
+<td>运行在本机的Java应用可以把日志输出到终端上，或者借助jstatd命令通过网络连接远程的Java应用。</td>
+<td>只有那些把-verbogc作为启动参数的JVM。</td>
+</tr>
+<tr>
+<td>输出信息</td>
+<td>堆状态（已用空间，最大限制，GC执行次数/时间，等等）</td>
+<td>执行GC前后新生代和老年代空间大小，GC执行时间。</td>
+</tr>
+<tr>
+<td>输出时间</td>
+<td>Every designated time每次设定好的时间。</td>
+<td>每次GC发生的时候。</td>
+</tr>
+<tr>
+<td>用途</td>
+<td>观察堆空间变化情况</td>
+<td>了解单次GC产生的效果。</td>
+</tr>
+</tbody>
+</table>
+<p>与-verbosegc配合使用的一些常用参数为：<br>   -XX:+PrintGCDetails，打印GC信息，这是-verbosegc默认开启的选项<br>   -XX:+PrintGCTimeStamps，打印每次GC的时间戳<br>   -XX:+PrintHeapAtGC：每次GC时，打印堆信息<br>   -XX:+PrintGCDateStamps (from JDK 6 update 4) ：打印GC日期，适合于长期运行的服务器<br>   -Xloggc:/home/admin/logs/gc.log：制定打印信息的记录的日志位置<br>每条verbosegc打印出的gc日志，都类似于下面的格式：<br><code>time [GC [&lt;collector&gt;: &lt;starting occupancy1&gt; -&gt; &lt;ending occupancy1&gt;(total occupancy1), &lt;pause time1&gt; secs] &lt;starting occupancy3&gt; -&gt; &lt;ending occupancy3&gt;(total occupancy3), &lt;pause time3&gt; secs]</code><br>如：<br><a href="/images/java-monitor-optimization-5.png"><img src="/images/java-monitor-optimization-5.png" alt=""></a><br>这些选项的意义是：<br>time：执行GC的时间，需要添加-XX:+PrintGCDateStamps参数才有；<br>collector：minor gc使用的收集器的名字。<br>starting occupancy1：GC执行前新生代空间大小。<br>ending occupancy1：GC执行后新生代空间大小。<br>total occupancy1：新生代总大小<br>pause time1：因为执行minor GC，Java应用暂停的时间。<br>starting occupancy3：GC执行前堆区域总大小<br>ending occupancy3：GC执行后堆区域总大小<br>total occupancy3：堆区总大小<br>pause time3：Java应用由于执行堆空间GC（包括full GC）而停止的时间。</p>
+<h2 id="可视化工具"><a href="#可视化工具" class="headerlink" title="可视化工具"></a>可视化工具</h2><p>监控和分析GC也有一些可视化工具，比较常见的有JConsole和VisualVM</p>
+<h3 id="JConsole"><a href="#JConsole" class="headerlink" title="JConsole"></a>JConsole</h3><p>JConsole工具在JDK/bin目录下，启动JConsole后，将自动搜索本机运行的jvm进程，不需要jps命令来查询指定。双击其中一个jvm进程即可开始监控，也可使用“远程进程”来连接远程服务器。<br><a href="/images/java-monitor-optimization-6.jpg"><img src="/images/java-monitor-optimization-6.jpg" alt=""></a><br>进入JConsole主界面，有“概述”、“内存”、“线程”、“类”、“VM摘要”和”Mbean”六个页签：<br><a href="/images/java-monitor-optimization-7.jpg"><img src="/images/java-monitor-optimization-7.jpg" alt=""></a><br>内存页签相当于jstat命令，用于监视收集器管理的虚拟机内存(Java堆和永久代)变化趋势，还可在详细信息栏观察全部GC执行的时间及次数。<br><a href="/images/java-monitor-optimization-8.jpg"><img src="/images/java-monitor-optimization-8.jpg" alt=""></a><br>线程页签<br><a href="/images/java-monitor-optimization-9.jpg"><img src="/images/java-monitor-optimization-9.jpg" alt=""></a><br>最后一个常用页签，VM页签，可清楚的了解显示指定的JVM参数及堆信息。<br><a href="/images/java-monitor-optimization-10.jpg"><img src="/images/java-monitor-optimization-10.jpg" alt=""></a></p>
+<h3 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h3><p>VisualVM是一个集成多个JDK命令行工具的可视化工具。VisualVM基于NetBeans平台开发，它具备了插件扩展功能的特性，通过插件的扩展，可用于显示虚拟机进程及进程的配置和环境信息(jps，jinfo)，监视应用程序的CPU、GC、堆、方法区及线程的信息(jstat、jstack)等。VisualVM在JDK/bin目录下。<br>安装插件： 工具- 插件<br><a href="/images/java-monitor-optimization-11.jpg"><img src="/images/java-monitor-optimization-11.jpg" alt=""></a><br>VisualVM主界面<br><a href="/images/java-monitor-optimization-12.jpg"><img src="/images/java-monitor-optimization-12.jpg" alt=""></a><br>在VisualVM中生成dump文件：<br><a href="/images/java-monitor-optimization-13.jpg"><img src="/images/java-monitor-optimization-13.jpg" alt=""></a></p>
+<h1 id="调优方法"><a href="#调优方法" class="headerlink" title="调优方法"></a>调优方法</h1><p>一切都是为了这一步，调优，在调优之前，我们需要记住下面的原则：</p>
+<ol>
+<li>多数的Java应用不需要在服务器上进行GC优化；</li>
+<li>多数导致GC问题的Java应用，都不是因为我们参数设置错误，而是代码问题；</li>
+<li>在应用上线之前，先考虑将机器的JVM参数设置到最优（最适合）；</li>
+<li>减少创建对象的数量；</li>
+<li>减少使用全局变量和大对象；</li>
+<li>GC优化是到最后不得已才采用的手段；</li>
+<li>在实际使用中，分析GC情况优化代码比优化GC参数要多得多；</li>
+</ol>
+<p>GC优化的目的有两个:</p>
+<ul>
+<li>将转移到老年代的对象数量降低到最小；</li>
+<li>减少full GC的执行时间；</li>
+</ul>
+<p>为了达到上面的目的，一般地，你需要做的事情有：</p>
+<ul>
+<li>减少使用全局变量和大对象；</li>
+<li>调整新生代的大小到最合适；</li>
+<li>设置老年代的大小为最合适；</li>
+<li>选择合适的GC收集器；</li>
+</ul>
+<p>在上面的4条方法中，用了几个“合适”，那究竟什么才算合适，一般的，请参考上面“收集器搭配”和“启动内存分配”两节中的建议。但这些建议不是万能的，需要根据您的机器和应用情况进行发展和变化，<strong>实际操作中，可以将两台机器分别设置成不同的GC参数，并且进行对比，选用那些确实提高了性能或减少了GC时间的参数。</strong><br>真正熟练的使用GC调优，是建立在多次进行GC监控和调优的实战经验上的，进行监控和调优的一般步骤为：</p>
+<ol>
+<li>监控GC的状态<br>使用各种JVM工具，查看当前日志，分析当前JVM参数设置，并且分析当前堆内存快照和gc日志，根据实际的各区域内存划分和GC执行时间，觉得是否进行优化；</li>
+<li>分析结果，判断是否需要优化<br>如果各项参数设置合理，系统没有超时日志出现，GC频率不高，GC耗时不高，那么没有必要进行GC优化；如果GC时间超过1-3秒，或者频繁GC，则必须优化；<br>注：如果满足下面的指标，则一般不需要进行GC：<ul>
+<li>Minor GC执行时间不到50ms；</li>
+<li>Minor GC执行不频繁，约10秒一次；</li>
+<li>Full GC执行时间不到1s；</li>
+<li>Full GC执行频率不算频繁，不低于10分钟1次；</li>
+</ul>
+</li>
+<li>调整GC类型和内存分配<br>如果内存分配过大或过小，或者采用的GC收集器比较慢，则应该优先调整这些参数，并且先找1台或几台机器进行beta，然后比较优化过的机器和没有优化的机器的性能对比，并有针对性的做出最后选择；</li>
+<li>不断的分析和调整<br>通过不断的试验和试错，分析并找到最合适的参数</li>
+<li>全面应用参数<br>如果找到了最合适的参数，则将这些参数应用到所有服务器，并进行后续跟踪。</li>
+</ol>
+<h1 id="调优实例"><a href="#调优实例" class="headerlink" title="调优实例"></a>调优实例</h1><p>上面的内容都是纸上谈兵，下面我们以一些真实例子来进行说明：</p>
+<h2 id="实例1"><a href="#实例1" class="headerlink" title="实例1"></a>实例1</h2><p>笔者昨日发现部分开发测试机器出现异常：java.lang.OutOfMemoryError: GC overhead limit exceeded，这个异常代表：GC为了释放很小的空间却耗费了太多的时间，其原因一般有两个：1，堆太小，2，有死循环或大对象；<br>笔者首先排除了第2个原因，因为这个应用同时是在线上运行的，如果有问题，早就挂了。所以怀疑是这台机器中堆设置太小；<br>使用<code>ps -ef |grep &quot;java&quot;</code>查看，发现：<br><a href="/images/java-monitor-optimization-14.png"><img src="/images/java-monitor-optimization-14.png" alt=""></a><br>该应用的堆区设置只有768m，而机器内存有2g，机器上只跑这一个java应用，没有其他需要占用内存的地方。另外，这个应用比较大，需要占用的内存也比较多；<br>笔者通过上面的情况判断，只需要改变堆中各区域的大小设置即可，于是改成下面的情况：<br><a href="/images/java-monitor-optimization-15.png"><img src="/images/java-monitor-optimization-15.png" alt=""></a><br>跟踪运行情况发现，相关异常没有再出现；</p>
+<h2 id="实例2"><a href="#实例2" class="headerlink" title="实例2"></a>实例2</h2><p>一个服务系统，经常出现卡顿，分析原因，发现Full GC时间太长：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">jstat -gcutil:</div><div class="line">S0     S1    E     O       P        YGC YGCT FGC FGCT  GCT</div><div class="line">12.16 0.00 5.18 63.78 20.32         54  2.047 5 6.946 8.993</div></pre></td></tr></table></figure></p>
+<p>分析上面的数据，发现Young GC执行了54次，耗时2.047秒，每次Young GC耗时37ms，在正常范围，而Full GC执行了5次，耗时6.946秒，每次平均1.389s，数据显示出来的问题是：Full GC耗时较长，分析该系统的是指发现，NewRatio=9，也就是说，新生代和老生代大小之比为1:9，这就是问题的原因：</p>
+<ol>
+<li>新生代太小，导致对象提前进入老年代，触发老年代发生Full GC；</li>
+<li>老年代较大，进行Full GC时耗时较大；<br>优化的方法是调整NewRatio的值，调整到4，发现Full GC没有再发生，只有Young GC在执行。这就是把对象控制在新生代就清理掉，没有进入老年代（这种做法对一些应用是很有用的，但并不是对所有应用都要这么做）</li>
+</ol>
+<h2 id="实例3"><a href="#实例3" class="headerlink" title="实例3"></a>实例3</h2><p>一应用在性能测试过程中，发现内存占用率很高，Full GC频繁，使用<code>sudo -u admin -H  jmap -dump:format=b,file=文件名.hprof pid</code>来dump内存，生成dump文件，并使用Eclipse下的mat差距进行分析，发现：<br><a href="/images/java-monitor-optimization-16.png"><img src="/images/java-monitor-optimization-16.png" alt=""></a><br>从图中可以看出，这个线程存在问题，队列LinkedBlockingQueue所引用的大量对象并未释放，导致整个线程占用内存高达378m，此时通知开发人员进行代码优化，将相关对象释放掉即可。</p>
 
       
     </div>
@@ -881,7 +993,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参数设置"><span class="nav-number">1.</span> <span class="nav-text">参数设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准参数"><span class="nav-number">1.1.</span> <span class="nav-text">标准参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非标准参数"><span class="nav-number">1.2.</span> <span class="nav-text">非标准参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非Stable参数（非静态参数）"><span class="nav-number">1.3.</span> <span class="nav-text">非Stable参数（非静态参数）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#收集器搭配"><span class="nav-number">2.</span> <span class="nav-text">收集器搭配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动内存分配"><span class="nav-number">3.</span> <span class="nav-text">启动内存分配</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参数设置"><span class="nav-number">1.</span> <span class="nav-text">参数设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标准参数"><span class="nav-number">1.1.</span> <span class="nav-text">标准参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非标准参数"><span class="nav-number">1.2.</span> <span class="nav-text">非标准参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非Stable参数（非静态参数）"><span class="nav-number">1.3.</span> <span class="nav-text">非Stable参数（非静态参数）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#收集器搭配"><span class="nav-number">2.</span> <span class="nav-text">收集器搭配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动内存分配"><span class="nav-number">3.</span> <span class="nav-text">启动内存分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#监控工具和方法"><span class="nav-number">4.</span> <span class="nav-text">监控工具和方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jps"><span class="nav-number">4.1.</span> <span class="nav-text">jps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jstat"><span class="nav-number">4.2.</span> <span class="nav-text">jstat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jinfo"><span class="nav-number">4.3.</span> <span class="nav-text">jinfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jmap"><span class="nav-number">4.4.</span> <span class="nav-text">jmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jhat"><span class="nav-number">4.5.</span> <span class="nav-text">jhat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jstack"><span class="nav-number">4.6.</span> <span class="nav-text">jstack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#verbosegc"><span class="nav-number">4.7.</span> <span class="nav-text">-verbosegc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可视化工具"><span class="nav-number">4.8.</span> <span class="nav-text">可视化工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JConsole"><span class="nav-number">4.8.1.</span> <span class="nav-text">JConsole</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VisualVM"><span class="nav-number">4.8.2.</span> <span class="nav-text">VisualVM</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调优方法"><span class="nav-number">5.</span> <span class="nav-text">调优方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调优实例"><span class="nav-number">6.</span> <span class="nav-text">调优实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例1"><span class="nav-number">6.1.</span> <span class="nav-text">实例1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例2"><span class="nav-number">6.2.</span> <span class="nav-text">实例2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例3"><span class="nav-number">6.3.</span> <span class="nav-text">实例3</span></a></li></ol></li></ol></div>
             
 
           </div>
