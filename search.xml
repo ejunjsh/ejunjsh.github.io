@@ -204,9 +204,9 @@
         
         <tags>
             
-            <tag> raspberrypi </tag>
-            
             <tag> python </tag>
+            
+            <tag> raspberrypi </tag>
             
             <tag> NAS </tag>
             
@@ -234,9 +234,9 @@
         
         <tags>
             
-            <tag> raspberrypi </tag>
-            
             <tag> python </tag>
+            
+            <tag> raspberrypi </tag>
             
         </tags>
         
@@ -315,6 +315,40 @@
         <tags>
             
             <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[SELECT * ...... FOR UPDATE 锁机制]]></title>
+      <url>/2016/12/19/mysql-select-for-update/</url>
+      <content type="html"><![CDATA[<blockquote>
+<p>由于InnoDB预设是Row-Level Lock，InnoDB行锁是通过给索引上的索引项加锁来实现的，这一点MySQL与Oracle不同，后者是通过在数据块中对相应数据行加锁来实现的。InnoDB这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB才使用行级锁，否则，InnoDB将使用表锁！ </p>
+</blockquote>
+<a id="more"></a>
+<p>举个例子:<br>假设有个表单products ，里面有id跟name二个栏位，id是主键。<br>例1: (明确指定主键，并且有此笔资料，row lock)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">'3'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">'3'</span> <span class="keyword">and</span> <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div></pre></td></tr></table></figure></p>
+<p>例2: (明确指定主键，若查无此笔资料，无lock)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">'-1'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div></pre></td></tr></table></figure></p>
+<p>例3: (无主键，table lock)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">name</span>=<span class="string">'Mouse'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div></pre></td></tr></table></figure></p>
+<p>例4: (主键不明确，table lock)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>&lt;&gt;<span class="string">'3'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div></pre></td></tr></table></figure></p>
+<p>例5: (主键不明确，table lock)<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span> <span class="keyword">LIKE</span> <span class="string">'3'</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</div></pre></td></tr></table></figure></p>
+<p>注1: FOR UPDATE仅适用于InnoDB，且必须在交易区块(BEGIN/COMMIT)中才能生效。<br>注2: 要测试锁定的状况，可以利用mysql的Command Mode ，开二个视窗来做测试。</p>
+<p>在MySql 5.0中测试确实是这样的<br>另外：MyAsim 只支持表级锁，InnerDB支持行级锁<br>添加了(行级锁/表级锁)锁的数据不能被其它事务再锁定，也不被其它事务修改（修改、删除）<br>是表级锁时，不管是否查询到记录，都会锁定表</p>
+<p>此外，如果A与B都对表id进行查询但查询不到记录，则A与B在查询上不会进行row锁，但A与B都会获取排它锁，此时A再插入一条记录的话则会因为B已经有锁而处于等待中，此时B再插入一条同样的数据则会抛出Deadlock found when trying to get lock; try restarting transaction然后释放锁，此时A就获得了锁而插入成功</p>
+<p>上面介绍过SELECT … FOR UPDATE 的用法，不过锁定(Lock)的数据是判别就得要注意一下了。由于InnoDB 预设是Row-Level Lock，所以只有「明确」的指定主键，MySQL 才会执行Row lock (只锁住被选取的数据) ，否则MySQL 将会执行Table Lock (将整个数据表单给锁住)。</p>
+<p>转载 <a href="http://www.cnblogs.com/chenwenbiao/archive/2012/06/06/2537508.html" target="_blank" rel="external">http://www.cnblogs.com/chenwenbiao/archive/2012/06/06/2537508.html</a></p>
+]]></content>
+      
+        <categories>
+            
+            <category> mysql </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> mysql </tag>
             
         </tags>
         
@@ -1734,6 +1768,7 @@
 <li>老年代较大，进行Full GC时耗时较大；<br>优化的方法是调整NewRatio的值，调整到4，发现Full GC没有再发生，只有Young GC在执行。这就是把对象控制在新生代就清理掉，没有进入老年代（这种做法对一些应用是很有用的，但并不是对所有应用都要这么做）</li>
 </ol>
 <h2 id="实例3"><a href="#实例3" class="headerlink" title="实例3"></a>实例3</h2><p>一应用在性能测试过程中，发现内存占用率很高，Full GC频繁，使用<code>sudo -u admin -H  jmap -dump:format=b,file=文件名.hprof pid</code>来dump内存，生成dump文件，并使用Eclipse下的mat差距进行分析，发现：<br><a href="/images/java-monitor-optimization-16.png"><img src="/images/java-monitor-optimization-16.png" alt=""></a><br>从图中可以看出，这个线程存在问题，队列LinkedBlockingQueue所引用的大量对象并未释放，导致整个线程占用内存高达378m，此时通知开发人员进行代码优化，将相关对象释放掉即可。</p>
+<p>参考 <a href="http://www.cnblogs.com/zhguang/p/Java-JVM-GC.html" target="_blank" rel="external">http://www.cnblogs.com/zhguang/p/Java-JVM-GC.html</a></p>
 ]]></content>
       
         <categories>
@@ -1809,9 +1844,9 @@
             
             <tag> java </tag>
             
-            <tag> gc </tag>
-            
             <tag> jvm </tag>
+            
+            <tag> gc </tag>
             
         </tags>
         
