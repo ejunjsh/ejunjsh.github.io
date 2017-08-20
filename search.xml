@@ -77,8 +77,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>raspberrypi</tag>
         <tag>python</tag>
+        <tag>raspberrypi</tag>
         <tag>NAS</tag>
       </tags>
   </entry>
@@ -90,8 +90,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>raspberrypi</tag>
         <tag>python</tag>
+        <tag>raspberrypi</tag>
       </tags>
   </entry>
   <entry>
@@ -252,8 +252,8 @@
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>jvm</tag>
         <tag>gc</tag>
+        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -380,9 +380,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
-        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
+        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
