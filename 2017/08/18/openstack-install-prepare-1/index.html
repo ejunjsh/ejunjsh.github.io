@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="openstack," />
+  <meta name="keywords" content="openstack,ubuntu," />
 
 
 
@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。 准备网络">
-<meta name="keywords" content="openstack">
+<meta name="description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta name="keywords" content="openstack,ubuntu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openstack安装准备(一)">
 <meta property="og:url" content="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。 准备网络">
-<meta property="og:updated_time" content="2017-08-19T03:49:29.000Z">
+<meta property="og:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta property="og:updated_time" content="2017-08-20T08:37:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openstack安装准备(一)">
-<meta name="twitter:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。 准备网络">
+<meta name="twitter:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
 
 
 
@@ -423,7 +423,12 @@
 </blockquote>
 <h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
 <h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
-<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><a id="more"></a>
+<a id="more"></a>
+<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>hostname:controller<br>接口|ip|模式<br>—-|—-|—–<br>ens33|192.168.199.10| 桥接<br>ens34|192.168.5.10| 私有<br>ens35|192.168.112.10| nat</p>
+<p>hostname:compute<br>接口|ip|模式<br>—-|—-|—–<br>ens33|192.168.199.11| 桥接<br>ens34|192.168.5.11| 私有</p>
+<p>PS:<br>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。一般用来做管理节点的网络。<br>私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络<br>nat模式用来给虚拟机访问互联网用</p>
+<p>上面网络配置好后，可以开搞了，至于怎么安装虚拟机和配置网络，可以搜索相关文章😈。</p>
+
       
     </div>
     
@@ -441,6 +446,8 @@
         <div class="post-tags">
           
             <a href="/tags/openstack/" rel="tag"># openstack</a>
+          
+            <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
           
         </div>
       
@@ -560,7 +567,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
