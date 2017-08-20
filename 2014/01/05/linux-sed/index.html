@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
+<meta name="description" content="功能说明：利用script来处理文本文件。语　　法：1sed [-hnV][-e script][-f script文件][文本文件]">
 <meta name="keywords" content="linux,sed">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux sed命令详解">
 <meta property="og:url" content="http://idiotsky.me/2014/01/05/linux-sed/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
-<meta property="og:updated_time" content="2017-07-19T13:37:12.000Z">
+<meta property="og:description" content="功能说明：利用script来处理文本文件。语　　法：1sed [-hnV][-e script][-f script文件][文本文件]">
+<meta property="og:updated_time" content="2017-08-20T09:58:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux sed命令详解">
-<meta name="twitter:description" content="功能说明： 利用script来处理文本文件。  语　　法： sed [-hnV][-e script][-f script文件][文本文件]">
+<meta name="twitter:description" content="功能说明：利用script来处理文本文件。语　　法：1sed [-hnV][-e script][-f script文件][文本文件]">
 
 
 
@@ -418,14 +418,11 @@
       
 
       
-        <p>功能说明：</p>
-<p>利用script来处理文本文件。 </p>
-<p>语　　法：</p>
-<p>sed [-hnV][-e script][-f script文件][文本文件]<br><a id="more"></a></p>
-<p>补充说明：</p>
-<p>sed可依照script的指令，来处理、编辑文本文件。 </p>
-<p>参　　数：<br>-e script或—expression=script   以选项中指定的script来处理输入的文本文件。<br>-f script文件或—file=script文件   以选项中指定的script文件来处理输入的文本文件。<br>-h或—help 显示帮助。<br>-n或—quiet或–silent 仅显示script处理后的结果。<br>-V或—version 显示版本信息。  </p>
-<p>例      子：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'s/123/1234/'</span> a.txt</div></pre></td></tr></table></figure></p>
+        <p>功能说明：<br>利用script来处理文本文件。<br>语　　法：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sed [-hnV][-e script][-f script文件][文本文件]</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>补充说明：<br>sed可依照script的指令，来处理、编辑文本文件。 </p>
+<p>参数：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-e script或—expression=script   以选项中指定的script来处理输入的文本文件。  </div><div class="line">-f script文件或—file=script文件   以选项中指定的script文件来处理输入的文本文件。  </div><div class="line">-h或—<span class="built_in">help</span> 显示帮助。  </div><div class="line">-n或—quiet或--silent 仅显示script处理后的结果。  </div><div class="line">-V或—version 显示版本信息。</div></pre></td></tr></table></figure></p>
+<p>例子：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'s/123/1234/'</span> a.txt</div></pre></td></tr></table></figure></p>
 <p>将a.txt文件中所有行中的123用1234替换（-e表示命令以命令行的方式执行；参数s，表示执行替换操作） </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sed -e <span class="string">'3,5 a4'</span> a.txt</div></pre></td></tr></table></figure>
 <p>将a.txt文件中的3行到5行之间所有行的后面添加一行内容为4的行（参数a，表示添加行，参数a后面指定添加的内容） </p>
@@ -583,7 +580,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-count">45</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -605,7 +602,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">38</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -695,7 +692,7 @@
       <div class="footer-inner">
         <div class="copyright" >
   
-  &copy; 
+  &copy;  2014 &mdash; 
   <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <a href="/mylove" style="border-bottom:none">
