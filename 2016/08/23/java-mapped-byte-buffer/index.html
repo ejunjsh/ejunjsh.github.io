@@ -103,19 +103,17 @@
 
 
 
-<meta name="description" content="老是不记得，果断mark.">
+<meta name="description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Servlet获取URL地址">
-<meta property="og:url" content="http://idiotsky.me/2014/02/20/java-servlet-url/index.html">
+<meta property="og:title" content="深入浅出MappedByteBuffer">
+<meta property="og:url" content="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="老是不记得，果断mark.">
-<meta property="og:image" content="http://idiotsky.me/images/java-servlet-url.png">
-<meta property="og:updated_time" content="2017-08-20T09:13:12.000Z">
+<meta property="og:description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
+<meta property="og:updated_time" content="2017-08-22T17:09:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Servlet获取URL地址">
-<meta name="twitter:description" content="老是不记得，果断mark.">
-<meta name="twitter:image" content="http://idiotsky.me/images/java-servlet-url.png">
+<meta name="twitter:title" content="深入浅出MappedByteBuffer">
+<meta name="twitter:description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
 
 
 
@@ -144,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2014/02/20/java-servlet-url/"/>
+  <link rel="canonical" href="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/"/>
 
 
 
 
 
-  <title>Servlet获取URL地址 | IdiotSky</title>
+  <title>深入浅出MappedByteBuffer | IdiotSky</title>
   
 
 
@@ -331,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/02/20/java-servlet-url/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -348,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Servlet获取URL地址</h1>
+          <h1 class="post-title" itemprop="name headline">深入浅出MappedByteBuffer</h1>
         
 
         <div class="post-meta">
@@ -360,8 +358,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-02-20T17:09:11+08:00">
-                20 Feb 14
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-23T00:36:51+08:00">
+                23 Aug 16
               </time>
             
 
@@ -420,26 +418,75 @@
       
 
       
-        <blockquote>
-<p>老是不记得，果断mark.</p>
-</blockquote>
-<a id="more"></a>
-<p>这里来说说用Servlet获取URL地址。在HttpServletRequest类里，有以下六个取URL的函数： </p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>java io操作中通常采用<code>BufferedReader</code>，<code>BufferedInputStream</code>等带缓冲的IO类处理大文件，不过java nio中引入了一种基于<code>MappedByteBuffer</code>操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。<br><a id="more"></a></p>
+<h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><p>在深入MappedByteBuffer之前，先看看计算机内存管理的几个术语：</p>
 <ul>
-<li>getContextPath 取得项目名 </li>
-<li>getServletPath 取得Servlet名 </li>
-<li>getPathInfo 取得Servlet后的URL名，不包括URL参数 </li>
-<li>getRequestURL 取得不包括参数的URL </li>
-<li>getRequestURI 取得不包括参数的URI，即去掉协议和服务器名的URL </li>
+<li><strong>MMC</strong>：CPU的内存管理单元。</li>
+<li><strong>物理内存</strong>：即内存条的内存空间。</li>
+<li><strong>虚拟内存</strong>：计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续的可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</li>
+<li><strong>页面文件</strong>：操作系统反映构建并使用虚拟内存的硬盘空间大小而创建的文件，在windows下，即pagefile.sys文件，其存在意味着物理内存被占满后，将暂时不用的数据移动到硬盘上。</li>
+<li><strong>缺页中断</strong>：当程序试图访问已映射在虚拟地址空间中但未被加载至物理内存的一个分页时，由MMC发出的中断。如果操作系统判断此次访问是有效的，则尝试将相关的页从虚拟内存文件中载入物理内存。</li>
 </ul>
-<p>具体如下图：<br><a href="/images/java-servlet-url.png"><img src="/images/java-servlet-url.png" alt=""></a><br>相对应的函数的值如下： </p>
+<p><strong>为什么会有虚拟内存和物理内存的区别？</strong><br>如果正在运行的一个进程，它所需的内存是有可能大于内存条容量之和的，如内存条是256M，程序却要创建一个2G的数据区，那么所有数据不可能都加载到内存（物理内存），必然有数据要放到其他介质中（比如硬盘），待进程需要访问那部分数据时，再调度进入物理内存。</p>
+<p><strong>什么是虚拟内存地址和物理内存地址？</strong><br>假设你的计算机是32位，那么它的地址总线是32位的，也就是它可以寻址0~0xFFFFFFFF（4G）的地址空间，但如果你的计算机只有256M的物理内存0x~0x0FFFFFFF（256M），同时你的进程产生了一个不在这256M地址空间中的地址，那么计算机该如何处理呢？回答这个问题前，先说明计算机的内存分页机制。</p>
+<p>计算机会对虚拟内存地址空间（32位为4G）进行分页产生页（page），对物理内存地址空间（假设256M）进行分页产生页帧（page frame），页和页帧的大小一样，所以虚拟内存页的个数势必要大于物理内存页帧的个数。在计算机上有一个页表（page table），就是映射虚拟内存页到物理内存页的，更确切的说是页号到页帧号的映射，而且是一对一的映射。<br>问题来了，虚拟内存页的个数 &gt; 物理内存页帧的个数，岂不是有些虚拟内存页的地址永远没有对应的物理内存地址空间？不是的，操作系统是这样处理的。操作系统有个页面失效（page fault）功能。操作系统找到一个最少使用的页帧，使之失效，并把它写入磁盘，随后把需要访问的页放到页帧中，并修改页表中的映射，保证了所有的页都会被调度。</p>
+<p>现在来看看什么是虚拟内存地址和物理内存地址：</p>
 <ul>
-<li>getContextPath：/ServletTest </li>
-<li>getServletPath：/main </li>
-<li>getPathInfo：/index/testpage/test </li>
-<li>getRequestURL：<a href="http://localhost:8080/ServletTest/main/index/testpage/test" target="_blank" rel="external">http://localhost:8080/ServletTest/main/index/testpage/test</a> </li>
-<li>getRequestURI：/ServletTest/main/index/testpage/test </li>
+<li>虚拟内存地址：由页号（与页表中的页号关联）和偏移量（页的小大，即这个页能存多少数据）组成。</li>
 </ul>
+<p>举个例子，有一个虚拟地址它的页号是4，偏移量是20，那么他的寻址过程是这样的：首先到页表中找到页号4对应的页帧号（比如为8），如果页不在内存中，则用失效机制调入页，接着把页帧号和偏移量传给MMC组成一个物理上真正存在的地址，最后就是访问物理内存的数据了。</p>
+<h1 id="MappedByteBuffer是什么"><a href="#MappedByteBuffer是什么" class="headerlink" title="MappedByteBuffer是什么"></a>MappedByteBuffer是什么</h1><p>从继承结构上看，MappedByteBuffer继承自ByteBuffer，内部维护了一个逻辑地址address。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>通过MappedByteBuffer读取文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MappedByteBufferTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        File file = <span class="keyword">new</span> File(<span class="string">"D://data.txt"</span>);</div><div class="line">        <span class="keyword">long</span> len = file.length();</div><div class="line">        <span class="keyword">byte</span>[] ds = <span class="keyword">new</span> <span class="keyword">byte</span>[(<span class="keyword">int</span>) len];</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            MappedByteBuffer mappedByteBuffer = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"r"</span>)</div><div class="line">                    .getChannel()</div><div class="line">                    .map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, len);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> offset = <span class="number">0</span>; offset &lt; len; offset++) &#123;</div><div class="line">                <span class="keyword">byte</span> b = mappedByteBuffer.get();</div><div class="line">                ds[offset] = b;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            Scanner scan = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> ByteArrayInputStream(ds)).useDelimiter(<span class="string">" "</span>);</div><div class="line">            <span class="keyword">while</span> (scan.hasNext()) &#123;</div><div class="line">                System.out.print(scan.next() + <span class="string">" "</span>);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;&#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="map过程"><a href="#map过程" class="headerlink" title="map过程"></a>map过程</h2><p>FileChannel提供了map方法把文件映射到虚拟内存，通常情况可以映射整个文件，如果文件比较大，可以进行分段映射。</p>
+<ul>
+<li><strong>FileChannel中的几个变量</strong>：<ul>
+<li><strong>MapMode mode</strong>：内存映像文件访问的方式，共三种：<ol>
+<li>MapMode.READ_ONLY：只读，试图修改得到的缓冲区将导致抛出异常。</li>
+<li>MapMode.READ_WRITE：读/写，对得到的缓冲区的更改最终将写入文件；但该更改对映射到同一文件的其他程序不一定是可见的。</li>
+<li>MapMode.PRIVATE：私用，可读可写,但是修改的内容不会写入文件，只是buffer自身的改变，这种能力称之为”copy on write”。</li>
+</ol>
+</li>
+<li><strong>position</strong>：文件映射时的起始位置。</li>
+<li><strong>allocationGranularity</strong>：Memory allocation size for mapping buffers，通过native函数initIDs初始化。</li>
+</ul>
+</li>
+</ul>
+<p>接下去通过分析源码，了解一下map过程的内部实现。</p>
+<ol>
+<li><p>通过RandomAccessFile获取FileChannel。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> FileChannel <span class="title">getChannel</span><span class="params">()</span> </span>&#123;</div><div class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (channel == <span class="keyword">null</span>) &#123;</div><div class="line">        channel = FileChannelImpl.open(fd, path, <span class="keyword">true</span>, rw, <span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> channel;</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 上述实现可以看出，由于synchronized ，只有一个线程能够初始化FileChannel。</p>
+</li>
+<li><p>通过FileChannel.map方法，把文件映射到虚拟内存，并返回逻辑地址address，实现如下：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">**只保留了核心代码**</div><div class="line"><span class="function"><span class="keyword">public</span> MappedByteBuffer <span class="title">map</span><span class="params">(MapMode mode, <span class="keyword">long</span> position, <span class="keyword">long</span> size)</span>  </span></div><div class="line"><span class="keyword">throws</span> IOException &#123;</div><div class="line">    <span class="keyword">int</span> pagePosition = (<span class="keyword">int</span>)(position % allocationGranularity);</div><div class="line">    <span class="keyword">long</span> mapPosition = position - pagePosition;</div><div class="line">    <span class="keyword">long</span> mapSize = size + pagePosition;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        addr = map0(imode, mapPosition, mapSize);</div><div class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</div><div class="line">        System.gc();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">100</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException y) &#123;</div><div class="line">            Thread.currentThread().interrupt();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            addr = map0(imode, mapPosition, mapSize);</div><div class="line">        &#125; <span class="keyword">catch</span> (OutOfMemoryError y) &#123;</div><div class="line">            <span class="comment">// After a second OOME, fail</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Map failed"</span>, y);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> isize = (<span class="keyword">int</span>)size;</div><div class="line">    Unmapper um = <span class="keyword">new</span> Unmapper(addr, mapSize, isize, mfd);</div><div class="line">    <span class="keyword">if</span> ((!writable) || (imode == MAP_RO)) &#123;</div><div class="line">        <span class="keyword">return</span> Util.newMappedByteBufferR(isize,</div><div class="line">                                        addr + pagePosition,</div><div class="line">                                        mfd,</div><div class="line">                                        um);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Util.newMappedByteBuffer(isize,</div><div class="line">                                        addr + pagePosition,</div><div class="line">                                        mfd,</div><div class="line">                                        um);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 上述代码可以看出，最终map通过native函数map0完成文件的映射工作。</p>
+<ol>
+<li>如果第一次文件映射导致OOM，则手动触发垃圾回收，休眠100ms后再次尝试映射，如果失败，则抛出异常。</li>
+<li><p>通过newMappedByteBuffer方法初始化MappedByteBuffer实例，不过其最终返回的是DirectByteBuffer的实例，实现如下：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> MappedByteBuffer <span class="title">newMappedByteBuffer</span><span class="params">(<span class="keyword">int</span> size, <span class="keyword">long</span> addr, FileDescriptor fd, Runnable unmapper)</span> </span>&#123;</div><div class="line">MappedByteBuffer dbb;</div><div class="line"><span class="keyword">if</span> (directByteBufferConstructor == <span class="keyword">null</span>)</div><div class="line">initDBBConstructor();</div><div class="line">dbb = (MappedByteBuffer)directByteBufferConstructor.newInstance(</div><div class="line"><span class="keyword">new</span> Object[] &#123; <span class="keyword">new</span> Integer(size),</div><div class="line">                <span class="keyword">new</span> Long(addr),</div><div class="line">                fd,</div><div class="line">                unmapper &#125;</div><div class="line"><span class="keyword">return</span> dbb;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 访问权限</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initDBBConstructor</span><span class="params">()</span> </span>&#123;</div><div class="line">AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</div><div class="line"><span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    Class&lt;?&gt; cl = Class.forName(<span class="string">"java.nio.DirectByteBuffer"</span>);</div><div class="line">        Constructor&lt;?&gt; ctor = cl.getDeclaredConstructor(</div><div class="line">            <span class="keyword">new</span> Class&lt;?&gt;[] &#123; <span class="keyword">int</span>.class,</div><div class="line">                            <span class="keyword">long</span>.class,</div><div class="line">                            FileDescriptor.class,</div><div class="line">                            Runnable.class &#125;);</div><div class="line">        ctor.setAccessible(<span class="keyword">true</span>);</div><div class="line">        directByteBufferConstructor = ctor;</div><div class="line">&#125;&#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 由于FileChannelImpl和DirectByteBuffer不在同一个包中，所以有权限访问问题，通过AccessController类获取DirectByteBuffer的构造器进行实例化。<br> DirectByteBuffer是MappedByteBuffer的一个子类，其实现了对内存的直接操作。</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="get过程"><a href="#get过程" class="headerlink" title="get过程"></a>get过程</h2><p>MappedByteBuffer的get方法最终通过DirectByteBuffer.get方法实现的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(nextGetIndex()))));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(checkIndex(i)))));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">ix</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> address + (i &lt;&lt; <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>map0()函数返回一个地址address，这样就无需调用read或write方法对文件进行读写，通过address就能够操作文件。底层采用unsafe.getByte方法，通过（address + 偏移量）获取指定内存的数据。</p>
+<ol>
+<li>第一次访问address所指向的内存区域，导致缺页中断，中断响应函数会在交换区中查找相对应的页面，如果找不到（也就是该文件从来没有被读入内存的情况），则从硬盘上将文件指定页读取到物理内存中（非jvm堆内存）。</li>
+<li>如果在拷贝数据时，发现物理内存不够用，则会通过虚拟内存机制（swap）将暂时不用的物理页面交换到硬盘的虚拟内存中。</li>
+</ol>
+<h1 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h1><p>从代码层面上看，从硬盘上将文件读入内存，都要经过文件系统进行数据拷贝，并且数据拷贝操作是由文件系统和硬件驱动实现的，理论上来说，拷贝数据的效率是一样的。<br>但是通过内存映射的方法访问硬盘上的文件，效率要比read和write系统调用高，这是为什么？</p>
+<ul>
+<li>read()是系统调用，首先将文件从硬盘拷贝到内核空间的一个缓冲区，再将这些数据拷贝到用户空间，实际上进行了两次数据拷贝；</li>
+<li>map()也是系统调用，但没有进行数据拷贝，当缺页中断发生时，直接将文件从硬盘拷贝到用户空间，只进行了一次数据拷贝。</li>
+</ul>
+<p>所以，采用内存映射的读写效率要比传统的read/write性能高。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>MappedByteBuffer使用虚拟内存，因此分配(map)的内存大小不受JVM的-Xmx参数限制，但是也是有大小限制的。</li>
+<li>如果当文件超出1.5G限制时，可以通过position参数重新map文件后面的内容。</li>
+<li>MappedByteBuffer在处理大文件时的确性能很高，但也存在一些问题，如内存占用、文件关闭不确定，被其打开的文件只有在垃圾回收的才会被关闭，而且这个时间点是不确定的。<br>javadoc中也提到：<strong>A mapped byte buffer and the file mapping that it represents remain* valid until the buffer itself is garbage-collected</strong>.</li>
+</ol>
+<p>原文：<a href="http://www.jianshu.com/p/f90866dcbffc" target="_blank" rel="external">http://www.jianshu.com/p/f90866dcbffc</a></p>
 
       
     </div>
@@ -470,8 +517,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/02/14/linux-find/" rel="next" title="find 命令">
-                <i class="fa fa-chevron-left"></i> find 命令
+              <a href="/2016/08/20/java-thread-2-md/" rel="next" title="Java多线程(二) 同步和锁">
+                <i class="fa fa-chevron-left"></i> Java多线程(二) 同步和锁
               </a>
             
           </div>
@@ -480,8 +527,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2014/02/20/linux-kill/" rel="prev" title="Linux中Kill进程的N种方法">
-                Linux中Kill进程的N种方法 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/09/03/redis-transaction-watch/" rel="prev" title="redis的事务和watch">
+                redis的事务和watch <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -534,8 +581,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -650,6 +706,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存管理"><span class="nav-number">2.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MappedByteBuffer是什么"><span class="nav-number">3.</span> <span class="nav-text">MappedByteBuffer是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.1.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map过程"><span class="nav-number">3.2.</span> <span class="nav-text">map过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#get过程"><span class="nav-number">3.3.</span> <span class="nav-text">get过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能分析"><span class="nav-number">4.</span> <span class="nav-text">性能分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
