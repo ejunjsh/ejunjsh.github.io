@@ -103,18 +103,18 @@
 
 
 
-<meta name="description" content="翻译中。。。 几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
+<meta name="description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JavaScript是如何工作之剖析V8引擎和怎么写出高效代码的方法">
+<meta property="og:title" content="JavaScript是如何工作的(二)">
 <meta property="og:url" content="http://idiotsky.me/2017/08/26/javascript-how-work-2/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="翻译中。。。 几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
+<meta property="og:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
 <meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-1.png">
-<meta property="og:updated_time" content="2017-08-26T05:58:06.000Z">
+<meta property="og:updated_time" content="2017-08-26T06:00:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JavaScript是如何工作之剖析V8引擎和怎么写出高效代码的方法">
-<meta name="twitter:description" content="翻译中。。。 几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
+<meta name="twitter:title" content="JavaScript是如何工作的(二)">
+<meta name="twitter:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
 <meta name="twitter:image" content="http://idiotsky.me/images/js-how-work-2-1.png">
 
 
@@ -150,7 +150,7 @@
 
 
 
-  <title>JavaScript是如何工作之剖析V8引擎和怎么写出高效代码的方法 | IdiotSky</title>
+  <title>JavaScript是如何工作的(二) | IdiotSky</title>
   
 
 
@@ -348,7 +348,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JavaScript是如何工作之剖析V8引擎和怎么写出高效代码的方法</h1>
+          <h1 class="post-title" itemprop="name headline">JavaScript是如何工作的(二)</h1>
         
 
         <div class="post-meta">
@@ -421,7 +421,6 @@
 
       
         <blockquote>
-<p>翻译中。。。</p>
 <p>几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。</p>
 </blockquote>
 <p><a href="/2017/08/26/javascript-how-work">系列的第一篇</a>主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。<br><a id="more"></a></p>
@@ -480,8 +479,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/26/javascript-how-work/" rel="next" title="JavaScript 是如何工作的？">
-                <i class="fa fa-chevron-left"></i> JavaScript 是如何工作的？
+              <a href="/2017/08/26/javascript-how-work/" rel="next" title="JavaScript是如何工作的(一)">
+                <i class="fa fa-chevron-left"></i> JavaScript是如何工作的(一)
               </a>
             
           </div>

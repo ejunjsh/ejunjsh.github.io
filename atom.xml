@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-08-26T05:58:06.000Z</updated>
+  <updated>2017-08-26T06:00:42.000Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -16,14 +16,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>JavaScript是如何工作之剖析V8引擎和怎么写出高效代码的方法</title>
+    <title>JavaScript是如何工作的(二)</title>
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work-2/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work-2/</id>
     <published>2017-08-26T03:08:09.000Z</published>
-    <updated>2017-08-26T05:58:06.000Z</updated>
+    <updated>2017-08-26T06:00:42.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
-<p>翻译中。。。</p>
 <p>几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。</p>
 </blockquote>
 <p><a href="/2017/08/26/javascript-how-work">系列的第一篇</a>主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。<br><a id="more"></a></p>
@@ -57,7 +56,6 @@
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;翻译中。。。&lt;/p&gt;
 &lt;p&gt;几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;a href=&quot;/2017/08/26/javascript-how-work&quot;&gt;系列的第一篇&lt;/a&gt;主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。&lt;br&gt;
@@ -72,11 +70,11 @@
   </entry>
   
   <entry>
-    <title>JavaScript 是如何工作的？</title>
+    <title>JavaScript是如何工作的(一)</title>
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work/</id>
     <published>2017-08-25T17:17:54.000Z</published>
-    <updated>2017-08-26T03:25:10.000Z</updated>
+    <updated>2017-08-26T06:00:38.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p><strong>简评</strong>：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？</p>
