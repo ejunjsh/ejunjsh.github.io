@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-08-26T06:00:42.000Z</updated>
+  <updated>2017-08-27T06:32:14.000Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work-2/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work-2/</id>
     <published>2017-08-26T03:08:09.000Z</published>
-    <updated>2017-08-26T06:00:42.000Z</updated>
+    <updated>2017-08-27T06:32:14.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。</p>
@@ -51,6 +51,13 @@
 <li>一个剖析器线程用来汇报哪些方法需要Crankshaft编译器优化。</li>
 <li>其他一些线程用来做垃圾回收</li>
 </ul>
+<p>当开始执行javascript代码，V8运用<strong>full-codegen</strong>来直接翻译解析过的javascript代码为机器码，这个过程没有任何中间转换，所以执行机器码<strong>非常快</strong>.由于没有用到任何中间的字节码，所以就没有需要解释器的必要了。</p>
+<p>当你的代码运行一段时间后，剖析器线程就能收集到足够的数据来确定哪些方法应该被优化。</p>
+<p>接下来，<strong>Crankshaft</strong> 优化编译器开始运行在其他线程。它翻译javascript抽象语法树到一个高级别的<a href="https://en.wikipedia.org/wiki/Static_single_assignment_form" target="_blank" rel="external">静态单赋值(SSA)</a> 形态,又叫<strong>Hydrogen(氢？)</strong>。然后优化这个Hydrogen图。大部分的优化都在这个层次上完成。</p>
+<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="/images/js-how-work-2-2.png"><img src="/images/js-how-work-2-2.png" alt=""></a></p>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
 ]]></content>
     
     <summary type="html">
@@ -120,15 +127,13 @@
     <link href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/"/>
     <id>http://idiotsky.me/2017/08/18/openstack-install-prepare-1/</id>
     <published>2017-08-18T14:50:07.000Z</published>
-    <updated>2017-08-20T08:56:41.000Z</updated>
+    <updated>2017-08-27T07:00:30.000Z</updated>
     
-    <content type="html"><![CDATA[<blockquote>
-<p>正在写。。。</p>
-</blockquote>
-<h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
+    <content type="html"><![CDATA[<h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
 <h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
 <a id="more"></a>
-<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute<br>hostname:controller</p>
+<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">controller</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.10</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.10</div><div class="line">netmask 255.255.255.0</div><div class="line"></div><div class="line">auto ens35</div><div class="line">iface ens35 inet manual</div></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -145,17 +150,17 @@
 </tr>
 <tr>
 <td>ens34</td>
-<td>192.168.5.10</td>
+<td>10.170.56.10</td>
 <td>私有</td>
 </tr>
 <tr>
 <td>ens35</td>
-<td>192.168.112.10</td>
+<td>网关192.168.112.2</td>
 <td>nat</td>
 </tr>
 </tbody>
 </table>
-<p>hostname:compute</p>
+<h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">compute</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.11</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.11</div><div class="line">netmask 255.255.255.0</div></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -172,27 +177,30 @@
 </tr>
 <tr>
 <td>ens34</td>
-<td>192.168.5.11</td>
+<td>10.170.56.11</td>
 <td>私有</td>
 </tr>
 </tbody>
 </table>
-<p>PS:</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>PS:</p>
 <ul>
 <li>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。一般用来做管理节点的网络。</li>
 <li>私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络</li>
 <li>nat模式用来给虚拟机访问互联网用</li>
 </ul>
 <p>PSPS:<br>接下来会在上面的两台虚拟机安装openstack，安装完openstack后，两台虚拟机对于openstack来说，就是物理机，通过openstack，创建的就是云主机（或者叫租户）了。所以必须要谨记这点。</p>
+<p>PSPSPS:</p>
+<ul>
+<li>桥接模式的ip必须是你电脑所在网络的任意不冲突的同子网的ip</li>
+<li>私有模式的ip可以任意一个子网下的ip，这个网络是用来做租户网络的</li>
+<li>nat网络不用配ip，这个给租户用来访问外网的，接下来实验会再提及，注意下他的网关即可，它是你的VMware的nat的一个网关。</li>
+</ul>
 <p>上面网络配置好后，可以开搞了，至于怎么安装虚拟机和配置网络，可以搜索相关文章😈。</p>
 ]]></content>
     
     <summary type="html">
     
-      &lt;blockquote&gt;
-&lt;p&gt;正在写。。。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;准备VMware&quot;&gt;&lt;a href=&quot;#准备VMware&quot; class=&quot;headerlink&quot; title=&quot;准备VMware&quot;&gt;&lt;/a&gt;准备VMware&lt;/h1&gt;&lt;p&gt;由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。&lt;/p&gt;
+      &lt;h1 id=&quot;准备VMware&quot;&gt;&lt;a href=&quot;#准备VMware&quot; class=&quot;headerlink&quot; title=&quot;准备VMware&quot;&gt;&lt;/a&gt;准备VMware&lt;/h1&gt;&lt;p&gt;由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。&lt;/p&gt;
 &lt;h1 id=&quot;准备Ubuntu&quot;&gt;&lt;a href=&quot;#准备Ubuntu&quot; class=&quot;headerlink&quot; title=&quot;准备Ubuntu&quot;&gt;&lt;/a&gt;准备Ubuntu&lt;/h1&gt;&lt;p&gt;Ubuntu去官网下载16.04的服务器版本的ISO即可。&lt;/p&gt;
     
     </summary>
@@ -204,34 +212,7 @@
     
       <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
     
-  </entry>
-  
-  <entry>
-    <title>openstack安装索引</title>
-    <link href="http://idiotsky.me/2017/08/16/openstack-install-index/"/>
-    <id>http://idiotsky.me/2017/08/16/openstack-install-index/</id>
-    <published>2017-08-15T17:58:47.000Z</published>
-    <updated>2017-08-18T14:52:18.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>索引页</p>
-</blockquote>
-<p><a href="/2017/08/18/openstack-install-prepare-1/">openstack安装准备(一)</a><br><a id="more"></a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;索引页&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;a href=&quot;/2017/08/18/openstack-install-prepare-1/&quot;&gt;openstack安装准备(一)&lt;/a&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
+      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
     
   </entry>
   
@@ -1048,6 +1029,60 @@
     <summary type="html">
     
       &lt;h1 id=&quot;字符串问题&quot;&gt;&lt;a href=&quot;#字符串问题&quot; class=&quot;headerlink&quot; title=&quot;字符串问题&quot;&gt;&lt;/a&gt;字符串问题&lt;/h1&gt;&lt;p&gt;字符串在我们平时的编码工作中其实用的非常多，并且用起来也比较简单，所以很少有人对其做特别深入的研究。倒是面试或者笔试的时候，往往会涉及比较深入和难度大一点的问题。我在招聘的时候也偶尔会问应聘者相关的问题，倒不是说一定要回答的特别正确和深入，通常问这些问题的目的有两个，第一是考察对 JAVA 基础知识的了解程度，第二是考察应聘者对技术的态度。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
+    
+    
+      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
+    
+      <category term="jvm" scheme="http://idiotsky.me/tags/jvm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java8内存模型—永久代(PermGen)和元空间(Metaspace)</title>
+    <link href="http://idiotsky.me/2016/07/26/java8-permgen-metaspace/"/>
+    <id>http://idiotsky.me/2016/07/26/java8-permgen-metaspace/</id>
+    <published>2016-07-26T12:28:09.000Z</published>
+    <updated>2017-07-29T12:24:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="JVM-内存模型"><a href="#JVM-内存模型" class="headerlink" title="JVM 内存模型"></a>JVM 内存模型</h1><p>根据 JVM 规范，JVM 内存共分为虚拟机栈、堆、方法区、程序计数器、本地方法栈五个部分。<br><a href="/images/java8-permgen-metaspace-1.png"><img src="/images/java8-permgen-metaspace-1.png" alt=""></a><br><a id="more"></a></p>
+<h2 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h2><p>每个线程有一个私有的栈，随着线程的创建而创建。栈里面存着的是一种叫“栈帧”的东西，每个方法会创建一个栈帧，栈帧中存放了局部变量表（基本数据类型和对象引用）、操作数栈、方法出口等信息。栈的大小可以固定也可以动态扩展。当栈调用深度大于JVM所允许的范围，会抛出StackOverflowError的错误，不过这个深度范围不是一个恒定的值，我们通过下面这段程序可以测试一下这个结果：<br>栈溢出测试源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.memory;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StackErrorMock</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> index = <span class="number">1</span>;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">()</span></span>&#123;</div><div class="line">        index++;</div><div class="line">        call();</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        StackErrorMock mock = <span class="keyword">new</span> StackErrorMock();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            mock.call();</div><div class="line">        &#125;<span class="keyword">catch</span> (Throwable e)&#123;</div><div class="line">            System.out.println(<span class="string">"Stack deep : "</span>+index);</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码段1</p>
+<p>运行三次，可以看出每次栈的深度都是不一样的，输出结果如下。<br><a href="/images/java8-permgen-metaspace-2.png"><img src="/images/java8-permgen-metaspace-2.png" alt=""></a><br>至于红色框里的值是怎么出来的，就需要深入到 JVM 的源码中才能探讨，这里不作详细阐述。</p>
+<p>虚拟机栈除了上述错误外，还有另一种错误，那就是当申请不到空间时，会抛出 OutOfMemoryError。这里有一个小细节需要注意，catch 捕获的是 Throwable，而不是 Exception。因为 StackOverflowError 和 OutOfMemoryError 都不属于 Exception 的子类。</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>这部分主要与虚拟机用到的 Native 方法相关，一般情况下， Java 应用程序员并不需要关心这部分的内容</p>
+<h2 id="PC-寄存器"><a href="#PC-寄存器" class="headerlink" title="PC 寄存器"></a>PC 寄存器</h2><p>PC 寄存器，也叫程序计数器。JVM支持多个线程同时运行，每个线程都有自己的程序计数器。倘若当前执行的是 JVM 的方法，则该寄存器中保存当前执行指令的地址；倘若执行的是native 方法，则PC寄存器中为空。</p>
+<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><p>堆内存是 JVM 所有线程共享的部分，在虚拟机启动的时候就已经创建。所有的对象和数组都在堆上进行分配。这部分空间可通过 GC 进行回收。当申请不到空间时会抛出 OutOfMemoryError。下面我们简单的模拟一个堆内存溢出的情况：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.memory;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> java.util.ArrayList;</div><div class="line"><span class="keyword">import</span> java.util.List;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeapOomMock</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        List&lt;<span class="keyword">byte</span>[]&gt; list = <span class="keyword">new</span> ArrayList&lt;<span class="keyword">byte</span>[]&gt;();</div><div class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">        <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</div><div class="line">        <span class="keyword">while</span> (flag)&#123;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                i++;</div><div class="line">                list.add(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span> * <span class="number">1024</span>]);<span class="comment">//每次增加一个1M大小的数组对象</span></div><div class="line">            &#125;<span class="keyword">catch</span> (Throwable e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">                flag = <span class="keyword">false</span>;</div><div class="line">                System.out.println(<span class="string">"count="</span>+i);<span class="comment">//记录运行的次数</span></div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码段2</p>
+<p>运行上述代码，输出结果如下：　<br><a href="/images/java8-permgen-metaspace-3.png"><img src="/images/java8-permgen-metaspace-3.png" alt=""></a><br><em>注意，这里我指定了堆内存的大小为16M，所以这个地方显示的count=14（这个数字不是固定的），至于为什么会是14或其他数字，需要根据 GC 日志来判断</em></p>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>　　方法区也是所有线程共享。主要用于存储类的信息、常量池、方法数据、方法代码等。方法区逻辑上属于堆的一部分，但是为了与堆进行区分，通常又叫“非堆”。 关于方法区内存溢出的问题会在下文中详细探讨。</p>
+<h1 id="PermGen（永久代）"><a href="#PermGen（永久代）" class="headerlink" title="PermGen（永久代）"></a>PermGen（永久代）</h1><p>绝大部分 Java 程序员应该都见过 “java.lang.OutOfMemoryError: PermGen space “这个异常。这里的 “PermGen space”其实指的就是方法区。不过方法区和“PermGen space”又有着本质的区别。前者是 JVM 的规范，而后者则是 JVM 规范的一种实现，并且只有 HotSpot 才有 “PermGen space”，而对于其他类型的虚拟机，如 JRockit（Oracle）、J9（IBM） 并没有“PermGen space”。由于方法区主要存储类的相关信息，所以对于动态生成类的情况比较容易出现永久代的内存溢出。最典型的场景就是，在 jsp 页面比较多的情况，容易出现永久代内存溢出。我们现在通过动态生成类来模拟 “PermGen space”的内存溢出：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.memory;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.memory;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> java.io.File;</div><div class="line"><span class="keyword">import</span> java.net.URL;</div><div class="line"><span class="keyword">import</span> java.net.URLClassLoader;</div><div class="line"><span class="keyword">import</span> java.util.ArrayList;</div><div class="line"><span class="keyword">import</span> java.util.List;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PermGenOomMock</span></span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        URL url = <span class="keyword">null</span>;</div><div class="line">        List&lt;ClassLoader&gt; classLoaderList = <span class="keyword">new</span> ArrayList&lt;ClassLoader&gt;();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            url = <span class="keyword">new</span> File(<span class="string">"/tmp"</span>).toURI().toURL();</div><div class="line">            URL[] urls = &#123;url&#125;;</div><div class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</div><div class="line">                ClassLoader loader = <span class="keyword">new</span> URLClassLoader(urls);</div><div class="line">                classLoaderList.add(loader);</div><div class="line">                loader.loadClass(<span class="string">"com.paddx.test.memory.Test"</span>);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码段3</p>
+<p>运行结果如下：<br><a href="/images/java8-permgen-metaspace-4.png"><img src="/images/java8-permgen-metaspace-4.png" alt=""></a><br>　　本例中使用的 JDK 版本是 1.7，指定的 PermGen 区的大小为 8M。通过每次生成不同URLClassLoader对象来加载Test类，从而生成不同的类对象，这样就能看到我们熟悉的 “java.lang.OutOfMemoryError: PermGen space “ 异常了。这里之所以采用 JDK 1.7，是因为在 JDK 1.8 中， HotSpot 已经没有 “PermGen space”这个区间了，取而代之是一个叫做 Metaspace（元空间） 的东西。下面我们就来看看 Metaspace 与 PermGen space 的区别。</p>
+<h1 id="Metaspace（元空间）"><a href="#Metaspace（元空间）" class="headerlink" title="Metaspace（元空间）"></a>Metaspace（元空间）</h1><p>其实，移除永久代的工作从JDK1.7就开始了。JDK1.7中，存储在永久代的部分数据就已经转移到了Java Heap或者是 Native Heap。但永久代仍存在于JDK1.7中，并没完全移除，譬如符号引用(Symbols)转移到了native heap；字面量(interned strings)转移到了java heap；类的静态变量(class statics)转移到了java heap。我们可以通过一段程序来比较 JDK 1.6 与 JDK 1.7及 JDK 1.8 的区别，以字符串常量为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.memory;</div><div class="line"> </div><div class="line"><span class="keyword">import</span> java.util.ArrayList;</div><div class="line"><span class="keyword">import</span> java.util.List;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringOomMock</span> </span>&#123;</div><div class="line">    <span class="keyword">static</span> String  base = <span class="string">"string"</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt; Integer.MAX_VALUE;i++)&#123;</div><div class="line">            String str = base + base;</div><div class="line">            base = str;</div><div class="line">            list.add(str.intern());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码段4</p>
+<p>这段程序以2的指数级不断的生成新的字符串，这样可以比较快速的消耗内存。我们通过 JDK 1.6、JDK 1.7 和 JDK 1.8 分别运行：<br>JDK 1.6 的运行结果：<br><a href="/images/java8-permgen-metaspace-5.png"><img src="/images/java8-permgen-metaspace-5.png" alt=""></a><br>JDK 1.7的运行结果：<br><a href="/images/java8-permgen-metaspace-6.png"><img src="/images/java8-permgen-metaspace-6.png" alt=""></a><br>JDK 1.8的运行结果：<br><a href="/images/java8-permgen-metaspace-7.png"><img src="/images/java8-permgen-metaspace-7.png" alt=""></a><br>从上述结果可以看出，JDK 1.6下，会出现“PermGen Space”的内存溢出，而在 JDK 1.7和 JDK 1.8 中，会出现堆内存溢出，并且 JDK 1.8中 PermSize 和 MaxPermGen 已经无效。因此，可以大致验证 JDK 1.7 和 1.8 将字符串常量由永久代转移到堆中，并且 JDK 1.8 中已经不存在永久代的结论。现在我们看看元空间到底是一个什么东西？</p>
+<p>　　元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代之间最大的区别在于：元空间并不在虚拟机中，而是使用本地内存。因此，默认情况下，元空间的大小仅受本地内存限制，但可以通过以下参数来指定元空间的大小：</p>
+<p>　　-XX:MetaspaceSize，初始空间大小，达到该值就会触发垃圾收集进行类型卸载，同时GC会对该值进行调整：如果释放了大量的空间，就适当降低该值；如果释放了很少的空间，那么在不超过MaxMetaspaceSize时，适当提高该值。<br>　　-XX:MaxMetaspaceSize，最大空间，默认是没有限制的。</p>
+<p>　　除了上面两个指定大小的选项以外，还有两个与 GC 相关的属性：<br>　　-XX:MinMetaspaceFreeRatio，在GC之后，最小的Metaspace剩余空间容量的百分比，减少为分配空间所导致的垃圾收集<br>　　-XX:MaxMetaspaceFreeRatio，在GC之后，最大的Metaspace剩余空间容量的百分比，减少为释放空间所导致的垃圾收集</p>
+<p>现在我们在 JDK 8下重新运行一下代码段3，不过这次不再指定 PermSize 和 MaxPermSize。而是指定 MetaSpaceSize 和 MaxMetaSpaceSize的大小。输出结果如下：<br><a href="/images/java8-permgen-metaspace-8.png"><img src="/images/java8-permgen-metaspace-8.png" alt=""></a><br>从输出结果，我们可以看出，这次不再出现永久代溢出，而是出现了元空间的溢出。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>　　通过上面分析，大家应该大致了解了 JVM 的内存划分，也清楚了 JDK 8 中永久代向元空间的转换。不过大家应该都有一个疑问，就是为什么要做这个转换？所以，最后给大家总结以下几点原因：</p>
+<ul>
+<li>字符串存在永久代中，容易出现性能问题和内存溢出。</li>
+<li>类及方法的信息等比较难确定其大小，因此对于永久代的大小指定比较困难，太小容易出现永久代溢出，太大则容易导致老年代溢出。</li>
+<li>永久代会为 GC 带来不必要的复杂度，并且回收效率偏低。</li>
+<li>Oracle 可能会将HotSpot 与 JRockit 合二为一。</li>
+</ul>
+<p>原文地址 <a href="http://www.cnblogs.com/paddix/p/5309550.html" target="_blank" rel="external">http://www.cnblogs.com/paddix/p/5309550.html</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;JVM-内存模型&quot;&gt;&lt;a href=&quot;#JVM-内存模型&quot; class=&quot;headerlink&quot; title=&quot;JVM 内存模型&quot;&gt;&lt;/a&gt;JVM 内存模型&lt;/h1&gt;&lt;p&gt;根据 JVM 规范，JVM 内存共分为虚拟机栈、堆、方法区、程序计数器、本地方法栈五个部分。&lt;br&gt;&lt;a href=&quot;/images/java8-permgen-metaspace-1.png&quot;&gt;&lt;img src=&quot;/images/java8-permgen-metaspace-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
     
     </summary>
     

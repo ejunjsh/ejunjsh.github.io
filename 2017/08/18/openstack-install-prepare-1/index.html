@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="openstack,ubuntu," />
+  <meta name="keywords" content="openstack,ubuntu,kvm," />
 
 
 
@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
-<meta name="keywords" content="openstack,ubuntu">
+<meta name="description" content="准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta name="keywords" content="openstack,ubuntu,kvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openstack安装准备(一)">
 <meta property="og:url" content="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
-<meta property="og:updated_time" content="2017-08-20T08:56:41.000Z">
+<meta property="og:description" content="准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta property="og:updated_time" content="2017-08-27T07:00:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openstack安装准备(一)">
-<meta name="twitter:description" content="正在写。。。  准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta name="twitter:description" content="准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
 
 
 
@@ -418,13 +418,11 @@
       
 
       
-        <blockquote>
-<p>正在写。。。</p>
-</blockquote>
-<h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
+        <h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
 <h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
 <a id="more"></a>
-<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute<br>hostname:controller</p>
+<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">controller</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.10</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.10</div><div class="line">netmask 255.255.255.0</div><div class="line"></div><div class="line">auto ens35</div><div class="line">iface ens35 inet manual</div></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -441,17 +439,17 @@
 </tr>
 <tr>
 <td>ens34</td>
-<td>192.168.5.10</td>
+<td>10.170.56.10</td>
 <td>私有</td>
 </tr>
 <tr>
 <td>ens35</td>
-<td>192.168.112.10</td>
+<td>网关192.168.112.2</td>
 <td>nat</td>
 </tr>
 </tbody>
 </table>
-<p>hostname:compute</p>
+<h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">compute</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.11</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.11</div><div class="line">netmask 255.255.255.0</div></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -468,18 +466,24 @@
 </tr>
 <tr>
 <td>ens34</td>
-<td>192.168.5.11</td>
+<td>10.170.56.11</td>
 <td>私有</td>
 </tr>
 </tbody>
 </table>
-<p>PS:</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>PS:</p>
 <ul>
 <li>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。一般用来做管理节点的网络。</li>
 <li>私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络</li>
 <li>nat模式用来给虚拟机访问互联网用</li>
 </ul>
 <p>PSPS:<br>接下来会在上面的两台虚拟机安装openstack，安装完openstack后，两台虚拟机对于openstack来说，就是物理机，通过openstack，创建的就是云主机（或者叫租户）了。所以必须要谨记这点。</p>
+<p>PSPSPS:</p>
+<ul>
+<li>桥接模式的ip必须是你电脑所在网络的任意不冲突的同子网的ip</li>
+<li>私有模式的ip可以任意一个子网下的ip，这个网络是用来做租户网络的</li>
+<li>nat网络不用配ip，这个给租户用来访问外网的，接下来实验会再提及，注意下他的网关即可，它是你的VMware的nat的一个网关。</li>
+</ul>
 <p>上面网络配置好后，可以开搞了，至于怎么安装虚拟机和配置网络，可以搜索相关文章😈。</p>
 
       
@@ -502,6 +506,8 @@
           
             <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
           
+            <a href="/tags/kvm/" rel="tag"># kvm</a>
+          
         </div>
       
 
@@ -513,8 +519,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/16/openstack-install-index/" rel="next" title="openstack安装索引">
-                <i class="fa fa-chevron-left"></i> openstack安装索引
+              <a href="/2017/08/16/gc-three-color/" rel="next" title="一张图了解三色标记法">
+                <i class="fa fa-chevron-left"></i> 一张图了解三色标记法
               </a>
             
           </div>
@@ -602,7 +608,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -624,7 +630,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">40</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -712,7 +718,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备VMware"><span class="nav-number">1.</span> <span class="nav-text">准备VMware</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">准备Ubuntu</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备网络"><span class="nav-number">3.</span> <span class="nav-text">准备网络</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备VMware"><span class="nav-number">1.</span> <span class="nav-text">准备VMware</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备Ubuntu"><span class="nav-number">2.</span> <span class="nav-text">准备Ubuntu</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#准备网络"><span class="nav-number">3.</span> <span class="nav-text">准备网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#controller"><span class="nav-number">3.1.</span> <span class="nav-text">controller</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#compute"><span class="nav-number">3.2.</span> <span class="nav-text">compute</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

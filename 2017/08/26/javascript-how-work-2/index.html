@@ -111,7 +111,8 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
 <meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-1.png">
-<meta property="og:updated_time" content="2017-08-26T06:00:42.000Z">
+<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-2.png">
+<meta property="og:updated_time" content="2017-08-27T06:32:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript是如何工作的(二)">
 <meta name="twitter:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
@@ -449,6 +450,13 @@
 <li>一个剖析器线程用来汇报哪些方法需要Crankshaft编译器优化。</li>
 <li>其他一些线程用来做垃圾回收</li>
 </ul>
+<p>当开始执行javascript代码，V8运用<strong>full-codegen</strong>来直接翻译解析过的javascript代码为机器码，这个过程没有任何中间转换，所以执行机器码<strong>非常快</strong>.由于没有用到任何中间的字节码，所以就没有需要解释器的必要了。</p>
+<p>当你的代码运行一段时间后，剖析器线程就能收集到足够的数据来确定哪些方法应该被优化。</p>
+<p>接下来，<strong>Crankshaft</strong> 优化编译器开始运行在其他线程。它翻译javascript抽象语法树到一个高级别的<a href="https://en.wikipedia.org/wiki/Static_single_assignment_form" target="_blank" rel="external">静态单赋值(SSA)</a> 形态,又叫<strong>Hydrogen(氢？)</strong>。然后优化这个Hydrogen图。大部分的优化都在这个层次上完成。</p>
+<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="/images/js-how-work-2-2.png"><img src="/images/js-how-work-2-2.png" alt=""></a></p>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
 
       
     </div>
@@ -564,7 +572,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -586,7 +594,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">39</span>
+                <span class="site-state-item-count">40</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -674,7 +682,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要创造一个V8引擎？"><span class="nav-number">2.</span> <span class="nav-text">为什么要创造一个V8引擎？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V8曾经有两个编译器"><span class="nav-number">3.</span> <span class="nav-text">V8曾经有两个编译器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要创造一个V8引擎？"><span class="nav-number">2.</span> <span class="nav-text">为什么要创造一个V8引擎？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V8曾经有两个编译器"><span class="nav-number">3.</span> <span class="nav-text">V8曾经有两个编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内联（inlining）"><span class="nav-number">4.</span> <span class="nav-text">内联（inlining）</span></a></li></ol></div>
             
 
           </div>
