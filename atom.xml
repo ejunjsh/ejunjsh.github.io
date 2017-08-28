@@ -125,6 +125,57 @@
   </entry>
   
   <entry>
+    <title>openstack安装准备(二)-环境的安装</title>
+    <link href="http://idiotsky.me/2017/08/19/openstack-install-prepare-2/"/>
+    <id>http://idiotsky.me/2017/08/19/openstack-install-prepare-2/</id>
+    <published>2017-08-19T14:50:07.000Z</published>
+    <updated>2017-08-28T15:09:30.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="/images/openstack-install-prepare-2-1.png"><img src="/images/openstack-install-prepare-2-1.png" alt=""></a><br>上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。</p>
+<p>按照官方建议，这次openstack安装的服务为：</p>
+<ul>
+<li>Identity service (keystone)</li>
+<li>Image service (glance)</li>
+<li>Compute service (nova)</li>
+<li>Networking service (neutron)</li>
+<li>Dashboard (horizon)</li>
+<li>Block Storage service (cinder)</li>
+</ul>
+<a id="more"></a>
+<p>在安装上面服务前，先要弄好环境的😁</p>
+<h1 id="安装openstack仓库"><a href="#安装openstack仓库" class="headerlink" title="安装openstack仓库"></a>安装openstack仓库</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># change to root</span></div><div class="line">$ sudo -i</div><div class="line">$ apt install software-properties-common</div><div class="line">$ add-apt-repository cloud-archive:pike</div><div class="line">$ apt update &amp;&amp; apt dist-upgrade</div><div class="line">$ apt install python-openstackclient</div></pre></td></tr></table></figure>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;/images/openstack-install-prepare-2-1.png&quot;&gt;&lt;img src=&quot;/images/openstack-install-prepare-2-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。&lt;/p&gt;
+&lt;p&gt;按照官方建议，这次openstack安装的服务为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Identity service (keystone)&lt;/li&gt;
+&lt;li&gt;Image service (glance)&lt;/li&gt;
+&lt;li&gt;Compute service (nova)&lt;/li&gt;
+&lt;li&gt;Networking service (neutron)&lt;/li&gt;
+&lt;li&gt;Dashboard (horizon)&lt;/li&gt;
+&lt;li&gt;Block Storage service (cinder)&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
+    
+    
+      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
+    
+      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
+    
+      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
+    
+  </entry>
+  
+  <entry>
     <title>openstack安装准备(一)</title>
     <link href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/"/>
     <id>http://idiotsky.me/2017/08/18/openstack-install-prepare-1/</id>
@@ -1063,75 +1114,6 @@
     
     
       <category term="java" scheme="http://idiotsky.me/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>通过反编译深入理解Java String及intern</title>
-    <link href="http://idiotsky.me/2016/07/29/java-string-intern/"/>
-    <id>http://idiotsky.me/2016/07/29/java-string-intern/</id>
-    <published>2016-07-29T12:11:55.000Z</published>
-    <updated>2017-07-30T14:31:02.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="字符串问题"><a href="#字符串问题" class="headerlink" title="字符串问题"></a>字符串问题</h1><p>字符串在我们平时的编码工作中其实用的非常多，并且用起来也比较简单，所以很少有人对其做特别深入的研究。倒是面试或者笔试的时候，往往会涉及比较深入和难度大一点的问题。我在招聘的时候也偶尔会问应聘者相关的问题，倒不是说一定要回答的特别正确和深入，通常问这些问题的目的有两个，第一是考察对 JAVA 基础知识的了解程度，第二是考察应聘者对技术的态度。<br><a id="more"></a><br>　　我们看看以下程序会输出什么结果？如果你能正确的回答每一道题，并且清楚其原因，那本文对你就没什么太大的意义。如果回答不正确或者不是很清楚其原理，那就仔细看看以下的分析，本文应该能帮助你清楚的理解每段程序的结果及输出该结果的深层次原因。</p>
-<p>代码段一：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.string;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String str1 = <span class="string">"string"</span>;</div><div class="line">        String str2 = <span class="keyword">new</span> String(<span class="string">"string"</span>);</div><div class="line">        String str3 = str2.intern();</div><div class="line"> </div><div class="line">        System.out.println(str1==str2);<span class="comment">//#1</span></div><div class="line">        System.out.println(str1==str3);<span class="comment">//#2</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>代码段二：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">package</span> com.paddx.test.string;</div><div class="line"></div><div class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringTest01</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String baseStr = <span class="string">"baseStr"</span>;</div><div class="line">        <span class="keyword">final</span> String baseFinalStr = <span class="string">"baseStr"</span>;</div><div class="line"> </div><div class="line">        String str1 = <span class="string">"baseStr01"</span>;</div><div class="line">        String str2 = <span class="string">"baseStr"</span>+<span class="string">"01"</span>;</div><div class="line">        String str3 = baseStr + <span class="string">"01"</span>;</div><div class="line">        String str4 = baseFinalStr+<span class="string">"01"</span>;</div><div class="line">        String str5 = <span class="keyword">new</span> String(<span class="string">"baseStr01"</span>).intern();</div><div class="line"> </div><div class="line">        System.out.println(str1 == str2);<span class="comment">//#3</span></div><div class="line">        System.out.println(str1 == str3);<span class="comment">//#4</span></div><div class="line">        System.out.println(str1 == str4);<span class="comment">//#5</span></div><div class="line">        System.out.println(str1 == str5);<span class="comment">//#6</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>代码段三（1）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.paddx.test.string;&lt;br&gt;　　</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InternTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line"> </div><div class="line">        String str2 = <span class="keyword">new</span> String(<span class="string">"str"</span>)+<span class="keyword">new</span> String(<span class="string">"01"</span>);</div><div class="line">        str2.intern();</div><div class="line">        String str1 = <span class="string">"str01"</span>;</div><div class="line">        System.out.println(str2==str1);<span class="comment">//#7</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>代码段三（2）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">package</span> com.paddx.test.string;</div><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InternTest01</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String str1 = <span class="string">"str01"</span>;</div><div class="line">        String str2 = <span class="keyword">new</span> String(<span class="string">"str"</span>)+<span class="keyword">new</span> String(<span class="string">"01"</span>);</div><div class="line">        str2.intern();</div><div class="line">        System.out.println(str2 == str1);<span class="comment">//#8</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>为了方便描述，我对上述代码的输出结果由#1~#8进行了编码，下文中蓝色字体部分即为结果。</p>
-<h1 id="字符串深入分析"><a href="#字符串深入分析" class="headerlink" title="字符串深入分析"></a>字符串深入分析</h1><h2 id="代码段一分析"><a href="#代码段一分析" class="headerlink" title="代码段一分析"></a>代码段一分析</h2><p>字符串不属于基本类型，但是可以像基本类型一样，直接通过字面量赋值，当然也可以通过new来生成一个字符串对象。不过通过字面量赋值的方式和new的方式生成字符串有本质的区别：<br><a href="/images/java-string-intern-1.jpg"><img src="/images/java-string-intern-1.jpg" alt=""></a> </p>
-<p>通过字面量赋值创建字符串时，会优先在常量池中查找是否已经存在相同的字符串，倘若已经存在，栈中的引用直接指向该字符串；倘若不存在，则在常量池中生成一个字符串，再将栈中的引用指向该字符串。而通过new的方式创建字符串时，就直接在堆中生成一个字符串的对象（备注，JDK 7 以后，HotSpot 已将常量池从永久代转移到了堆中。详细信息可参考《<a href="/2016/07/26/java8-permgen-metaspace/">JDK8内存模型-消失的PermGen</a>》一文），栈中的引用指向该对象。对于堆中的字符串对象，可以通过 intern() 方法来将字符串添加的常量池中，并返回指向该常量的引用。<br>现在我们应该能很清楚代码段一的结果了：</p>
-<font color="blue">结果 #1：因为str1指向的是字符串中的常量，str2是在堆中生成的对象，所以str1==str2返回false。<br>结果 #2：str2调用intern方法，会将str2中值（“string”）复制到常量池中，但是常量池中已经存在该字符串（即str1指向的字符串），所以直接返回该字符串的引用，因此str1==str2返回true。</font>
-
-<p>以下运行代码段一的代码的结果：<br><a href="/images/java-string-intern-2.jpg"><img src="/images/java-string-intern-2.jpg" alt=""></a> </p>
-<h2 id="代码段二分析"><a href="#代码段二分析" class="headerlink" title="代码段二分析"></a>代码段二分析</h2><p>对于代码段二的结果，还是通过反编译StringTest01.class文件比较容易理解：<br>常量池内容（部分）：<br><a href="/images/java-string-intern-3.jpg"><img src="/images/java-string-intern-3.jpg" alt=""></a><br>执行指令（部分，第二列#+序数对应常量池中的项）：<br><a href="/images/java-string-intern-4.jpg"><img src="/images/java-string-intern-4.jpg" alt=""></a><br>在解释上述执行过程之前，先了解两条指令：</p>
-<p>ldc：Push item from run-time constant pool，从常量池中加载指定项的引用到栈。</p>
-<p>astore_<n>：Store reference into local variable，将引用赋值给第n个局部变量。</n></p>
-<p>现在我们开始解释代码段二的执行过程：</p>
-<p>0: ldc           #2：加载常量池中的第二项（”baseStr”）到栈中。</p>
-<p>2: astore_1      ：将1中的引用赋值给第一个局部变量，即String baseStr = “baseStr”；</p>
-<p>3: ldc           #2：加载常量池中的第二项（”baseStr”）到栈中。</p>
-<p>5: astore_2      ：将3中的引用赋值给第二个局部变量，即 final String baseFinalStr=”baseStr”； </p>
-<p>6: ldc           #3：加载常量池中的第三项（”baseStr01”）到栈中。</p>
-<p>8: astore_3     ：将6中的引用赋值给第三个局部变量，即String str1=”baseStr01”;</p>
-<p>9: ldc           #3：加载常量池中的第三项（”baseStr01”）到栈中。</p>
-<p>11: astore        4：将9中的引用赋值给第四个局部变量：即String str2=”baseStr01”；</p>
-<font color="blue"><br>结果#3：str1==str2 肯定会返回true，因为str1和str2都指向常量池中的同一引用地址。所以其实在JAVA 1.6之后，常量字符串的“+”操作，编译阶段直接会合成为一个字符串。</font><br>13: new           #4：生成StringBuilder的实例。<br><br>16: dup 　　　　   ：复制13生成对象的引用并压入栈中。<br><br>17: invokespecial #5：调用常量池中的第五项，即StringBuilder.<init>方法。<br><br>以上三条指令的作用是生成一个StringBuilder的对象。<br><br>20: aload_1　　：加载第一个参数的值，即”baseStr”<br><br>21: invokevirtual #6 ：调用StringBuilder对象的append方法。<br><br>24: ldc           #7：加载常量池中的第七项（”01”）到栈中。<br><br>26: invokevirtual #6：调用StringBuilder.append方法。<br><br>29: invokevirtual #8：调用StringBuilder.toString方法。<br><br>32: astore        5：将29中的结果引用赋值改第五个局部变量，即对变量str3的赋值。<br><font color="blue"><br>结果 #4：因为str3实际上是stringBuilder.append()生成的结果，所以与str1不相等，结果返回false。</font><br>34: ldc           #3：加载常量池中的第三项（”baseStr01”）到栈中。<br><br>36: astore        6：将34中的引用赋值给第六个局部变量，即str4=”baseStr01”;<br><font color="blue"><br>结果 #5 ：因为str1和str4指向的都是常量池中的第三项，所以str1==str4返回true。这里我们还能发现一个现象，对于final字段，编译期直接进行了常量替换，而对于非final字段则是在运行期进行赋值处理的。</font><br>38: new           #9：创建String对象<br><br>41: dup               ：复制引用并压如栈中。<br><br>42: ldc           #3：加载常量池中的第三项（”baseStr01”）到栈中。<br><br>44: invokespecial #10：调用String.”<init>“方法，并传42步骤中的引用作为参数传入该方法。<br><br>47: invokevirtual #11：调用String.intern方法。<br><br>从38到41的对应的源码就是new String(“baseStr01”).intern()。<br><br>50: astore        7：将47步返回的结果赋值给变量7，即str5指向baseStr01在常量池中的位置。<br><font color="blue"><br>结果 #6 ：因为str5和str1都指向的都是常量池中的同一个字符串，所以str1==str5返回true。</font><br>运行代码段二，输出结果如下：<br><a href="/images/java-string-intern-5.jpg"><img src="/images/java-string-intern-5.jpg" alt=""></a><br><br>## 代码段三解析：<br>对于代码段三，在 JDK 1.6 和 JDK 1.7中的运行结果不同。我们先看一下运行结果，然后再来解释其原因：<br><br>JDK 1.6 下的运行结果：<br><a href="/images/java-string-intern-6.jpg"><img src="/images/java-string-intern-6.jpg" alt=""></a><br>JDK 1.7 下的运行结果：<br><a href="/images/java-string-intern-7.jpg"><img src="/images/java-string-intern-7.jpg" alt=""></a><br><br>根据对代码段一的分析，应该可以很简单得出 JDK 1.6 的结果，因为 str2 和 str1本来就是指向不同的位置，理应返回false。<br><br>比较奇怪的问题在于JDK 1.7后，对于第一种情况返回true，但是调换了一下位置返回的结果就变成了false。这个原因主要是从JDK 1.7后，HotSpot 将常量池从永久代移到了元空间，正因为如此，JDK 1.7 后的intern方法在实现上发生了比较大的改变，JDK 1.7后，intern方法还是会先去查询常量池中是否有已经存在，如果存在，则返回常量池中的引用，这一点与之前没有区别，区别在于，如果在常量池找不到对应的字符串，则不会再将字符串拷贝到常量池，而只是在常量池中生成一个对原字符串的引用。所以:<br><font color="blue"><br>结果 #7：在第一种情况下，因为常量池中没有“str01”这个字符串，所以会在常量池中生成一个对堆中的“str01”的引用，而在进行字面量赋值的时候，常量池中已经存在，所以直接返回该引用即可，因此str1和str2都指向堆中的字符串，返回true。<br><br>结果 #8：调换位置以后，因为在进行字面量赋值（String str1 = “str01”）的时候，常量池中不存在，所以str1指向的常量池中的位置，而str2指向的是堆中的对象，再进行intern方法时，对str1和str2已经没有影响了，所以返回false。</font>
-
-<h1 id="常见面试题解答"><a href="#常见面试题解答" class="headerlink" title="常见面试题解答"></a>常见面试题解答</h1><p>有了对以上的知识的了解，我们现在再来看常见的面试或笔试题就很简单了：</p>
-<p>Q：String s = new String(“xyz”)，创建了几个String Object? </p>
-<p>A：两个，常量池中的”xyz”和堆中对象。</p>
-<p>Q：下列程序的输出结果：</p>
-<p>String s1 = “abc”;<br>String s2 = “abc”;<br>System.out.println(s1 == s2);</p>
-<p>A：true，均指向常量池中对象。</p>
-<p>Q：下列程序的输出结果：</p>
-<p>String s1 = new String(“abc”);<br>String s2 = new String(“abc”);<br>System.out.println(s1 == s2);</p>
-<p>A：false，两个引用指向堆中的不同对象。</p>
-<p>Q：下列程序的输出结果：</p>
-<p>String s1 = “abc”;<br>String s2 = “a”;<br>String s3 = “bc”;<br>String s4 = s2 + s3;<br>System.out.println(s1 == s4);</p>
-<p>A：false，因为s2+s3实际上是使用StringBuilder.append来完成，会生成不同的对象。</p>
-<p>Q：下列程序的输出结果：</p>
-<p>String s1 = “abc”;<br>final String s2 = “a”;<br>final String s3 = “bc”;<br>String s4 = s2 + s3;<br>System.out.println(s1 == s4);</p>
-<p>A：true，因为final变量在编译后会直接替换成对应的值，所以实际上等于s4=”a”+”bc”，而这种情况下，编译器会直接合并为s4=”abc”，所以最终s1==s4。</p>
-<p>Q：下列程序的输出结果：</p>
-<p>String s = new String(“abc”);<br>String s1 = “abc”;<br>String s2 = new String(“abc”);</p>
-<p>System.out.println(s == s1.intern());<br>System.out.println(s == s2.intern());<br>System.out.println(s1 == s2.intern());</p>
-<p>A：false，false，true，具体原因参考第二部分内容。</p>
-<p>原文地址 <a href="http://www.cnblogs.com/paddix/p/5326863.html" target="_blank" rel="external">http://www.cnblogs.com/paddix/p/5326863.html</a></p>
-</init></init>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;字符串问题&quot;&gt;&lt;a href=&quot;#字符串问题&quot; class=&quot;headerlink&quot; title=&quot;字符串问题&quot;&gt;&lt;/a&gt;字符串问题&lt;/h1&gt;&lt;p&gt;字符串在我们平时的编码工作中其实用的非常多，并且用起来也比较简单，所以很少有人对其做特别深入的研究。倒是面试或者笔试的时候，往往会涉及比较深入和难度大一点的问题。我在招聘的时候也偶尔会问应聘者相关的问题，倒不是说一定要回答的特别正确和深入，通常问这些问题的目的有两个，第一是考察对 JAVA 基础知识的了解程度，第二是考察应聘者对技术的态度。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
-    
-      <category term="jvm" scheme="http://idiotsky.me/tags/jvm/"/>
     
   </entry>
   

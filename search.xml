@@ -23,6 +23,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[openstack安装准备(二)-环境的安装]]></title>
+    <url>%2F2017%2F08%2F19%2Fopenstack-install-prepare-2%2F</url>
+    <content type="text"><![CDATA[上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。 按照官方建议，这次openstack安装的服务为： Identity service (keystone) Image service (glance) Compute service (nova) Networking service (neutron) Dashboard (horizon) Block Storage service (cinder) 在安装上面服务前，先要弄好环境的😁 安装openstack仓库123456# change to root$ sudo -i$ apt install software-properties-common$ add-apt-repository cloud-archive:pike$ apt update &amp;&amp; apt dist-upgrade$ apt install python-openstackclient to be continue…]]></content>
+      <categories>
+        <category>openstack</category>
+      </categories>
+      <tags>
+        <tag>openstack</tag>
+        <tag>ubuntu</tag>
+        <tag>kvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[openstack安装准备(一)]]></title>
     <url>%2F2017%2F08%2F18%2Fopenstack-install-prepare-1%2F</url>
     <content type="text"><![CDATA[准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。 准备网络这次实验用到两台虚拟机： controller,compute controller12345678910111213141516171819202122232425262728$ cat /etc/hostnamecontroller$ cat /etc/hosts127.0.0.1 localhost192.168.199.11 compute192.168.199.10 controller$ cat /etc/network/interfaces# The loopback network interfaceauto loiface lo inet loopback# The primary network interfaceauto ens33iface ens33 inet staticaddress 192.168.199.10netmask 255.255.255.0gateway 192.168.199.1dns-nameservers 192.168.199.1auto ens34iface ens34 inet staticaddress 10.170.56.10netmask 255.255.255.0auto ens35iface ens35 inet manual 接口 ip 模式 ens33 192.168.199.10 桥接 ens34 10.170.56.10 私有 ens35 网关192.168.112.2 nat compute12345678910111213141516171819202122232425$ cat /etc/hostnamecompute$ cat /etc/hosts127.0.0.1 localhost192.168.199.11 compute192.168.199.10 controller$ cat /etc/network/interfaces# The loopback network interfaceauto loiface lo inet loopback# The primary network interfaceauto ens33iface ens33 inet staticaddress 192.168.199.11netmask 255.255.255.0gateway 192.168.199.1dns-nameservers 192.168.199.1auto ens34iface ens34 inet staticaddress 10.170.56.11netmask 255.255.255.0 接口 ip 模式 ens33 192.168.199.11 桥接 ens34 10.170.56.11 私有 总结PS: 桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。一般用来做管理节点的网络。 私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络 nat模式用来给虚拟机访问互联网用 PSPS:接下来会在上面的两台虚拟机安装openstack，安装完openstack后，两台虚拟机对于openstack来说，就是物理机，通过openstack，创建的就是云主机（或者叫租户）了。所以必须要谨记这点。 PSPSPS: 桥接模式的ip必须是你电脑所在网络的任意不冲突的同子网的ip 私有模式的ip可以任意一个子网下的ip，这个网络是用来做租户网络的 nat网络不用配ip，这个给租户用来访问外网的，接下来实验会再提及，注意下他的网关即可，它是你的VMware的nat的一个网关。 上面网络配置好后，可以开搞了，至于怎么安装虚拟机和配置网络，可以搜索相关文章😈。]]></content>
