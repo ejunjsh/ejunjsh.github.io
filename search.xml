@@ -175,6 +175,20 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[全面解析-SQL事务+隔离级别+阻塞+死锁]]></title>
+    <url>%2F2016%2F08%2F27%2Fsql-trasaction-isolation-deadlock%2F</url>
+    <content type="text"><![CDATA[本篇主要是对SQL中事务和并发的详细讲解。 事务什么是事务为单个工作单元而执行的一系列操作。如查询、修改数据、修改数据定义。 语法显示定义事务的开始、提交1234BEGIN TRANINSERT INTO b(t1) VALUES(1)INSERT INTO b(t1) VALUES(2)COMMIT TRAN 隐式定义如果不显示定义事务的边界，则SQL Server会默认把每个单独的语句作为一个事务，即在执行完每个语句之后就会自动提交事务。 事务的四个属性ACID原子性Atomicity 事务必须是原子工作单元。事务中进行的修改，要么全部执行，要么全都不执行； 在事务完成之前（提交指令被记录到事务日志之前），系统出现故障或重新启动，SQL Server将会撤销在事务中进行的所有修改； 事务在处理中遇到错误，SQL Server通常会自动回滚事务； 少数不太严重的错误不会引发事务的自动回滚，如主键冲突、锁超时等； 可以使用错误处理来捕获第4点提到的错误，并采取某种操作，如把错误记录在日志中，再回滚事务； SELECT @@TRANCOUNT可用在代码的任何位置来判断当前使用SELECT @@TRANCOUNT的地方是否位于一个打开的事务当中，如果不在任何打开的事务范围内，则该函数返回0；如果在某个打开的事务返回范围内，则返回一个大于0的值。打开一个事务，@@TRANCOUNT=@@TRANCOUNT+1；提交一个事务，@@TRANCOUNT-1。 一致性Consiitency 同时发生的事务在修改和查询数据时不发生冲突； 一致性取决于应用程序的需要。后面会讲到一致性级别，以及如何对一致性进行控制。 隔离性Isolation 用于控制数据访问，确保事务只访问处于期望的一致性级别下的数据； 使用锁对各个事务之间正在修改和查询的数据进行隔离。 持久性Durability 在将数据修改写入到磁盘上数据库的数据分区之前会把这些修改写入到磁盘上数据库的事务日志中，把提交指令记录到磁盘的事务日志中以后，及时数据修改还没有应用到磁盘的数据分区，也可以认为事务时持久化的。 系统重新启动（正常启动或在发生系统故障之后启动），SQL Server会每个数据库的事务日志，进行回复处理。 恢复处理包含两个阶段：重做阶段和撤销阶段。 前滚：在重做阶段，对于提交指令已经写入到日志的事务，但数据修改还没有应用到数据分区的事务，数据库引擎会重做这些食物所做的所有修改。 回滚：在撤销阶段，对于提交指令没有写入到日志中的事务，数据库引擎会撤销这些事务所做的修改。（这句话需要research,可能是不正确的。因为提交指令没有写入到数据分区，撤销修改是指撤销哪些修改呢？？？） 锁事务中的锁 SQL Server使用锁来实现事务的隔离。 事务获取锁这种控制资源，用于保护数据资源，防止其他事务对数据进行冲突的或不兼容的访问。 锁模式 排他锁 当试图修改数据时，事务只能为所依赖的数据资源请求排他锁。 持有排他锁时间：一旦某个事务得到了排他锁，则这个事务将一直持有排他锁直到事务完成。 排他锁和其他任何类型的锁在多事务中不能在同一阶段作用于同一个资源。如：当前事务获得了某个资源的排他锁，则其他事务不能获得该资源的任何其他类型的锁。其他事务获得了某个资源的任何其他类型的锁，则当前事务不能获得该资源的排他锁。 共享锁 当试图读取数据时，事务默认会为所依赖的数据资源请求共享锁。 持有共享锁时间：从事务得到共享锁到读操作完成。 多个事务可以在同一阶段用共享锁作用于同一数据资源。 在读取数据时，可以对如何处理锁定进行控制。后面隔离级别会讲到如何对锁定进行控制。 排他锁和共享锁的兼容性 如果数据正在由一个事务进行修改，则其他事务既不能修改该数据，也不能读取（至少默认不能）该数据，直到第一个事务完成。 如果数据正在由一个事务读取，则其他事务不能修改该数据（至少默认不能）。 to be continue..]]></content>
+      <categories>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>sql</tag>
+        <tag>死锁</tag>
+        <tag>事务</tag>
+        <tag>隔离级别</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[深入浅出MappedByteBuffer]]></title>
     <url>%2F2016%2F08%2F23%2Fjava-mapped-byte-buffer%2F</url>
     <content type="text"><![CDATA[前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。 内存管理在深入MappedByteBuffer之前，先看看计算机内存管理的几个术语： MMC：CPU的内存管理单元。 物理内存：即内存条的内存空间。 虚拟内存：计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续的可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。 页面文件：操作系统反映构建并使用虚拟内存的硬盘空间大小而创建的文件，在windows下，即pagefile.sys文件，其存在意味着物理内存被占满后，将暂时不用的数据移动到硬盘上。 缺页中断：当程序试图访问已映射在虚拟地址空间中但未被加载至物理内存的一个分页时，由MMC发出的中断。如果操作系统判断此次访问是有效的，则尝试将相关的页从虚拟内存文件中载入物理内存。 为什么会有虚拟内存和物理内存的区别？如果正在运行的一个进程，它所需的内存是有可能大于内存条容量之和的，如内存条是256M，程序却要创建一个2G的数据区，那么所有数据不可能都加载到内存（物理内存），必然有数据要放到其他介质中（比如硬盘），待进程需要访问那部分数据时，再调度进入物理内存。 什么是虚拟内存地址和物理内存地址？假设你的计算机是32位，那么它的地址总线是32位的，也就是它可以寻址0~0xFFFFFFFF（4G）的地址空间，但如果你的计算机只有256M的物理内存0x~0x0FFFFFFF（256M），同时你的进程产生了一个不在这256M地址空间中的地址，那么计算机该如何处理呢？回答这个问题前，先说明计算机的内存分页机制。 计算机会对虚拟内存地址空间（32位为4G）进行分页产生页（page），对物理内存地址空间（假设256M）进行分页产生页帧（page frame），页和页帧的大小一样，所以虚拟内存页的个数势必要大于物理内存页帧的个数。在计算机上有一个页表（page table），就是映射虚拟内存页到物理内存页的，更确切的说是页号到页帧号的映射，而且是一对一的映射。问题来了，虚拟内存页的个数 &gt; 物理内存页帧的个数，岂不是有些虚拟内存页的地址永远没有对应的物理内存地址空间？不是的，操作系统是这样处理的。操作系统有个页面失效（page fault）功能。操作系统找到一个最少使用的页帧，使之失效，并把它写入磁盘，随后把需要访问的页放到页帧中，并修改页表中的映射，保证了所有的页都会被调度。 现在来看看什么是虚拟内存地址和物理内存地址： 虚拟内存地址：由页号（与页表中的页号关联）和偏移量（页的小大，即这个页能存多少数据）组成。 举个例子，有一个虚拟地址它的页号是4，偏移量是20，那么他的寻址过程是这样的：首先到页表中找到页号4对应的页帧号（比如为8），如果页不在内存中，则用失效机制调入页，接着把页帧号和偏移量传给MMC组成一个物理上真正存在的地址，最后就是访问物理内存的数据了。 MappedByteBuffer是什么从继承结构上看，MappedByteBuffer继承自ByteBuffer，内部维护了一个逻辑地址address。 示例通过MappedByteBuffer读取文件1234567891011121314151617181920212223public class MappedByteBufferTest &#123; public static void main(String[] args) &#123; File file = new File("D://data.txt"); long len = file.length(); byte[] ds = new byte[(int) len]; try &#123; MappedByteBuffer mappedByteBuffer = new RandomAccessFile(file, "r") .getChannel() .map(FileChannel.MapMode.READ_ONLY, 0, len); for (int offset = 0; offset &lt; len; offset++) &#123; byte b = mappedByteBuffer.get(); ds[offset] = b; &#125; Scanner scan = new Scanner(new ByteArrayInputStream(ds)).useDelimiter(" "); while (scan.hasNext()) &#123; System.out.print(scan.next() + " "); &#125; &#125; catch (IOException e) &#123;&#125; &#125;&#125; map过程FileChannel提供了map方法把文件映射到虚拟内存，通常情况可以映射整个文件，如果文件比较大，可以进行分段映射。 FileChannel中的几个变量： MapMode mode：内存映像文件访问的方式，共三种： MapMode.READ_ONLY：只读，试图修改得到的缓冲区将导致抛出异常。 MapMode.READ_WRITE：读/写，对得到的缓冲区的更改最终将写入文件；但该更改对映射到同一文件的其他程序不一定是可见的。 MapMode.PRIVATE：私用，可读可写,但是修改的内容不会写入文件，只是buffer自身的改变，这种能力称之为”copy on write”。 position：文件映射时的起始位置。 allocationGranularity：Memory allocation size for mapping buffers，通过native函数initIDs初始化。 接下去通过分析源码，了解一下map过程的内部实现。 通过RandomAccessFile获取FileChannel。 12345678public final FileChannel getChannel() &#123;synchronized (this) &#123; if (channel == null) &#123; channel = FileChannelImpl.open(fd, path, true, rw, this); &#125; return channel;&#125;&#125; 上述实现可以看出，由于synchronized ，只有一个线程能够初始化FileChannel。 通过FileChannel.map方法，把文件映射到虚拟内存，并返回逻辑地址address，实现如下： 123456789101112131415161718192021222324252627282930313233343536**只保留了核心代码**public MappedByteBuffer map(MapMode mode, long position, long size) throws IOException &#123; int pagePosition = (int)(position % allocationGranularity); long mapPosition = position - pagePosition; long mapSize = size + pagePosition; try &#123; addr = map0(imode, mapPosition, mapSize); &#125; catch (OutOfMemoryError x) &#123; System.gc(); try &#123; Thread.sleep(100); &#125; catch (InterruptedException y) &#123; Thread.currentThread().interrupt(); &#125; try &#123; addr = map0(imode, mapPosition, mapSize); &#125; catch (OutOfMemoryError y) &#123; // After a second OOME, fail throw new IOException("Map failed", y); &#125; &#125; int isize = (int)size; Unmapper um = new Unmapper(addr, mapSize, isize, mfd); if ((!writable) || (imode == MAP_RO)) &#123; return Util.newMappedByteBufferR(isize, addr + pagePosition, mfd, um); &#125; else &#123; return Util.newMappedByteBuffer(isize, addr + pagePosition, mfd, um); &#125;&#125; 上述代码可以看出，最终map通过native函数map0完成文件的映射工作。 如果第一次文件映射导致OOM，则手动触发垃圾回收，休眠100ms后再次尝试映射，如果失败，则抛出异常。 通过newMappedByteBuffer方法初始化MappedByteBuffer实例，不过其最终返回的是DirectByteBuffer的实例，实现如下： 12345678910111213141516171819202122232425static MappedByteBuffer newMappedByteBuffer(int size, long addr, FileDescriptor fd, Runnable unmapper) &#123;MappedByteBuffer dbb;if (directByteBufferConstructor == null)initDBBConstructor();dbb = (MappedByteBuffer)directByteBufferConstructor.newInstance(new Object[] &#123; new Integer(size), new Long(addr), fd, unmapper &#125;return dbb;&#125;// 访问权限private static void initDBBConstructor() &#123;AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() &#123;public Void run() &#123; Class&lt;?&gt; cl = Class.forName("java.nio.DirectByteBuffer"); Constructor&lt;?&gt; ctor = cl.getDeclaredConstructor( new Class&lt;?&gt;[] &#123; int.class, long.class, FileDescriptor.class, Runnable.class &#125;); ctor.setAccessible(true); directByteBufferConstructor = ctor;&#125;&#125;);&#125; 由于FileChannelImpl和DirectByteBuffer不在同一个包中，所以有权限访问问题，通过AccessController类获取DirectByteBuffer的构造器进行实例化。 DirectByteBuffer是MappedByteBuffer的一个子类，其实现了对内存的直接操作。 get过程MappedByteBuffer的get方法最终通过DirectByteBuffer.get方法实现的。123456789public byte get() &#123; return ((unsafe.getByte(ix(nextGetIndex()))));&#125;public byte get(int i) &#123; return ((unsafe.getByte(ix(checkIndex(i)))));&#125;private long ix(int i) &#123; return address + (i &lt;&lt; 0);&#125; map0()函数返回一个地址address，这样就无需调用read或write方法对文件进行读写，通过address就能够操作文件。底层采用unsafe.getByte方法，通过（address + 偏移量）获取指定内存的数据。 第一次访问address所指向的内存区域，导致缺页中断，中断响应函数会在交换区中查找相对应的页面，如果找不到（也就是该文件从来没有被读入内存的情况），则从硬盘上将文件指定页读取到物理内存中（非jvm堆内存）。 如果在拷贝数据时，发现物理内存不够用，则会通过虚拟内存机制（swap）将暂时不用的物理页面交换到硬盘的虚拟内存中。 性能分析从代码层面上看，从硬盘上将文件读入内存，都要经过文件系统进行数据拷贝，并且数据拷贝操作是由文件系统和硬件驱动实现的，理论上来说，拷贝数据的效率是一样的。但是通过内存映射的方法访问硬盘上的文件，效率要比read和write系统调用高，这是为什么？ read()是系统调用，首先将文件从硬盘拷贝到内核空间的一个缓冲区，再将这些数据拷贝到用户空间，实际上进行了两次数据拷贝； map()也是系统调用，但没有进行数据拷贝，当缺页中断发生时，直接将文件从硬盘拷贝到用户空间，只进行了一次数据拷贝。 所以，采用内存映射的读写效率要比传统的read/write性能高。 总结 MappedByteBuffer使用虚拟内存，因此分配(map)的内存大小不受JVM的-Xmx参数限制，但是也是有大小限制的。 如果当文件超出1.5G限制时，可以通过position参数重新map文件后面的内容。 MappedByteBuffer在处理大文件时的确性能很高，但也存在一些问题，如内存占用、文件关闭不确定，被其打开的文件只有在垃圾回收的才会被关闭，而且这个时间点是不确定的。javadoc中也提到：A mapped byte buffer and the file mapping that it represents remain* valid until the buffer itself is garbage-collected. 原文：http://www.jianshu.com/p/f90866dcbffc]]></content>
@@ -369,6 +383,29 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[SSH免密码登陆以及穿越跳板机]]></title>
+    <url>%2F2014%2F03%2F27%2Flinux-ssh-gateway%2F</url>
+    <content type="text"><![CDATA[免密码直连 [user@hostA ~] $ssh hostBSTEP1. 在hostA上生成RSA公钥私钥（在~/.ssh/下生成RSA私钥id_rsa，公钥id_rsa.pub）1[user@hostA ~]$ ssh-keygen -t rsa STEP2. 将hostA的公钥传给hostB机器（在hostB机器的.ssh/authorized_keys里面添加A机器的id_rsa.pub）方法一：使用 ssh-copy-id工具1[user@hostA ~]$ ssh-copy-id -i .ssh/id_rsa.pub hostB 方法二：人肉拼接12[user@hostA ~]$ scp .ssh/id_rsa.pub hostB:~/.ssh/temp[user@hostB ~]$ cat .ssh/temp &gt;&gt; .ssh/authorized_keys 穿越跳板机 desktop -&gt; gateway -&gt; server在我厂，从desktop访问server，必须先登录到gateway，即:12[user@desktop ~]$ ssh gateway[user@gateway ~]$ ssh server 根据”1. 免密码直连”虽然可以减少两次输入密码，但仍然很麻烦。如果可以一步到位该多好。另外，SCP文件更郁闷，先把文件从desktop拷到gateway，再拷到server，奔溃了。。 STEP1. 在desktop上生成RSA公钥私钥，方法同1.STEP1STEP2. 在desktop的.ssh目录下生成config文件，文件内容如下12Host shortServer ProxyCommand ssh user@gateway nc server %p 2&gt;/dev/null 其中，gateway为跳板机ip，server为服务器ip，shortServer自定义一个缩写的服务器名称。例如：我厂gateway地址x.y.g.w，以及N多服务器，例如*.a.b.c。12Host 123 ProxyCommand ssh user@x.y.g.w nc 123.a.b.c %p 2&gt;/dev/null STEP3. 把deskptop的公钥分发给gateway和server分发给gateway，因为可以直连desktop和gateway，直接用1.STEP2.方法一分发给server，因为暂时无法直连desktop和server，所以只能使用1.STEP2.方法二 连接方法：1[user@desktop ~]$ ssh 123 此时SCP也能直接用了1[user@desktop ~]$ scp ToCopy.txt 123:]]></content>
+      <categories>
+        <category>linux命令</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[为什么要使用SLF4J而不是Log4J]]></title>
+    <url>%2F2014%2F03%2F27%2Fjava-slf4j-log4j%2F</url>
+    <content type="text"><![CDATA[每一个Java程序员都知道日志对于任何一个Java应用程序，尤其是服务端程序是至关重要的，而很多程序员也已经熟悉各种不同的日志库如java.util.logging、Apache log4j、logback。但如果你还不知道SLF4J（Simple logging facade for Java）的话，那么是时候去在你项目中学习使用SLF4J了。在这篇文章中，我们将学习为什么使用SLF4J比log4j或者java.util.logging要优秀。 不管怎样，让我们回到这个话题，SLF4J不同于其他日志类库，与其它有很大的不同。SLF4J(Simple logging Facade for Java)不是一个真正的日志实现，而是一个抽象层（ abstraction layer），它允许你在后台使用任意一个日志类库。如果是在编写供内外部都可以使用的API或者通用类库，那么你真不会希望使用你类库的客户端必须使用你选择的日志类库。 如果一个项目已经使用了log4j，而你加载了一个类库，比方说 Apache Active MQ——它依赖于于另外一个日志类库logback，那么你就需要把它也加载进去。但如果Apache Active MQ使用了SLF4J，你可以继续使用你的日志类库而无语忍受加载和维护一个新的日志框架的痛苦。 总的来说，SLF4J使你的代码独立于任意一个特定的日志API，这是一个对于开发API的开发者很好的思想。虽然抽象日志类库的思想已经不是新鲜的事物而且Apache commons logging也已经在使用这种思想了，但现在SLF4J正迅速成为Java世界的日志标准。让我们再看看几个使用SLF4J而不是log4j、logback或者java.util.logging的理由。SLF4J对比Log4J，logback和java.util.Logging的优势正如我之前说的，在你的代码中使用SLF4J写日志语句的主要出发点是使得你的程序独立于任意特定的日志类库，依赖于特定类可能需要不同与你已有的配置，并且导致更多维护的麻烦。但除此之外，还要一个SLF4J API的特性使得我坚持使用SLF4J而抛弃我长期间钟爱的Lof4j的理由，是被称为占位符(place holder)，在代码中表示为“{}”的特性。占位符是一个非常类似于在String的format()方法中的%s，因为它会在运行时被某个提供的实际字符串所替换。这不仅降低了你代码中字符串连接次数，而且还节省了新建的String对象。即使你可能没需要那些对象，但这个依旧成立，取决于你的生产环境的日志级别，例如在DEBUG或者INFO级别的字符串连接。因为String对象是不可修改的并且它们建立在一个String池中，它们消耗堆内存( heap memory)而且大多数时间他们是不被需要的，例如当你的应用程序在生产环境以ERROR级别运行时候，一个String使用在DEBUG语句就是不被需要的。通过使用SLF4J,你可以在运行时延迟字符串的建立，这意味着只有需要的String对象才被建立。而如果你已经使用log4j，那么你已经对于在if条件中使用debug语句这种变通方案十分熟悉了，但SLF4J的占位符就比这个好用得多。 这是你在Log4j中使用的方案，但肯定这一点都不有趣并且降低了代码可读性因为增加了不必要的繁琐重复代码(boiler-plate code)：123if (logger.isDebugEnabled()) &#123; logger.debug("Processing trade with id: " + id + " symbol: " + symbol);&#125; 另一方面，如果你使用SLF4J的话，你可以得到在极简洁的格式的结果，就像以下展示的一样：1logger.debug("Processing trade with id: &#123;&#125; and symbol : &#123;&#125; ", id, symbol); 在SLF4J，我们不需要字符串连接而且不会导致暂时不需要的字符串消耗。取而代之的，我们在一个以占位符和以参数传递实际值的模板格式下写日志信息。你可能会在想万一我有很个参数怎么办？嗯，那么你可以选择使用变量参数版本的日志方法或者用以Object数组传递。这是一个相当的方便和高效方法的打日志方法。记住，在生产最终日志信息的字符串之前，这个方法会检查一个特定的日志级别是不是打开了，这不仅降低了内存消耗而且预先降低了CPU去处理字符串连接命令的时间。这里是使用SLF4J日志方法的代码，来自于slf4j-log4j12-1.6.1.jar中的Log4j的适配器类Log4jLoggerAdapter。123456public void debug(String format, Object arg1, Object arg2) &#123; if (logger.isDebugEnabled()) &#123; FormattingTuple ft = MessageFormatter.format(format, arg1, arg2); logger.log(FQCN, Level.DEBUG, ft.getMessage(), ft.getThrowable()); &#125;&#125; 同时，我们也很值得知道打日志是对应用程序的性能有着很大影响的，在生产环节上只进行必要的日志记录是我们所建议的。 怎么用SLF4J做Log4J的日志记录除了以上好处，我想还有一个告诫，就是为了使用SLF4J，你不仅需要包含SLF4J的API jar包，例如 slf4j-api-1.6.1.jar，还需要相关Jar包，这取决于你在后台使用的日志类库。如果你想要使用和Log4J 一起使用SLF4J ，Simple Logging Facade for Java,，你需要包含以下的Jar包在你的classpath中，取决于哪个SLF4J和你在使用的Log4J的版本。例如： slf4j-api-1.6.1.jar – JAR for SLF4J API log4j-1.2.16.jar – JAR for Log4J API slf4j-log4j12-1.6.1.jar – Log4J Adapter for SLF4J 如果你在使用Maven去管理你的项目依赖，你只需要包含SLF4J JAR包，maven会包含它的依赖的相关包。为了和SLF4J一起中使用Log4J，你可以包含以下的依赖在你项目中的pom.xml。1234567891011&lt;dependency&gt; &lt;groupId&gt;org.slf4j&lt;/groupId&gt; &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt; &lt;version&gt;1.6.1&lt;/version&gt;&lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;org.slf4j&lt;/groupId&gt; &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt; &lt;version&gt;1.6.1&lt;/version&gt;&lt;/dependency&gt; 还有，如果你对于使用变量参数版本（variable argument version ）的日志方法感兴趣的话，那么就导入SLF4J 1.7的版本吧。 总结总结这次说的，我建议使用SLF4J的而不是直接使用 Log4j, commons logging, logback 或者 java.util.logging 已经足够充分了。 在你的开源或内部类库中使用SLF4J会使得它独立于任何一个特定的日志实现，这意味着不需要管理多个日志配置或者多个日志类库，你的客户端会很感激这点。SLF4J提供了基于占位符的日志方法，这通过去除检查isDebugEnabled(), isInfoEnabled()等等，提高了代码可读性。通过使用SLF4J的日志方法，你可以延迟构建日志信息（Srting）的开销，直到你真正需要，这对于内存和CPU都是高效的。作为附注，更少的暂时的字符串意味着垃圾回收器（Garbage Collector）需要做更好的工作，这意味着你的应用程序有为更好的吞吐量和性能。这些好处只是冰山一角，你将在开始使用SL4J和阅读其中代码的时候知道更多的好处。我强烈建议，任何一个新的Java程序员，都应该使用SLF4J做日志而不是使用包括Log4J在内的其他日志API。 原文链接： javarevisited 翻译： ImportNew.com - Jaskey译文链接： http://www.importnew.com/7450.html]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[maven resource 记录]]></title>
     <url>%2F2014%2F02%2F20%2Fmaven-resouce%2F</url>
     <content type="text"><![CDATA[今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。 上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。12345678910111213&lt;build&gt; &lt;resources&gt; &lt;resource&gt; &lt;directory&gt;src/main/java&lt;/directory&gt; &lt;includes&gt; &lt;include&gt;**/*.properties&lt;/include&gt; &lt;include&gt;**/*.xml&lt;/include&gt; &lt;include&gt;**/*.tld&lt;/include&gt; &lt;/includes&gt; &lt;filtering&gt;true&lt;/filtering&gt; &lt;/resource&gt; &lt;/resources&gt; &lt;/build&gt; 搞定收工。。。不知道有没有更好到方法呢？]]></content>
@@ -403,9 +440,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
+        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
-        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
@@ -457,6 +494,19 @@
       </categories>
       <tags>
         <tag>jQuery</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[一分钟教你知道乐观锁和悲观锁的区别]]></title>
+    <url>%2F2014%2F01%2F27%2Fsql-pessimistic-optimistic-lock%2F</url>
+    <content type="text"><![CDATA[悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。 乐观锁(Optimistic Lock), 顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库如果提供类似于write_condition机制的其实都是提供的乐观锁。]]></content>
+      <categories>
+        <category>sql</category>
+      </categories>
+      <tags>
+        <tag>悲观锁</tag>
+        <tag>乐观锁</tag>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
