@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-09-01T15:21:47.000Z</updated>
+  <updated>2017-09-02T13:39:44.000Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work-2/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work-2/</id>
     <published>2017-08-26T03:08:09.000Z</published>
-    <updated>2017-09-01T15:21:47.000Z</updated>
+    <updated>2017-09-02T13:39:44.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。</p>
@@ -57,7 +57,10 @@
 <h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="/images/js-how-work-2-2.png"><img src="/images/js-how-work-2-2.png" alt=""></a></p>
 <h1 id="隐藏类-Hidden-class"><a href="#隐藏类-Hidden-class" class="headerlink" title="隐藏类(Hidden class)"></a>隐藏类(Hidden class)</h1><p>javascript是一种基于原型的语言：没有类和对象是通过克隆进程创建的(机翻😁)。javascript也是一种动态语言，他能够随意的添加和删除一个对象的属性，即使这个对象已经实例化了。<br>大部分javascript解释器使用类字典的结构(基于<a href="http://en.wikipedia.org/wiki/Hash_function" target="_blank" rel="external">哈希函数</a>)来存储对象属性值在内存的位置。相比非动态语言如java和c#，这种结构使得取值是种计算昂贵的操作。对java来说，在编译之前就已经确定对象的属性，运行时也不能随意添加和删除属性的（当然，c#支持<a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/dynamic" target="_blank" rel="external">动态类型</a>,那就在其他话题里了）。所以，属性的值（或者属性的指针）可以存储在一个连续的缓存里面，属性之间的位移更是固定的，而且位移的长度可以容易的基于属性类型来确定。这些对于javascript来说是不可能的，因为javascript的类型可以在运行时改变。<br>由于这种字典的取地址方式是不高效的，所以V8用了一个不同的方法来取代：隐藏类(Hidden class)。隐藏类的运作方式跟java的固定对象布局类似，除了它们是在运行时创建的。下面举个栗子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.x = x;</div><div class="line">    <span class="keyword">this</span>.y = y;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</div></pre></td></tr></table></figure></p>
 <p>一旦<code>new Point(1, 2)</code>被调用，V8将创建一个<code>C0</code>的隐藏类。<br><a href="/images/js-how-work-2-3.png"><img src="/images/js-how-work-2-3.png" alt=""></a><br>由于<code>Point</code>没有属性定义,所以<code>C0</code>是空的。</p>
-<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code></p>
+<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code>。<code>C1</code>描述了x的内存的位置（相对于对象指针），在这个情况下，x的位置存在<a href="http://en.wikipedia.org/wiki/Offset_%28computer_science%29" target="_blank" rel="external">位移</a>0上，这代表了<code>point</code>对象是一个连续的内存，它的第一个位移对应的是属性x。同时V8也用“类转换”更新了<code>C0</code>，表明了如果一个属性x加到<code>point</code>对象，隐藏类就应该要从<code>C0</code>转换到<code>C1</code>。所以现在<code>point</code>对象的隐藏类为<code>C1</code>。<br><a href="/images/js-how-work-2-4.png"><img src="/images/js-how-work-2-4.png" alt=""></a><br><small><em>每一次一个新的属性加到一个对象，一条转换的路径更新到旧的隐藏类并指向新的隐藏类。隐藏类转换是很重要的，因为同样方式创建的对象都共享同一个隐藏类。如果两个对象共享一个隐藏类，同时相同的属性加到这个两个对象的话，那么转换将保证这两个对象还是共享同一个新的隐藏类，而且共享同一个隐藏类有益于优化代码。</em></small></p>
+<p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="/images/js-how-work-2-5.png"><img src="/images/js-how-work-2-5.png" alt=""></a></p>
+<p>隐藏类的转换依赖于属性的加入顺序。看一下下面的代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.x = x;</div><div class="line">    <span class="keyword">this</span>.y = y;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</div><div class="line">p1.a = <span class="number">5</span>;</div><div class="line">p1.b = <span class="number">6</span>;</div><div class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> Point(<span class="number">3</span>, <span class="number">4</span>);</div><div class="line">p2.b = <span class="number">7</span>;</div><div class="line">p2.a = <span class="number">8</span>;</div></pre></td></tr></table></figure></p>
+<p>现在你肯定会认为p1和p2都是共享同一个隐藏类和转换路径，其实不然。对于p1，第一个属性是a再到b，而p2的话是先b在到a，所以p1和p2是分别两个不同的隐藏类和不同的两条转换路径。<strong>所以，对于动态属性最好是用相同的顺序加入到对象里面，这样有利于隐藏类的重用。</strong></p>
 <blockquote>
 <p>to be continue…</p>
 </blockquote>
@@ -130,7 +133,7 @@
     <link href="http://idiotsky.me/2017/08/19/openstack-install-prepare-2/"/>
     <id>http://idiotsky.me/2017/08/19/openstack-install-prepare-2/</id>
     <published>2017-08-19T14:50:07.000Z</published>
-    <updated>2017-08-28T15:09:30.000Z</updated>
+    <updated>2017-09-02T14:10:23.000Z</updated>
     
     <content type="html"><![CDATA[<p><a href="/images/openstack-install-prepare-2-1.png"><img src="/images/openstack-install-prepare-2-1.png" alt=""></a><br>上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。</p>
 <p>按照官方建议，这次openstack安装的服务为：</p>
@@ -145,9 +148,19 @@
 <a id="more"></a>
 <p>在安装上面服务前，先要弄好环境的😁</p>
 <h1 id="安装openstack仓库"><a href="#安装openstack仓库" class="headerlink" title="安装openstack仓库"></a>安装openstack仓库</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># change to root</span></div><div class="line">$ sudo -i</div><div class="line">$ apt install software-properties-common</div><div class="line">$ add-apt-repository cloud-archive:pike</div><div class="line">$ apt update &amp;&amp; apt dist-upgrade</div><div class="line">$ apt install python-openstackclient</div></pre></td></tr></table></figure>
-<blockquote>
-<p>to be continue…</p>
-</blockquote>
+<p>上面的步骤两个节点都要安装。<br><strong>以下步骤安装在controller</strong></p>
+<h1 id="安装数据库"><a href="#安装数据库" class="headerlink" title="安装数据库"></a>安装数据库</h1><p>openstack所用到的数据都会存到数据库里，所以安装一个数据库是准备的一个重要步骤。mariadb是官方建议的数据库。</p>
+<h2 id="安装和配置mariadb"><a href="#安装和配置mariadb" class="headerlink" title="安装和配置mariadb"></a>安装和配置mariadb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ apt install mariadb-server python-pymysql</div><div class="line">$ vi /etc/mysql/mariadb.conf.d/99-openstack.cnf</div><div class="line"><span class="comment"># 加一个[mysqld]区，bind-address为管理网络ip</span></div><div class="line">[mysqld]</div><div class="line"><span class="built_in">bind</span>-address = controller <span class="comment"># 192.168.199.10 </span></div><div class="line"></div><div class="line">default-storage-engine = innodb</div><div class="line">innodb_file_per_table = on</div><div class="line">max_connections = 4096</div><div class="line">collation-server = utf8_general_ci</div><div class="line">character-set-server = utf8</div></pre></td></tr></table></figure>
+<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service mysql restart</div></pre></td></tr></table></figure></p>
+<p>设置下root用户的密码，这个密码后面要用到，务必谨记。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mysql_secure_installation</div></pre></td></tr></table></figure></p>
+<h1 id="安装消息队列"><a href="#安装消息队列" class="headerlink" title="安装消息队列"></a>安装消息队列</h1><p>openstack用消息队列来异步控制各种service，所以要装一个，rabbitmq是官方推荐，装之。</p>
+<h2 id="安装和配置rabbitmq"><a href="#安装和配置rabbitmq" class="headerlink" title="安装和配置rabbitmq"></a>安装和配置rabbitmq</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ apt install rabbitmq-server</div></pre></td></tr></table></figure>
+<p>加一个openstack用户。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl add_user openstack RABBIT_PASS <span class="comment">#用你的密码替换下RABBIT_PASS，谨记这个密码，后面有用。</span></div></pre></td></tr></table></figure></p>
+<p>赋予更多权限给openstack用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl set_permissions openstack <span class="string">".*"</span> <span class="string">".*"</span> <span class="string">".*"</span></div></pre></td></tr></table></figure></p>
+<h1 id="安装缓存"><a href="#安装缓存" class="headerlink" title="安装缓存"></a>安装缓存</h1><p>openstack用到缓存，memcached是官方推荐，还是装之。</p>
+<h2 id="安装和配置memcached"><a href="#安装和配置memcached" class="headerlink" title="安装和配置memcached"></a>安装和配置memcached</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ apt install memcached python-memcache</div><div class="line">$ vi /etc/memcached.conf</div><div class="line"><span class="comment">#监听管理网络ip</span></div><div class="line"><span class="comment">#-l 127.0.0.1 改成下面这样</span></div><div class="line">-l controller <span class="comment"># 192.168.199.10</span></div></pre></td></tr></table></figure>
+<h2 id="收尾-1"><a href="#收尾-1" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service memcached restart</div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>基本上环境已经搭好了，接下来就要安装各种服务了。😈</p>
 ]]></content>
     
     <summary type="html">
@@ -181,7 +194,7 @@
     <link href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/"/>
     <id>http://idiotsky.me/2017/08/18/openstack-install-prepare-1/</id>
     <published>2017-08-18T14:50:07.000Z</published>
-    <updated>2017-08-27T07:00:30.000Z</updated>
+    <updated>2017-09-02T13:53:56.000Z</updated>
     
     <content type="html"><![CDATA[<h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
 <h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
@@ -238,7 +251,7 @@
 </table>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>PS:</p>
 <ul>
-<li>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。一般用来做管理节点的网络。</li>
+<li>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。这里用来做管理节点的网络。</li>
 <li>私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络</li>
 <li>nat模式用来给虚拟机访问互联网用</li>
 </ul>
@@ -299,9 +312,9 @@
       <category term="go" scheme="http://idiotsky.me/categories/go/"/>
     
     
-      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
-    
       <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
     
   </entry>
   
@@ -453,9 +466,9 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
     
     
-      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
-    
       <category term="python" scheme="http://idiotsky.me/tags/python/"/>
+    
+      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
     
       <category term="NAS" scheme="http://idiotsky.me/tags/NAS/"/>
     
@@ -485,9 +498,9 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
     
     
-      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
-    
       <category term="python" scheme="http://idiotsky.me/tags/python/"/>
+    
+      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
     
   </entry>
   
