@@ -115,7 +115,9 @@
 <meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-3.png">
 <meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-4.png">
 <meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-5.png">
-<meta property="og:updated_time" content="2017-09-02T13:39:44.000Z">
+<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-6.png">
+<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-7.png">
+<meta property="og:updated_time" content="2017-09-03T11:06:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript是如何工作的(二)">
 <meta name="twitter:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
@@ -463,9 +465,28 @@
 <p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="/images/js-how-work-2-5.png"><img src="/images/js-how-work-2-5.png" alt=""></a></p>
 <p>隐藏类的转换依赖于属性的加入顺序。看一下下面的代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.x = x;</div><div class="line">    <span class="keyword">this</span>.y = y;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</div><div class="line">p1.a = <span class="number">5</span>;</div><div class="line">p1.b = <span class="number">6</span>;</div><div class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> Point(<span class="number">3</span>, <span class="number">4</span>);</div><div class="line">p2.b = <span class="number">7</span>;</div><div class="line">p2.a = <span class="number">8</span>;</div></pre></td></tr></table></figure></p>
 <p>现在你肯定会认为p1和p2都是共享同一个隐藏类和转换路径，其实不然。对于p1，第一个属性是a再到b，而p2的话是先b在到a，所以p1和p2是分别两个不同的隐藏类和不同的两条转换路径。<strong>所以，对于动态属性最好是用相同的顺序加入到对象里面，这样有利于隐藏类的重用。</strong></p>
-<blockquote>
-<p>to be continue…</p>
-</blockquote>
+<h1 id="内联缓存-Inline-caching"><a href="#内联缓存-Inline-caching" class="headerlink" title="内联缓存(Inline caching)"></a>内联缓存(Inline caching)</h1><p>V8利用内联缓存技术来优化动态类型语言。内联缓存依赖于观察哪些方法在哪些相同的对象类型被重复调用。更深的介绍可以看<a href="https://github.com/sq/JSIL/wiki/Optimizing-dynamic-JavaScript-with-inline-caches" target="_blank" rel="external">这里</a><br>我们用更通用的概念来说说内联缓存（如果你没时间去看上面的介绍的链接的话。）<br>所以，内联缓存是怎么工作的呢？V8维护一个对象类型的缓存，当一个对象做为参数传递到一个函数调用中，那V8会缓存这个对象，并假设这个对象会在未来会再一次作为参数传递到一个函数调用中。如果V8的这个假设是正确的话，在下次传递对象到一个方法调用的时候，就会绕过查找类型对象的属性的过程，直接使用之前查找隐藏类所储存的信息。</p>
+<p>所以隐藏类和内联缓存是怎么样关联起来的呢？无论一个指定对象方法什么时候被执行，V8引擎都会去查找那个对象的隐藏类去决定指定属性的访问位移。在两次成功调用相同隐藏类的相同方法后，V8就会忽略隐藏类的查找并简单的用属性位移和这个对象指针相加来确定地址。对于未来的那个方法的调用，V8都假设这个对象的隐藏类都没有改变，直接使用之前查找后对象内存的位移来访问属性，这样大大增加执行速度。</p>
+<p>相同类型的对象共享相同隐藏类是很重要的，原因是内存缓存。如果你创建两个相同类型的对象，但它们的隐藏类不同（前面例子有提到），V8将没办法用到内联缓存，因为尽管类型相同，但是它们对应的隐藏类分配的属性位移是不同的。<br><a href="/images/js-how-work-2-6.png"><img src="/images/js-how-work-2-6.png" alt=""></a><br><small><em>这两个对象基本上是一样的，但是a和b属性是用不同的顺序创建的。</em></small></p>
+<h1 id="编译机器码"><a href="#编译机器码" class="headerlink" title="编译机器码"></a>编译机器码</h1><p>一旦Hydrogen图被优化，Crankshaft降低它为一个低级别的表述，称为Lithium。大多数Lithium实现是架构指定的。注册器分配发生在这个级别。</p>
+<p>最后，Lithium被编译为机器码。有一些编译发生在OSR:栈中替换。在我们编译和优化一个明显长时间运行的方法时，我们有可能已经运行了这个方法了。V8不会忘了这个方法重新运行一个优化的版本的方法，而是转换所有的上下文（栈，注册器），这样就可以在执行中切换到优化版本。这是一个复杂的任务，记得在其他优化里，V8已经一开始就内联代码了。V8不是唯一有这能力的引擎。</p>
+<p>这里有个保障是，一旦引擎的假设不成立的话，会把优化过的代码回滚回之前未优化的代码。这个保障称之为去优化（deoptimization）</p>
+<h1 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h1><p>对于垃圾回收，V8使用传统的分代标记清理的方式来清除旧的对象。标记的阶段一般都会停止javascript的执行。为了控制GC的成本和令执行更加稳定，V8用了递增标记来取代全堆标记。递增标记只是在部分堆中递增标记可能的对象，之后回到正常的代码执行。到下次执行GC的时候，会从上次GC标记的堆中开始。这样的话，停止时间很少。之前提及过，清理过程是在不同的线程执行的。</p>
+<h1 id="Ignition和TurboFan"><a href="#Ignition和TurboFan" class="headerlink" title="Ignition和TurboFan"></a>Ignition和TurboFan</h1><p>V8的5.9版本在2017年初发布，一个新的执行管道被引入。这个新的管道使得V8在现实的javascript应用程序中达到更高的性能和更少内存使用。</p>
+<p>新的执行管道由V8解释器<a href="https://github.com/v8/v8/wiki/Interpreter" target="_blank" rel="external">Ignition</a>和V8最新优化编译器<a href="https://github.com/v8/v8/wiki/TurboFan" target="_blank" rel="external">TurboFan</a> 组成。</p>
+<p>你可以在<a href="https://v8project.blogspot.bg/2017/05/launching-ignition-and-turbofan.html" target="_blank" rel="external">这里</a>查阅来自V8团队的博客文章.</p>
+<p>自从5.9版本的V8发布，full-codegen和Crankshaft（这两个技术从2010就开始服务V8了）不再被V8用来执行javascript，当V8团队要跟上新的javascript语言特性的步伐和这些特性更需要优化的支持。</p>
+<p>这就意味着V8总体来讲将是一个更简单和更容易维护的架构。<br><a href="/images/js-how-work-2-7.png"><img src="/images/js-how-work-2-7.png" alt=""></a><br><small><em>在网页和Node.js的性能改进</em></small></p>
+<p>这些改进只是个开始。新的Ignition和TurboFan为更长远的优化铺平了道路，并在这几年提升javascript的性能和缩小Node.js和Chrome的差距。</p>
+<h1 id="怎么写出最好的javascript代码"><a href="#怎么写出最好的javascript代码" class="headerlink" title="怎么写出最好的javascript代码"></a>怎么写出最好的javascript代码</h1><p>最后，这里有些建议帮助你们写出更优更好的javascript。我想，当你看到这里，你心里已经有所感悟了，但是，我还是总结下吧：</p>
+<ol>
+<li>对象属性的顺序:初始化对象属性最好要按相同顺序，这样，他们的隐藏类和后续的优化代码能够共享。</li>
+<li>动态属性：加一个动态属性会令一个对象的隐藏类改变，和拖慢任何一个方法，因为这个方法已经针对前一个隐藏类优化的了。所以，尽可能分配在构造函数里面分配所有的对象属性。</li>
+<li>方法：重复执行相同的方法比一次执行许多不同的方法快（因为内联缓存）</li>
+<li>数组：避免稀疏数组，因为它们的key不是递增的。稀疏数组并不是每个索引都有元素，所以它更像个哈希表。还有访问这样的数组是昂贵的。还有就是不要一次分配个大数组，最好按需分配。最后，不要在数组中删除元素，这样就令key稀疏了。</li>
+<li>标签值：V8用32位来代表对象和数字。它用一位来区分对象（flag=1）和整形（flag=0），这个整形也叫SMI（SMall Integer）,因为它只有31位。这样的话，如果一个数字值大于31位，V8将会将它转化为一个double并使用一个对象把它装箱。尽可能使用31位的有符号数字，这样能够避免昂贵的装箱操作。</li>
+</ol>
+<p>翻译 <a href="https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e" target="_blank" rel="external">https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e</a></p>
 
       
     </div>
@@ -691,7 +712,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要创造一个V8引擎？"><span class="nav-number">2.</span> <span class="nav-text">为什么要创造一个V8引擎？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V8曾经有两个编译器"><span class="nav-number">3.</span> <span class="nav-text">V8曾经有两个编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内联（inlining）"><span class="nav-number">4.</span> <span class="nav-text">内联（inlining）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#隐藏类-Hidden-class"><span class="nav-number">5.</span> <span class="nav-text">隐藏类(Hidden class)</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要创造一个V8引擎？"><span class="nav-number">2.</span> <span class="nav-text">为什么要创造一个V8引擎？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#V8曾经有两个编译器"><span class="nav-number">3.</span> <span class="nav-text">V8曾经有两个编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内联（inlining）"><span class="nav-number">4.</span> <span class="nav-text">内联（inlining）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#隐藏类-Hidden-class"><span class="nav-number">5.</span> <span class="nav-text">隐藏类(Hidden class)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内联缓存-Inline-caching"><span class="nav-number">6.</span> <span class="nav-text">内联缓存(Inline caching)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译机器码"><span class="nav-number">7.</span> <span class="nav-text">编译机器码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#垃圾回收"><span class="nav-number">8.</span> <span class="nav-text">垃圾回收</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ignition和TurboFan"><span class="nav-number">9.</span> <span class="nav-text">Ignition和TurboFan</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎么写出最好的javascript代码"><span class="nav-number">10.</span> <span class="nav-text">怎么写出最好的javascript代码</span></a></li></ol></div>
             
 
           </div>
