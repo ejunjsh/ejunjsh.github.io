@@ -717,10 +717,10 @@
 
       
         
-          <p>一般编写调度让系统帮你定时做事情有两种方式：</p>
+          <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>一般编写调度让系统帮你定时做事情有两种方式：</p>
 <ul>
-<li>在<code>/etc</code>目录下有一个<code>crontab</code>文件，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
-<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/usr/spool/cron/crontabs/username</code>。 </li>
+<li>在<code>/etc</code>目录下有几个<code>cron.</code>开头的文件夹，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
+<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/var/spool/cron/crontabs/[username]</code>。 </li>
 </ul>
           <!--noindex-->
           <div class="post-button text-center">

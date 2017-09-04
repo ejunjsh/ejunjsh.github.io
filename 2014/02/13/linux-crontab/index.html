@@ -103,17 +103,19 @@
 
 
 
-<meta name="description" content="一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有一个crontab文件，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/usr/spool/cron/crontabs/username。">
+<meta name="description" content="描述一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有几个cron.开头的文件夹，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/var/spool/cron/crontabs/[username]。">
 <meta name="keywords" content="linux,crontab">
 <meta property="og:type" content="article">
 <meta property="og:title" content="crontab 命令">
 <meta property="og:url" content="http://idiotsky.me/2014/02/13/linux-crontab/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有一个crontab文件，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/usr/spool/cron/crontabs/username。">
-<meta property="og:updated_time" content="2017-08-12T09:54:36.000Z">
+<meta property="og:description" content="描述一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有几个cron.开头的文件夹，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/var/spool/cron/crontabs/[username]。">
+<meta property="og:image" content="http://idiotsky.me/images/linux-crontab.png">
+<meta property="og:updated_time" content="2017-09-04T16:36:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="crontab 命令">
-<meta name="twitter:description" content="一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有一个crontab文件，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/usr/spool/cron/crontabs/username。">
+<meta name="twitter:description" content="描述一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有几个cron.开头的文件夹，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/var/spool/cron/crontabs/[username]。">
+<meta name="twitter:image" content="http://idiotsky.me/images/linux-crontab.png">
 
 
 
@@ -418,10 +420,10 @@
       
 
       
-        <p>一般编写调度让系统帮你定时做事情有两种方式：</p>
+        <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>一般编写调度让系统帮你定时做事情有两种方式：</p>
 <ul>
-<li>在<code>/etc</code>目录下有一个<code>crontab</code>文件，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
-<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/usr/spool/cron/crontabs/username</code>。 </li>
+<li>在<code>/etc</code>目录下有几个<code>cron.</code>开头的文件夹，这里存放有<code>系统</code>运行的一些调度程序,可以把自己的调度写在这里。</li>
+<li>每个用户可以用<code>crontab</code>命令建立自己的调度,调度文件存放在以用户名为名的文件<code>/var/spool/cron/crontabs/[username]</code>。 </li>
 </ul>
 <a id="more"></a>
 <p><code>crontab</code>命令有三种形式的命令行结构： </p>
@@ -430,21 +432,92 @@
 <li>crontab [-u user] [-e|-l|-r]  </li>
 <li>crontab -l -u [-e|-l|-r] </li>
 </ul>
-<p>第一个命令行中，<code>file</code>是命令文件的名字。如果在命令行中指定了这个文件，那么执行<code>crontab</code>命令，则将这个文件拷贝到<code>crontabs</code>目录下；如果在命令行中没有制定这个文件，<code>crontab</code>命令将接受标准输入（键盘）上键入的命令，并将他们也存放在<code>crontab</code>目录下。  </p>
-<p>命令行中<code>-r</code>选项的作用是从<code>/usr/spool/cron/crontabs</code>目录下删除用户定义的文件crontab；  </p>
-<p>命令行中<code>-l</code>选项的作用是显示用户<code>crontab</code>文件的内容。  </p>
+<p>第一个命令行中，<code>file</code>是命令文件的名字。如果在命令行中指定了这个文件，那么执行<code>crontab</code>命令，则会把这个文件保存到<code>/var/spool/cron/crontabs/[username]</code>；如果在命令行中没有制定这个文件，<code>crontab</code>命令将接受标准输入（键盘）上键入的命令，并将他们也存放在上面的那个文件。  </p>
+<p>命令行中<code>-u</code>选项的作用用来切换用户，默认不加这个选项是表示当前用户 </p>
+<p>命令行中<code>-r</code>选项的作用其实是删除当前用户的<code>/var/spool/cron/crontabs/[username]</code> 这个文件；  </p>
+<p>命令行中<code>-l</code>选项的作用是显示当前用户<code>/var/spool/cron/crontabs/[username]</code>文件的内容。 </p>
 <p>使用命令<code>crontab -u user -e</code>命令编辑用户user的cron(c)作业。用户通过编辑文件来增加或修改任何作业请求。  </p>
-<p>执行命令<code>crontab -u user -r</code>即可删除当前用户的所有的cron作业。  </p>
-<p>作业与它们预定的时间储存在文件<code>/usr/spool/cron/crontabs/username</code>里。username使用户名，在相应的文件中存放着该用户所要运行的命令。命令执行的结果，无论是标准输出还是错误输出，都将以邮件形式发给用户。文件里的每一个请求必须包含以spaces和tabs分割的六个域。前五个字段可以取整数值，指定何时开始工作，第六个域是字符串，称为命令字段，其中包括了crontab调度执行的命令。  </p>
+<p>执行命令<code>crontab -u user -r</code>即可删除指定用户的所有的cron作业。  </p>
+<p>文件里的每一个请求必须包含以spaces和tabs分割的六个域。前五个字段可以取整数值，指定何时开始工作，第六个域是字符串，称为命令字段，其中包括了crontab调度执行的命令。  </p>
+<p><a href="/images/linux-crontab.png"><img src="/images/linux-crontab.png" alt=""></a></p>
 <p>第一道第五个字段的整数取值范围及意义是：  </p>
 <ul>
 <li>0～59 表示分  </li>
 <li>1～23 表示小时  </li>
 <li>1～31 表示日  </li>
-<li>1～12 表示月份  </li>
-<li>0～6 表示星期（其中0表示星期日）  </li>
+<li>1～12 表示月份  （也可以是英文缩写）</li>
+<li>0～6 表示星期（其中0表示星期日,也可以是英文缩写如sun，mon）  </li>
 </ul>
-<p><code>/usr/lib/cron/cron.allow</code>表示谁能使用<code>crontab</code>命令。如果它是一个空文件表明没有一个用户能安排作业。如果这个文件不存在，而有另外一个文件<code>/usr/lib/cron/cron.deny</code>,则只有不包括在这个文件中的用户才可以使用<code>crontab</code>命令。如果它是一个空文件表明任何用户都可安排作业。两个文件同时存在时<code>cron.allow</code>优先，如果都不存在，只有超级用户可以安排作业。 </p>
+<h1 id="20个超实用的Crontab使用实例"><a href="#20个超实用的Crontab使用实例" class="headerlink" title="20个超实用的Crontab使用实例"></a>20个超实用的Crontab使用实例</h1><ol>
+<li><p>每天 02:00 执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 2 * * * /bin/sh backup.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每天 5:00和17:00执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 5,17 * * * /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每分钟执行一次任务<br> 通常情况下，我们并没有每分钟都需要执行的脚本</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * *  /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每周日 17:00 执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 17 * * sun  /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每 10min 执行一次任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">*/10 * * * * /scripts/monitor.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>在特定的某几个月执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * jan,may,aug * /script/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>在特定的某几天执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 17 * * sun,fri /script/scripy.sh</div></pre></td></tr></table></figure>
+<p> 在每周五、周日的17点执行任务</p>
+</li>
+<li><p>在某个月的第一个周日执行任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 2 * * sun  [ $(date +%d) -le 07 ] &amp;&amp; /script/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每四个小时执行一个任务</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 */4 * * * /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每周一、周日执行任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 4,17 * * sun,mon /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每个30秒执行一次任务<br>我们没有办法直接通过上诉类似的例子去执行，因为最小的是1min。但是我们可以通过如下的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">* * * * * /scripts/script.sh</div><div class="line">* * * * *  sleep 30; /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>多个任务在一条命令中配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * /scripts/script.sh; /scripts/scrit2.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每年执行一次任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@yearly /scripts/script.sh</div></pre></td></tr></table></figure>
+<p>@yearly 类似于“0 0 1 1 *”。它会在每年的第一分钟内执行，通常我们可以用这个发送新年的问候。</p>
+</li>
+<li><p>每月执行一次任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@monthly /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每周执行一次任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@weekly /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每天执行一次任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@daily /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>每小时执行一次任务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@hourly /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>系统重启时执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@reboot /scripts/script.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>将 Cron 结果重定向的特定的账户<br>默认情况下，cron 只会将结果详情发送给 cron 被指定的用户。如果需要发送给其他用户，可以设置<code>MAIL</code>属性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -l</div><div class="line">MAIL=bob</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+</li>
+<li><p>将所有的 cron 命令备份到文本文件当中<br>这是一个当我们丢失了cron命令后方便快速的一个恢复方式。<br>下面是利用这个方式恢复cron的一个小例子。（看看就行~）<br>首先：检查当前的cron</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -l</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<p>然后：备份cron到文件中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># crontab -l &gt; cron-backup.txt</div><div class="line"># cat cron-backup.txt</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<p>接着：移除当前的cron</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -r</div><div class="line"># crontab -l</div><div class="line">no crontab for root</div></pre></td></tr></table></figure>
+<p>恢复：从text file中恢复</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># crontab cron-backup.txt</div><div class="line"># crontab -l</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+</li>
+</ol>
 
       
     </div>
@@ -541,8 +614,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -657,6 +739,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#描述"><span class="nav-number">1.</span> <span class="nav-text">描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#20个超实用的Crontab使用实例"><span class="nav-number">2.</span> <span class="nav-text">20个超实用的Crontab使用实例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
