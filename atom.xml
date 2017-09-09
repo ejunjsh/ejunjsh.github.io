@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-09-03T11:06:34.000Z</updated>
+  <updated>2017-09-09T08:34:40.000Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,77 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>openstack安装-keystone安装</title>
+    <link href="http://idiotsky.me/2017/09/09/openstack-install-keystone/"/>
+    <id>http://idiotsky.me/2017/09/09/openstack-install-keystone/</id>
+    <published>2017-09-09T07:46:36.000Z</published>
+    <updated>2017-09-09T08:34:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>keystone 是openstack中所有service的权限管理和接口入口，所以先安装它</p>
+<p>to be continue…</p>
+</blockquote>
+<a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;keystone 是openstack中所有service的权限管理和接口入口，所以先安装它&lt;/p&gt;
+&lt;p&gt;to be continue…&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
+    
+    
+      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
+    
+      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
+    
+      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go的变量和字面值的类型</title>
+    <link href="http://idiotsky.me/2017/09/09/go-type-literal/"/>
+    <id>http://idiotsky.me/2017/09/09/go-type-literal/</id>
+    <published>2017-09-09T07:44:21.000Z</published>
+    <updated>2017-09-09T08:40:21.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>前几天逛v2ex，无聊看到一个关于这个的话题 <a href="https://www.v2ex.com/t/389157" target="_blank" rel="external">golang 的字面值与类型转换，来猜猜结果</a>，所以现在总结下，免得以后进坑。</p>
+</blockquote>
+<h1 id="论述"><a href="#论述" class="headerlink" title="论述"></a>论述</h1><p>先上代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"> a := <span class="number">1</span></div><div class="line"> b := <span class="number">3</span></div><div class="line"> </div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / b)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3.0</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3.0</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">int</div><div class="line">int</div><div class="line">int</div><div class="line">int</div><div class="line">float64</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>其实这里有奇怪的第三行和最后一行的输出结果，第三行里面a=1跟最后一行是一样的，为什么结果类型不一样呢，很明显这里有类型转换了，究竟谁类型转换了呢，继续上代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"> a := <span class="number">1</span></div><div class="line"> </div><div class="line"> fmt.Println(a / <span class="number">3</span>)</div><div class="line"> fmt.Println(a / <span class="number">3.0</span>)</div><div class="line"> <span class="comment">//fmt.Println(a / 3.1) //类型错误</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">0</div><div class="line">0</div><div class="line"># literal/test2/main.go:10: constant 3.1 truncated to integer</div></pre></td></tr></table></figure></p>
+<p>很明显是字面值转换了类型，最后一行的3.1是转换不了整形的，所以就报错了，而3.0是没问题的，那为什么变量不会转换呢，继续上代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	a := <span class="number">1</span></div><div class="line">	b := <span class="number">3.0</span></div><div class="line"></div><div class="line">	fmt.Printf(<span class="string">"%T\n"</span>, a)</div><div class="line">	fmt.Printf(<span class="string">"%T\n"</span>, b)</div><div class="line">    <span class="comment">//fmt.Printf("%T\n", a/b) //编译错误</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">int</div><div class="line">float64</div><div class="line">#literal/test3/main.go:11: invalid operation: a / b (mismatched types int and float64)</div></pre></td></tr></table></figure></p>
+<p>很明显变量类型在初始化赋值的时候就确定，在运算的时候变量不会去类型转换。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>go里面的变量运算是保证运算变量一定是相同类型才行，否则会编译错误，而且是初始赋值后就确定类型，不会在运算时自动帮你转换。但是字面值不同，在不同的场景会转换成不同的类型，当然前提是可以转换，否则就跟上面的例子3.1一样，没办法转换成整形而报错。<br>所有代码在 <a href="https://github.com/ejunjsh/go-code/tree/master/literal" target="_blank" rel="external">https://github.com/ejunjsh/go-code/tree/master/literal</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;前几天逛v2ex，无聊看到一个关于这个的话题 &lt;a href=&quot;https://www.v2ex.com/t/389157&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;golang 的字面值与类型转换，来猜猜结果&lt;/a&gt;，所以现在总结下，免得以后进坑。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;论述&quot;&gt;&lt;a href=&quot;#论述&quot; class=&quot;headerlink&quot; title=&quot;论述&quot;&gt;&lt;/a&gt;论述&lt;/h1&gt;&lt;p&gt;先上代码&lt;br&gt;&lt;figure class=&quot;highlight go&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;package&lt;/span&gt; main&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; a := &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; b := &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; &lt;/div&gt;&lt;div class=&quot;line&quot;&gt; fmt.Printf(&lt;span class=&quot;string&quot;&gt;&quot;%T\n&quot;&lt;/span&gt;, a / b)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; fmt.Printf(&lt;span class=&quot;string&quot;&gt;&quot;%T\n&quot;&lt;/span&gt;, a / &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; fmt.Printf(&lt;span class=&quot;string&quot;&gt;&quot;%T\n&quot;&lt;/span&gt;, a / &lt;span class=&quot;number&quot;&gt;3.0&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; fmt.Printf(&lt;span class=&quot;string&quot;&gt;&quot;%T\n&quot;&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; / &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; fmt.Printf(&lt;span class=&quot;string&quot;&gt;&quot;%T\n&quot;&lt;/span&gt;, &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; / &lt;span class=&quot;number&quot;&gt;3.0&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;运行代码：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;int&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;int&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;int&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;int&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;float64&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
+    
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+  </entry>
   
   <entry>
     <title>JavaScript是如何工作的(二)</title>
@@ -485,9 +556,9 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
     
     
-      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
-    
       <category term="python" scheme="http://idiotsky.me/tags/python/"/>
+    
+      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
     
       <category term="NAS" scheme="http://idiotsky.me/tags/NAS/"/>
     
@@ -517,9 +588,9 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
     
     
-      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
-    
       <category term="python" scheme="http://idiotsky.me/tags/python/"/>
+    
+      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
     
   </entry>
   
@@ -876,189 +947,6 @@
     
     
       <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>全面解析-SQL事务+隔离级别+阻塞+死锁</title>
-    <link href="http://idiotsky.me/2016/08/27/sql-trasaction-isolation-deadlock/"/>
-    <id>http://idiotsky.me/2016/08/27/sql-trasaction-isolation-deadlock/</id>
-    <published>2016-08-27T10:15:18.000Z</published>
-    <updated>2017-08-28T12:51:07.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>本篇主要是对SQL中事务和并发的详细讲解。</p>
-</blockquote>
-<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h2><p>为单个工作单元而执行的一系列操作。如查询、修改数据、修改数据定义。</p>
-<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><h3 id="显示定义事务的开始、提交"><a href="#显示定义事务的开始、提交" class="headerlink" title="显示定义事务的开始、提交"></a>显示定义事务的开始、提交</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">BEGIN</span> TRAN</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> b(t1) <span class="keyword">VALUES</span>(<span class="number">1</span>)</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> b(t1) <span class="keyword">VALUES</span>(<span class="number">2</span>)</div><div class="line"><span class="keyword">COMMIT</span> TRAN</div></pre></td></tr></table></figure>
-<h3 id="隐式定义"><a href="#隐式定义" class="headerlink" title="隐式定义"></a>隐式定义</h3><p>如果不显示定义事务的边界，则SQL Server会默认把每个单独的语句作为一个事务，即在执行完每个语句之后就会自动提交事务。<br><a id="more"></a></p>
-<h2 id="事务的四个属性ACID"><a href="#事务的四个属性ACID" class="headerlink" title="事务的四个属性ACID"></a>事务的四个属性ACID</h2><h3 id="原子性Atomicity"><a href="#原子性Atomicity" class="headerlink" title="原子性Atomicity"></a>原子性Atomicity</h3><p><a href="/images/sql-trasaction-isolation-deadlock-1.jpg"><img src="/images/sql-trasaction-isolation-deadlock-1.jpg" alt=""></a> </p>
-<ol>
-<li>事务必须是原子工作单元。事务中进行的修改，要么全部执行，要么全都不执行；</li>
-<li>在事务完成之前（提交指令被记录到事务日志之前），系统出现故障或重新启动，SQL Server将会撤销在事务中进行的所有修改；</li>
-<li>事务在处理中遇到错误，SQL Server通常会自动回滚事务；</li>
-<li>少数不太严重的错误不会引发事务的自动回滚，如主键冲突、锁超时等；</li>
-<li>可以使用错误处理来捕获第4点提到的错误，并采取某种操作，如把错误记录在日志中，再回滚事务；</li>
-<li>SELECT @@TRANCOUNT可用在代码的任何位置来判断当前使用SELECT @@TRANCOUNT的地方是否位于一个打开的事务当中，如果不在任何打开的事务范围内，则该函数返回0；如果在某个打开的事务返回范围内，则返回一个大于0的值。打开一个事务，@@TRANCOUNT=@@TRANCOUNT+1；提交一个事务，@@TRANCOUNT-1。</li>
-</ol>
-<h3 id="一致性Consiitency"><a href="#一致性Consiitency" class="headerlink" title="一致性Consiitency"></a>一致性Consiitency</h3><p><a href="/images/sql-trasaction-isolation-deadlock-2.jpg"><img src="/images/sql-trasaction-isolation-deadlock-2.jpg" alt=""></a> </p>
-<ol>
-<li>同时发生的事务在修改和查询数据时不发生冲突；</li>
-<li>一致性取决于应用程序的需要。后面会讲到一致性级别，以及如何对一致性进行控制。</li>
-</ol>
-<h3 id="隔离性Isolation"><a href="#隔离性Isolation" class="headerlink" title="隔离性Isolation"></a>隔离性Isolation</h3><p><a href="/images/sql-trasaction-isolation-deadlock-3.jpg"><img src="/images/sql-trasaction-isolation-deadlock-3.jpg" alt=""></a> </p>
-<ol>
-<li>用于控制数据访问，确保事务只访问处于期望的一致性级别下的数据；</li>
-<li>使用锁对各个事务之间正在修改和查询的数据进行隔离。</li>
-</ol>
-<h3 id="持久性Durability"><a href="#持久性Durability" class="headerlink" title="持久性Durability"></a>持久性Durability</h3><p><a href="/images/sql-trasaction-isolation-deadlock-4.jpg"><img src="/images/sql-trasaction-isolation-deadlock-4.jpg" alt=""></a> </p>
-<ol>
-<li>在将数据修改写入到磁盘上数据库的数据分区之前会把这些修改写入到磁盘上数据库的事务日志中，把提交指令记录到磁盘的事务日志中以后，及时数据修改还没有应用到磁盘的数据分区，也可以认为事务时持久化的。</li>
-<li>系统重新启动（正常启动或在发生系统故障之后启动），SQL Server会每个数据库的事务日志，进行回复处理。</li>
-<li>恢复处理包含两个阶段：重做阶段和撤销阶段。</li>
-<li>前滚：在重做阶段，对于提交指令已经写入到日志的事务，但数据修改还没有应用到数据分区的事务，数据库引擎会重做这些食物所做的所有修改。</li>
-<li>回滚：在撤销阶段，对于提交指令没有写入到日志中的事务，数据库引擎会撤销这些事务所做的修改。（这句话需要research,可能是不正确的。因为提交指令没有写入到数据分区，撤销修改是指撤销哪些修改呢？？？）</li>
-</ol>
-<h1 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h1><h2 id="事务中的锁"><a href="#事务中的锁" class="headerlink" title="事务中的锁"></a>事务中的锁</h2><ol>
-<li>SQL Server使用锁来实现事务的隔离。</li>
-<li>事务获取锁这种控制资源，用于保护数据资源，防止其他事务对数据进行冲突的或不兼容的访问。</li>
-</ol>
-<h2 id="锁模式"><a href="#锁模式" class="headerlink" title="锁模式"></a>锁模式</h2><ol>
-<li>排他锁<ul>
-<li>当试图修改数据时，事务只能为所依赖的数据资源请求排他锁。</li>
-<li>持有排他锁时间：一旦某个事务得到了排他锁，则这个事务将一直持有排他锁直到事务完成。</li>
-<li>排他锁和其他任何类型的锁在多事务中不能在同一阶段作用于同一个资源。如：当前事务获得了某个资源的排他锁，则其他事务不能获得该资源的任何其他类型的锁。其他事务获得了某个资源的任何其他类型的锁，则当前事务不能获得该资源的排他锁。</li>
-</ul>
-</li>
-<li>共享锁<ul>
-<li>当试图读取数据时，事务默认会为所依赖的数据资源请求共享锁。</li>
-<li>持有共享锁时间：从事务得到共享锁到读操作完成。</li>
-<li>多个事务可以在同一阶段用共享锁作用于同一数据资源。</li>
-<li>在读取数据时，可以对如何处理锁定进行控制。后面隔离级别会讲到如何对锁定进行控制。</li>
-</ul>
-</li>
-</ol>
-<h2 id="排他锁和共享锁的兼容性"><a href="#排他锁和共享锁的兼容性" class="headerlink" title="排他锁和共享锁的兼容性"></a>排他锁和共享锁的兼容性</h2><ol>
-<li>如果数据正在由一个事务进行修改，则其他事务既不能修改该数据，也不能读取（至少默认不能）该数据，直到第一个事务完成。</li>
-<li>如果数据正在由一个事务读取，则其他事务不能修改该数据（至少默认不能）。</li>
-</ol>
-<blockquote>
-<p>to be continue..</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;本篇主要是对SQL中事务和并发的详细讲解。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;事务&quot;&gt;&lt;a href=&quot;#事务&quot; class=&quot;headerlink&quot; title=&quot;事务&quot;&gt;&lt;/a&gt;事务&lt;/h1&gt;&lt;h2 id=&quot;什么是事务&quot;&gt;&lt;a href=&quot;#什么是事务&quot; class=&quot;headerlink&quot; title=&quot;什么是事务&quot;&gt;&lt;/a&gt;什么是事务&lt;/h2&gt;&lt;p&gt;为单个工作单元而执行的一系列操作。如查询、修改数据、修改数据定义。&lt;/p&gt;
-&lt;h2 id=&quot;语法&quot;&gt;&lt;a href=&quot;#语法&quot; class=&quot;headerlink&quot; title=&quot;语法&quot;&gt;&lt;/a&gt;语法&lt;/h2&gt;&lt;h3 id=&quot;显示定义事务的开始、提交&quot;&gt;&lt;a href=&quot;#显示定义事务的开始、提交&quot; class=&quot;headerlink&quot; title=&quot;显示定义事务的开始、提交&quot;&gt;&lt;/a&gt;显示定义事务的开始、提交&lt;/h3&gt;&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;BEGIN&lt;/span&gt; TRAN&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;INTO&lt;/span&gt; b(t1) &lt;span class=&quot;keyword&quot;&gt;VALUES&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;INTO&lt;/span&gt; b(t1) &lt;span class=&quot;keyword&quot;&gt;VALUES&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;COMMIT&lt;/span&gt; TRAN&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h3 id=&quot;隐式定义&quot;&gt;&lt;a href=&quot;#隐式定义&quot; class=&quot;headerlink&quot; title=&quot;隐式定义&quot;&gt;&lt;/a&gt;隐式定义&lt;/h3&gt;&lt;p&gt;如果不显示定义事务的边界，则SQL Server会默认把每个单独的语句作为一个事务，即在执行完每个语句之后就会自动提交事务。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="sql" scheme="http://idiotsky.me/categories/sql/"/>
-    
-    
-      <category term="sql" scheme="http://idiotsky.me/tags/sql/"/>
-    
-      <category term="死锁" scheme="http://idiotsky.me/tags/%E6%AD%BB%E9%94%81/"/>
-    
-      <category term="事务" scheme="http://idiotsky.me/tags/%E4%BA%8B%E5%8A%A1/"/>
-    
-      <category term="隔离级别" scheme="http://idiotsky.me/tags/%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>深入浅出MappedByteBuffer</title>
-    <link href="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/"/>
-    <id>http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/</id>
-    <published>2016-08-22T16:36:51.000Z</published>
-    <updated>2017-08-22T17:09:12.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>java io操作中通常采用<code>BufferedReader</code>，<code>BufferedInputStream</code>等带缓冲的IO类处理大文件，不过java nio中引入了一种基于<code>MappedByteBuffer</code>操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。<br><a id="more"></a></p>
-<h1 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h1><p>在深入MappedByteBuffer之前，先看看计算机内存管理的几个术语：</p>
-<ul>
-<li><strong>MMC</strong>：CPU的内存管理单元。</li>
-<li><strong>物理内存</strong>：即内存条的内存空间。</li>
-<li><strong>虚拟内存</strong>：计算机系统内存管理的一种技术。它使得应用程序认为它拥有连续的可用的内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</li>
-<li><strong>页面文件</strong>：操作系统反映构建并使用虚拟内存的硬盘空间大小而创建的文件，在windows下，即pagefile.sys文件，其存在意味着物理内存被占满后，将暂时不用的数据移动到硬盘上。</li>
-<li><strong>缺页中断</strong>：当程序试图访问已映射在虚拟地址空间中但未被加载至物理内存的一个分页时，由MMC发出的中断。如果操作系统判断此次访问是有效的，则尝试将相关的页从虚拟内存文件中载入物理内存。</li>
-</ul>
-<p><strong>为什么会有虚拟内存和物理内存的区别？</strong><br>如果正在运行的一个进程，它所需的内存是有可能大于内存条容量之和的，如内存条是256M，程序却要创建一个2G的数据区，那么所有数据不可能都加载到内存（物理内存），必然有数据要放到其他介质中（比如硬盘），待进程需要访问那部分数据时，再调度进入物理内存。</p>
-<p><strong>什么是虚拟内存地址和物理内存地址？</strong><br>假设你的计算机是32位，那么它的地址总线是32位的，也就是它可以寻址0~0xFFFFFFFF（4G）的地址空间，但如果你的计算机只有256M的物理内存0x~0x0FFFFFFF（256M），同时你的进程产生了一个不在这256M地址空间中的地址，那么计算机该如何处理呢？回答这个问题前，先说明计算机的内存分页机制。</p>
-<p>计算机会对虚拟内存地址空间（32位为4G）进行分页产生页（page），对物理内存地址空间（假设256M）进行分页产生页帧（page frame），页和页帧的大小一样，所以虚拟内存页的个数势必要大于物理内存页帧的个数。在计算机上有一个页表（page table），就是映射虚拟内存页到物理内存页的，更确切的说是页号到页帧号的映射，而且是一对一的映射。<br>问题来了，虚拟内存页的个数 &gt; 物理内存页帧的个数，岂不是有些虚拟内存页的地址永远没有对应的物理内存地址空间？不是的，操作系统是这样处理的。操作系统有个页面失效（page fault）功能。操作系统找到一个最少使用的页帧，使之失效，并把它写入磁盘，随后把需要访问的页放到页帧中，并修改页表中的映射，保证了所有的页都会被调度。</p>
-<p>现在来看看什么是虚拟内存地址和物理内存地址：</p>
-<ul>
-<li>虚拟内存地址：由页号（与页表中的页号关联）和偏移量（页的小大，即这个页能存多少数据）组成。</li>
-</ul>
-<p>举个例子，有一个虚拟地址它的页号是4，偏移量是20，那么他的寻址过程是这样的：首先到页表中找到页号4对应的页帧号（比如为8），如果页不在内存中，则用失效机制调入页，接着把页帧号和偏移量传给MMC组成一个物理上真正存在的地址，最后就是访问物理内存的数据了。</p>
-<h1 id="MappedByteBuffer是什么"><a href="#MappedByteBuffer是什么" class="headerlink" title="MappedByteBuffer是什么"></a>MappedByteBuffer是什么</h1><p>从继承结构上看，MappedByteBuffer继承自ByteBuffer，内部维护了一个逻辑地址address。</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>通过MappedByteBuffer读取文件<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MappedByteBufferTest</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        File file = <span class="keyword">new</span> File(<span class="string">"D://data.txt"</span>);</div><div class="line">        <span class="keyword">long</span> len = file.length();</div><div class="line">        <span class="keyword">byte</span>[] ds = <span class="keyword">new</span> <span class="keyword">byte</span>[(<span class="keyword">int</span>) len];</div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            MappedByteBuffer mappedByteBuffer = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"r"</span>)</div><div class="line">                    .getChannel()</div><div class="line">                    .map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, len);</div><div class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> offset = <span class="number">0</span>; offset &lt; len; offset++) &#123;</div><div class="line">                <span class="keyword">byte</span> b = mappedByteBuffer.get();</div><div class="line">                ds[offset] = b;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            Scanner scan = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> ByteArrayInputStream(ds)).useDelimiter(<span class="string">" "</span>);</div><div class="line">            <span class="keyword">while</span> (scan.hasNext()) &#123;</div><div class="line">                System.out.print(scan.next() + <span class="string">" "</span>);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;&#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="map过程"><a href="#map过程" class="headerlink" title="map过程"></a>map过程</h2><p>FileChannel提供了map方法把文件映射到虚拟内存，通常情况可以映射整个文件，如果文件比较大，可以进行分段映射。</p>
-<ul>
-<li><strong>FileChannel中的几个变量</strong>：<ul>
-<li><strong>MapMode mode</strong>：内存映像文件访问的方式，共三种：<ol>
-<li>MapMode.READ_ONLY：只读，试图修改得到的缓冲区将导致抛出异常。</li>
-<li>MapMode.READ_WRITE：读/写，对得到的缓冲区的更改最终将写入文件；但该更改对映射到同一文件的其他程序不一定是可见的。</li>
-<li>MapMode.PRIVATE：私用，可读可写,但是修改的内容不会写入文件，只是buffer自身的改变，这种能力称之为”copy on write”。</li>
-</ol>
-</li>
-<li><strong>position</strong>：文件映射时的起始位置。</li>
-<li><strong>allocationGranularity</strong>：Memory allocation size for mapping buffers，通过native函数initIDs初始化。</li>
-</ul>
-</li>
-</ul>
-<p>接下去通过分析源码，了解一下map过程的内部实现。</p>
-<ol>
-<li><p>通过RandomAccessFile获取FileChannel。</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> FileChannel <span class="title">getChannel</span><span class="params">()</span> </span>&#123;</div><div class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (channel == <span class="keyword">null</span>) &#123;</div><div class="line">        channel = FileChannelImpl.open(fd, path, <span class="keyword">true</span>, rw, <span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> channel;</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p> 上述实现可以看出，由于synchronized ，只有一个线程能够初始化FileChannel。</p>
-</li>
-<li><p>通过FileChannel.map方法，把文件映射到虚拟内存，并返回逻辑地址address，实现如下：</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">**只保留了核心代码**</div><div class="line"><span class="function"><span class="keyword">public</span> MappedByteBuffer <span class="title">map</span><span class="params">(MapMode mode, <span class="keyword">long</span> position, <span class="keyword">long</span> size)</span>  </span></div><div class="line"><span class="keyword">throws</span> IOException &#123;</div><div class="line">    <span class="keyword">int</span> pagePosition = (<span class="keyword">int</span>)(position % allocationGranularity);</div><div class="line">    <span class="keyword">long</span> mapPosition = position - pagePosition;</div><div class="line">    <span class="keyword">long</span> mapSize = size + pagePosition;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        addr = map0(imode, mapPosition, mapSize);</div><div class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</div><div class="line">        System.gc();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">100</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException y) &#123;</div><div class="line">            Thread.currentThread().interrupt();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            addr = map0(imode, mapPosition, mapSize);</div><div class="line">        &#125; <span class="keyword">catch</span> (OutOfMemoryError y) &#123;</div><div class="line">            <span class="comment">// After a second OOME, fail</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Map failed"</span>, y);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> isize = (<span class="keyword">int</span>)size;</div><div class="line">    Unmapper um = <span class="keyword">new</span> Unmapper(addr, mapSize, isize, mfd);</div><div class="line">    <span class="keyword">if</span> ((!writable) || (imode == MAP_RO)) &#123;</div><div class="line">        <span class="keyword">return</span> Util.newMappedByteBufferR(isize,</div><div class="line">                                        addr + pagePosition,</div><div class="line">                                        mfd,</div><div class="line">                                        um);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> Util.newMappedByteBuffer(isize,</div><div class="line">                                        addr + pagePosition,</div><div class="line">                                        mfd,</div><div class="line">                                        um);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p> 上述代码可以看出，最终map通过native函数map0完成文件的映射工作。</p>
-<ol>
-<li>如果第一次文件映射导致OOM，则手动触发垃圾回收，休眠100ms后再次尝试映射，如果失败，则抛出异常。</li>
-<li><p>通过newMappedByteBuffer方法初始化MappedByteBuffer实例，不过其最终返回的是DirectByteBuffer的实例，实现如下：</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> MappedByteBuffer <span class="title">newMappedByteBuffer</span><span class="params">(<span class="keyword">int</span> size, <span class="keyword">long</span> addr, FileDescriptor fd, Runnable unmapper)</span> </span>&#123;</div><div class="line">MappedByteBuffer dbb;</div><div class="line"><span class="keyword">if</span> (directByteBufferConstructor == <span class="keyword">null</span>)</div><div class="line">initDBBConstructor();</div><div class="line">dbb = (MappedByteBuffer)directByteBufferConstructor.newInstance(</div><div class="line"><span class="keyword">new</span> Object[] &#123; <span class="keyword">new</span> Integer(size),</div><div class="line">                <span class="keyword">new</span> Long(addr),</div><div class="line">                fd,</div><div class="line">                unmapper &#125;</div><div class="line"><span class="keyword">return</span> dbb;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 访问权限</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initDBBConstructor</span><span class="params">()</span> </span>&#123;</div><div class="line">AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</div><div class="line"><span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">    Class&lt;?&gt; cl = Class.forName(<span class="string">"java.nio.DirectByteBuffer"</span>);</div><div class="line">        Constructor&lt;?&gt; ctor = cl.getDeclaredConstructor(</div><div class="line">            <span class="keyword">new</span> Class&lt;?&gt;[] &#123; <span class="keyword">int</span>.class,</div><div class="line">                            <span class="keyword">long</span>.class,</div><div class="line">                            FileDescriptor.class,</div><div class="line">                            Runnable.class &#125;);</div><div class="line">        ctor.setAccessible(<span class="keyword">true</span>);</div><div class="line">        directByteBufferConstructor = ctor;</div><div class="line">&#125;&#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p> 由于FileChannelImpl和DirectByteBuffer不在同一个包中，所以有权限访问问题，通过AccessController类获取DirectByteBuffer的构造器进行实例化。<br> DirectByteBuffer是MappedByteBuffer的一个子类，其实现了对内存的直接操作。</p>
-</li>
-</ol>
-</li>
-</ol>
-<h2 id="get过程"><a href="#get过程" class="headerlink" title="get过程"></a>get过程</h2><p>MappedByteBuffer的get方法最终通过DirectByteBuffer.get方法实现的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(nextGetIndex()))));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">byte</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> ((unsafe.getByte(ix(checkIndex(i)))));</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">ix</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> address + (i &lt;&lt; <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>map0()函数返回一个地址address，这样就无需调用read或write方法对文件进行读写，通过address就能够操作文件。底层采用unsafe.getByte方法，通过（address + 偏移量）获取指定内存的数据。</p>
-<ol>
-<li>第一次访问address所指向的内存区域，导致缺页中断，中断响应函数会在交换区中查找相对应的页面，如果找不到（也就是该文件从来没有被读入内存的情况），则从硬盘上将文件指定页读取到物理内存中（非jvm堆内存）。</li>
-<li>如果在拷贝数据时，发现物理内存不够用，则会通过虚拟内存机制（swap）将暂时不用的物理页面交换到硬盘的虚拟内存中。</li>
-</ol>
-<h1 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h1><p>从代码层面上看，从硬盘上将文件读入内存，都要经过文件系统进行数据拷贝，并且数据拷贝操作是由文件系统和硬件驱动实现的，理论上来说，拷贝数据的效率是一样的。<br>但是通过内存映射的方法访问硬盘上的文件，效率要比read和write系统调用高，这是为什么？</p>
-<ul>
-<li>read()是系统调用，首先将文件从硬盘拷贝到内核空间的一个缓冲区，再将这些数据拷贝到用户空间，实际上进行了两次数据拷贝；</li>
-<li>map()也是系统调用，但没有进行数据拷贝，当缺页中断发生时，直接将文件从硬盘拷贝到用户空间，只进行了一次数据拷贝。</li>
-</ul>
-<p>所以，采用内存映射的读写效率要比传统的read/write性能高。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
-<li>MappedByteBuffer使用虚拟内存，因此分配(map)的内存大小不受JVM的-Xmx参数限制，但是也是有大小限制的。</li>
-<li>如果当文件超出1.5G限制时，可以通过position参数重新map文件后面的内容。</li>
-<li>MappedByteBuffer在处理大文件时的确性能很高，但也存在一些问题，如内存占用、文件关闭不确定，被其打开的文件只有在垃圾回收的才会被关闭，而且这个时间点是不确定的。<br>javadoc中也提到：<strong>A mapped byte buffer and the file mapping that it represents remain* valid until the buffer itself is garbage-collected</strong>.</li>
-</ol>
-<p>原文：<a href="http://www.jianshu.com/p/f90866dcbffc" target="_blank" rel="external">http://www.jianshu.com/p/f90866dcbffc</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;java io操作中通常采用&lt;code&gt;BufferedReader&lt;/code&gt;，&lt;code&gt;BufferedInputStream&lt;/code&gt;等带缓冲的IO类处理大文件，不过java nio中引入了一种基于&lt;code&gt;MappedByteBuffer&lt;/code&gt;操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
     
   </entry>
   
