@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它 to be continue…">
+<meta name="description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它这一章都是在controller节点操作。。。  前提 切换到root用户，执行下面命令  1$ mysql  创建keystone数据库:  1MariaDB [(none)]&amp;gt; CREATE DATABASE keystone;  赋予合适权限给keystone数据库：  1234MariaDB">
 <meta name="keywords" content="openstack,ubuntu,kvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="keystone安装">
+<meta property="og:title" content="openstack安装-keystone">
 <meta property="og:url" content="http://idiotsky.me/2017/09/09/openstack-install-keystone/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它 to be continue…">
-<meta property="og:updated_time" content="2017-09-09T13:50:04.000Z">
+<meta property="og:description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它这一章都是在controller节点操作。。。  前提 切换到root用户，执行下面命令  1$ mysql  创建keystone数据库:  1MariaDB [(none)]&amp;gt; CREATE DATABASE keystone;  赋予合适权限给keystone数据库：  1234MariaDB">
+<meta property="og:updated_time" content="2017-09-14T12:59:17.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="keystone安装">
-<meta name="twitter:description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它 to be continue…">
+<meta name="twitter:title" content="openstack安装-keystone">
+<meta name="twitter:description" content="keystone 是openstack中所有service的权限管理和接口入口，所以先安装它这一章都是在controller节点操作。。。  前提 切换到root用户，执行下面命令  1$ mysql  创建keystone数据库:  1MariaDB [(none)]&amp;gt; CREATE DATABASE keystone;  赋予合适权限给keystone数据库：  1234MariaDB">
 
 
 
@@ -148,7 +148,7 @@
 
 
 
-  <title>keystone安装 | IdiotSky</title>
+  <title>openstack安装-keystone | IdiotSky</title>
   
 
 
@@ -346,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">keystone安装</h1>
+          <h1 class="post-title" itemprop="name headline">openstack安装-keystone</h1>
         
 
         <div class="post-meta">
@@ -419,10 +419,81 @@
 
       
         <blockquote>
-<p>keystone 是openstack中所有service的权限管理和接口入口，所以先安装它</p>
-<p>to be continue…</p>
+<p>keystone 是openstack中所有service的权限管理和接口入口，所以先安装它<br>这一章都是在<code>controller</code>节点操作。。。</p>
 </blockquote>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><ol>
+<li><p>切换到<code>root</code>用户，执行下面命令</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mysql</div></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>keystone</code>数据库:</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; CREATE DATABASE keystone;</div></pre></td></tr></table></figure>
+</li>
+<li><p>赋予合适权限给<code>keystone</code>数据库：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'localhost'</span> \</div><div class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'%'</span> \</div><div class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</div></pre></td></tr></table></figure>
+<p> <strong>用一个合适的密码覆盖<code>KEYSTONE_DBPASS</code></strong></p>
+</li>
+<li>退出数据库</li>
+</ol>
 <a id="more"></a>
+<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><ol>
+<li><p>运行下面命令安装包：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ apt install keystone  apache2 libapache2-mod-wsgi</div></pre></td></tr></table></figure>
+</li>
+<li><p>编辑<code>/etc/keystone/keystone.conf</code></p>
+<ul>
+<li><p>在<code>[database]</code> 区域，配置数据库访问连接：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[database]</div><div class="line"># ...</div><div class="line">connection = mysql+pymysql://keystone:KEYSTONE_DBPASS@controller/keystone</div></pre></td></tr></table></figure>
+<p>  <strong>替换掉<code>KEYSTONE_DBPASS</code>,密码是上面配置的数据库密码</strong><br>  <strong>去掉这个区域里面其他关于<code>connection</code>的属性</strong></p>
+</li>
+<li>在<code>[token]</code> 区域，配置Fernet：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[token]</div><div class="line"># ...</div><div class="line">provider = fernet</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>部署身份服务（Identity service）数据库：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ su -s /bin/sh -c <span class="string">"keystone-manage db_sync"</span> keystone</div></pre></td></tr></table></figure>
+</li>
+<li><p>初始化Fernet</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone</div><div class="line">$ keystone-manage credential_setup --keystone-user keystone --keystone-group keystone</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动身份服务（Identity service）</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ keystone-manage bootstrap --bootstrap-password ADMIN_PASS \</div><div class="line">--bootstrap-admin-url http://controller:35357/v3/ \</div><div class="line">--bootstrap-internal-url http://controller:5000/v3/ \</div><div class="line">--bootstrap-public-url http://controller:5000/v3/ \</div><div class="line">--bootstrap-region-id RegionOne</div></pre></td></tr></table></figure>
+<p> <strong>替换<code>ADMIN_PASS</code></strong></p>
+</li>
+</ol>
+<h1 id="配置Apache"><a href="#配置Apache" class="headerlink" title="配置Apache"></a>配置Apache</h1><p>因为这个服务是跑在Apache里面的，所以需要配置之。</p>
+<ol>
+<li><p>修改<code>/etc/apache2/apache2.conf</code>文件，配置<code>ServerName</code>选项：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ServerName controller</div></pre></td></tr></table></figure>
+</li>
+<li><p>重启</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service apache2 restart</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="编写admin环境变量脚本"><a href="#编写admin环境变量脚本" class="headerlink" title="编写admin环境变量脚本"></a>编写admin环境变量脚本</h1><p>创建一个<code>admin-openrc</code>文件，内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">export OS_PROJECT_DOMAIN_NAME=Default</div><div class="line">export OS_USER_DOMAIN_NAME=Default</div><div class="line">export OS_PROJECT_NAME=admin</div><div class="line">export OS_USERNAME=admin</div><div class="line">export OS_PASSWORD=ADMIN_PASS</div><div class="line">export OS_AUTH_URL=http://controller:35357/v3</div><div class="line">export OS_IDENTITY_API_VERSION=3</div><div class="line">export OS_IMAGE_API_VERSION=2</div></pre></td></tr></table></figure></p>
+<p><strong><code>ADMIN_PASS</code> 用上面的创建的密码替换掉这个</strong></p>
+<h1 id="创建域-domain-项目-project-用户-users-和角色-roles"><a href="#创建域-domain-项目-project-用户-users-和角色-roles" class="headerlink" title="创建域(domain),项目(project),用户(users)和角色(roles)"></a>创建域(domain),项目(project),用户(users)和角色(roles)</h1><p>创建这些之前，先执行上面那个脚本，切换到admin用户。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">. admin-openrc</div></pre></td></tr></table></figure></p>
+<p>因为OpenStack默认创建了<code>default</code>的域，所以这次不用创建域了</p>
+<ol>
+<li><p>创建一个<code>service</code> project</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">$ openstack project create --domain default \</div><div class="line">--description <span class="string">"Service Project"</span> service</div><div class="line"></div><div class="line">+-------------+----------------------------------+</div><div class="line">| Field       | Value                            |</div><div class="line">+-------------+----------------------------------+</div><div class="line">| description | Service Project                  |</div><div class="line">| domain_id   | default                          |</div><div class="line">| enabled     | True                             |</div><div class="line">| id          | 24ac7f19cd944f4cba1d77469b2a73ed |</div><div class="line">| is_domain   | False                            |</div><div class="line">| name        | service                          |</div><div class="line">| parent_id   | default                          |</div><div class="line">+-------------+----------------------------------+</div></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>demo</code>project,user和role</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">$ openstack project create --domain default \</div><div class="line">--description <span class="string">"Demo Project"</span> demo</div><div class="line"></div><div class="line">+-------------+----------------------------------+</div><div class="line">| Field       | Value                            |</div><div class="line">+-------------+----------------------------------+</div><div class="line">| description | Demo Project                     |</div><div class="line">| domain_id   | default                          |</div><div class="line">| enabled     | True                             |</div><div class="line">| id          | 231ad6e7ebba47d6a1e57e1cc07ae446 |</div><div class="line">| is_domain   | False                            |</div><div class="line">| name        | demo                             |</div><div class="line">| parent_id   | default                          |</div><div class="line">+-------------+----------------------------------+</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ openstack user create --domain default \</div><div class="line">--password-prompt demo</div><div class="line"></div><div class="line">User Password:</div><div class="line">Repeat User Password:</div><div class="line">+---------------------+----------------------------------+</div><div class="line">| Field               | Value                            |</div><div class="line">+---------------------+----------------------------------+</div><div class="line">| domain_id           | default                          |</div><div class="line">| enabled             | True                             |</div><div class="line">| id                  | aeda23aa78f44e859900e22c24817832 |</div><div class="line">| name                | demo                             |</div><div class="line">| options             | &#123;&#125;                               |</div><div class="line">| password_expires_at | None                             |</div><div class="line">+---------------------+----------------------------------+</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">$ openstack role create user</div><div class="line"></div><div class="line">+-----------+----------------------------------+</div><div class="line">| Field     | Value                            |</div><div class="line">+-----------+----------------------------------+</div><div class="line">| domain_id | None                             |</div><div class="line">| id        | 997ce8d05fc143ac97d83fdfb5998552 |</div><div class="line">| name      | user                             |</div><div class="line">+-----------+----------------------------------+</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ openstack role add --project demo --user demo user</div></pre></td></tr></table></figure>
+</li>
+<li><p>创建demo用户的环境脚本<br> <code>demo-openrc</code></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">export OS_PROJECT_DOMAIN_NAME=Default</div><div class="line">export OS_USER_DOMAIN_NAME=Default</div><div class="line">export OS_PROJECT_NAME=demo</div><div class="line">export OS_USERNAME=demo</div><div class="line">export OS_PASSWORD=DEMO_PASS</div><div class="line">export OS_AUTH_URL=http://controller:5000/v3</div><div class="line">export OS_IDENTITY_API_VERSION=3</div><div class="line">export OS_IMAGE_API_VERSION=2</div></pre></td></tr></table></figure>
+<p> <strong><code>DEMO_PASS</code></strong>替换成上一步创建demo用户时保存的密码<br> 好了现在执行一下这个脚本就切换到demo用户了</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">. demo-openrc</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><p>切换到<code>admin</code>用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">. admin-openrc</div></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">$ openstack token issue</div><div class="line"></div><div class="line">+------------+-----------------------------------------------------------------+</div><div class="line">| Field      | Value                                                           |</div><div class="line">+------------+-----------------------------------------------------------------+</div><div class="line">| expires    | 2016-02-12T20:44:35.659723Z                                     |</div><div class="line">| id         | gAAAAABWvjYj-Zjfg8WXFaQnUd1DMYTBVrKw4h3fIagi5NoEmh21U72SrRv2trl |</div><div class="line">|            | JWFYhLi2_uPR31Igf6A8mH2Rw9kv_bxNo1jbLNPLGzW_u5FC7InFqx0yYtTwa1e |</div><div class="line">|            | eq2b0f6-18KZyQhs7F3teAta143kJEWuNEYET-y7u29y0be1_64KYkM7E       |</div><div class="line">| project_id | 343d245e850143a096806dfaefa9afdc                                |</div><div class="line">| user_id    | ac3377633149401296f6c0d92d79dc16                                |</div><div class="line">+------------+-----------------------------------------------------------------+</div></pre></td></tr></table></figure>
+<p>上面输出上面类似代表正常了。<code>demo</code>用户也是类似，这里就不演示了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这里需要注意的是，用户的环境脚本，其实他只是方便切换用户的，就算不做，都可以通过把环境变量作为<code>openstack</code>命令参数来执行，例如上面验证可以用下面命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">$ openstack --os-auth-url http://controller:35357/v3 \</div><div class="line">  --os-project-domain-name Default --os-user-domain-name Default \</div><div class="line">  --os-project-name admin --os-username admin token issue</div><div class="line"></div><div class="line">Password: <span class="comment">#这里要输入admin密码</span></div><div class="line">+------------+-----------------------------------------------------------------+</div><div class="line">| Field      | Value                                                           |</div><div class="line">+------------+-----------------------------------------------------------------+</div><div class="line">| expires    | 2016-02-12T20:14:07.056119Z                                     |</div><div class="line">| id         | gAAAAABWvi7_B8kKQD9wdXac8MoZiQldmjEO643d-e_j-XXq9AmIegIbA7UHGPv |</div><div class="line">|            | atnN21qtOMjCFWX7BReJEQnVOAj3nclRQgAYRsfSU_MrsuWb4EDtnjU7HEpoBb4 |</div><div class="line">|            | o6ozsA_NmFWEpLeKy0uNn_WeKbAhYygrsmQGA49dclHVnz-OMVLiyM9ws       |</div><div class="line">| project_id | 343d245e850143a096806dfaefa9afdc                                |</div><div class="line">| user_id    | ac3377633149401296f6c0d92d79dc16                                |</div><div class="line">+------------+-----------------------------------------------------------------+</div></pre></td></tr></table></figure></p>
+
       
     </div>
     
@@ -466,8 +537,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/09/11/epoll-mechanism/" rel="prev" title="epoll原理">
-                epoll原理 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/09/11/epoll-mechanism/" rel="prev" title="linux epoll原理">
+                linux epoll原理 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -520,8 +591,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -536,7 +616,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">63</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -558,7 +638,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">60</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -636,6 +716,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装和配置组件"><span class="nav-number">2.</span> <span class="nav-text">安装和配置组件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置Apache"><span class="nav-number">3.</span> <span class="nav-text">配置Apache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写admin环境变量脚本"><span class="nav-number">4.</span> <span class="nav-text">编写admin环境变量脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建域-domain-项目-project-用户-users-和角色-roles"><span class="nav-number">5.</span> <span class="nav-text">创建域(domain),项目(project),用户(users)和角色(roles)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#验证"><span class="nav-number">6.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
