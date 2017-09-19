@@ -72,6 +72,7 @@
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>jvm</tag>
         <tag>jit</tag>
       </tags>
   </entry>
@@ -193,8 +194,8 @@
         <category>go</category>
       </categories>
       <tags>
-        <tag>go</tag>
         <tag>gc</tag>
+        <tag>go</tag>
       </tags>
   </entry>
   <entry>
@@ -239,8 +240,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
         <tag>NAS</tag>
       </tags>
   </entry>
@@ -252,8 +253,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -392,6 +393,7 @@
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -403,6 +405,7 @@
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -414,6 +417,7 @@
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -689,9 +693,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
-        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
+        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>

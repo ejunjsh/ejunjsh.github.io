@@ -344,7 +344,7 @@
     <link href="http://idiotsky.me/2017/09/14/java-jit/"/>
     <id>http://idiotsky.me/2017/09/14/java-jit/</id>
     <published>2017-09-14T14:41:24.000Z</published>
-    <updated>2017-09-14T12:59:17.000Z</updated>
+    <updated>2017-09-19T17:15:45.000Z</updated>
     
     <content type="html"><![CDATA[<h1 id="Just-In-Time"><a href="#Just-In-Time" class="headerlink" title="Just In Time"></a>Just In Time</h1><p>Just in time编译，也叫做运行时编译，不同于 C / C++ 语言直接被翻译成机器指令，javac把java的源文件翻译成了class文件，而class文件中全都是Java字节码。那么，JVM在加载了这些class文件以后，针对这些字节码，逐条取出，逐条执行，这种方法就是解释执行。</p>
 <p>还有一种，就是把这些Java字节码重新编译优化，生成机器码，让CPU直接执行。这样编出来的代码效率会更高。通常，我们不必把所有的Java方法都编译成机器码，只需要把调用最频繁，占据CPU时间最长的方法找出来将其编译成机器码。这种调用最频繁的Java方法就是我们常说的热点方法（Hotspot，说不定这个虚拟机的名字就是从这里来的）。</p>
@@ -393,6 +393,8 @@
     
     
       <category term="java" scheme="http://idiotsky.me/tags/java/"/>
+    
+      <category term="jvm" scheme="http://idiotsky.me/tags/jvm/"/>
     
       <category term="jit" scheme="http://idiotsky.me/tags/jit/"/>
     
@@ -1101,9 +1103,9 @@
       <category term="go" scheme="http://idiotsky.me/categories/go/"/>
     
     
-      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
-    
       <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
     
   </entry>
   
@@ -1255,9 +1257,9 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
     
     
-      <category term="python" scheme="http://idiotsky.me/tags/python/"/>
-    
       <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
+    
+      <category term="python" scheme="http://idiotsky.me/tags/python/"/>
     
       <category term="NAS" scheme="http://idiotsky.me/tags/NAS/"/>
     
