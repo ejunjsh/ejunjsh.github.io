@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-4.jpg">
-<meta property="og:updated_time" content="2017-08-28T12:51:07.000Z">
+<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="全面解析-SQL事务+隔离级别+阻塞+死锁">
 <meta name="twitter:description" content="本篇主要是对SQL中事务和并发的详细讲解。  事务什么是事务为单个工作单元而执行的一系列操作。如查询、修改数据、修改数据定义。 语法显示定义事务的开始、提交1234BEGIN TRANINSERT INTO b(t1) VALUES(1)INSERT INTO b(t1) VALUES(2)COMMIT TRAN 隐式定义如果不显示定义事务的边界，则SQL Server会默认把每个单独的语句作为">
@@ -429,7 +429,7 @@
 <h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h2><p>为单个工作单元而执行的一系列操作。如查询、修改数据、修改数据定义。</p>
 <h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><h3 id="显示定义事务的开始、提交"><a href="#显示定义事务的开始、提交" class="headerlink" title="显示定义事务的开始、提交"></a>显示定义事务的开始、提交</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">BEGIN</span> TRAN</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> b(t1) <span class="keyword">VALUES</span>(<span class="number">1</span>)</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> b(t1) <span class="keyword">VALUES</span>(<span class="number">2</span>)</div><div class="line"><span class="keyword">COMMIT</span> TRAN</div></pre></td></tr></table></figure>
 <h3 id="隐式定义"><a href="#隐式定义" class="headerlink" title="隐式定义"></a>隐式定义</h3><p>如果不显示定义事务的边界，则SQL Server会默认把每个单独的语句作为一个事务，即在执行完每个语句之后就会自动提交事务。<br><a id="more"></a></p>
-<h2 id="事务的四个属性ACID"><a href="#事务的四个属性ACID" class="headerlink" title="事务的四个属性ACID"></a>事务的四个属性ACID</h2><h3 id="原子性Atomicity"><a href="#原子性Atomicity" class="headerlink" title="原子性Atomicity"></a>原子性Atomicity</h3><p><a href="/images/sql-trasaction-isolation-deadlock-1.jpg"><img src="/images/sql-trasaction-isolation-deadlock-1.jpg" alt=""></a> </p>
+<h2 id="事务的四个属性ACID"><a href="#事务的四个属性ACID" class="headerlink" title="事务的四个属性ACID"></a>事务的四个属性ACID</h2><h3 id="原子性Atomicity"><a href="#原子性Atomicity" class="headerlink" title="原子性Atomicity"></a>原子性Atomicity</h3><p><a href="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-1.jpg"><img src="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-1.jpg" alt=""></a> </p>
 <ol>
 <li>事务必须是原子工作单元。事务中进行的修改，要么全部执行，要么全都不执行；</li>
 <li>在事务完成之前（提交指令被记录到事务日志之前），系统出现故障或重新启动，SQL Server将会撤销在事务中进行的所有修改；</li>
@@ -438,17 +438,17 @@
 <li>可以使用错误处理来捕获第4点提到的错误，并采取某种操作，如把错误记录在日志中，再回滚事务；</li>
 <li>SELECT @@TRANCOUNT可用在代码的任何位置来判断当前使用SELECT @@TRANCOUNT的地方是否位于一个打开的事务当中，如果不在任何打开的事务范围内，则该函数返回0；如果在某个打开的事务返回范围内，则返回一个大于0的值。打开一个事务，@@TRANCOUNT=@@TRANCOUNT+1；提交一个事务，@@TRANCOUNT-1。</li>
 </ol>
-<h3 id="一致性Consiitency"><a href="#一致性Consiitency" class="headerlink" title="一致性Consiitency"></a>一致性Consiitency</h3><p><a href="/images/sql-trasaction-isolation-deadlock-2.jpg"><img src="/images/sql-trasaction-isolation-deadlock-2.jpg" alt=""></a> </p>
+<h3 id="一致性Consiitency"><a href="#一致性Consiitency" class="headerlink" title="一致性Consiitency"></a>一致性Consiitency</h3><p><a href="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-2.jpg"><img src="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-2.jpg" alt=""></a> </p>
 <ol>
 <li>同时发生的事务在修改和查询数据时不发生冲突；</li>
 <li>一致性取决于应用程序的需要。后面会讲到一致性级别，以及如何对一致性进行控制。</li>
 </ol>
-<h3 id="隔离性Isolation"><a href="#隔离性Isolation" class="headerlink" title="隔离性Isolation"></a>隔离性Isolation</h3><p><a href="/images/sql-trasaction-isolation-deadlock-3.jpg"><img src="/images/sql-trasaction-isolation-deadlock-3.jpg" alt=""></a> </p>
+<h3 id="隔离性Isolation"><a href="#隔离性Isolation" class="headerlink" title="隔离性Isolation"></a>隔离性Isolation</h3><p><a href="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-3.jpg"><img src="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-3.jpg" alt=""></a> </p>
 <ol>
 <li>用于控制数据访问，确保事务只访问处于期望的一致性级别下的数据；</li>
 <li>使用锁对各个事务之间正在修改和查询的数据进行隔离。</li>
 </ol>
-<h3 id="持久性Durability"><a href="#持久性Durability" class="headerlink" title="持久性Durability"></a>持久性Durability</h3><p><a href="/images/sql-trasaction-isolation-deadlock-4.jpg"><img src="/images/sql-trasaction-isolation-deadlock-4.jpg" alt=""></a> </p>
+<h3 id="持久性Durability"><a href="#持久性Durability" class="headerlink" title="持久性Durability"></a>持久性Durability</h3><p><a href="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-4.jpg"><img src="http://idiotsky.me/images/sql-trasaction-isolation-deadlock-4.jpg" alt=""></a> </p>
 <ol>
 <li>在将数据修改写入到磁盘上数据库的数据分区之前会把这些修改写入到磁盘上数据库的事务日志中，把提交指令记录到磁盘的事务日志中以后，及时数据修改还没有应用到磁盘的数据分区，也可以认为事务时持久化的。</li>
 <li>系统重新启动（正常启动或在发生系统故障之后启动），SQL Server会每个数据库的事务日志，进行回复处理。</li>
@@ -607,7 +607,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -629,7 +629,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">68</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

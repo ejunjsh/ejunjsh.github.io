@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-09-14T12:59:17.000Z</updated>
+  <updated>2017-09-19T13:18:39.000Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,330 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>go基础-iota</title>
+    <link href="http://idiotsky.me/2017/09/18/go-basic-iota/"/>
+    <id>http://idiotsky.me/2017/09/18/go-basic-iota/</id>
+    <published>2017-09-18T07:44:21.000Z</published>
+    <updated>2017-09-19T13:18:39.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>iota这个关键字，用来实现枚举的功能，但是用起来很奇怪，其实最后表示的还是常量。</p>
+</blockquote>
+<h1 id="先上代码"><a href="#先上代码" class="headerlink" title="先上代码"></a>先上代码</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">const</span>(</div><div class="line">    a= <span class="number">10</span>+<span class="literal">iota</span></div><div class="line">    b</div><div class="line">    c</div><div class="line">    d</div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(a)</div><div class="line">	fmt.Println(b)</div><div class="line">	fmt.Println(c)</div><div class="line">	fmt.Println(d)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td></tr></table></figure></p>
+<p>其实上面代码等价于<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span>(</div><div class="line">    a= <span class="number">10</span>+<span class="number">0</span></div><div class="line">    b= <span class="number">10</span>+<span class="number">1</span></div><div class="line">    c= <span class="number">10</span>+<span class="number">2</span></div><div class="line">    d= <span class="number">10</span>+<span class="number">3</span></div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p>看出规律了吧，只要iota出现一次，就累加一次，而且一旦出现一次，就算后面不使用这个iota关键字，接下来的变量都会套用前面的表达式来计算，所以b,c,d用的就是a的表达式<br><a id="more"></a></p>
+<h1 id="再上代码"><a href="#再上代码" class="headerlink" title="再上代码"></a>再上代码</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">const</span>(</div><div class="line">    a= <span class="number">10</span>+<span class="literal">iota</span></div><div class="line">    b</div><div class="line">    c</div><div class="line">    d</div><div class="line">	  e=<span class="number">1</span>+<span class="literal">iota</span></div><div class="line">	  f</div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(a)</div><div class="line">	fmt.Println(b)</div><div class="line">	fmt.Println(c)</div><div class="line">	fmt.Println(d)</div><div class="line">	fmt.Println(e)</div><div class="line">	fmt.Println(f)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个的输出，应该能猜出来了吧<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">5</div><div class="line">6</div></pre></td></tr></table></figure></p>
+<p>f很明显是由于e的表达式变了，所以是套用了e的表达式，而不用a的表达式</p>
+<h1 id="最后的代码"><a href="#最后的代码" class="headerlink" title="最后的代码"></a>最后的代码</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">const</span>(</div><div class="line">    a= <span class="number">10</span>+<span class="literal">iota</span></div><div class="line">    b</div><div class="line">    c</div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">const</span>(</div><div class="line">	d=<span class="number">1</span>+<span class="literal">iota</span></div><div class="line">	e</div><div class="line">	f</div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(a)</div><div class="line">	fmt.Println(b)</div><div class="line">	fmt.Println(c)</div><div class="line">	fmt.Println(d)</div><div class="line">	fmt.Println(e)</div><div class="line">	fmt.Println(f)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td></tr></table></figure></p>
+<p>很明显，iota只能在一个代码块累加，在另外的代码块就又重置了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>其实iota在go就是一个常量，定义在builtin.go这个源文件<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// iota is a predeclared identifier representing the untyped integer ordinal</span></div><div class="line"><span class="comment">// number of the current const specification in a (usually parenthesized)</span></div><div class="line"><span class="comment">// const declaration. It is zero-indexed.</span></div><div class="line"><span class="keyword">const</span> <span class="literal">iota</span> = <span class="number">0</span> <span class="comment">// Untyped int.</span></div></pre></td></tr></table></figure></p>
+<p>本文代码在 <a href="https://github.com/ejunjsh/go-code/tree/master/iota" target="_blank" rel="external">https://github.com/ejunjsh/go-code/tree/master/iota</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;iota这个关键字，用来实现枚举的功能，但是用起来很奇怪，其实最后表示的还是常量。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;先上代码&quot;&gt;&lt;a href=&quot;#先上代码&quot; class=&quot;headerlink&quot; title=&quot;先上代码&quot;&gt;&lt;/a&gt;先上代码&lt;/h1&gt;&lt;figure class=&quot;highlight go&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;package&lt;/span&gt; main&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; (&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	&lt;span class=&quot;string&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt;(&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    a= &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;+&lt;span class=&quot;literal&quot;&gt;iota&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    b&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    c&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    d&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	fmt.Println(a)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	fmt.Println(b)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	fmt.Println(c)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	fmt.Println(d)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;结果：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;其实上面代码等价于&lt;br&gt;&lt;figure class=&quot;highlight go&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt;(&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    a= &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;+&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    b= &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;+&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    c= &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;+&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    d= &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;+&lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;看出规律了吧，只要iota出现一次，就累加一次，而且一旦出现一次，就算后面不使用这个iota关键字，接下来的变量都会套用前面的表达式来计算，所以b,c,d用的就是a的表达式&lt;br&gt;
+    
+    </summary>
+    
+      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
+    
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis数据结构-整数集合</title>
+    <link href="http://idiotsky.me/2017/09/16/redis-intset/"/>
+    <id>http://idiotsky.me/2017/09/16/redis-intset/</id>
+    <published>2017-09-16T04:07:30.000Z</published>
+    <updated>2017-09-19T16:59:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。</p>
+<h1 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h1></blockquote>
+<a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。&lt;/p&gt;
+&lt;h1 id=&quot;整数集合的实现&quot;&gt;&lt;a href=&quot;#整数集合的实现&quot; class=&quot;headerlink&quot; title=&quot;整数集合的实现&quot;&gt;&lt;/a&gt;整数集合的实现&lt;/h1&gt;&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
+    
+      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="整数集合" scheme="http://idiotsky.me/tags/%E6%95%B4%E6%95%B0%E9%9B%86%E5%90%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis数据结构-跳跃表</title>
+    <link href="http://idiotsky.me/2017/09/16/redis-skiplist/"/>
+    <id>http://idiotsky.me/2017/09/16/redis-skiplist/</id>
+    <published>2017-09-16T04:07:30.000Z</published>
+    <updated>2017-09-19T17:05:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。</p>
+<p>跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。</p>
+<p>在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。<br>Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。</p>
+</blockquote>
+<h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。<br><a href="http://idiotsky.me/images/redis-skiplist.png"><img src="http://idiotsky.me/images/redis-skiplist.png" alt=""></a><br>图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：</p>
+<ul>
+<li>header ：指向跳跃表的表头节点。</li>
+<li>tail ：指向跳跃表的表尾节点。</li>
+<li>level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。</li>
+<li>length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。</li>
+</ul>
+<p>位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性：</p>
+<ul>
+<li>层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。</li>
+<li>后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。</li>
+<li>分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。</li>
+<li>成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。</li>
+</ul>
+<p>注意表头节点和其他节点的构造是一样的： 表头节点也有后退指针、分值和成员对象， 不过表头节点的这些属性都不会被用到， 所以图中省略了这些部分， 只显示了表头节点的各个层。</p>
+<p>本节接下来的内容将对 zskiplistNode 和 zskiplist 两个结构进行更详细的介绍。<br><a id="more"></a></p>
+<h1 id="跳跃表节点"><a href="#跳跃表节点" class="headerlink" title="跳跃表节点"></a>跳跃表节点</h1><p>跳跃表节点的实现由 redis.h/zskiplistNode 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 后退指针</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 分值</span></div><div class="line">    <span class="keyword">double</span> score;</div><div class="line"></div><div class="line">    <span class="comment">// 成员对象</span></div><div class="line">    robj *obj;</div><div class="line"></div><div class="line">    <span class="comment">// 层</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></div><div class="line"></div><div class="line">        <span class="comment">// 前进指针</span></div><div class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">forward</span>;</span></div><div class="line"></div><div class="line">        <span class="comment">// 跨度</span></div><div class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</div><div class="line"></div><div class="line">    &#125; level[];</div><div class="line"></div><div class="line">&#125; zskiplistNode;</div></pre></td></tr></table></figure></p>
+<h2 id="层"><a href="#层" class="headerlink" title="层"></a>层</h2><p>跳跃表节点的 level 数组可以包含多个元素， 每个元素都包含一个指向其他节点的指针， 程序可以通过这些层来加快访问其他节点的速度， 一般来说， 层的数量越多， 访问其他节点的速度就越快。</p>
+<p>每次创建一个新跳跃表节点的时候， 程序都根据幂次定律 （power law，越大的数出现的概率越小） 随机生成一个介于 1 和 32 之间的值作为 level 数组的大小， 这个大小就是层的“高度”。</p>
+<p>图 5-2 分别展示了三个高度为 1 层、 3 层和 5 层的节点， 因为 C 语言的数组索引总是从 0 开始的， 所以节点的第一层是 level[0] ， 而第二层是 level[1] ， 以此类推。<br><a href="http://idiotsky.me/images/redis-skiplist-1.png"><img src="http://idiotsky.me/images/redis-skiplist-1.png" alt=""></a></p>
+<h2 id="前进指针"><a href="#前进指针" class="headerlink" title="前进指针"></a>前进指针</h2><p>每个层都有一个指向表尾方向的前进指针（level[i].forward 属性）， 用于从表头向表尾方向访问节点。</p>
+<p>图 5-3 用虚线表示出了程序从表头向表尾方向， 遍历跳跃表中所有节点的路径：</p>
+<ol>
+<li>迭代程序首先访问跳跃表的第一个节点（表头）， 然后从第四层的前进指针移动到表中的第二个节点。</li>
+<li>在第二个节点时， 程序沿着第二层的前进指针移动到表中的第三个节点。</li>
+<li>在第三个节点时， 程序同样沿着第二层的前进指针移动到表中的第四个节点。</li>
+<li>当程序再次沿着第四个节点的前进指针移动时， 它碰到一个 NULL ， 程序知道这时已经到达了跳跃表的表尾， 于是结束这次遍历。</li>
+</ol>
+<p><a href="http://idiotsky.me/images/redis-skiplist-2.png"><img src="http://idiotsky.me/images/redis-skiplist-2.png" alt=""></a></p>
+<h2 id="跨度"><a href="#跨度" class="headerlink" title="跨度"></a>跨度</h2><p>层的跨度（level[i].span 属性）用于记录两个节点之间的距离：</p>
+<ul>
+<li>两个节点之间的跨度越大， 它们相距得就越远。</li>
+<li>指向 NULL 的所有前进指针的跨度都为 0 ， 因为它们没有连向任何节点。</li>
+</ul>
+<p>初看上去， 很容易以为跨度和遍历操作有关， 但实际上并不是这样 —— 遍历操作只使用前进指针就可以完成了， 跨度实际上是用来计算排位（rank）的： 在查找某个节点的过程中， 将沿途访问过的所有层的跨度累计起来， 得到的结果就是目标节点在跳跃表中的排位。</p>
+<p>举个例子， 图 5-4 用虚线标记了在跳跃表中查找分值为 3.0 、 成员对象为 o3 的节点时， 沿途经历的层： 查找的过程只经过了一个层， 并且层的跨度为 3 ， 所以目标节点在跳跃表中的排位为 3 。<br><a href="http://idiotsky.me/images/redis-skiplist-3.png"><img src="http://idiotsky.me/images/redis-skiplist-3.png" alt=""></a><br>再举个例子， 图 5-5 用虚线标记了在跳跃表中查找分值为 2.0 、 成员对象为 o2 的节点时， 沿途经历的层： 在查找节点的过程中， 程序经过了两个跨度为 1 的节点， 因此可以计算出， 目标节点在跳跃表中的排位为 2 。<br><a href="http://idiotsky.me/images/redis-skiplist-4.png"><img src="http://idiotsky.me/images/redis-skiplist-4.png" alt=""></a></p>
+<h2 id="后退指针"><a href="#后退指针" class="headerlink" title="后退指针"></a>后退指针</h2><p>节点的后退指针（backward 属性）用于从表尾向表头方向访问节点： 跟可以一次跳过多个节点的前进指针不同， 因为每个节点只有一个后退指针， 所以每次只能后退至前一个节点。</p>
+<p>图 5-6 用虚线展示了如果从表尾向表头遍历跳跃表中的所有节点： 程序首先通过跳跃表的 tail 指针访问表尾节点， 然后通过后退指针访问倒数第二个节点， 之后再沿着后退指针访问倒数第三个节点， 再之后遇到指向 NULL 的后退指针， 于是访问结束。<br><a href="http://idiotsky.me/images/redis-skiplist-5.png"><img src="http://idiotsky.me/images/redis-skiplist-5.png" alt=""></a></p>
+<h2 id="分值和成员"><a href="#分值和成员" class="headerlink" title="分值和成员"></a>分值和成员</h2><p>节点的分值（score 属性）是一个 double 类型的浮点数， 跳跃表中的所有节点都按分值从小到大来排序。</p>
+<p>节点的成员对象（obj 属性）是一个指针， 它指向一个字符串对象， 而字符串对象则保存着一个 SDS 值。</p>
+<p>在同一个跳跃表中， 各个节点保存的成员对象必须是唯一的， 但是多个节点保存的分值却可以是相同的： 分值相同的节点将按照成员对象在字典序中的大小来进行排序， 成员对象较小的节点会排在前面（靠近表头的方向）， 而成员对象较大的节点则会排在后面（靠近表尾的方向）。</p>
+<p>举个例子， 在图 5-7 所示的跳跃表中， 三个跳跃表节点都保存了相同的分值 10086.0 ， 但保存成员对象 o1 的节点却排在保存成员对象 o2 和 o3 的节点之前， 而保存成员对象 o2 的节点又排在保存成员对象 o3 的节点之前， 由此可见， o1 、 o2 、 o3 三个成员对象在字典中的排序为 o1 &lt;= o2 &lt;= o3 。<br><a href="http://idiotsky.me/images/redis-skiplist-6.png"><img src="http://idiotsky.me/images/redis-skiplist-6.png" alt=""></a></p>
+<h1 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h1><p>虽然仅靠多个跳跃表节点就可以组成一个跳跃表， 如图 5-8 所示。<br><a href="http://idiotsky.me/images/redis-skiplist-7.png"><img src="http://idiotsky.me/images/redis-skiplist-7.png" alt=""></a><br>但通过使用一个 zskiplist 结构来持有这些节点， 程序可以更方便地对整个跳跃表进行处理， 比如快速访问跳跃表的表头节点和表尾节点， 又或者快速地获取跳跃表节点的数量（也即是跳跃表的长度）等信息， 如图 5-9 所示。<br><a href="http://idiotsky.me/images/redis-skiplist-8.png"><img src="http://idiotsky.me/images/redis-skiplist-8.png" alt=""></a><br>zskiplist 结构的定义如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 表头节点和表尾节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">header</span>, *<span class="title">tail</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 表中节点的数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</div><div class="line"></div><div class="line">    <span class="comment">// 表中层数最大的节点的层数</span></div><div class="line">    <span class="keyword">int</span> level;</div><div class="line"></div><div class="line">&#125; zskiplist;</div></pre></td></tr></table></figure></p>
+<p>header 和 tail 指针分别指向跳跃表的表头和表尾节点， 通过这两个指针， 程序定位表头节点和表尾节点的复杂度为 O(1) 。</p>
+<p>通过使用 length 属性来记录节点的数量， 程序可以在 O(1) 复杂度内返回跳跃表的长度。</p>
+<p>level 属性则用于在 O(1) 复杂度内获取跳跃表中层高最大的那个节点的层数量， 注意表头节点的层高并不计算在内。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。&lt;/p&gt;
+&lt;p&gt;跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。&lt;/p&gt;
+&lt;p&gt;在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。&lt;br&gt;Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;概括&quot;&gt;&lt;a href=&quot;#概括&quot; class=&quot;headerlink&quot; title=&quot;概括&quot;&gt;&lt;/a&gt;概括&lt;/h1&gt;&lt;p&gt;Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-skiplist.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-skiplist.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;header ：指向跳跃表的表头节点。&lt;/li&gt;
+&lt;li&gt;tail ：指向跳跃表的表尾节点。&lt;/li&gt;
+&lt;li&gt;level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。&lt;/li&gt;
+&lt;li&gt;length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。&lt;/li&gt;
+&lt;li&gt;后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。&lt;/li&gt;
+&lt;li&gt;分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。&lt;/li&gt;
+&lt;li&gt;成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意表头节点和其他节点的构造是一样的： 表头节点也有后退指针、分值和成员对象， 不过表头节点的这些属性都不会被用到， 所以图中省略了这些部分， 只显示了表头节点的各个层。&lt;/p&gt;
+&lt;p&gt;本节接下来的内容将对 zskiplistNode 和 zskiplist 两个结构进行更详细的介绍。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
+    
+      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="跳跃表" scheme="http://idiotsky.me/tags/%E8%B7%B3%E8%B7%83%E8%A1%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis数据结构-字典</title>
+    <link href="http://idiotsky.me/2017/09/15/redis-dict/"/>
+    <id>http://idiotsky.me/2017/09/15/redis-dict/</id>
+    <published>2017-09-14T16:59:31.000Z</published>
+    <updated>2017-09-19T17:05:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一<br>Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。</p>
+</blockquote>
+<h1 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h1><p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 哈希表数组</span></div><div class="line">    dictEntry **table;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></div><div class="line">    <span class="comment">// 总是等于 size - 1</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</div><div class="line"></div><div class="line">    <span class="comment">// 该哈希表已有节点的数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</div><div class="line"></div><div class="line">&#125; dictht;</div></pre></td></tr></table></figure></p>
+<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。<br>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。<br>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。<br>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br><a href="http://idiotsky.me/images/redis-dict-1.png"><img src="http://idiotsky.me/images/redis-dict-1.png" alt=""></a><br><a id="more"></a></p>
+<h1 id="哈希表节点"><a href="#哈希表节点" class="headerlink" title="哈希表节点"></a>哈希表节点</h1><p>哈希表节点使用 dictEntry 结构表示， 每个 dictEntry 结构都保存着一个键值对：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 键</span></div><div class="line">    <span class="keyword">void</span> *key;</div><div class="line"></div><div class="line">    <span class="comment">// 值</span></div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">void</span> *val;</div><div class="line">        <span class="keyword">uint64_t</span> u64;</div><div class="line">        <span class="keyword">int64_t</span> s64;</div><div class="line">    &#125; v;</div><div class="line"></div><div class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></div><div class="line"></div><div class="line">&#125; dictEntry;</div></pre></td></tr></table></figure></p>
+<p>key 属性保存着键值对中的键， 而 v 属性则保存着键值对中的值， 其中键值对的值可以是一个指针， 或者是一个 uint64_t 整数， 又或者是一个 int64_t 整数。<br>next 属性是指向另一个哈希表节点的指针， 这个指针可以将多个哈希值相同的键值对连接在一次， 以此来解决键冲突（collision）的问题。<br>举个例子， 图 4-2 就展示了如何通过 next 指针， 将两个索引值相同的键 k1 和 k0 连接在一起。<br><a href="http://idiotsky.me/images/redis-dict-2.png"><img src="http://idiotsky.me/images/redis-dict-2.png" alt=""></a></p>
+<h1 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 类型特定函数</span></div><div class="line">    dictType *type;</div><div class="line"></div><div class="line">    <span class="comment">// 私有数据</span></div><div class="line">    <span class="keyword">void</span> *privdata;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表</span></div><div class="line">    dictht ht[<span class="number">2</span>];</div><div class="line"></div><div class="line">    <span class="comment">// rehash 索引</span></div><div class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></div><div class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></div><div class="line"></div><div class="line">&#125; dict;</div></pre></td></tr></table></figure>
+<p>type 属性和 privdata 属性是针对不同类型的键值对， 为创建多态字典而设置的：</p>
+<ul>
+<li>type 属性是一个指向 dictType 结构的指针， 每个 dictType 结构保存了一簇用于操作特定类型键值对的函数， Redis 会为用途不同的字典设置不同的类型特定函数。</li>
+<li>而 privdata 属性则保存了需要传给那些类型特定函数的可选参数。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictType</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 计算哈希值的函数</span></div><div class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="title">int</span> <span class="params">(*hashFunction)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key)</span></span>;</div><div class="line"></div><div class="line">    <span class="comment">// 复制键的函数</span></div><div class="line">    <span class="keyword">void</span> *(*keyDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key);</div><div class="line"></div><div class="line">    <span class="comment">// 复制值的函数</span></div><div class="line">    <span class="keyword">void</span> *(*valDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *obj);</div><div class="line"></div><div class="line">    <span class="comment">// 对比键的函数</span></div><div class="line">    <span class="keyword">int</span> (*keyCompare)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key1, <span class="keyword">const</span> <span class="keyword">void</span> *key2);</div><div class="line"></div><div class="line">    <span class="comment">// 销毁键的函数</span></div><div class="line">    <span class="keyword">void</span> (*keyDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *key);</div><div class="line"></div><div class="line">    <span class="comment">// 销毁值的函数</span></div><div class="line">    <span class="keyword">void</span> (*valDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *obj);</div><div class="line"></div><div class="line">&#125; dictType;</div></pre></td></tr></table></figure>
+<p>ht 属性是一个包含两个项的数组， 数组中的每个项都是一个 dictht 哈希表， 一般情况下， 字典只使用 ht[0] 哈希表， ht[1] 哈希表只会在对 ht[0] 哈希表进行 rehash 时使用。</p>
+<p>除了 ht[1] 之外， 另一个和 rehash 有关的属性就是 rehashidx ： 它记录了 rehash 目前的进度， 如果目前没有在进行 rehash ， 那么它的值为 -1 。</p>
+<p>图 4-3 展示了一个普通状态下（没有进行 rehash）的字典：<br><a href="http://idiotsky.me/images/redis-dict-3.png"><img src="http://idiotsky.me/images/redis-dict-3.png" alt=""></a></p>
+<h1 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h1><p>当要将一个新的键值对添加到字典里面时， 程序需要先根据键值对的键计算出哈希值和索引值， 然后再根据索引值， 将包含新键值对的哈希表节点放到哈希表数组的指定索引上面。</p>
+<p>Redis 计算哈希值和索引值的方法如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//使用字典设置的哈希函数，计算键 key 的哈希值</span></div><div class="line">hash = dict-&gt;type-&gt;hashFunction(key);</div><div class="line"></div><div class="line"><span class="comment">//使用哈希表的 sizemask 属性和哈希值，计算出索引值</span></div><div class="line"><span class="comment">//根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span></div><div class="line">index = hash &amp; dict-&gt;ht[x].sizemask;</div></pre></td></tr></table></figure></p>
+<p><a href="http://idiotsky.me/images/redis-dict-4.png"><img src="http://idiotsky.me/images/redis-dict-4.png" alt=""></a><br>举个例子， 对于图 4-4 所示的字典来说， 如果我们要将一个键值对 k0 和 v0 添加到字典里面， 那么程序会先使用语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hash = dict-&gt;type-&gt;hashFunction(k0);</div></pre></td></tr></table></figure></p>
+<p>计算键 k0 的哈希值。<br>假设计算得出的哈希值为 8 ， 那么程序会继续使用语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">index = hash &amp; dict-&gt;ht[<span class="number">0</span>].sizemask = <span class="number">8</span> &amp; <span class="number">3</span> = <span class="number">0</span>;</div></pre></td></tr></table></figure></p>
+<p>计算出键 k0 的索引值 0 ， 这表示包含键值对 k0 和 v0 的节点应该被放置到哈希表数组的索引 0 位置上， 如图 4-5 所示。<br><a href="http://idiotsky.me/images/redis-dict-5.png"><img src="http://idiotsky.me/images/redis-dict-5.png" alt=""></a><br>当字典被用作数据库的底层实现， 或者哈希键的底层实现时， Redis 使用 MurmurHash2 算法来计算键的哈希值。</p>
+<p>MurmurHash 算法最初由 Austin Appleby 于 2008 年发明， 这种算法的优点在于， 即使输入的键是有规律的， 算法仍能给出一个很好的随机分布性，并且算法的计算速度也非常快。</p>
+<p>MurmurHash 算法目前的最新版本为 MurmurHash3 ， 而 Redis 使用的是 MurmurHash2 ， 关于 MurmurHash 算法的更多信息可以参考该算法的主页： <a href="http://code.google.com/p/smhasher/" target="_blank" rel="external">http://code.google.com/p/smhasher/</a> 。</p>
+<h1 id="解决键冲突"><a href="#解决键冲突" class="headerlink" title="解决键冲突"></a>解决键冲突</h1><p>当有两个或以上数量的键被分配到了哈希表数组的同一个索引上面时， 我们称这些键发生了冲突（collision）。</p>
+<p>Redis 的哈希表使用链地址法（separate chaining）来解决键冲突： 每个哈希表节点都有一个 next 指针， 多个哈希表节点可以用 next 指针构成一个单向链表， 被分配到同一个索引上的多个节点可以用这个单向链表连接起来， 这就解决了键冲突的问题。</p>
+<p>举个例子， 假设程序要将键值对 k2 和 v2 添加到图 4-6 所示的哈希表里面， 并且计算得出 k2 的索引值为 2 ， 那么键 k1 和 k2 将产生冲突， 而解决冲突的办法就是使用 next 指针将键 k2 和 k1 所在的节点连接起来， 如图 4-7 所示。<br><a href="http://idiotsky.me/images/redis-dict-6.png"><img src="http://idiotsky.me/images/redis-dict-6.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-7.png"><img src="http://idiotsky.me/images/redis-dict-7.png" alt=""></a><br>因为 dictEntry 节点组成的链表没有指向链表表尾的指针， 所以为了速度考虑， 程序总是将新节点添加到链表的表头位置（复杂度为 O(1)）， 排在其他已有节点的前面。</p>
+<h1 id="rehash"><a href="#rehash" class="headerlink" title="rehash"></a>rehash</h1><p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。<br>扩展和收缩哈希表的工作可以通过执行 rehash （重新散列）操作来完成， Redis 对字典的哈希表执行 rehash 的步骤如下：</p>
+<ol>
+<li><p>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）：</p>
+<ul>
+<li>如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂）；</li>
+<li>如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n 。</li>
+</ul>
+</li>
+<li><p>将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</p>
+</li>
+<li>当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。</li>
+</ol>
+<p>举个例子， 假设程序要对图 4-8 所示字典的 ht[0] 进行扩展操作， 那么程序将执行以下步骤：</p>
+<ol>
+<li>ht[0].used 当前的值为 4 ， 4 * 2 = 8 ， 而 8 （2^3）恰好是第一个大于等于 4 的 2 的 n 次方， 所以程序会将 ht[1] 哈希表的大小设置为 8 。 图 4-9 展示了 ht[1] 在分配空间之后， 字典的样子。</li>
+<li>将 ht[0] 包含的四个键值对都 rehash 到 ht[1] ， 如图 4-10 所示。</li>
+<li>释放 ht[0] ，并将 ht[1] 设置为 ht[0] ，然后为 ht[1] 分配一个空白哈希表，如图 4-11 所示。</li>
+</ol>
+<p>至此， 对哈希表的扩展操作执行完毕， 程序成功将哈希表的大小从原来的 4 改为了现在的 8 。<br><a href="http://idiotsky.me/images/redis-dict-8.png"><img src="http://idiotsky.me/images/redis-dict-8.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-9.png"><img src="http://idiotsky.me/images/redis-dict-9.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-10.png"><img src="http://idiotsky.me/images/redis-dict-10.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-11.png"><img src="http://idiotsky.me/images/redis-dict-11.png" alt=""></a></p>
+<h1 id="哈希表的扩展与收缩"><a href="#哈希表的扩展与收缩" class="headerlink" title="哈希表的扩展与收缩"></a>哈希表的扩展与收缩</h1><p>当以下条件中的任意一个被满足时， 程序会自动开始对哈希表执行扩展操作：</p>
+<ol>
+<li>服务器目前没有在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 1 ；</li>
+<li>服务器目前正在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 5 ；</li>
+</ol>
+<p>其中哈希表的负载因子可以通过公式：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 负载因子 = 哈希表已保存节点数量 / 哈希表大小</span></div><div class="line">load_factor = ht[<span class="number">0</span>].used / ht[<span class="number">0</span>].size</div></pre></td></tr></table></figure></p>
+<p>计算得出。</p>
+<p>比如说， 对于一个大小为 4 ， 包含 4 个键值对的哈希表来说， 这个哈希表的负载因子为：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">load_factor = <span class="number">4</span> / <span class="number">4</span> = <span class="number">1</span></div></pre></td></tr></table></figure></p>
+<p>又比如说， 对于一个大小为 512 ， 包含 256 个键值对的哈希表来说， 这个哈希表的负载因子为：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">load_factor = <span class="number">256</span> / <span class="number">512</span> = <span class="number">0.5</span></div></pre></td></tr></table></figure></p>
+<p>根据 BGSAVE 命令或 BGREWRITEAOF 命令是否正在执行， 服务器执行扩展操作所需的负载因子并不相同， 这是因为在执行 BGSAVE 命令或 BGREWRITEAOF 命令的过程中， Redis 需要创建当前服务器进程的子进程， 而大多数操作系统都采用写时复制（<a href="http://en.wikipedia.org/wiki/Copy-on-write" target="_blank" rel="external">copy-on-write</a>）技术来优化子进程的使用效率， 所以在子进程存在期间， 服务器会提高执行扩展操作所需的负载因子， 从而尽可能地避免在子进程存在期间进行哈希表扩展操作， 这可以避免不必要的内存写入操作， 最大限度地节约内存。</p>
+<p>另一方面， 当哈希表的负载因子小于 0.1 时， 程序自动开始对哈希表执行收缩操作。</p>
+<h1 id="渐进式-rehash"><a href="#渐进式-rehash" class="headerlink" title="渐进式 rehash"></a>渐进式 rehash</h1><p>上一节说过， 扩展或收缩哈希表需要将 ht[0] 里面的所有键值对 rehash 到 ht[1] 里面， 但是， 这个 rehash 动作并不是一次性、集中式地完成的， 而是分多次、渐进式地完成的。</p>
+<p>这样做的原因在于， 如果 ht[0] 里只保存着四个键值对， 那么服务器可以在瞬间就将这些键值对全部 rehash 到 ht[1] ； 但是， 如果哈希表里保存的键值对数量不是四个， 而是四百万、四千万甚至四亿个键值对， 那么要一次性将这些键值对全部 rehash 到 ht[1] 的话， 庞大的计算量可能会导致服务器在一段时间内停止服务。</p>
+<p>因此， 为了避免 rehash 对服务器性能造成影响， 服务器不是一次性将 ht[0] 里面的所有键值对全部 rehash 到 ht[1] ， 而是分多次、渐进式地将 ht[0] 里面的键值对慢慢地 rehash 到 ht[1] 。</p>
+<p>以下是哈希表渐进式 rehash 的详细步骤：</p>
+<ol>
+<li>为 ht[1] 分配空间， 让字典同时持有 ht[0] 和 ht[1] 两个哈希表。</li>
+<li>在字典中维持一个索引计数器变量 rehashidx ， 并将它的值设置为 0 ， 表示 rehash 工作正式开始。</li>
+<li>在 rehash 进行期间， 每次对字典执行添加、删除、查找或者更新操作时， 程序除了执行指定的操作以外， 还会顺带将 ht[0] 哈希表在 rehashidx 索引上的所有键值对 rehash 到 ht[1] ， 当 rehash 工作完成之后， 程序将 rehashidx 属性的值增一。</li>
+<li>随着字典操作的不断执行， 最终在某个时间点上， ht[0] 的所有键值对都会被 rehash 至 ht[1] ， 这时程序将 rehashidx 属性的值设为 -1 ， 表示 rehash 操作已完成。<br>渐进式 rehash 的好处在于它采取分而治之的方式， 将 rehash 键值对所需的计算工作均滩到对字典的每个添加、删除、查找和更新操作上， 从而避免了集中式 rehash 而带来的庞大计算量。</li>
+</ol>
+<p>图 4-12 至图 4-17 展示了一次完整的渐进式 rehash 过程， 注意观察在整个 rehash 过程中， 字典的 rehashidx 属性是如何变化的。<br><a href="http://idiotsky.me/images/redis-dict-12.png"><img src="http://idiotsky.me/images/redis-dict-12.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-13.png"><img src="http://idiotsky.me/images/redis-dict-13.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-14.png"><img src="http://idiotsky.me/images/redis-dict-14.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-15.png"><img src="http://idiotsky.me/images/redis-dict-15.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-16.png"><img src="http://idiotsky.me/images/redis-dict-16.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-17.png"><img src="http://idiotsky.me/images/redis-dict-17.png" alt=""></a></p>
+<h1 id="渐进式-rehash-执行期间的哈希表操作"><a href="#渐进式-rehash-执行期间的哈希表操作" class="headerlink" title="渐进式 rehash 执行期间的哈希表操作"></a>渐进式 rehash 执行期间的哈希表操作</h1><p>因为在进行渐进式 rehash 的过程中， 字典会同时使用 ht[0] 和 ht[1] 两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。</p>
+<p>另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1] 里面， 而 ht[0] 则不再进行任何添加操作： 这一措施保证了 ht[0] 包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</p>
+<p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一&lt;br&gt;Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;哈希表&quot;&gt;&lt;a href=&quot;#哈希表&quot; class=&quot;headerlink&quot; title=&quot;哈希表&quot;&gt;&lt;/a&gt;哈希表&lt;/h1&gt;&lt;p&gt;Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dictht&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表数组&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    dictEntry **table;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表大小&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; size;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表大小掩码，用于计算索引值&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 总是等于 size - 1&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; sizemask;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 该哈希表已有节点的数量&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; used;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125; dictht;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。&lt;br&gt;size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。&lt;br&gt;sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。&lt;br&gt;图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-dict-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-dict-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
+    
+      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="hashtable" scheme="http://idiotsky.me/tags/hashtable/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis数据结构-链表</title>
+    <link href="http://idiotsky.me/2017/09/14/redis-linkedlist/"/>
+    <id>http://idiotsky.me/2017/09/14/redis-linkedlist/</id>
+    <published>2017-09-14T15:59:31.000Z</published>
+    <updated>2017-09-19T17:05:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>列表键的底层就是一个链表</p>
+</blockquote>
+<h1 id="链表节点"><a href="#链表节点" class="headerlink" title="链表节点"></a>链表节点</h1><p>每个链表节点使用一个 adlist.h/listNode 结构来表示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 前置节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 后置节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 节点的值</span></div><div class="line">    <span class="keyword">void</span> *value;</div><div class="line"></div><div class="line">&#125; listNode;</div></pre></td></tr></table></figure></p>
+<p>多个 listNode 可以通过 prev 和 next 指针组成双端链表， 如图 3-1 所示。<br><a href="http://idiotsky.me/images/redis-linkedlist-1.png"><img src="http://idiotsky.me/images/redis-linkedlist-1.png" alt=""></a><br><a id="more"></a></p>
+<h1 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h1><p>虽然仅仅使用多个 listNode 结构就可以组成链表， 但使用 adlist.h/list 来持有链表的话， 操作起来会更方便：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 表头节点</span></div><div class="line">    listNode *head;</div><div class="line"></div><div class="line">    <span class="comment">// 表尾节点</span></div><div class="line">    listNode *tail;</div><div class="line"></div><div class="line">    <span class="comment">// 链表所包含的节点数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;</div><div class="line"></div><div class="line">    <span class="comment">// 节点值复制函数</span></div><div class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);</div><div class="line"></div><div class="line">    <span class="comment">// 节点值释放函数</span></div><div class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);</div><div class="line"></div><div class="line">    <span class="comment">// 节点值对比函数</span></div><div class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key);</div><div class="line"></div><div class="line">&#125; <span class="built_in">list</span>;</div></pre></td></tr></table></figure></p>
+<p>list 结构为链表提供了表头指针 head 、表尾指针 tail ， 以及链表长度计数器 len ， 而 dup 、 free 和 match 成员则是用于实现多态链表所需的类型特定函数：</p>
+<ul>
+<li>dup 函数用于复制链表节点所保存的值；</li>
+<li>free 函数用于释放链表节点所保存的值；</li>
+<li>match 函数则用于对比链表节点所保存的值和另一个输入值是否相等。</li>
+</ul>
+<p>图 3-2 是由一个 list 结构和三个 listNode 结构组成的链表：<br><a href="http://idiotsky.me/images/redis-linkedlist-2.png"><img src="http://idiotsky.me/images/redis-linkedlist-2.png" alt=""></a></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Redis 的链表实现的特性可以总结如下：</p>
+<ul>
+<li>双端： 链表节点带有 prev 和 next 指针， 获取某个节点的前置节点和后置节点的复杂度都是 O(1) 。</li>
+<li>无环： 表头节点的 prev 指针和表尾节点的 next 指针都指向 NULL ， 对链表的访问以 NULL 为终点。</li>
+<li>带表头指针和表尾指针： 通过 list 结构的 head 指针和 tail 指针， 程序获取链表的表头节点和表尾节点的复杂度为 O(1) 。</li>
+<li>带链表长度计数器： 程序使用 list 结构的 len 属性来对 list 持有的链表节点进行计数， 程序获取链表中节点数量的复杂度为 O(1) 。</li>
+<li>多态： 链表节点使用 void* 指针来保存节点值， 并且可以通过 list 结构的 dup 、 free 、 match 三个属性为节点值设置类型特定函数， 所以链表可以用于保存各种不同类型的值。</li>
+</ul>
+<p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;列表键的底层就是一个链表&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;链表节点&quot;&gt;&lt;a href=&quot;#链表节点&quot; class=&quot;headerlink&quot; title=&quot;链表节点&quot;&gt;&lt;/a&gt;链表节点&lt;/h1&gt;&lt;p&gt;每个链表节点使用一个 adlist.h/listNode 结构来表示：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;listNode&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 前置节点&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;listNode&lt;/span&gt; *&lt;span class=&quot;title&quot;&gt;prev&lt;/span&gt;;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 后置节点&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;listNode&lt;/span&gt; *&lt;span class=&quot;title&quot;&gt;next&lt;/span&gt;;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 节点的值&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; *value;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125; listNode;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;多个 listNode 可以通过 prev 和 next 指针组成双端链表， 如图 3-1 所示。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-linkedlist-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-linkedlist-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
+    
+      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="链表" scheme="http://idiotsky.me/tags/%E9%93%BE%E8%A1%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>JVM杂谈之JIT</title>
@@ -79,7 +403,7 @@
     <link href="http://idiotsky.me/2017/09/13/kafka-design/"/>
     <id>http://idiotsky.me/2017/09/13/kafka-design/</id>
     <published>2017-09-13T13:38:51.000Z</published>
-    <updated>2017-09-14T13:18:42.000Z</updated>
+    <updated>2017-09-14T13:22:33.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>to be continue</p>
@@ -94,6 +418,158 @@
     
     </summary>
     
+      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
+    
+    
+      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
+    
+      <category term="kafka" scheme="http://idiotsky.me/tags/kafka/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>redis数据结构-简单动态字符串</title>
+    <link href="http://idiotsky.me/2017/09/11/redis-string/"/>
+    <id>http://idiotsky.me/2017/09/11/redis-string/</id>
+    <published>2017-09-11T04:07:30.000Z</published>
+    <updated>2017-09-19T17:05:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。例如键（key）底层就是SDS，而值如果是字符串对象，那这个对象的底层也是个SDS</p>
+</blockquote>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>每个 sds.h/sdshdr 结构表示一个 SDS 值：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 记录 buf 数组中已使用字节的数量</span></div><div class="line">    <span class="comment">// 等于 SDS 所保存字符串的长度</span></div><div class="line">    <span class="keyword">int</span> len;</div><div class="line"></div><div class="line">    <span class="comment">// 记录 buf 数组中未使用字节的数量</span></div><div class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</div><div class="line"></div><div class="line">    <span class="comment">// 字节数组，用于保存字符串</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line"></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>图 2-1 展示了一个 SDS 示例：</p>
+<ul>
+<li>free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间。</li>
+<li>len 属性的值为 5 ， 表示这个 SDS 保存了一个五字节长的字符串。</li>
+<li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。<br><a href="http://idiotsky.me/images/redis-string-1.png"><img src="http://idiotsky.me/images/redis-string-1.png" alt=""></a><br>SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。</li>
+</ul>
+<p>遵循空字符结尾这一惯例的好处是， SDS 可以直接重用一部分 C 字符串函数库里面的函数。</p>
+<p>举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s-&gt;buf);</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>来打印出 SDS 保存的字符串值 “Redis” ， 而无须为 SDS 编写专门的打印函数。</p>
+<p>图 2-2 展示了另一个 SDS 示例:</p>
+<ul>
+<li>这个 SDS 和之前展示的 SDS 一样， 都保存了字符串值 “Redis” 。</li>
+<li>这个 SDS 和之前展示的 SDS 的区别在于， 这个 SDS 为 buf 数组分配了五字节未使用空间， 所以它的 free 属性的值为 5 （图中使用五个空格来表示五字节的未使用空间）。<br><a href="http://idiotsky.me/images/redis-string-2.png"><img src="http://idiotsky.me/images/redis-string-2.png" alt=""></a></li>
+</ul>
+<h1 id="SDS-与-C-字符串的区别"><a href="#SDS-与-C-字符串的区别" class="headerlink" title="SDS 与 C 字符串的区别"></a>SDS 与 C 字符串的区别</h1><p>根据传统， C 语言使用长度为 N+1 的字符数组来表示长度为 N 的字符串， 并且字符数组的最后一个元素总是空字符 ‘\0’ 。</p>
+<p>比如说， 图 2-3 就展示了一个值为 “Redis” 的 C 字符串：<br><a href="http://idiotsky.me/images/redis-string-3.png"><img src="http://idiotsky.me/images/redis-string-3.png" alt=""></a><br>C 语言使用的这种简单的字符串表示方式， 并不能满足 Redis 对字符串在安全性、效率、以及功能方面的要求， 本节接下来的内容将详细对比 C 字符串和 SDS 之间的区别， 并说明 SDS 比 C 字符串更适用于 Redis 的原因。</p>
+<h2 id="常数复杂度获取字符串长度"><a href="#常数复杂度获取字符串长度" class="headerlink" title="常数复杂度获取字符串长度"></a>常数复杂度获取字符串长度</h2><p>因为 C 字符串并不记录自身的长度信息， 所以为了获取一个 C 字符串的长度， 程序必须遍历整个字符串， 对遇到的每个字符进行计数， 直到遇到代表字符串结尾的空字符为止， 这个操作的复杂度为 O(N) 。</p>
+<p>举个例子， 图 2-4 展示了程序计算一个 C 字符串长度的过程。<br><a href="http://idiotsky.me/images/redis-string-4.png"><img src="http://idiotsky.me/images/redis-string-4.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-5.png"><img src="http://idiotsky.me/images/redis-string-5.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-6.png"><img src="http://idiotsky.me/images/redis-string-6.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-7.png"><img src="http://idiotsky.me/images/redis-string-7.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-8.png"><img src="http://idiotsky.me/images/redis-string-8.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-9.png"><img src="http://idiotsky.me/images/redis-string-9.png" alt=""></a><br>和 C 字符串不同， 因为 SDS 在 len 属性中记录了 SDS 本身的长度， 所以获取一个 SDS 长度的复杂度仅为 O(1) 。</p>
+<p>举个例子， 对于图 2-5 所示的 SDS 来说， 程序只要访问 SDS 的 len 属性， 就可以立即知道 SDS 的长度为 5 字节：<br><a href="http://idiotsky.me/images/redis-string-10.png"><img src="http://idiotsky.me/images/redis-string-10.png" alt=""></a><br>又比如说， 对于图 2-6 展示的 SDS 来说， 程序只要访问 SDS 的 len 属性， 就可以立即知道 SDS 的长度为 11 字节。<br><a href="http://idiotsky.me/images/redis-string-11.png"><img src="http://idiotsky.me/images/redis-string-11.png" alt=""></a><br>设置和更新 SDS 长度的工作是由 SDS 的 API 在执行时自动完成的， 使用 SDS 无须进行任何手动修改长度的工作。</p>
+<p>通过使用 SDS 而不是 C 字符串， Redis 将获取字符串长度所需的复杂度从 O(N) 降低到了 O(1) ， 这确保了获取字符串长度的工作不会成为 Redis 的性能瓶颈。</p>
+<p>比如说， 因为字符串键在底层使用 SDS 来实现， 所以即使我们对一个非常长的字符串键反复执行 STRLEN 命令， 也不会对系统性能造成任何影响， 因为 STRLEN 命令的复杂度仅为 O(1) 。</p>
+<h2 id="杜绝缓冲区溢出"><a href="#杜绝缓冲区溢出" class="headerlink" title="杜绝缓冲区溢出"></a>杜绝缓冲区溢出</h2><p>除了获取字符串长度的复杂度高之外， C 字符串不记录自身长度带来的另一个问题是容易造成缓冲区溢出（buffer overflow）。</p>
+<p>举个例子， <code>&lt;string.h&gt;/strcat</code> 函数可以将 src 字符串中的内容拼接到 dest 字符串的末尾：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">char</span> *<span class="title">strcat</span><span class="params">(<span class="keyword">char</span> *dest, <span class="keyword">const</span> <span class="keyword">char</span> *src)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>因为 C 字符串不记录自身的长度， 所以 strcat 假定用户在执行这个函数时， 已经为 dest 分配了足够多的内存， 可以容纳 src 字符串中的所有内容， 而一旦这个假定不成立时， 就会产生缓冲区溢出。</p>
+<p>举个例子， 假设程序里有两个在内存中紧邻着的 C 字符串 s1 和 s2 ， 其中 s1 保存了字符串 “Redis” ， 而 s2 则保存了字符串 “MongoDB” ， 如图 2-7 所示。<br><a href="http://idiotsky.me/images/redis-string-12.png"><img src="http://idiotsky.me/images/redis-string-12.png" alt=""></a><br>如果一个程序员决定通过执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">strcat</span>(s1, <span class="string">" Cluster"</span>);</div></pre></td></tr></table></figure></p>
+<p>将 s1 的内容修改为 “Redis Cluster” ， 但粗心的他却忘了在执行 strcat 之前为 s1 分配足够的空间， 那么在 strcat 函数执行之后， s1 的数据将溢出到 s2 所在的空间中， 导致 s2 保存的内容被意外地修改， 如图 2-8 所示。<br><a href="http://idiotsky.me/images/redis-string-13.png"><img src="http://idiotsky.me/images/redis-string-13.png" alt=""></a><br>与 C 字符串不同， SDS 的空间分配策略完全杜绝了发生缓冲区溢出的可能性： 当 SDS API 需要对 SDS 进行修改时， API 会先检查 SDS 的空间是否满足修改所需的要求， 如果不满足的话， API 会自动将 SDS 的空间扩展至执行修改所需的大小， 然后才执行实际的修改操作， 所以使用 SDS 既不需要手动修改 SDS 的空间大小， 也不会出现前面所说的缓冲区溢出问题。</p>
+<p>举个例子， SDS 的 API 里面也有一个用于执行拼接操作的 sdscat 函数， 它可以将一个 C 字符串拼接到给定 SDS 所保存的字符串的后面， 但是在执行拼接操作之前， sdscat 会先检查给定 SDS 的空间是否足够， 如果不够的话， sdscat 就会先扩展 SDS 的空间， 然后才执行拼接操作。</p>
+<p>比如说， 如果我们执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sdscat(s, <span class="string">" Cluster"</span>);</div></pre></td></tr></table></figure></p>
+<p>其中 SDS 值 s 如图 2-9 所示， 那么 sdscat 将在执行拼接操作之前检查 s 的长度是否足够， 在发现 s 目前的空间不足以拼接 “ Cluster” 之后， sdscat 就会先扩展 s 的空间， 然后才执行拼接 “ Cluster” 的操作， 拼接操作完成之后的 SDS 如图 2-10 所示。<br><a href="http://idiotsky.me/images/redis-string-14.png"><img src="http://idiotsky.me/images/redis-string-14.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-15.png"><img src="http://idiotsky.me/images/redis-string-15.png" alt=""></a><br>注意图 2-10 所示的 SDS ： sdscat 不仅对这个 SDS 进行了拼接操作， 它还为 SDS 分配了 13 字节的未使用空间， 并且拼接之后的字符串也正好是 13 字节长， 这种现象既不是 bug 也不是巧合， 它和 SDS 的空间分配策略有关， 接下来的小节将对这一策略进行说明</p>
+<h2 id="减少修改字符串时带来的内存重分配次数"><a href="#减少修改字符串时带来的内存重分配次数" class="headerlink" title="减少修改字符串时带来的内存重分配次数"></a>减少修改字符串时带来的内存重分配次数</h2><p>正如前两个小节所说， 因为 C 字符串并不记录自身的长度， 所以对于一个包含了 N 个字符的 C 字符串来说， 这个 C 字符串的底层实现总是一个 N+1 个字符长的数组（额外的一个字符空间用于保存空字符）。</p>
+<p>因为 C 字符串的长度和底层数组的长度之间存在着这种关联性， 所以每次增长或者缩短一个 C 字符串， 程序都总要对保存这个 C 字符串的数组进行一次内存重分配操作：</p>
+<ul>
+<li>如果程序执行的是增长字符串的操作， 比如拼接操作（append）， 那么在执行这个操作之前， 程序需要先通过内存重分配来扩展底层数组的空间大小 —— 如果忘了这一步就会产生缓冲区溢出。</li>
+<li>如果程序执行的是缩短字符串的操作， 比如截断操作（trim）， 那么在执行这个操作之后， 程序需要通过内存重分配来释放字符串不再使用的那部分空间 —— 如果忘了这一步就会产生内存泄漏。</li>
+</ul>
+<p>举个例子， 如果我们持有一个值为 “Redis” 的 C 字符串 s ， 那么为了将 s 的值改为 “Redis Cluster” ， 在执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">strcat</span>(s, <span class="string">" Cluster"</span>);</div></pre></td></tr></table></figure></p>
+<p>之前， 我们需要先使用内存重分配操作， 扩展 s 的空间。</p>
+<p>之后， 如果我们又打算将 s 的值从 “Redis Cluster” 改为 “Redis Cluster Tutorial” ， 那么在执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">strcat</span>(s, <span class="string">" Tutorial"</span>);</div></pre></td></tr></table></figure></p>
+<p>之前， 我们需要再次使用内存重分配扩展 s 的空间， 诸如此类。</p>
+<p>因为内存重分配涉及复杂的算法， 并且可能需要执行系统调用， 所以它通常是一个比较耗时的操作：</p>
+<ul>
+<li>在一般程序中， 如果修改字符串长度的情况不太常出现， 那么每次修改都执行一次内存重分配是可以接受的。</li>
+<li>但是 Redis 作为数据库， 经常被用于速度要求严苛、数据被频繁修改的场合， 如果每次修改字符串的长度都需要执行一次内存重分配的话， 那么光是执行内存重分配的时间就会占去修改字符串所用时间的一大部分， 如果这种修改频繁地发生的话， 可能还会对性能造成影响。</li>
+</ul>
+<p>为了避免 C 字符串的这种缺陷， SDS 通过未使用空间解除了字符串长度和底层数组长度之间的关联： 在 SDS 中， buf 数组的长度不一定就是字符数量加一， 数组里面可以包含未使用的字节， 而这些字节的数量就由 SDS 的 free 属性记录。</p>
+<p>通过未使用空间， SDS 实现了空间预分配和惰性空间释放两种优化策略。</p>
+<h3 id="空间预分配"><a href="#空间预分配" class="headerlink" title="空间预分配"></a>空间预分配</h3><p>空间预分配用于优化 SDS 的字符串增长操作： 当 SDS 的 API 对一个 SDS 进行修改， 并且需要对 SDS 进行空间扩展的时候， 程序不仅会为 SDS 分配修改所必须要的空间， 还会为 SDS 分配额外的未使用空间。</p>
+<p>其中， 额外分配的未使用空间数量由以下公式决定：</p>
+<ul>
+<li>如果对 SDS 进行修改之后， SDS 的长度（也即是 len 属性的值）将小于 1 MB ， 那么程序分配和 len 属性同样大小的未使用空间， 这时 SDS len 属性的值将和 free 属性的值相同。 举个例子， 如果进行修改之后， SDS 的 len 将变成 13 字节， 那么程序也会分配 13 字节的未使用空间， SDS 的 buf 数组的实际长度将变成 13 + 13 + 1 = 27 字节（额外的一字节用于保存空字符）。</li>
+<li>如果对 SDS 进行修改之后， SDS 的长度将大于等于 1 MB ， 那么程序会分配 1 MB 的未使用空间。 举个例子， 如果进行修改之后， SDS 的 len 将变成 30 MB ， 那么程序会分配 1 MB 的未使用空间， SDS 的 buf 数组的实际长度将为 30 MB + 1 MB + 1 byte 。</li>
+</ul>
+<p>通过空间预分配策略， Redis 可以减少连续执行字符串增长操作所需的内存重分配次数。</p>
+<p>举个例子， 对于图 2-11 所示的 SDS 值 s 来说， 如果我们执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sdscat(s, <span class="string">" Cluster"</span>);</div></pre></td></tr></table></figure></p>
+<p>那么 sdscat 将执行一次内存重分配操作， 将 SDS 的长度修改为 13 字节， 并将 SDS 的未使用空间同样修改为 13 字节， 如图 2-12 所示。<br><a href="http://idiotsky.me/images/redis-string-16.png"><img src="http://idiotsky.me/images/redis-string-16.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-17.png"><img src="http://idiotsky.me/images/redis-string-17.png" alt=""></a><br>如果这时， 我们再次对 s 执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sdscat(s, <span class="string">" Tutorial"</span>);</div></pre></td></tr></table></figure></p>
+<p>那么这次 sdscat 将不需要执行内存重分配： 因为未使用空间里面的 13 字节足以保存 9 字节的 “ Tutorial” ， 执行 sdscat 之后的 SDS 如图 2-13 所示。<br><a href="http://idiotsky.me/images/redis-string-18.png"><img src="http://idiotsky.me/images/redis-string-18.png" alt=""></a><br>在扩展 SDS 空间之前， SDS API 会先检查未使用空间是否足够， 如果足够的话， API 就会直接使用未使用空间， 而无须执行内存重分配。</p>
+<p>通过这种预分配策略， SDS 将连续增长 N 次字符串所需的内存重分配次数从必定 N 次降低为最多 N 次。</p>
+<h3 id="惰性空间释放"><a href="#惰性空间释放" class="headerlink" title="惰性空间释放"></a>惰性空间释放</h3><p>惰性空间释放用于优化 SDS 的字符串缩短操作： 当 SDS 的 API 需要缩短 SDS 保存的字符串时， 程序并不立即使用内存重分配来回收缩短后多出来的字节， 而是使用 free 属性将这些字节的数量记录起来， 并等待将来使用。</p>
+<p>举个例子， sdstrim 函数接受一个 SDS 和一个 C 字符串作为参数， 从 SDS 左右两端分别移除所有在 C 字符串中出现过的字符。</p>
+<p>比如对于图 2-14 所示的 SDS 值 s 来说， 执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sdstrim(s, <span class="string">"XY"</span>);   <span class="comment">// 移除 SDS 字符串中的所有 'X' 和 'Y'</span></div></pre></td></tr></table></figure></p>
+<p>会将 SDS 修改成图 2-15 所示的样子。<br><a href="http://idiotsky.me/images/redis-string-19.png"><img src="http://idiotsky.me/images/redis-string-19.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-string-20.png"><img src="http://idiotsky.me/images/redis-string-20.png" alt=""></a><br>注意执行 sdstrim 之后的 SDS 并没有释放多出来的 8 字节空间， 而是将这 8 字节空间作为未使用空间保留在了 SDS 里面， 如果将来要对 SDS 进行增长操作的话， 这些未使用空间就可能会派上用场。</p>
+<p>举个例子， 如果现在对 s 执行：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sdscat(s, <span class="string">" Redis"</span>);</div></pre></td></tr></table></figure></p>
+<p>那么完成这次 sdscat 操作将不需要执行内存重分配： 因为 SDS 里面预留的 8 字节空间已经足以拼接 6 个字节长的 “ Redis” ， 如图 2-16 所示。<br><a href="http://idiotsky.me/images/redis-string-21.png"><img src="http://idiotsky.me/images/redis-string-21.png" alt=""></a><br>通过惰性空间释放策略， SDS 避免了缩短字符串时所需的内存重分配操作， 并为将来可能有的增长操作提供了优化。</p>
+<p>与此同时， SDS 也提供了相应的 API ， 让我们可以在有需要时， 真正地释放 SDS 里面的未使用空间， 所以不用担心惰性空间释放策略会造成内存浪费。</p>
+<h1 id="二进制安全"><a href="#二进制安全" class="headerlink" title="二进制安全"></a>二进制安全</h1><p>C 字符串中的字符必须符合某种编码（比如 ASCII）， 并且除了字符串的末尾之外， 字符串里面不能包含空字符， 否则最先被程序读入的空字符将被误认为是字符串结尾 —— 这些限制使得 C 字符串只能保存文本数据， 而不能保存像图片、音频、视频、压缩文件这样的二进制数据。</p>
+<p>举个例子， 如果有一种使用空字符来分割多个单词的特殊数据格式， 如图 2-17 所示， 那么这种格式就不能使用 C 字符串来保存， 因为 C 字符串所用的函数只会识别出其中的 “Redis” ， 而忽略之后的 “Cluster” 。<br><a href="http://idiotsky.me/images/redis-string-22.png"><img src="http://idiotsky.me/images/redis-string-22.png" alt=""></a><br>虽然数据库一般用于保存文本数据， 但使用数据库来保存二进制数据的场景也不少见， 因此， 为了确保 Redis 可以适用于各种不同的使用场景， SDS 的 API 都是二进制安全的（binary-safe）： 所有 SDS API 都会以处理二进制的方式来处理 SDS 存放在 buf 数组里的数据， 程序不会对其中的数据做任何限制、过滤、或者假设 —— 数据在写入时是什么样的， 它被读取时就是什么样。</p>
+<p>这也是我们将 SDS 的 buf 属性称为字节数组的原因 —— Redis 不是用这个数组来保存字符， 而是用它来保存一系列二进制数据。</p>
+<p>比如说， 使用 SDS 来保存之前提到的特殊数据格式就没有任何问题， 因为 SDS 使用 len 属性的值而不是空字符来判断字符串是否结束， 如图 2-18 所示。<br><a href="http://idiotsky.me/images/redis-string-23.png"><img src="http://idiotsky.me/images/redis-string-23.png" alt=""></a><br>通过使用二进制安全的 SDS ， 而不是 C 字符串， 使得 Redis 不仅可以保存文本数据， 还可以保存任意格式的二进制数据。</p>
+<h1 id="兼容部分-C-字符串函数"><a href="#兼容部分-C-字符串函数" class="headerlink" title="兼容部分 C 字符串函数"></a>兼容部分 C 字符串函数</h1><p>虽然 SDS 的 API 都是二进制安全的， 但它们一样遵循 C 字符串以空字符结尾的惯例： 这些 API 总会将 SDS 保存的数据的末尾设置为空字符， 并且总会在为 buf 数组分配空间时多分配一个字节来容纳这个空字符， 这是为了让那些保存文本数据的 SDS 可以重用一部分 <code>&lt;string.h&gt;</code> 库定义的函数。<br><a href="http://idiotsky.me/images/redis-string-24.png"><img src="http://idiotsky.me/images/redis-string-24.png" alt=""></a><br>举个例子， 如图 2-19 所示， 如果我们有一个保存文本数据的 SDS 值 sds ， 那么我们就可以重用 <code>&lt;string.h&gt;/strcasecmp</code> 函数， 使用它来对比 SDS 保存的字符串和另一个 C 字符串：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">strcasecmp(sds-&gt;buf, <span class="string">"hello world"</span>);</div></pre></td></tr></table></figure></p>
+<p>这样 Redis 就不用自己专门去写一个函数来对比 SDS 值和 C 字符串值了。</p>
+<p>与此类似， 我们还可以将一个保存文本数据的 SDS 作为 strcat 函数的第二个参数， 将 SDS 保存的字符串追加到一个 C 字符串的后面：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">strcat</span>(c_string, sds-&gt;buf);</div></pre></td></tr></table></figure></p>
+<p>这样 Redis 就不用专门编写一个将 SDS 字符串追加到 C 字符串之后的函数了。</p>
+<p>通过遵循 C 字符串以空字符结尾的惯例， SDS 可以在有需要时重用 <code>&lt;string.h&gt;</code> 函数库， 从而避免了不必要的代码重复。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><table>
+<thead>
+<tr>
+<th>C 字符串</th>
+<th>SDS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>获取字符串长度的复杂度为 O(N) 。</td>
+<td>获取字符串长度的复杂度为 O(1) 。</td>
+</tr>
+<tr>
+<td>API 是不安全的，可能会造成缓冲区溢出。</td>
+<td>API 是安全的，不会造成缓冲区溢出。</td>
+</tr>
+<tr>
+<td>修改字符串长度 N 次必然需要执行 N 次内存重分配。</td>
+<td>修改字符串长度 N 次最多需要执行 N 次内存重分配。</td>
+</tr>
+<tr>
+<td>只能保存文本数据。</td>
+<td>可以保存文本或者二进制数据。</td>
+</tr>
+<tr>
+<td>可以使用所有 <code>&lt;string.h&gt;</code>库中的函数。</td>
+<td>可以使用一部分 <code>&lt;string.h&gt;</code>库中的函数。</td>
+</tr>
+</tbody>
+</table>
+<p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。例如键（key）底层就是SDS，而值如果是字符串对象，那这个对象的底层也是个SDS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;定义&quot;&gt;&lt;a href=&quot;#定义&quot; class=&quot;headerlink&quot; title=&quot;定义&quot;&gt;&lt;/a&gt;定义&lt;/h1&gt;&lt;p&gt;每个 sds.h/sdshdr 结构表示一个 SDS 值：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;sdshdr&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 记录 buf 数组中已使用字节的数量&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 等于 SDS 所保存字符串的长度&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; len;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 记录 buf 数组中未使用字节的数量&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;free&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 字节数组，用于保存字符串&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; buf[];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;图 2-1 展示了一个 SDS 示例：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间。&lt;/li&gt;
+&lt;li&gt;len 属性的值为 5 ， 表示这个 SDS 保存了一个五字节长的字符串。&lt;/li&gt;
+&lt;li&gt;buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-string-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-string-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;遵循空字符结尾这一惯例的好处是， SDS 可以直接重用一部分 C 字符串函数库里面的函数。&lt;/p&gt;
+&lt;p&gt;举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;printf&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&quot;%s&quot;&lt;/span&gt;, s-&amp;gt;buf);&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
+    
+    
+      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
+    
+      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="字符串" scheme="http://idiotsky.me/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/"/>
     
   </entry>
   
@@ -102,7 +578,7 @@
     <link href="http://idiotsky.me/2017/09/11/epoll-mechanism/"/>
     <id>http://idiotsky.me/2017/09/11/epoll-mechanism/</id>
     <published>2017-09-10T17:35:15.000Z</published>
-    <updated>2017-09-13T12:54:05.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。 </p>
@@ -125,8 +601,8 @@
 <li><strong>LT</strong>：level-trigger，水平触发模式，只要某个socket处于readable/writable状态，无论什么时候进行epoll_wait都会返回该socket。</li>
 <li><strong>ET</strong>：edge-trigger，边缘触发模式，只有某个socket从unreadable变为readable或从unwritable变为writable时，epoll_wait才会返回该socket。</li>
 </ul>
-<p>socket读数据<br><a href="/images/epoll-mechanism-1.png"><img src="/images/epoll-mechanism-1.png" alt=""></a></p>
-<p>socket写数据<br><a href="/images/epoll-mechanism-2.png"><img src="/images/epoll-mechanism-2.png" alt=""></a></p>
+<p>socket读数据<br><a href="http://idiotsky.me/images/epoll-mechanism-1.png"><img src="http://idiotsky.me/images/epoll-mechanism-1.png" alt=""></a></p>
+<p>socket写数据<br><a href="http://idiotsky.me/images/epoll-mechanism-2.png"><img src="http://idiotsky.me/images/epoll-mechanism-2.png" alt=""></a></p>
 <p>参考 <a href="http://www.jianshu.com/p/0d497fe5484a" target="_blank" rel="external">http://www.jianshu.com/p/0d497fe5484a</a></p>
 ]]></content>
     
@@ -314,7 +790,7 @@
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work-2/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work-2/</id>
     <published>2017-08-26T03:08:09.000Z</published>
-    <updated>2017-09-03T11:06:34.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。</p>
@@ -332,7 +808,7 @@
 <li><a href="https://en.wikipedia.org/wiki/Nashorn_%28JavaScript_engine%29" target="_blank" rel="external">Nashorn</a> -  OpenJDK的开源一部分, 由Oracle Java 语言和工具组开发</li>
 <li><a href="https://en.wikipedia.org/wiki/JerryScript" target="_blank" rel="external">JerryScript</a> — 一个轻量级引擎.</li>
 </ul>
-<h1 id="为什么要创造一个V8引擎？"><a href="#为什么要创造一个V8引擎？" class="headerlink" title="为什么要创造一个V8引擎？"></a>为什么要创造一个V8引擎？</h1><p>V8引擎由Google创建并开源，c++编写。用于Google的Chrome浏览器。不像其他引擎，V8还是流行的Node.js的运行时引擎。<br><a href="/images/js-how-work-2-1.png"><img src="/images/js-how-work-2-1.png" alt=""></a><br>V8是第一个为了性能提升的浏览器引擎。为了达到更好的性能，相比于使用解释器，V8更倾向于使用编译器编译javascript代码成更高效的机器码。它像其他现代化javascript引擎如SpiderMonkey或者Rhino (Mozilla)一样，使用<strong>JIT(Just-In-Time)</strong>编译器在执行阶段编译代码，唯一不同的是，V8不会生成字节码或任意中间代码。</p>
+<h1 id="为什么要创造一个V8引擎？"><a href="#为什么要创造一个V8引擎？" class="headerlink" title="为什么要创造一个V8引擎？"></a>为什么要创造一个V8引擎？</h1><p>V8引擎由Google创建并开源，c++编写。用于Google的Chrome浏览器。不像其他引擎，V8还是流行的Node.js的运行时引擎。<br><a href="http://idiotsky.me/images/js-how-work-2-1.png"><img src="http://idiotsky.me/images/js-how-work-2-1.png" alt=""></a><br>V8是第一个为了性能提升的浏览器引擎。为了达到更好的性能，相比于使用解释器，V8更倾向于使用编译器编译javascript代码成更高效的机器码。它像其他现代化javascript引擎如SpiderMonkey或者Rhino (Mozilla)一样，使用<strong>JIT(Just-In-Time)</strong>编译器在执行阶段编译代码，唯一不同的是，V8不会生成字节码或任意中间代码。</p>
 <h1 id="V8曾经有两个编译器"><a href="#V8曾经有两个编译器" class="headerlink" title="V8曾经有两个编译器"></a>V8曾经有两个编译器</h1><p>在5.9版本发布（今年早些时候）之前，V8曾经有两个编译器：</p>
 <ul>
 <li>full-codegen — 一个简单快速的编译器，用来生成简单，相对慢的机器码。</li>
@@ -348,16 +824,16 @@
 <p>当开始执行javascript代码，V8运用<strong>full-codegen</strong>来直接翻译解析过的javascript代码为机器码，这个过程没有任何中间转换，所以执行机器码<strong>非常快</strong>.由于没有用到任何中间的字节码，所以就没有需要解释器的必要了。</p>
 <p>当你的代码运行一段时间后，剖析器线程就能收集到足够的数据来确定哪些方法应该被优化。</p>
 <p>接下来，<strong>Crankshaft</strong> 优化编译器开始运行在其他线程。它翻译javascript抽象语法树到一个高级别的<a href="https://en.wikipedia.org/wiki/Static_single_assignment_form" target="_blank" rel="external">静态单赋值(SSA)</a> 形态,又叫<strong>Hydrogen(氢？)</strong>。然后优化这个Hydrogen图。大部分的优化都在这个层次上完成。</p>
-<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="/images/js-how-work-2-2.png"><img src="/images/js-how-work-2-2.png" alt=""></a></p>
+<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="http://idiotsky.me/images/js-how-work-2-2.png"><img src="http://idiotsky.me/images/js-how-work-2-2.png" alt=""></a></p>
 <h1 id="隐藏类-Hidden-class"><a href="#隐藏类-Hidden-class" class="headerlink" title="隐藏类(Hidden class)"></a>隐藏类(Hidden class)</h1><p>javascript是一种基于原型的语言：没有类和对象是通过克隆进程创建的(机翻😁)。javascript也是一种动态语言，他能够随意的添加和删除一个对象的属性，即使这个对象已经实例化了。<br>大部分javascript解释器使用类字典的结构(基于<a href="http://en.wikipedia.org/wiki/Hash_function" target="_blank" rel="external">哈希函数</a>)来存储对象属性值在内存的位置。相比非动态语言如java和c#，这种结构使得取值是种计算昂贵的操作。对java来说，在编译之前就已经确定对象的属性，运行时也不能随意添加和删除属性的（当然，c#支持<a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/dynamic" target="_blank" rel="external">动态类型</a>,那就在其他话题里了）。所以，属性的值（或者属性的指针）可以存储在一个连续的缓存里面，属性之间的位移更是固定的，而且位移的长度可以容易的基于属性类型来确定。这些对于javascript来说是不可能的，因为javascript的类型可以在运行时改变。<br>由于这种字典的取地址方式是不高效的，所以V8用了一个不同的方法来取代：隐藏类(Hidden class)。隐藏类的运作方式跟java的固定对象布局类似，除了它们是在运行时创建的。下面举个栗子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.x = x;</div><div class="line">    <span class="keyword">this</span>.y = y;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</div></pre></td></tr></table></figure></p>
-<p>一旦<code>new Point(1, 2)</code>被调用，V8将创建一个<code>C0</code>的隐藏类。<br><a href="/images/js-how-work-2-3.png"><img src="/images/js-how-work-2-3.png" alt=""></a><br>由于<code>Point</code>没有属性定义,所以<code>C0</code>是空的。</p>
-<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code>。<code>C1</code>描述了x的内存的位置（相对于对象指针），在这个情况下，x的位置存在<a href="http://en.wikipedia.org/wiki/Offset_%28computer_science%29" target="_blank" rel="external">位移</a>0上，这代表了<code>point</code>对象是一个连续的内存，它的第一个位移对应的是属性x。同时V8也用“类转换”更新了<code>C0</code>，表明了如果一个属性x加到<code>point</code>对象，隐藏类就应该要从<code>C0</code>转换到<code>C1</code>。所以现在<code>point</code>对象的隐藏类为<code>C1</code>。<br><a href="/images/js-how-work-2-4.png"><img src="/images/js-how-work-2-4.png" alt=""></a><br><small><em>每一次一个新的属性加到一个对象，一条转换的路径更新到旧的隐藏类并指向新的隐藏类。隐藏类转换是很重要的，因为同样方式创建的对象都共享同一个隐藏类。如果两个对象共享一个隐藏类，同时相同的属性加到这个两个对象的话，那么转换将保证这两个对象还是共享同一个新的隐藏类，而且共享同一个隐藏类有益于优化代码。</em></small></p>
-<p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="/images/js-how-work-2-5.png"><img src="/images/js-how-work-2-5.png" alt=""></a></p>
+<p>一旦<code>new Point(1, 2)</code>被调用，V8将创建一个<code>C0</code>的隐藏类。<br><a href="http://idiotsky.me/images/js-how-work-2-3.png"><img src="http://idiotsky.me/images/js-how-work-2-3.png" alt=""></a><br>由于<code>Point</code>没有属性定义,所以<code>C0</code>是空的。</p>
+<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code>。<code>C1</code>描述了x的内存的位置（相对于对象指针），在这个情况下，x的位置存在<a href="http://en.wikipedia.org/wiki/Offset_%28computer_science%29" target="_blank" rel="external">位移</a>0上，这代表了<code>point</code>对象是一个连续的内存，它的第一个位移对应的是属性x。同时V8也用“类转换”更新了<code>C0</code>，表明了如果一个属性x加到<code>point</code>对象，隐藏类就应该要从<code>C0</code>转换到<code>C1</code>。所以现在<code>point</code>对象的隐藏类为<code>C1</code>。<br><a href="http://idiotsky.me/images/js-how-work-2-4.png"><img src="http://idiotsky.me/images/js-how-work-2-4.png" alt=""></a><br><small><em>每一次一个新的属性加到一个对象，一条转换的路径更新到旧的隐藏类并指向新的隐藏类。隐藏类转换是很重要的，因为同样方式创建的对象都共享同一个隐藏类。如果两个对象共享一个隐藏类，同时相同的属性加到这个两个对象的话，那么转换将保证这两个对象还是共享同一个新的隐藏类，而且共享同一个隐藏类有益于优化代码。</em></small></p>
+<p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="http://idiotsky.me/images/js-how-work-2-5.png"><img src="http://idiotsky.me/images/js-how-work-2-5.png" alt=""></a></p>
 <p>隐藏类的转换依赖于属性的加入顺序。看一下下面的代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.x = x;</div><div class="line">    <span class="keyword">this</span>.y = y;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</div><div class="line">p1.a = <span class="number">5</span>;</div><div class="line">p1.b = <span class="number">6</span>;</div><div class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> Point(<span class="number">3</span>, <span class="number">4</span>);</div><div class="line">p2.b = <span class="number">7</span>;</div><div class="line">p2.a = <span class="number">8</span>;</div></pre></td></tr></table></figure></p>
 <p>现在你肯定会认为p1和p2都是共享同一个隐藏类和转换路径，其实不然。对于p1，第一个属性是a再到b，而p2的话是先b在到a，所以p1和p2是分别两个不同的隐藏类和不同的两条转换路径。<strong>所以，对于动态属性最好是用相同的顺序加入到对象里面，这样有利于隐藏类的重用。</strong></p>
 <h1 id="内联缓存-Inline-caching"><a href="#内联缓存-Inline-caching" class="headerlink" title="内联缓存(Inline caching)"></a>内联缓存(Inline caching)</h1><p>V8利用内联缓存技术来优化动态类型语言。内联缓存依赖于观察哪些方法在哪些相同的对象类型被重复调用。更深的介绍可以看<a href="https://github.com/sq/JSIL/wiki/Optimizing-dynamic-JavaScript-with-inline-caches" target="_blank" rel="external">这里</a><br>我们用更通用的概念来说说内联缓存（如果你没时间去看上面的介绍的链接的话。）<br>所以，内联缓存是怎么工作的呢？V8维护一个对象类型的缓存，当一个对象做为参数传递到一个函数调用中，那V8会缓存这个对象，并假设这个对象会在未来会再一次作为参数传递到一个函数调用中。如果V8的这个假设是正确的话，在下次传递对象到一个方法调用的时候，就会绕过查找类型对象的属性的过程，直接使用之前查找隐藏类所储存的信息。</p>
 <p>所以隐藏类和内联缓存是怎么样关联起来的呢？无论一个指定对象方法什么时候被执行，V8引擎都会去查找那个对象的隐藏类去决定指定属性的访问位移。在两次成功调用相同隐藏类的相同方法后，V8就会忽略隐藏类的查找并简单的用属性位移和这个对象指针相加来确定地址。对于未来的那个方法的调用，V8都假设这个对象的隐藏类都没有改变，直接使用之前查找后对象内存的位移来访问属性，这样大大增加执行速度。</p>
-<p>相同类型的对象共享相同隐藏类是很重要的，原因是内存缓存。如果你创建两个相同类型的对象，但它们的隐藏类不同（前面例子有提到），V8将没办法用到内联缓存，因为尽管类型相同，但是它们对应的隐藏类分配的属性位移是不同的。<br><a href="/images/js-how-work-2-6.png"><img src="/images/js-how-work-2-6.png" alt=""></a><br><small><em>这两个对象基本上是一样的，但是a和b属性是用不同的顺序创建的。</em></small></p>
+<p>相同类型的对象共享相同隐藏类是很重要的，原因是内存缓存。如果你创建两个相同类型的对象，但它们的隐藏类不同（前面例子有提到），V8将没办法用到内联缓存，因为尽管类型相同，但是它们对应的隐藏类分配的属性位移是不同的。<br><a href="http://idiotsky.me/images/js-how-work-2-6.png"><img src="http://idiotsky.me/images/js-how-work-2-6.png" alt=""></a><br><small><em>这两个对象基本上是一样的，但是a和b属性是用不同的顺序创建的。</em></small></p>
 <h1 id="编译机器码"><a href="#编译机器码" class="headerlink" title="编译机器码"></a>编译机器码</h1><p>一旦Hydrogen图被优化，Crankshaft降低它为一个低级别的表述，称为Lithium。大多数Lithium实现是架构指定的。注册器分配发生在这个级别。</p>
 <p>最后，Lithium被编译为机器码。有一些编译发生在OSR:栈中替换。在我们编译和优化一个明显长时间运行的方法时，我们有可能已经运行了这个方法了。V8不会忘了这个方法重新运行一个优化的版本的方法，而是转换所有的上下文（栈，注册器），这样就可以在执行中切换到优化版本。这是一个复杂的任务，记得在其他优化里，V8已经一开始就内联代码了。V8不是唯一有这能力的引擎。</p>
 <p>这里有个保障是，一旦引擎的假设不成立的话，会把优化过的代码回滚回之前未优化的代码。这个保障称之为去优化（deoptimization）</p>
@@ -366,7 +842,7 @@
 <p>新的执行管道由V8解释器<a href="https://github.com/v8/v8/wiki/Interpreter" target="_blank" rel="external">Ignition</a>和V8最新优化编译器<a href="https://github.com/v8/v8/wiki/TurboFan" target="_blank" rel="external">TurboFan</a> 组成。</p>
 <p>你可以在<a href="https://v8project.blogspot.bg/2017/05/launching-ignition-and-turbofan.html" target="_blank" rel="external">这里</a>查阅来自V8团队的博客文章.</p>
 <p>自从5.9版本的V8发布，full-codegen和Crankshaft（这两个技术从2010就开始服务V8了）不再被V8用来执行javascript，当V8团队要跟上新的javascript语言特性的步伐和这些特性更需要优化的支持。</p>
-<p>这就意味着V8总体来讲将是一个更简单和更容易维护的架构。<br><a href="/images/js-how-work-2-7.png"><img src="/images/js-how-work-2-7.png" alt=""></a><br><small><em>在网页和Node.js的性能改进</em></small></p>
+<p>这就意味着V8总体来讲将是一个更简单和更容易维护的架构。<br><a href="http://idiotsky.me/images/js-how-work-2-7.png"><img src="http://idiotsky.me/images/js-how-work-2-7.png" alt=""></a><br><small><em>在网页和Node.js的性能改进</em></small></p>
 <p>这些改进只是个开始。新的Ignition和TurboFan为更长远的优化铺平了道路，并在这几年提升javascript的性能和缩小Node.js和Chrome的差距。</p>
 <h1 id="怎么写出最好的javascript代码"><a href="#怎么写出最好的javascript代码" class="headerlink" title="怎么写出最好的javascript代码"></a>怎么写出最好的javascript代码</h1><p>最后，这里有些建议帮助你们写出更优更好的javascript。我想，当你看到这里，你心里已经有所感悟了，但是，我还是总结下吧：</p>
 <ol>
@@ -400,29 +876,29 @@
     <link href="http://idiotsky.me/2017/08/26/javascript-how-work/"/>
     <id>http://idiotsky.me/2017/08/26/javascript-how-work/</id>
     <published>2017-08-25T17:17:54.000Z</published>
-    <updated>2017-08-26T06:00:38.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p><strong>简评</strong>：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？</p>
 </blockquote>
 <a id="more"></a>
 <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>大家应该都知道 JavaScript 是单线程的，以及听过 V8 引擎的概念。<br>这篇文章将会介绍这些概念，并解释 JavaScript 是如何运行的。通过了解这些细节，开发者能更好地编写代码，正确利用其提供的 API。</p>
-<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="/images/js-how-work.png"><img src="/images/js-how-work.png" alt=""></a></p>
+<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="http://idiotsky.me/images/js-how-work.png"><img src="http://idiotsky.me/images/js-how-work.png" alt=""></a></p>
 <p>引擎主要由两个组件组成：</p>
 <ul>
 <li>内存堆（Memory Heap ）：这是内存分配的地方</li>
 <li>调用堆栈（Call Stack）：这是程序运行时函数的调用过程</li>
 </ul>
-<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="/images/js-how-work-1.png"><img src="/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="http://idiotsky.me/images/js-how-work-1.png"><img src="http://idiotsky.me/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
 <h1 id="调用堆栈（Call-Stack）"><a href="#调用堆栈（Call-Stack）" class="headerlink" title="调用堆栈（Call Stack）"></a>调用堆栈（Call Stack）</h1><p>JavaScript 是单线程语言，这意味着它只有一个单一的调用堆栈。因此，它每次只能做一件事。</p>
 <p>调用堆栈是一个数据结构，按调用顺序保存所有在运行期被调用的方法。既然是个栈，那么它就满足先入后出的特性。</p>
 <p>我们来看一个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> x * y;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">printSquare</span>(<span class="params">x</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> s = multiply(x, x);</div><div class="line">    <span class="built_in">console</span>.log(s);</div><div class="line">&#125;</div><div class="line">printSquare(<span class="number">5</span>);</div></pre></td></tr></table></figure></p>
-<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="/images/js-how-work-2.png"><img src="/images/js-how-work-2.png" alt=""></a></p>
+<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="http://idiotsky.me/images/js-how-work-2.png"><img src="http://idiotsky.me/images/js-how-work-2.png" alt=""></a></p>
 <p>调用堆栈中的每个条目称为堆栈帧（Stack Frame）。当异常发生时，它基本上是调用堆栈的状态。再看看下面这段代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'SessionStack will help you resolve crashes :)'</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    bar();</div><div class="line">&#125;</div><div class="line">start();</div></pre></td></tr></table></figure></p>
-<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="/images/js-how-work-3.png"><img src="/images/js-how-work-3.png" alt=""></a></p>
+<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="http://idiotsky.me/images/js-how-work-3.png"><img src="http://idiotsky.me/images/js-how-work-3.png" alt=""></a></p>
 <p>当你达到最大调用堆栈时，会容易发生这种情况，特别是在没有测试代码时随意使用递归。<br>看看这个示例代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line">foo();</div></pre></td></tr></table></figure></p>
-<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="/images/js-how-work-4.png"><img src="/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="/images/js-how-work-5.png"><img src="/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
-<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="/images/js-how-work-6.jpg"><img src="/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
+<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="http://idiotsky.me/images/js-how-work-4.png"><img src="http://idiotsky.me/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="http://idiotsky.me/images/js-how-work-5.png"><img src="http://idiotsky.me/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
+<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="http://idiotsky.me/images/js-how-work-6.jpg"><img src="http://idiotsky.me/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
 <p>翻译和参考 <a href="https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf" target="_blank" rel="external">https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf</a></p>
 ]]></content>
     
@@ -446,9 +922,9 @@
     <link href="http://idiotsky.me/2017/08/19/openstack-install-prepare-2/"/>
     <id>http://idiotsky.me/2017/08/19/openstack-install-prepare-2/</id>
     <published>2017-08-19T14:50:07.000Z</published>
-    <updated>2017-09-13T13:08:21.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
-    <content type="html"><![CDATA[<p><a href="/images/openstack-install-prepare-2-1.png"><img src="/images/openstack-install-prepare-2-1.png" alt=""></a><br>上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。</p>
+    <content type="html"><![CDATA[<p><a href="http://idiotsky.me/images/openstack-install-prepare-2-1.png"><img src="http://idiotsky.me/images/openstack-install-prepare-2-1.png" alt=""></a><br>上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。</p>
 <p>按照官方建议，这次openstack安装的服务为：</p>
 <ul>
 <li>Identity service (keystone)</li>
@@ -478,7 +954,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;&lt;a href=&quot;/images/openstack-install-prepare-2-1.png&quot;&gt;&lt;img src=&quot;/images/openstack-install-prepare-2-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。&lt;/p&gt;
+      &lt;p&gt;&lt;a href=&quot;http://idiotsky.me/images/openstack-install-prepare-2-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/openstack-install-prepare-2-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。&lt;/p&gt;
 &lt;p&gt;按照官方建议，这次openstack安装的服务为：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Identity service (keystone)&lt;/li&gt;
@@ -601,9 +1077,9 @@
     <link href="http://idiotsky.me/2017/08/16/gc-three-color/"/>
     <id>http://idiotsky.me/2017/08/16/gc-three-color/</id>
     <published>2017-08-15T17:02:35.000Z</published>
-    <updated>2017-08-20T03:32:45.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
-    <content type="html"><![CDATA[<p><a href="/images/gc-1.gif"><img src="/images/gc-1.gif" alt=""></a><br><a id="more"></a><br>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，</p>
+    <content type="html"><![CDATA[<p><a href="http://idiotsky.me/images/gc-1.gif"><img src="http://idiotsky.me/images/gc-1.gif" alt=""></a><br><a id="more"></a><br>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，</p>
 <ol>
 <li>首先创建三个集合：白、灰、黑。</li>
 <li>将所有对象放入白色集合中。</li>
@@ -618,16 +1094,16 @@
     
     <summary type="html">
     
-      &lt;p&gt;&lt;a href=&quot;/images/gc-1.gif&quot;&gt;&lt;img src=&quot;/images/gc-1.gif&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+      &lt;p&gt;&lt;a href=&quot;http://idiotsky.me/images/gc-1.gif&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/gc-1.gif&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
     
     </summary>
     
       <category term="go" scheme="http://idiotsky.me/categories/go/"/>
     
     
-      <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
-    
       <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+      <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
     
   </entry>
   
@@ -636,9 +1112,9 @@
     <link href="http://idiotsky.me/2017/08/16/gc-mark-sweep/"/>
     <id>http://idiotsky.me/2017/08/16/gc-mark-sweep/</id>
     <published>2017-08-15T17:02:21.000Z</published>
-    <updated>2017-08-15T17:06:32.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
-    <content type="html"><![CDATA[<p><a href="/images/gc.gif"><img src="/images/gc.gif" alt=""></a><br><a id="more"></a><br>这个算法分为两步，标记和清除。</p>
+    <content type="html"><![CDATA[<p><a href="http://idiotsky.me/images/gc.gif"><img src="http://idiotsky.me/images/gc.gif" alt=""></a><br><a id="more"></a><br>这个算法分为两步，标记和清除。</p>
 <ul>
 <li>标记：从程序的根节点开始， 递归地 遍历所有对象，将能遍历到的对象打上标记。</li>
 <li>清除：讲所有未标记的的对象当作垃圾销毁。</li>
@@ -648,7 +1124,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;&lt;a href=&quot;/images/gc.gif&quot;&gt;&lt;img src=&quot;/images/gc.gif&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+      &lt;p&gt;&lt;a href=&quot;http://idiotsky.me/images/gc.gif&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/gc.gif&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
     
     </summary>
     
@@ -666,16 +1142,16 @@
     <link href="http://idiotsky.me/2017/08/10/postman/"/>
     <id>http://idiotsky.me/2017/08/10/postman/</id>
     <published>2017-08-10T12:11:55.000Z</published>
-    <updated>2017-08-15T16:51:07.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>postman,用来模拟发送http请求的工具，里面涉及的请求body有以下几个类型，所以记下，而且也能理解http body的几种格式，分享之。。</p>
 </blockquote>
 <a id="more"></a>
 <h1 id="form-data"><a href="#form-data" class="headerlink" title="form-data"></a>form-data</h1><p>就是http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。既可以上传键值对，也可以上传文件。当上传的字段是文件时，会有Content-Type来表名文件类型；content-disposition，用来说明字段的一些信息；<br>由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。</p>
-<p><a href="/images/postman-1.png"><img src="/images/postman-1.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 9843651a-5bf9-0544-03c1-fcc2a16f484b</div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;username&quot;</div><div class="line"></div><div class="line">admin</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;password&quot;</div><div class="line"></div><div class="line">admin123</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;abc&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;tttt&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW--</div></pre></td></tr></table></figure></p>
-<h1 id="x-www-form-urlencoded"><a href="#x-www-form-urlencoded" class="headerlink" title="x-www-form-urlencoded"></a>x-www-form-urlencoded</h1><p>就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，并以urlencode为格式<br><a href="/images/postman-2.png"><img src="/images/postman-2.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/x-www-form-urlencoded</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: e6887900-a46e-2ff4-8232-de878b75f5fd</div><div class="line"></div><div class="line">username=admin&amp;password=admin123</div></pre></td></tr></table></figure></p>
-<h1 id="raw"><a href="#raw" class="headerlink" title="raw"></a>raw</h1><p>可以上传任意格式的文本，可以上传text、json、xml、html等<br><a href="/images/postman-3.png"><img src="/images/postman-3.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/json</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 233df0e0-c6d9-98c7-4d7e-736329322683</div><div class="line"></div><div class="line">&#123;</div><div class="line">  &quot;abc&quot;:&quot;cba&quot;,</div><div class="line">  &quot;cba&quot;:&quot;abc&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><a href="http://idiotsky.me/images/postman-1.png"><img src="http://idiotsky.me/images/postman-1.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 9843651a-5bf9-0544-03c1-fcc2a16f484b</div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;username&quot;</div><div class="line"></div><div class="line">admin</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;password&quot;</div><div class="line"></div><div class="line">admin123</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;abc&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;tttt&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW--</div></pre></td></tr></table></figure></p>
+<h1 id="x-www-form-urlencoded"><a href="#x-www-form-urlencoded" class="headerlink" title="x-www-form-urlencoded"></a>x-www-form-urlencoded</h1><p>就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，并以urlencode为格式<br><a href="http://idiotsky.me/images/postman-2.png"><img src="http://idiotsky.me/images/postman-2.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/x-www-form-urlencoded</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: e6887900-a46e-2ff4-8232-de878b75f5fd</div><div class="line"></div><div class="line">username=admin&amp;password=admin123</div></pre></td></tr></table></figure></p>
+<h1 id="raw"><a href="#raw" class="headerlink" title="raw"></a>raw</h1><p>可以上传任意格式的文本，可以上传text、json、xml、html等<br><a href="http://idiotsky.me/images/postman-3.png"><img src="http://idiotsky.me/images/postman-3.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/json</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 233df0e0-c6d9-98c7-4d7e-736329322683</div><div class="line"></div><div class="line">&#123;</div><div class="line">  &quot;abc&quot;:&quot;cba&quot;,</div><div class="line">  &quot;cba&quot;:&quot;abc&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>从图片和内容对比，可以发现，基本，粘什么，就发什么，不会进行任何转意。</p>
 <h1 id="binary"><a href="#binary" class="headerlink" title="binary"></a>binary</h1><p>相当于Content-Type:application/octet-stream,从字面意思得知，只可以上传二进制数据，通常用来上传文件，由于没有键值，所以，一次只能上传一个文件。</p>
 <h1 id="multipart-form-data与x-www-form-urlencoded区别"><a href="#multipart-form-data与x-www-form-urlencoded区别" class="headerlink" title="multipart/form-data与x-www-form-urlencoded区别"></a>multipart/form-data与x-www-form-urlencoded区别</h1><ul>
@@ -740,7 +1216,7 @@
     <link href="http://idiotsky.me/2017/07/20/raspberry-nas/"/>
     <id>http://idiotsky.me/2017/07/20/raspberry-nas/</id>
     <published>2017-07-20T14:39:35.000Z</published>
-    <updated>2017-08-31T13:48:11.000Z</updated>
+    <updated>2017-09-19T17:05:02.000Z</updated>
     
     <content type="html"><![CDATA[<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><ul>
 <li>raspberry pi 3</li>
@@ -754,7 +1230,7 @@
 <p>可以把配置文件中你不需要的分享名称删除，例如 [homes], [printers] 等。<br>测试配置文件是否有错误，根据提示做相应修改<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">testparm</div></pre></td></tr></table></figure></p>
 <p>添加登陆账户并创建密码，必须是 linux 已存在的用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo smbpasswd -a pi</div></pre></td></tr></table></figure></p>
 <p>重启 samba 服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/samba restart</div></pre></td></tr></table></figure></p>
-<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>一般树莓派跟你的WiFi相连的话，你的网络就能看到跟上面配置一样的分享名称，如mac上面这样的显示：<br><a href="/images/nas-screenshot.png"><img src="/images/nas-screenshot.png" alt=""></a><br>如果显示没权限，可以断开连接，用你上面添加的账号登录。</p>
+<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>一般树莓派跟你的WiFi相连的话，你的网络就能看到跟上面配置一样的分享名称，如mac上面这样的显示：<br><a href="http://idiotsky.me/images/nas-screenshot.png"><img src="http://idiotsky.me/images/nas-screenshot.png" alt=""></a><br>如果显示没权限，可以断开连接，用你上面添加的账号登录。</p>
 <h1 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h1><ul>
 <li>基本上不是ext4格式的硬盘都不用上传到NAS上了，因为树莓对其他格式的硬盘只有读权限。</li>
 <li>如果是ext4格式，也不要高兴，那上传速度可以😭的</li>
@@ -784,558 +1260,6 @@
       <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
     
       <category term="NAS" scheme="http://idiotsky.me/tags/NAS/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>利用树莓派实现一个能播放天气的闹钟</title>
-    <link href="http://idiotsky.me/2017/07/18/raspberry-weather-clock/"/>
-    <id>http://idiotsky.me/2017/07/18/raspberry-weather-clock/</id>
-    <published>2017-07-17T17:12:25.000Z</published>
-    <updated>2017-09-04T16:35:56.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>你要有个pi😄<br><a id="more"></a></p>
-<h1 id="获取天气接口"><a href="#获取天气接口" class="headerlink" title="获取天气接口"></a>获取天气接口</h1><p>这里我是用图灵机器人来获取天气的接口，你可以自己上去注册一个，下面代码URL的Key是我注册的机器人给的。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getWeatherText</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        response = requests.get(</div><div class="line">            <span class="string">"http://www.tuling123.com/openapi/api?key=652ae4a714794fe6b01faa990d7a981f&amp;info=%s"</span> % <span class="string">"广州今日天气"</span>)</div><div class="line">        json = response.json()</div><div class="line">        <span class="keyword">if</span> json[<span class="string">"code"</span>] == <span class="number">100000</span>:</div><div class="line">            <span class="keyword">return</span> json[<span class="string">"text"</span>]</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            <span class="keyword">return</span> <span class="string">""</span></div><div class="line">    <span class="keyword">except</span>:</div><div class="line">        <span class="keyword">return</span> <span class="string">""</span></div></pre></td></tr></table></figure></p>
-<h1 id="播放文字"><a href="#播放文字" class="headerlink" title="播放文字"></a>播放文字</h1><p>利用百度的接口可以转换文本为语音。默认只有女声<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">text2voice</span><span class="params">(text)</span>:</span></div><div class="line">    url = <span class="string">'http://tts.baidu.com/text2audio?idx=1&amp;tex=&#123;0&#125;&amp;cuid=baidu_speech_'</span> \</div><div class="line">          <span class="string">'demo&amp;cod=2&amp;lan=zh&amp;ctp=1&amp;pdt=1&amp;spd=4&amp;per=4&amp;vol=5&amp;pit=5'</span>.format(text)</div><div class="line">    <span class="comment"># 用mplayer播放语音</span></div><div class="line">    os.system(<span class="string">'mplayer "%s"'</span> % url)</div></pre></td></tr></table></figure></p>
-<h1 id="安装播放媒体软件"><a href="#安装播放媒体软件" class="headerlink" title="安装播放媒体软件"></a>安装播放媒体软件</h1><p>上面代码你看到的<code>mplayer</code>,就是用来播放语音的，传个url作为参数<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install mplayer</div><div class="line">usage: mplayer [url]</div></pre></td></tr></table></figure></p>
-<h1 id="播放音乐"><a href="#播放音乐" class="headerlink" title="播放音乐"></a>播放音乐</h1><p>有了上面这个神器，你可以给播报语音前后加一首音乐😄<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">playMusic</span><span class="params">(path)</span>:</span></div><div class="line">    os.system(<span class="string">'mplayer %s'</span> % path)</div></pre></td></tr></table></figure></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>利用上面的东东，可以组合些好玩的东西了，至于闹钟的唤醒，可以cron job 做，也可以代码里面实现，enjoy…😄<br>全部代码地址 <a href="https://github.com/ejunjsh/raspberrypi-code/blob/master/clock/weather.py" target="_blank" rel="external">https://github.com/ejunjsh/raspberrypi-code/blob/master/clock/weather.py</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前提&quot;&gt;&lt;a href=&quot;#前提&quot; class=&quot;headerlink&quot; title=&quot;前提&quot;&gt;&lt;/a&gt;前提&lt;/h1&gt;&lt;p&gt;你要有个pi😄&lt;br&gt;
-    
-    </summary>
-    
-      <category term="raspberrypi" scheme="http://idiotsky.me/categories/raspberrypi/"/>
-    
-    
-      <category term="python" scheme="http://idiotsky.me/tags/python/"/>
-    
-      <category term="raspberrypi" scheme="http://idiotsky.me/tags/raspberrypi/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>用go实现一个简单的restful接口</title>
-    <link href="http://idiotsky.me/2017/07/18/go-first-rest/"/>
-    <id>http://idiotsky.me/2017/07/18/go-first-rest/</id>
-    <published>2017-07-17T17:01:18.000Z</published>
-    <updated>2017-07-22T08:00:12.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>go的标准库<code>http</code>已经封装好很多接口，可以很简单实现一个web服务器。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 定义 handler</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">HelloServer</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</div><div class="line">    io.WriteString(w, <span class="string">"hello, world!\n"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="comment">//绑定pattern和handler</span></div><div class="line">    http.HandleFunc(<span class="string">"/hello"</span>, HelloServer)</div><div class="line">    err := http.ListenAndServe(<span class="string">":12345"</span>, <span class="literal">nil</span>)</div><div class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">        log.Fatal(<span class="string">"ListenAndServe: "</span>, err)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>基于上面例子可以封装一个restful接口，不是难事。<br><a id="more"></a></p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>从上面例子可以看到，一个url pattern对应一个handler，即对应一个处理，就可以处理http请求了，所以下面的实现是基于对这两个东西的封装开始</p>
-<h2 id="封装一个restful-app-结构"><a href="#封装一个restful-app-结构" class="headerlink" title="封装一个restful app 结构"></a>封装一个restful app 结构</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> App <span class="keyword">struct</span> &#123;</div><div class="line">    <span class="comment">//一个map，key是pattern，value是handler</span></div><div class="line">	handlers <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="function"><span class="keyword">func</span><span class="params">(r *HttpRequest,w HttpResponse)</span><span class="title">error</span></span></div><div class="line">    //<span class="title">pattern</span>数组，用来保证加入<span class="title">pattern</span>的顺序，因为上面的<span class="title">map</span>是无顺序的</div><div class="line">	<span class="title">patterns</span> []<span class="title">string</span></div><div class="line">    //一个<span class="title">map</span>，<span class="title">key</span>是<span class="title">pattern</span>，<span class="title">value</span>是<span class="title">http</span> <span class="title">method</span></div><div class="line">	<span class="title">methods</span> <span class="title">map</span>[<span class="title">string</span>]<span class="title">string</span></div><div class="line">    //用来实现在<span class="title">url</span> <span class="title">path</span>取出参数的。</div><div class="line">	<span class="title">regexps</span> <span class="title">map</span>[<span class="title">string</span>]*<span class="title">regexp</span>.<span class="title">Regexp</span></div><div class="line">	<span class="title">pathparamanmes</span> <span class="title">map</span>[<span class="title">string</span>][]<span class="title">string</span></div><div class="line">    //用来处理异常的<span class="title">handler</span></div><div class="line">	<span class="title">errHandler</span> <span class="title">func</span><span class="params">( err error, r *HttpRequest,w HttpResponse)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>初始化函数<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewApp</span><span class="params">()</span> *<span class="title">App</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> &amp;App&#123;</div><div class="line">		handlers: <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="function"><span class="keyword">func</span><span class="params">(r *HttpRequest,w HttpResponse)</span><span class="title">error</span>),</span></div><div class="line">		<span class="title">patterns</span>:<span class="title">make</span><span class="params">([]<span class="keyword">string</span>,0)</span>,</div><div class="line">		<span class="title">methods</span>:<span class="title">make</span><span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span>,</div><div class="line">		<span class="title">regexps</span>:<span class="title">make</span><span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>]*regexp.Regexp)</span>,</div><div class="line">		<span class="title">pathparamanmes</span>:<span class="title">make</span><span class="params">(<span class="keyword">map</span>[<span class="keyword">string</span>][]<span class="keyword">string</span>)</span>,</div><div class="line">        //一个默认的异常处理，直接返回异常内容</div><div class="line">		<span class="title">errHandler</span>: <span class="title">func</span><span class="params">(err error, r *HttpRequest, w HttpResponse)</span> &#123;</div><div class="line">			w.Write( []<span class="keyword">byte</span>(err.Error()))</div><div class="line">		&#125;,</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="映射绑定"><a href="#映射绑定" class="headerlink" title="映射绑定"></a>映射绑定</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span><span class="params">(a *App)</span> <span class="title">handle</span><span class="params">(method <span class="keyword">string</span>,pattern <span class="keyword">string</span>, handler <span class="keyword">func</span>(r *HttpRequest,w HttpResponse)</span> <span class="title">error</span>)</span>&#123;</div><div class="line">    <span class="comment">//绑定pattern和handler</span></div><div class="line">	a.handlers[pattern]=handler</div><div class="line">    <span class="comment">//绑定pattern和method</span></div><div class="line">	a.methods[pattern]=method</div><div class="line">    <span class="comment">//绑定pattern 正则，用来匹配url pattern,和获取url path 参数</span></div><div class="line">	a.regexps[pattern],a.pathparamanmes[pattern]=convertPatterntoRegex(pattern)</div><div class="line">	<span class="keyword">for</span> _,s:=<span class="keyword">range</span> a.patterns&#123;</div><div class="line">		<span class="keyword">if</span> s==pattern&#123;</div><div class="line">			<span class="keyword">return</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">    <span class="comment">//加入数组，方便用此数组确定顺序</span></div><div class="line">	a.patterns=<span class="built_in">append</span>(a.patterns,pattern)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//绑定GET</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *App)</span> <span class="title">Get</span><span class="params">(pattern <span class="keyword">string</span>, handler <span class="keyword">func</span>(r *HttpRequest,w HttpResponse)</span><span class="title">error</span>)</span>  &#123;</div><div class="line">	a.handle(<span class="string">"GET"</span>,pattern,handler)</div><div class="line">&#125;</div><div class="line"><span class="comment">//绑定POST</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *App)</span> <span class="title">Post</span><span class="params">(pattern <span class="keyword">string</span>, handler <span class="keyword">func</span>(r *HttpRequest,w HttpResponse)</span><span class="title">error</span>)</span>  &#123;</div><div class="line">	a.handle(<span class="string">"POST"</span>,pattern,handler)</div><div class="line">&#125;</div><div class="line"><span class="comment">//绑定DELETE</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *App)</span> <span class="title">Delete</span><span class="params">(pattern <span class="keyword">string</span>, handler <span class="keyword">func</span>(r *HttpRequest,w HttpResponse)</span><span class="title">error</span>)</span>  &#123;</div><div class="line">	a.handle(<span class="string">"DELETE"</span>,pattern,handler)</div><div class="line">&#125;</div><div class="line"><span class="comment">//绑定PUT</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *App)</span> <span class="title">Put</span><span class="params">(pattern <span class="keyword">string</span>, handler <span class="keyword">func</span>(r *HttpRequest,w HttpResponse)</span> <span class="title">error</span>)</span>  &#123;</div><div class="line">	a.handle(<span class="string">"PUT"</span>,pattern,handler)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a *App)</span> <span class="title">Error</span><span class="params">(handler <span class="keyword">func</span>(err error,r *HttpRequest,w HttpResponse)</span>)</span>  &#123;</div><div class="line">	a.errHandler=handler</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>有了Restful接口的四个方法映射绑定，剩下的就要请求能进到来，所以接下来要写个入口才行。</p>
-<h2 id="编写http入口"><a href="#编写http入口" class="headerlink" title="编写http入口"></a>编写http入口</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//http 入口</span></div><div class="line"><span class="function"><span class="keyword">func</span><span class="params">(a *App)</span> <span class="title">Run</span><span class="params">(address <span class="keyword">string</span>)</span> <span class="title">error</span></span>&#123;</div><div class="line">	fmt.Printf(<span class="string">"Server listens on %s"</span>,address)</div><div class="line">	err:=http.ListenAndServe(address,&amp;hodler&#123;app:a&#125;)</div><div class="line">	<span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</div><div class="line">		<span class="keyword">return</span> err</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//https 入口</span></div><div class="line"><span class="function"><span class="keyword">func</span><span class="params">(a *App)</span> <span class="title">RunTls</span><span class="params">(address <span class="keyword">string</span>,cert <span class="keyword">string</span>,key <span class="keyword">string</span>)</span> <span class="title">error</span></span>&#123;</div><div class="line">	fmt.Printf(<span class="string">"Server listens on %s"</span>,address)</div><div class="line">	err:=http.ListenAndServeTLS(address,cert,key,&amp;hodler&#123;app:a&#125;)</div><div class="line">	<span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</div><div class="line">		<span class="keyword">return</span> err</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="literal">nil</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>入口函数主要调用<code>http</code>库来启动http服务，然后把请求处理函数作为<code>ListenAndServe</code>第二个参数传入。这里由<code>holder</code>来实现这个处理函数。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(h *hodler)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span>&#123;</div><div class="line">	<span class="comment">//封装一下，附加更多功能</span></div><div class="line">    request:= newHttpRequest(r)</div><div class="line">	response:=newHttpResponse(w)</div><div class="line">	<span class="comment">//捕获panic，并让errhandler处理返回。</span></div><div class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</div><div class="line">		<span class="keyword">if</span> err:=<span class="built_in">recover</span>();err!=<span class="literal">nil</span>&#123;</div><div class="line">			<span class="keyword">if</span> e,ok:=err.(error);ok&#123;</div><div class="line">				h.app.errHandler(InternalError&#123;e,<span class="string">""</span>&#125;,request,response)</div><div class="line">			&#125;</div><div class="line">			<span class="keyword">if</span> e,ok:=err.(<span class="keyword">string</span>);ok&#123;</div><div class="line">				h.app.errHandler(InternalError&#123;<span class="literal">nil</span>,e&#125;,request,response)</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;()</div><div class="line">    <span class="comment">//根据pattern的添加顺序，循环判断</span></div><div class="line">   <span class="keyword">for</span> _,p:=<span class="keyword">range</span> h.app.patterns&#123;</div><div class="line">       <span class="keyword">if</span> reg,ok:= h.app.regexps[p];ok&#123;</div><div class="line">           <span class="comment">//匹配method</span></div><div class="line">		   <span class="keyword">if</span> method,ok:=h.app.methods[p];ok&amp;&amp;r.Method==method&#123;</div><div class="line">              <span class="comment">//匹配pattern</span></div><div class="line">			   <span class="keyword">if</span> reg.Match([]<span class="keyword">byte</span>(r.URL.Path)) &#123;</div><div class="line">                   <span class="comment">//抽取url path parameters</span></div><div class="line">				   matchers:=reg.FindSubmatch([]<span class="keyword">byte</span>(r.URL.Path))</div><div class="line">				   pathParamMap:=<span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</div><div class="line">				   <span class="keyword">if</span> <span class="built_in">len</span>(matchers)&gt;<span class="number">1</span>&#123;</div><div class="line">                       <span class="keyword">if</span> pathParamNames,ok:=h.app.pathparamanmes[p];ok&#123;</div><div class="line">						   <span class="keyword">for</span> i:=<span class="number">1</span>;i&lt;<span class="built_in">len</span>(matchers);i++&#123;</div><div class="line">							   pathParamMap[pathParamNames[i]]=<span class="keyword">string</span>(matchers[i])</div><div class="line">						   &#125;</div><div class="line">					   &#125;</div><div class="line">				   &#125;</div><div class="line">                   <span class="comment">//PathParams是封装后的request独有的属性</span></div><div class="line">				   request.PathParams=pathParamMap</div><div class="line">				   <span class="keyword">if</span> handler,ok:=h.app.handlers[p];ok&#123;</div><div class="line">                       <span class="comment">//执行handler</span></div><div class="line">					   err:=handler(request,response)</div><div class="line">					   <span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</div><div class="line">                           <span class="comment">//执行errhandler</span></div><div class="line">						   h.app.errHandler(err,request,response)</div><div class="line">					   &#125;</div><div class="line">					   <span class="keyword">return</span></div><div class="line">				   &#125;</div><div class="line">			   &#125;</div><div class="line">		   &#125;</div><div class="line">	   &#125;</div><div class="line">   &#125;</div><div class="line">   <span class="comment">//执行no found errhandler</span></div><div class="line">	h.app.errHandler(NoFoundError&#123;&#125;,request,response)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>基本一个请求的流程如下：<br>requset-&gt;ServeHTTP()-&gt;匹配url pattern-&gt;匹配method-&gt;匹配到你的handler-&gt;执行你的handler-&gt;你的handler返回结果</p>
-<h2 id="返回结果"><a href="#返回结果" class="headerlink" title="返回结果"></a>返回结果</h2><p>由于返回结果可以有很多，所以封装了<code>http</code>库的<code>http.ResponseWriter</code>来实现<code>WriteString,WriteJson,WriteXml,WriteFile</code>等方法。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//封装request，附件一个PathParams来保存url path parameters.</span></div><div class="line"><span class="keyword">type</span> HttpRequest <span class="keyword">struct</span> &#123;</div><div class="line">	*http.Request</div><div class="line">	PathParams <span class="keyword">map</span>[<span class="keyword">string</span>] <span class="keyword">string</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> HttpResponse <span class="keyword">struct</span> &#123;</div><div class="line">	http.ResponseWriter</div><div class="line">&#125;</div><div class="line"><span class="comment">//用来返回字符</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(response *HttpResponse)</span> <span class="title">WriteString</span><span class="params">(str <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</div><div class="line">	...</div><div class="line">&#125;</div><div class="line"><span class="comment">//返回JSON</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(response *HttpResponse)</span> <span class="title">WriteJson</span><span class="params">(jsonObj <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</div><div class="line">	...</div><div class="line">&#125;</div><div class="line"><span class="comment">//返回XML</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(response *HttpResponse)</span> <span class="title">WriteXml</span><span class="params">(xmlObj <span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">error</span></span> &#123;</div><div class="line">	...</div><div class="line">&#125;</div><div class="line"><span class="comment">//返回文件</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(response *HttpResponse)</span> <span class="title">WriteFile</span><span class="params">(filepath <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"><span class="comment">//返回一个模板html</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(response *HttpResponse)</span> <span class="title">WriteTemplates</span><span class="params">(data <span class="keyword">interface</span>&#123;&#125;,tplPath ...<span class="keyword">string</span>)</span> <span class="title">error</span></span>  &#123;</div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</div><div class="line">    <span class="comment">//new 一个restful接口</span></div><div class="line">	app:=gorest.NewApp()</div><div class="line">    <span class="comment">//绑定</span></div><div class="line">	app.Get(<span class="string">"/json"</span>, <span class="function"><span class="keyword">func</span><span class="params">(r *gorest.HttpRequest, w gorest.HttpResponse)</span> <span class="title">error</span></span> &#123;</div><div class="line">		a:= <span class="keyword">struct</span> &#123;</div><div class="line">			Abc <span class="keyword">string</span> <span class="string">`json:"abc"`</span></div><div class="line">			Cba <span class="keyword">string</span> <span class="string">`json:"cba"`</span></div><div class="line">		&#125;&#123;<span class="string">"123"</span>,<span class="string">"321"</span>&#125;</div><div class="line">        <span class="comment">//返回json作为结果</span></div><div class="line">		<span class="keyword">return</span> w.WriteJson(a)</div><div class="line">	&#125;)</div><div class="line">	app.Error(<span class="function"><span class="keyword">func</span><span class="params">(err error, r *gorest.HttpRequest, w gorest.HttpResponse)</span></span>&#123;</div><div class="line">		<span class="keyword">if</span> e,ok:=err.(gorest.NoFoundError);ok &#123;</div><div class="line">			w.Write([]<span class="keyword">byte</span>(e.Error()))</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> e,ok:=err.(gorest.InternalError);ok &#123;</div><div class="line">			w.Write([]<span class="keyword">byte</span>(e.Error()))</div><div class="line">		&#125;</div><div class="line">	&#125;)</div><div class="line"></div><div class="line">    <span class="comment">//启动</span></div><div class="line">	app.Run(<span class="string">":8081"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>收工😄</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>go的标准库封装了很多了，所以实现这个其实还是比较轻松的😄<br>详细代码见<a href="https://github.com/ejunjsh/gorest" target="_blank" rel="external">https://github.com/ejunjsh/gorest</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;go的标准库&lt;code&gt;http&lt;/code&gt;已经封装好很多接口，可以很简单实现一个web服务器。&lt;br&gt;&lt;figure class=&quot;highlight go&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 定义 handler&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;HelloServer&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(w http.ResponseWriter, req *http.Request)&lt;/span&gt;&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    io.WriteString(w, &lt;span class=&quot;string&quot;&gt;&quot;hello, world!\n&quot;&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//绑定pattern和handler&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    http.HandleFunc(&lt;span class=&quot;string&quot;&gt;&quot;/hello&quot;&lt;/span&gt;, HelloServer)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    err := http.ListenAndServe(&lt;span class=&quot;string&quot;&gt;&quot;:12345&quot;&lt;/span&gt;, &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; err != &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        log.Fatal(&lt;span class=&quot;string&quot;&gt;&quot;ListenAndServe: &quot;&lt;/span&gt;, err)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;基于上面例子可以封装一个restful接口，不是难事。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
-    
-    
-      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
-    
-      <category term="restful" scheme="http://idiotsky.me/tags/restful/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一张图了解一致性hash</title>
-    <link href="http://idiotsky.me/2017/07/16/consistent-hash/"/>
-    <id>http://idiotsky.me/2017/07/16/consistent-hash/</id>
-    <published>2017-07-16T12:39:20.000Z</published>
-    <updated>2017-07-19T12:39:16.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="/images/consistent-hash.png"><img src="/images/consistent-hash.png" alt="one image describes how consistent-hash works"></a><br><a id="more"></a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;/images/consistent-hash.png&quot;&gt;&lt;img src=&quot;/images/consistent-hash.png&quot; alt=&quot;one image describes how consistent-hash works&quot;&gt;&lt;/a&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>一张图了解hashmap</title>
-    <link href="http://idiotsky.me/2017/07/15/hashmap/"/>
-    <id>http://idiotsky.me/2017/07/15/hashmap/</id>
-    <published>2017-07-15T10:03:15.000Z</published>
-    <updated>2017-09-06T13:29:37.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="/images/hashmap.png"><img src="/images/hashmap.png" alt="one image describes how hashmap works"></a><br><a id="more"></a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;/images/hashmap.png&quot;&gt;&lt;img src=&quot;/images/hashmap.png&quot; alt=&quot;one image describes how hashmap works&quot;&gt;&lt;/a&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>redis基础、高级特性与性能调优</title>
-    <link href="http://idiotsky.me/2017/04/09/redis-summary/"/>
-    <id>http://idiotsky.me/2017/04/09/redis-summary/</id>
-    <published>2017-04-09T13:52:30.000Z</published>
-    <updated>2017-09-10T17:25:36.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>本文将从Redis的基本特性入手，通过讲述Redis的数据结构和主要命令对Redis的基本能力进行直观介绍。之后概览Redis提供的高级能力，并在部署、维护、性能调优等多个方面进行更深入的介绍和指导。<br>本文适合使用Redis的普通开发人员，以及对Redis进行选型、架构设计和性能调优的架构设计人员。</p>
-</blockquote>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Redis是一个开源的，基于内存的结构化数据存储媒介，可以作为数据库、缓存服务或消息服务使用。<br>Redis支持多种数据结构，包括字符串、哈希表、链表、集合、有序集合、位图、Hyperloglogs等。<br>Redis具备LRU淘汰、事务实现、以及不同级别的硬盘持久化等能力，并且支持副本集和通过Redis Sentinel实现的高可用方案，同时还支持通过Redis Cluster实现的数据自动分片能力。</p>
-<p>Redis的主要功能都基于单线程模型实现，也就是说Redis使用一个线程来服务所有的客户端请求，同时Redis采用了非阻塞式IO，并精细地优化各种命令的算法时间复杂度，这些信息意味着：</p>
-<ul>
-<li>Redis是线程安全的（因为只有一个线程），其所有操作都是原子的，不会因并发产生数据异常</li>
-<li>Redis的速度非常快（因为使用非阻塞式IO，且大部分命令的算法时间复杂度都是O(1))</li>
-<li>使用高耗时的Redis命令是很危险的，会占用唯一的一个线程的大量处理时间，导致所有的请求都被拖慢。（例如时间复杂度为O(N)的KEYS命令，严格禁止在生产环境中使用）</li>
-</ul>
-<a id="more"></a>
-<h1 id="Redis的数据结构和相关常用命令"><a href="#Redis的数据结构和相关常用命令" class="headerlink" title="Redis的数据结构和相关常用命令"></a>Redis的数据结构和相关常用命令</h1><p>本节中将介绍Redis支持的主要数据结构，以及相关的常用Redis命令。本节只对Redis命令进行扼要的介绍，且只列出了较常用的命令。如果想要了解完整的Redis命令集，或了解某个命令的详细使用方法，请参考官方文档：<a href="https://redis.io/commands" target="_blank" rel="external">https://redis.io/commands</a></p>
-<h2 id="Key"><a href="#Key" class="headerlink" title="Key"></a>Key</h2><p>Redis采用Key-Value型的基本数据结构，任何二进制序列都可以作为Redis的Key使用（例如普通的字符串或一张JPEG图片）<br>关于Key的一些注意事项：</p>
-<ul>
-<li>不要使用过长的Key。例如使用一个1024字节的key就不是一个好主意，不仅会消耗更多的内存，还会导致查找的效率降低</li>
-<li>Key短到缺失了可读性也是不好的，例如”u1000flw”比起”user:1000:followers”来说，节省了寥寥的存储空间，却引发了可读性和可维护性上的麻烦</li>
-<li>最好使用统一的规范来设计Key，比如”object-type:id:attr”，以这一规范设计出的Key可能是”user:1000”或”comment:1234:reply-to”</li>
-<li>Redis允许的最大Key长度是512MB（对Value的长度限制也是512MB）</li>
-</ul>
-<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>String是Redis的基础数据类型，Redis没有Int、Float、Boolean等数据类型的概念，所有的基本类型在Redis中都以String体现。<br>与String相关的常用命令：</p>
-<ul>
-<li>SET：为一个key设置value，可以配合EX/PX参数指定key的有效期，通过NX/XX参数针对key是否存在的情况进行区别操作，时间复杂度O(1)</li>
-<li>GET：获取某个key对应的value，时间复杂度O(1)</li>
-<li>GETSET：为一个key设置value，并返回该key的原value，时间复杂度O(1)</li>
-<li>MSET：为多个key设置value，时间复杂度O(N)</li>
-<li>MSETNX：同MSET，如果指定的key中有任意一个已存在，则不进行任何操作，时间复杂度O(N)</li>
-<li>MGET：获取多个key对应的value，时间复杂度O(N)</li>
-</ul>
-<p>上文提到过，Redis的基本数据类型只有String，但Redis可以把String作为整型或浮点型数字来使用，主要体现在INCR、DECR类的命令上：</p>
-<ul>
-<li>INCR：将key对应的value值自增1，并返回自增后的值。只对可以转换为整型的String数据起作用。时间复杂度O(1)</li>
-<li>NCRBY：将key对应的value值自增指定的整型数值，并返回自增后的值。只对可以转换为整型的String数据起作用。时间复杂度O(1)</li>
-<li>DECR/DECRBY：同INCR/INCRBY，自增改为自减。<br>INCR/DECR系列命令要求操作的value类型为String，并可以转换为64位带符号的整型数字，否则会返回错误。</li>
-</ul>
-<p>也就是说，进行INCR/DECR系列命令的value，必须在[-2^63 ~ 2^63 - 1]范围内。<br>提到过，Redis采用单线程模型，天然是线程安全的，这使得INCR/DECR命令可以非常便利的实现高并发场景下的精确控制。</p>
-<h3 id="例1：库存控制"><a href="#例1：库存控制" class="headerlink" title="例1：库存控制"></a>例1：库存控制</h3><p>在高并发场景下实现库存余量的精准校验，确保不出现超卖的情况。<br>设置库存总量：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET inv:remain <span class="string">"100"</span></div></pre></td></tr></table></figure></p>
-<p>库存扣减+余量校验：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DECR inv:remain</div></pre></td></tr></table></figure></p>
-<p>当DECR命令返回值大于等于0时，说明库存余量校验通过，如果返回小于0的值，则说明库存已耗尽。<br>假设同时有300个并发请求进行库存扣减，Redis能够确保这300个请求分别得到99到-200的返回值，每个请求得到的返回值都是唯一的，绝对不会找出现两个请求得到一样的返回值的情况。</p>
-<h3 id="例2：自增序列生成"><a href="#例2：自增序列生成" class="headerlink" title="例2：自增序列生成"></a>例2：自增序列生成</h3><p>实现类似于RDBMS的Sequence功能，生成一系列唯一的序列号<br>设置序列起始值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET sequence <span class="string">"10000"</span></div></pre></td></tr></table></figure></p>
-<p>获取一个序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">INCR sequence</div></pre></td></tr></table></figure></p>
-<p>直接将返回值作为序列使用即可。</p>
-<p>获取一批（如100个）序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">INCRBY sequence 100</div></pre></td></tr></table></figure></p>
-<p>假设返回值为N，那么[N - 99 ~ N]的数值都是可用的序列值。<br>当多个客户端同时向Redis申请自增序列时，Redis能够确保每个客户端得到的序列值或序列范围都是全局唯一的，绝对不会出现不同客户端得到了重复的序列值的情况。</p>
-<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><p>Redis的List是链表型的数据结构，可以使用LPUSH/RPUSH/LPOP/RPOP等命令在List的两端执行插入元素和弹出元素的操作。虽然List也支持在特定index上插入和读取元素的功能，但其时间复杂度较高（O(N)），应小心使用。<br>与List相关的常用命令：</p>
-<ul>
-<li>LPUSH：向指定List的左侧（即头部）插入1个或多个元素，返回插入后的List长度。时间复杂度O(N)，N为插入元素的数量</li>
-<li>RPUSH：同LPUSH，向指定List的右侧（即尾部）插入1或多个元素</li>
-<li>LPOP：从指定List的左侧（即头部）移除一个元素并返回，时间复杂度O(1)</li>
-<li>RPOP：同LPOP，从指定List的右侧（即尾部）移除1个元素并返回</li>
-<li>LPUSHX/RPUSHX：与LPUSH/RPUSH类似，区别在于，LPUSHX/RPUSHX操作的key如果不存在，则不会进行任何操作</li>
-<li>LLEN：返回指定List的长度，时间复杂度O(1)</li>
-<li>LRANGE：返回指定List中指定范围的元素（双端包含，即LRANGE key 0 10会返回11个元素），时间复杂度O(N)。应尽可能控制一次获取的元素数量，一次获取过大范围的List元素会导致延迟，同时对长度不可预知的List，避免使用LRANGE key 0 -1这样的完整遍历操作。</li>
-</ul>
-<p>应谨慎使用的List相关命令：</p>
-<ul>
-<li>LINDEX：返回指定List指定index上的元素，如果index越界，返回nil。index数值是回环的，即-1代表List最后一个位置，-2代表List倒数第二个位置。时间复杂度O(N)</li>
-<li>LSET：将指定List指定index上的元素设置为value，如果index越界则返回错误，时间复杂度O(N)，如果操作的是头/尾部的元素，则时间复杂度为O(1)</li>
-<li>LINSERT：向指定List中指定元素之前/之后插入一个新元素，并返回操作后的List长度。如果指定的元素不存在，返回-1。如果指定key不存在，不会进行任何操作，时间复杂度O(N)</li>
-</ul>
-<p>由于Redis的List是链表结构的，上述的三个命令的算法效率较低，需要对List进行遍历，命令的耗时无法预估，在List长度大的情况下耗时会明显增加，应谨慎使用。</p>
-<p>换句话说，Redis的List实际是设计来用于实现队列，而不是用于实现类似ArrayList这样的列表的。如果你不是想要实现一个双端出入的队列，那么请尽量不要使用Redis的List数据结构。</p>
-<p>为了更好支持队列的特性，Redis还提供了一系列阻塞式的操作命令，如BLPOP/BRPOP等，能够实现类似于BlockingQueue的能力，即在List为空时，阻塞该连接，直到List中有对象可以出队时再返回。针对阻塞类的命令，此处不做详细探讨，请参考官方文档（<a href="https://redis.io/topics/data-types-intro）" target="_blank" rel="external">https://redis.io/topics/data-types-intro）</a> 中”Blocking operations on lists”一节。</p>
-<h2 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h2><p>Hash即哈希表，Redis的Hash和传统的哈希表一样，是一种field-value型的数据结构，可以理解成将HashMap搬入Redis。<br>Hash非常适合用于表现对象类型的数据，用Hash中的field对应对象的field即可。<br>Hash的优点包括：</p>
-<ul>
-<li>可以实现二元查找，如”查找ID为1000的用户的年龄”</li>
-<li>比起将整个对象序列化后作为String存储的方法，Hash能够有效地减少网络传输的消耗</li>
-<li>当使用Hash维护一个集合时，提供了比List效率高得多的随机访问命令</li>
-</ul>
-<p>与Hash相关的常用命令：</p>
-<ul>
-<li>HSET：将key对应的Hash中的field设置为value。如果该Hash不存在，会自动创建一个。时间复杂度O(1)</li>
-<li>HGET：返回指定Hash中field字段的值，时间复杂度O(1)</li>
-<li>HMSET/HMGET：同HSET和HGET，可以批量操作同一个key下的多个field，时间复杂度：O(N)，N为一次操作的field数量</li>
-<li>HSETNX：同HSET，但如field已经存在，HSETNX不会进行任何操作，时间复杂度O(1)</li>
-<li>HEXISTS：判断指定Hash中field是否存在，存在返回1，不存在返回0，时间复杂度O(1)</li>
-<li>HDEL：删除指定Hash中的field（1个或多个），时间复杂度：O(N)，N为操作的field数量</li>
-<li>HINCRBY：同INCRBY命令，对指定Hash中的一个field进行INCRBY，时间复杂度O(1)</li>
-</ul>
-<p>应谨慎使用的Hash相关命令：</p>
-<ul>
-<li>HGETALL：返回指定Hash中所有的field-value对。返回结果为数组，数组中field和value交替出现。时间复杂度O(N)</li>
-<li>HKEYS/HVALS：返回指定Hash中所有的field/value，时间复杂度O(N)</li>
-</ul>
-<p>上述三个命令都会对Hash进行完整遍历，Hash中的field数量与命令的耗时线性相关，对于尺寸不可预知的Hash，应严格避免使用上面三个命令，而改为使用HSCAN命令进行游标式的遍历，具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a></p>
-<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>Redis Set是无序的，不可重复的String集合。<br>与Set相关的常用命令：</p>
-<ul>
-<li>SADD：向指定Set中添加1个或多个member，如果指定Set不存在，会自动创建一个。时间复杂度O(N)，N为添加的member个数</li>
-<li>SREM：从指定Set中移除1个或多个member，时间复杂度O(N)，N为移除的member个数</li>
-<li>SRANDMEMBER：从指定Set中随机返回1个或多个member，时间复杂度O(N)，N为返回的member个数</li>
-<li>SPOP：从指定Set中随机移除并返回count个member，时间复杂度O(N)，N为移除的member个数</li>
-<li>SCARD：返回指定Set中的member个数，时间复杂度O(1)</li>
-<li>SISMEMBER：判断指定的value是否存在于指定Set中，时间复杂度O(1)</li>
-<li>SMOVE：将指定member从一个Set移至另一个Set</li>
-</ul>
-<p>慎用的Set相关命令：</p>
-<ul>
-<li>SMEMBERS：返回指定Hash中所有的member，时间复杂度O(N)</li>
-<li>SUNION/SUNIONSTORE：计算多个Set的并集并返回/存储至另一个Set中，时间复杂度O(N)，N为参与计算的所有集合的总member数</li>
-<li>SINTER/SINTERSTORE：计算多个Set的交集并返回/存储至另一个Set中，时间复杂度O(N)，N为参与计算的所有集合的总member数</li>
-<li>SDIFF/SDIFFSTORE：计算1个Set与1或多个Set的差集并返回/存储至另一个Set中，时间复杂度O(N)，N为参与计算的所有集合的总member数</li>
-</ul>
-<p>上述几个命令涉及的计算量大，应谨慎使用，特别是在参与计算的Set尺寸不可知的情况下，应严格避免使用。可以考虑通过SSCAN命令遍历获取相关Set的全部member（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a> ），如果需要做并集/交集/差集计算，可以在客户端进行，或在不服务实时查询请求的Slave上进行。</p>
-<h2 id="Sorted-Set"><a href="#Sorted-Set" class="headerlink" title="Sorted Set"></a>Sorted Set</h2><p>Redis Sorted Set是有序的、不可重复的String集合。Sorted Set中的每个元素都需要指派一个分数(score)，Sorted Set会根据score对元素进行升序排序。如果多个member拥有相同的score，则以字典序进行升序排序。</p>
-<p>Sorted Set非常适合用于实现排名。</p>
-<p>Sorted Set的主要命令：</p>
-<ul>
-<li>ZADD：向指定Sorted Set中添加1个或多个member，时间复杂度O(Mlog(N))，M为添加的member数量，N为Sorted Set中的member数量</li>
-<li>ZREM：从指定Sorted Set中删除1个或多个member，时间复杂度O(Mlog(N))，M为删除的member数量，N为Sorted Set中的member数量</li>
-<li>ZCOUNT：返回指定Sorted Set中指定score范围内的member数量，时间复杂度：O(log(N))</li>
-<li>ZCARD：返回指定Sorted Set中的member数量，时间复杂度O(1)</li>
-<li>ZSCORE：返回指定Sorted Set中指定member的score，时间复杂度O(1)</li>
-<li>ZRANK/ZREVRANK：返回指定member在Sorted Set中的排名，ZRANK返回按升序排序的排名，ZREVRANK则返回按降序排序的排名。时间复杂度O(log(N))</li>
-<li>ZINCRBY：同INCRBY，对指定Sorted Set中的指定member的score进行自增，时间复杂度O(log(N))</li>
-</ul>
-<p>慎用的Sorted Set相关命令：</p>
-<ul>
-<li>ZRANGE/ZREVRANGE：返回指定Sorted Set中指定排名范围内的所有member，ZRANGE为按score升序排序，ZREVRANGE为按score降序排序，时间复杂度O(log(N)+M)，M为本次返回的member数</li>
-<li>ZRANGEBYSCORE/ZREVRANGEBYSCORE：返回指定Sorted Set中指定score范围内的所有member，返回结果以升序/降序排序，min和max可以指定为-inf和+inf，代表返回所有的member。时间复杂度O(log(N)+M)</li>
-<li>ZREMRANGEBYRANK/ZREMRANGEBYSCORE：移除Sorted Set中指定排名范围/指定score范围内的所有member。时间复杂度O(log(N)+M)</li>
-</ul>
-<p>上述几个命令，应尽量避免传递[0 -1]或[-inf +inf]这样的参数，来对Sorted Set做一次性的完整遍历，特别是在Sorted Set的尺寸不可预知的情况下。可以通过ZSCAN命令来进行游标式的遍历（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a> ），或通过LIMIT参数来限制返回member的数量（适用于ZRANGEBYSCORE和ZREVRANGEBYSCORE命令），以实现游标式的遍历。</p>
-<h2 id="Bitmap和HyperLogLog"><a href="#Bitmap和HyperLogLog" class="headerlink" title="Bitmap和HyperLogLog"></a>Bitmap和HyperLogLog</h2><p>Redis的这两种数据结构相较之前的并不常用，在本文中只做简要介绍，如想要详细了解这两种数据结构与其相关的命令，请参考官方文档<a href="https://redis.io/topics/data-types-intro" target="_blank" rel="external">https://redis.io/topics/data-types-intro</a> 中的相关章节</p>
-<p>Bitmap在Redis中不是一种实际的数据类型，而是一种将String作为Bitmap使用的方法。可以理解为将String转换为bit数组。使用Bitmap来存储true/false类型的简单数据极为节省空间。</p>
-<p>HyperLogLogs是一种主要用于数量统计的数据结构，它和Set类似，维护一个不可重复的String集合，但是HyperLogLogs并不维护具体的member内容，只维护member的个数。也就是说，HyperLogLogs只能用于计算一个集合中不重复的元素数量，所以它比Set要节省很多内存空间。</p>
-<h2 id="其他常用命令"><a href="#其他常用命令" class="headerlink" title="其他常用命令"></a>其他常用命令</h2><ul>
-<li>EXISTS：判断指定的key是否存在，返回1代表存在，0代表不存在，时间复杂度O(1)</li>
-<li>DEL：删除指定的key及其对应的value，时间复杂度O(N)，N为删除的key数量</li>
-<li>EXPIRE/PEXPIRE：为一个key设置有效期，单位为秒或毫秒，时间复杂度O(1)</li>
-<li>TTL/PTTL：返回一个key剩余的有效时间，单位为秒或毫秒，时间复杂度O(1)</li>
-<li>RENAME/RENAMENX：将key重命名为newkey。使用RENAME时，如果newkey已经存在，其值会被覆盖；使用RENAMENX时，如果newkey已经存在，则不会进行任何操作，时间复杂度O(1)</li>
-<li>TYPE：返回指定key的类型，string, list, set, zset, hash。时间复杂度O(1)</li>
-<li>CONFIG GET：获得Redis某配置项的当前值，可以使用*通配符，时间复杂度O(1)</li>
-<li>CONFIG SET：为Redis某个配置项设置新值，时间复杂度O(1)</li>
-<li>CONFIG REWRITE：让Redis重新加载redis.conf中的配置</li>
-</ul>
-<h1 id="数据持久化"><a href="#数据持久化" class="headerlink" title="数据持久化"></a>数据持久化</h1><p>Redis提供了将数据定期自动持久化至硬盘的能力，包括RDB和AOF两种方案，两种方案分别有其长处和短板，可以配合起来同时运行，确保数据的稳定性。</p>
-<h2 id="必须使用数据持久化吗？"><a href="#必须使用数据持久化吗？" class="headerlink" title="必须使用数据持久化吗？"></a>必须使用数据持久化吗？</h2><p>Redis的数据持久化机制是可以关闭的。如果你只把Redis作为缓存服务使用，Redis中存储的所有数据都不是该数据的主体而仅仅是同步过来的备份，那么可以关闭Redis的数据持久化机制。<br>但通常来说，仍然建议至少开启RDB方式的数据持久化，因为：</p>
-<ul>
-<li>RDB方式的持久化几乎不损耗Redis本身的性能，在进行RDB持久化时，Redis主进程唯一需要做的事情就是fork出一个子进程，所有持久化工作都由子进程完成</li>
-<li>Redis无论因为什么原因crash掉之后，重启时能够自动恢复到上一次RDB快照中记录的数据。这省去了手工从其他数据源（如DB）同步数据的过程，而且要比其他任何的数据恢复方式都要快</li>
-<li>现在硬盘那么大，真的不缺那一点地方</li>
-</ul>
-<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>采用RDB持久方式，Redis会定期保存数据快照至一个rbd文件中，并在启动时自动加载rdb文件，恢复之前保存的数据。可以在配置文件中配置Redis进行快照保存的时机：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">save [seconds] [changes]</div></pre></td></tr></table></figure></p>
-<p>意为在[seconds]秒内如果发生了[changes]次数据修改，则进行一次RDB快照保存，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">save 60 100</div></pre></td></tr></table></figure></p>
-<p>会让Redis每60秒检查一次数据变更情况，如果发生了100次或以上的数据变更，则进行RDB快照保存。<br>可以配置多条save指令，让Redis执行多级的快照保存策略。<br>Redis默认开启RDB快照，默认的RDB策略如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">save 900 1</div><div class="line">save 300 10</div><div class="line">save 60 10000</div></pre></td></tr></table></figure></p>
-<p>也可以通过BGSAVE命令手工触发RDB快照保存。</p>
-<p>RDB的优点：</p>
-<ul>
-<li>对性能影响最小。如前文所述，Redis在保存RDB快照时会fork出子进程进行，几乎不影响Redis处理客户端请求的效率。</li>
-<li>每次快照会生成一个完整的数据快照文件，所以可以辅以其他手段保存多个时间点的快照（例如把每天0点的快照备份至其他存储媒介中），作为非常可靠的灾难恢复手段。</li>
-<li>使用RDB文件进行数据恢复比使用AOF要快很多。</li>
-</ul>
-<p>RDB的缺点：</p>
-<ul>
-<li>快照是定期生成的，所以在Redis crash时或多或少会丢失一部分数据。</li>
-<li>如果数据集非常大且CPU不够强（比如单核CPU），Redis在fork子进程时可能会消耗相对较长的时间（长至1秒），影响这期间的客户端请求。</li>
-</ul>
-<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><p>采用AOF持久方式时，Redis会把每一个写请求都记录在一个日志文件里。在Redis重启时，会把AOF文件中记录的所有写操作顺序执行一遍，确保数据恢复到最新。</p>
-<p>AOF默认是关闭的，如要开启，进行如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">appendonly yes</div></pre></td></tr></table></figure></p>
-<p>AOF提供了三种fsync配置，always/everysec/no，通过配置项[appendfsync]指定：</p>
-<ul>
-<li>appendfsync no：不进行fsync，将flush文件的时机交给OS决定，速度最快</li>
-<li>appendfsync always：每写入一条日志就进行一次fsync操作，数据安全性最高，但速度最慢</li>
-<li>appendfsync everysec：折中的做法，交由后台线程每秒fsync一次</li>
-</ul>
-<p>随着AOF不断地记录写操作日志，必定会出现一些无用的日志，例如某个时间点执行了命令<strong>SET key1 “abc”</strong>，在之后某个时间点又执行了<strong>SET key1 “bcd”</strong>，那么第一条命令很显然是没有用的。大量的无用日志会让AOF文件过大，也会让数据恢复的时间过长。<br>所以Redis提供了AOF rewrite功能，可以重写AOF文件，只保留能够把数据恢复到最新状态的最小写操作集。<br>AOF rewrite可以通过BGREWRITEAOF命令触发，也可以配置Redis定期自动进行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">auto-aof-rewrite-percentage 100</div><div class="line">auto-aof-rewrite-min-size 64mb</div></pre></td></tr></table></figure></p>
-<p>上面两行配置的含义是，Redis在每次AOF rewrite时，会记录完成rewrite后的AOF日志大小，当AOF日志大小在该基础上增长了100%后，自动进行AOF rewrite。同时如果增长的大小没有达到64mb，则不会进行rewrite。</p>
-<p>AOF的优点：</p>
-<ul>
-<li>最安全，在启用appendfsync always时，任何已写入的数据都不会丢失，使用在启用appendfsync everysec也至多只会丢失1秒的数据。</li>
-<li>AOF文件在发生断电等问题时也不会损坏，即使出现了某条日志只写入了一半的情况，也可以使用redis-check-aof工具轻松修复。</li>
-<li>AOF文件易读，可修改，在进行了某些错误的数据清除操作后，只要AOF文件没有rewrite，就可以把AOF文件备份出来，把错误的命令删除，然后恢复数据。</li>
-</ul>
-<p>AOF的缺点：</p>
-<ul>
-<li>AOF文件通常比RDB文件更大</li>
-<li>性能消耗比RDB高</li>
-<li>数据恢复速度比RDB慢</li>
-</ul>
-<h1 id="内存管理与数据淘汰机制"><a href="#内存管理与数据淘汰机制" class="headerlink" title="内存管理与数据淘汰机制"></a>内存管理与数据淘汰机制</h1><h2 id="最大内存设置"><a href="#最大内存设置" class="headerlink" title="最大内存设置"></a>最大内存设置</h2><p>默认情况下，在32位OS中，Redis最大使用3GB的内存，在64位OS中则没有限制。</p>
-<p>在使用Redis时，应该对数据占用的最大空间有一个基本准确的预估，并为Redis设定最大使用的内存。否则在64位OS中Redis会无限制地占用内存（当物理内存被占满后会使用swap空间），容易引发各种各样的问题。</p>
-<p>通过如下配置控制Redis使用的最大内存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">maxmemory 100mb</div></pre></td></tr></table></figure></p>
-<p>在内存占用达到了maxmemory后，再向Redis写入数据时，Redis会：</p>
-<ul>
-<li>根据配置的数据淘汰策略尝试淘汰数据，释放空间</li>
-<li>如果没有数据可以淘汰，或者没有配置数据淘汰策略，那么Redis会对所有写请求返回错误，但读请求仍然可以正常执行</li>
-</ul>
-<p>在为Redis设置maxmemory时，需要注意：</p>
-<ul>
-<li>如果采用了Redis的主从同步，主节点向从节点同步数据时，会占用掉一部分内存空间，如果maxmemory过于接近主机的可用内存，导致数据同步时内存不足。所以设置的maxmemory不要过于接近主机可用的内存，留出一部分预留用作主从同步。</li>
-</ul>
-<h2 id="数据淘汰机制"><a href="#数据淘汰机制" class="headerlink" title="数据淘汰机制"></a>数据淘汰机制</h2><p>Redis提供了5种数据淘汰策略：</p>
-<ul>
-<li>volatile-lru：使用LRU算法进行数据淘汰（淘汰上次使用时间最早的，且使用次数最少的key），只淘汰设定了有效期的key</li>
-<li>allkeys-lru：使用LRU算法进行数据淘汰，所有的key都可以被淘汰</li>
-<li>volatile-random：随机淘汰数据，只淘汰设定了有效期的key</li>
-<li>allkeys-random：随机淘汰数据，所有的key都可以被淘汰</li>
-<li>volatile-ttl：淘汰剩余有效期最短的key</li>
-</ul>
-<p>最好为Redis指定一种有效的数据淘汰策略以配合maxmemory设置，避免在内存使用满后发生写入失败的情况。</p>
-<p>一般来说，推荐使用的策略是volatile-lru，并辨识Redis中保存的数据的重要性。对于那些重要的，绝对不能丢弃的数据（如配置类数据等），应不设置有效期，这样Redis就永远不会淘汰这些数据。对于那些相对不是那么重要的，并且能够热加载的数据（比如缓存最近登录的用户信息，当在Redis中找不到时，程序会去DB中读取），可以设置上有效期，这样在内存不够时Redis就会淘汰这部分数据。</p>
-<p>配置方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">maxmemory-policy volatile-lru   #默认是noeviction，即不进行数据淘汰</div></pre></td></tr></table></figure></p>
-<h1 id="Pipelining"><a href="#Pipelining" class="headerlink" title="Pipelining"></a>Pipelining</h1><p>Redis提供许多批量操作的命令，如MSET/MGET/HMSET/HMGET等等，这些命令存在的意义是减少维护网络连接和传输数据所消耗的资源和时间。<br>例如连续使用5次SET命令设置5个不同的key，比起使用一次MSET命令设置5个不同的key，效果是一样的，但前者会消耗更多的RTT(Round Trip Time)时长，永远应优先使用后者。</p>
-<p>然而，如果客户端要连续执行的多次操作无法通过Redis命令组合在一起，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SET a &quot;abc&quot;</div><div class="line">INCR b</div><div class="line">HSET c name &quot;hi&quot;</div></pre></td></tr></table></figure></p>
-<p>此时便可以使用Redis提供的pipelining功能来实现在一次交互中执行多条命令。<br>使用pipelining时，只需要从客户端一次向Redis发送多条命令（以\r\n）分隔，Redis就会依次执行这些命令，并且把每个命令的返回按顺序组装在一起一次返回，比如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ (<span class="built_in">printf</span> <span class="string">"PING\r\nPING\r\nPING\r\n"</span>; sleep 1) | nc localhost 6379</div><div class="line">+PONG</div><div class="line">+PONG</div><div class="line">+PONG</div></pre></td></tr></table></figure></p>
-<p>大部分的Redis客户端都对Pipelining提供支持，所以开发者通常并不需要自己手工拼装命令列表。</p>
-<h2 id="Pipelining的局限性"><a href="#Pipelining的局限性" class="headerlink" title="Pipelining的局限性"></a>Pipelining的局限性</h2><p>Pipelining只能用于执行<strong>连续且无相关性</strong>的命令，当某个命令的生成需要依赖于前一个命令的返回时，就无法使用Pipelining了。</p>
-<p>通过Scripting功能，可以规避这一局限性</p>
-<h1 id="事务与Scripting"><a href="#事务与Scripting" class="headerlink" title="事务与Scripting"></a>事务与Scripting</h1><p>Pipelining能够让Redis在一次交互中处理多条命令，然而在一些场景下，我们可能需要在此基础上确保这一组命令是连续执行的。</p>
-<p>比如获取当前累计的PV数并将其清0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; GET vCount</div><div class="line">12384</div><div class="line">&gt; SET vCount 0</div><div class="line">OK</div></pre></td></tr></table></figure></p>
-<p>如果在GET和SET命令之间插进来一个INCR vCount，就会使客户端拿到的vCount不准确。</p>
-<p>Redis的事务可以确保复数命令执行时的原子性。也就是说Redis能够保证：一个事务中的一组命令是绝对连续执行的，在这些命令执行完成之前，绝对不会有来自于其他连接的其他命令插进去执行。</p>
-<p>通过MULTI和EXEC命令来把这两个命令加入一个事务中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; MULTI</div><div class="line">OK</div><div class="line">&gt; GET vCount</div><div class="line">QUEUED</div><div class="line">&gt; SET vCount 0</div><div class="line">QUEUED</div><div class="line">&gt; EXEC</div><div class="line">1) 12384</div><div class="line">2) OK</div></pre></td></tr></table></figure></p>
-<p>Redis在接收到MULTI命令后便会开启一个事务，这之后的所有读写命令都会保存在队列中但并不执行，直到接收到EXEC命令后，Redis会把队列中的所有命令连续顺序执行，并以数组形式返回每个命令的返回结果。</p>
-<p>可以使用DISCARD命令放弃当前的事务，将保存的命令队列清空。</p>
-<p>需要注意的是，<strong>Redis事务不支持回滚</strong>：<br>如果一个事务中的命令出现了语法错误，大部分客户端驱动会返回错误，2.6.5版本以上的Redis也会在执行EXEC时检查队列中的命令是否存在语法错误，如果存在，则会自动放弃事务并返回错误。<br>但如果一个事务中的命令有非语法类的错误（比如对String执行HSET操作），无论客户端驱动还是Redis都无法在真正执行这条命令之前发现，所以事务中的所有命令仍然会被依次执行。在这种情况下，会出现一个事务中部分命令成功部分命令失败的情况，然而与RDBMS不同，Redis不提供事务回滚的功能，所以只能通过其他方法进行数据的回滚。</p>
-<h2 id="通过事务实现CAS"><a href="#通过事务实现CAS" class="headerlink" title="通过事务实现CAS"></a>通过事务实现CAS</h2><p>Redis提供了WATCH命令与事务搭配使用，实现CAS乐观锁的机制。</p>
-<p>假设要实现将某个商品的状态改为已售：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;)</div><div class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</div></pre></td></tr></table></figure></p>
-<p>这一伪代码执行时，无法确保并发安全性，有可能多个客户端都获取到了”in stock”的状态，导致一个库存被售卖多次。</p>
-<p>使用WATCH命令和事务可以解决这一问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">exec(WATCH stock:1001);</div><div class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;) &#123;</div><div class="line">    exec(MULTI);</div><div class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</div><div class="line">    exec(EXEC);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>WATCH的机制是：在事务EXEC命令执行时，Redis会检查被WATCH的key，只有被WATCH的key从WATCH起始时至今没有发生过变更，EXEC才会被执行。如果WATCH的key在WATCH命令到EXEC命令之间发生过变化，则EXEC命令会返回失败。</p>
-<h2 id="Scripting"><a href="#Scripting" class="headerlink" title="Scripting"></a>Scripting</h2><p>通过EVAL与EVALSHA命令，可以让Redis执行LUA脚本。这就类似于RDBMS的存储过程一样，可以把客户端与Redis之间密集的读/写交互放在服务端进行，避免过多的数据交互，提升性能。</p>
-<p>Scripting功能是作为事务功能的替代者诞生的，事务提供的所有能力Scripting都可以做到。Redis官方推荐使用LUA Script来代替事务，前者的效率和便利性都超过了事务。</p>
-<p>关于Scripting的具体使用，本文不做详细介绍，请参考官方文档 <a href="https://redis.io/commands/eval" target="_blank" rel="external">https://redis.io/commands/eval</a></p>
-<h1 id="Redis性能调优"><a href="#Redis性能调优" class="headerlink" title="Redis性能调优"></a>Redis性能调优</h1><p>尽管Redis是一个非常快速的内存数据存储媒介，也并不代表Redis不会产生性能问题。<br>前文中提到过，Redis采用单线程模型，所有的命令都是由一个线程串行执行的，所以当某个命令执行耗时较长时，会拖慢其后的所有命令，这使得Redis对每个任务的执行效率更加敏感。</p>
-<p>针对Redis的性能优化，主要从下面几个层面入手：</p>
-<ul>
-<li>最初的也是最重要的，确保没有让Redis执行耗时长的命令</li>
-<li>使用pipelining将连续执行的命令组合执行</li>
-<li><p>操作系统的Transparent huge pages功能必须关闭：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</div></pre></td></tr></table></figure>
-</li>
-<li><p>如果在虚拟机中运行Redis，可能天然就有虚拟机环境带来的固有延迟。可以通过./redis-cli –intrinsic-latency 100命令查看固有延迟。同时如果对Redis的性能有较高要求的话，应尽可能在物理机上直接部署Redis。</p>
-</li>
-<li>检查数据持久化策略</li>
-<li>考虑引入读写分离机制</li>
-</ul>
-<h2 id="长耗时命令"><a href="#长耗时命令" class="headerlink" title="长耗时命令"></a>长耗时命令</h2><p>Redis绝大多数读写命令的时间复杂度都在O(1)到O(N)之间，在文本和官方文档中均对每个命令的时间复杂度有说明。</p>
-<p>通常来说，O(1)的命令是安全的，O(N)命令在使用时需要注意，如果N的数量级不可预知，则应避免使用。例如对一个field数未知的Hash数据执行HGETALL/HKEYS/HVALS命令，通常来说这些命令执行的很快，但如果这个Hash中的field数量极多，耗时就会成倍增长。<br>又如使用SUNION对两个Set执行Union操作，或使用SORT对List/Set执行排序操作等时，都应该严加注意。</p>
-<p>避免在使用这些O(N)命令时发生问题主要有几个办法：</p>
-<ul>
-<li>不要把List当做列表使用，仅当做队列来使用</li>
-<li>通过机制严格控制Hash、Set、Sorted Set的大小</li>
-<li>可能的话，将排序、并集、交集等操作放在客户端执行</li>
-<li>绝对禁止使用KEYS命令</li>
-<li>避免一次性遍历集合类型的所有成员，而应使用SCAN类的命令进行分批的，游标式的遍历</li>
-</ul>
-<p>Redis提供了SCAN命令，可以对Redis中存储的所有key进行游标式的遍历，避免使用KEYS命令带来的性能问题。同时还有SSCAN/HSCAN/ZSCAN等命令，分别用于对Set/Hash/Sorted Set中的元素进行游标式遍历。SCAN类命令的使用请参考官方文档：<a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a></p>
-<p>Redis提供了Slow Log功能，可以自动记录耗时较长的命令。相关的配置参数有两个：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">slowlog-log-slower-than xxxms  <span class="comment">#执行时间慢于xxx毫秒的命令计入Slow Log</span></div><div class="line">slowlog-max-len xxx  <span class="comment">#Slow Log的长度，即最大纪录多少条Slow Log</span></div></pre></td></tr></table></figure></p>
-<p>使用<strong>SLOWLOG GET [number]</strong>命令，可以输出最近进入Slow Log的number条命令。<br>使用<strong>SLOWLOG RESET</strong>命令，可以重置Slow Log</p>
-<h2 id="网络引发的延迟"><a href="#网络引发的延迟" class="headerlink" title="网络引发的延迟"></a>网络引发的延迟</h2><ul>
-<li>尽可能使用长连接或连接池，避免频繁创建销毁连接</li>
-<li>客户端进行的批量数据操作，应使用Pipeline特性在一次交互中完成。具体请参照本文的Pipelining章节</li>
-</ul>
-<h2 id="数据持久化引发的延迟"><a href="#数据持久化引发的延迟" class="headerlink" title="数据持久化引发的延迟"></a>数据持久化引发的延迟</h2><p>Redis的数据持久化工作本身就会带来延迟，需要根据数据的安全级别和性能要求制定合理的持久化策略：</p>
-<ul>
-<li>AOF + fsync always的设置虽然能够绝对确保数据安全，但每个操作都会触发一次fsync，会对Redis的性能有比较明显的影响</li>
-<li>AOF + fsync every second是比较好的折中方案，每秒fsync一次</li>
-<li>AOF + fsync never会提供AOF持久化方案下的最优性能</li>
-<li>使用RDB持久化通常会提供比使用AOF更高的性能，但需要注意RDB的策略配置</li>
-<li>每一次RDB快照和AOF Rewrite都需要Redis主进程进行fork操作。fork操作本身可能会产生较高的耗时，与CPU和Redis占用的内存大小有关。根据具体的情况合理配置RDB快照和AOF Rewrite时机，避免过于频繁的fork带来的延迟</li>
-</ul>
-<blockquote>
-<p>Redis在fork子进程时需要将内存分页表拷贝至子进程，以占用了24GB内存的Redis实例为例，共需要拷贝24GB / 4kB * 8 = 48MB的数据。在使用单Xeon 2.27Ghz的物理机上，这一fork操作耗时216ms。</p>
-<p>可以通过INFO命令返回的latest_fork_usec字段查看上一次fork操作的耗时（微秒）</p>
-</blockquote>
-<h2 id="Swap引发的延迟"><a href="#Swap引发的延迟" class="headerlink" title="Swap引发的延迟"></a>Swap引发的延迟</h2><p>当Linux将Redis所用的内存分页移至swap空间时，将会阻塞Redis进程，导致Redis出现不正常的延迟。Swap通常在物理内存不足或一些进程在进行大量I/O操作时发生，应尽可能避免上述两种情况的出现。</p>
-<p><code>/proc/&lt;pid&gt;/smaps</code>文件中会保存进程的swap记录，通过查看这个文件，能够判断Redis的延迟是否由Swap产生。如果这个文件中记录了较大的Swap size，则说明延迟很有可能是Swap造成的。</p>
-<h2 id="数据淘汰引发的延迟"><a href="#数据淘汰引发的延迟" class="headerlink" title="数据淘汰引发的延迟"></a>数据淘汰引发的延迟</h2><p>当同一秒内有大量key过期时，也会引发Redis的延迟。在使用时应尽量将key的失效时间错开。</p>
-<h2 id="引入读写分离机制"><a href="#引入读写分离机制" class="headerlink" title="引入读写分离机制"></a>引入读写分离机制</h2><p>Redis的主从复制能力可以实现一主多从的多节点架构，在这一架构下，主节点接收所有写请求，并将数据同步给多个从节点。<br>在这一基础上，我们可以让从节点提供对实时性要求不高的读请求服务，以减小主节点的压力。<br>尤其是针对一些使用了长耗时命令的统计类任务，完全可以指定在一个或多个从节点上执行，避免这些长耗时命令影响其他请求的响应。</p>
-<h1 id="主从复制与集群分片"><a href="#主从复制与集群分片" class="headerlink" title="主从复制与集群分片"></a>主从复制与集群分片</h1><h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><p>Redis支持一主多从的主从复制架构。一个Master实例负责处理所有的写请求，Master将写操作同步至所有Slave。<br>借助Redis的主从复制，可以实现读写分离和高可用：</p>
-<ul>
-<li>实时性要求不是特别高的读请求，可以在Slave上完成，提升效率。特别是一些周期性执行的统计任务，这些任务可能需要执行一些长耗时的Redis命令，可以专门规划出1个或几个Slave用于服务这些统计任务</li>
-<li>借助Redis Sentinel可以实现高可用，当Master crash后，Redis Sentinel能够自动将一个Slave晋升为Master，继续提供服务</li>
-</ul>
-<p>启用主从复制非常简单，只需要配置多个Redis实例，在作为Slave的Redis实例中配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">slaveof 192.168.1.1 6379  <span class="comment">#指定Master的IP和端口</span></div></pre></td></tr></table></figure></p>
-<p>当Slave启动后，会从Master进行一次冷启动数据同步，由Master触发BGSAVE生成RDB文件推送给Slave进行导入，导入完成后Master再将增量数据通过Redis Protocol同步给Slave。之后主从之间的数据便一直以Redis Protocol进行同步</p>
-<h2 id="使用Sentinel做自动failover"><a href="#使用Sentinel做自动failover" class="headerlink" title="使用Sentinel做自动failover"></a>使用Sentinel做自动failover</h2><p>Redis的主从复制功能本身只是做数据同步，并不提供监控和自动failover能力，要通过主从复制功能来实现Redis的高可用，还需要引入一个组件：Redis Sentinel</p>
-<p>Redis Sentinel是Redis官方开发的监控组件，可以监控Redis实例的状态，通过Master节点自动发现Slave节点，并在监测到Master节点失效时选举出一个新的Master，并向所有Redis实例推送新的主从配置。</p>
-<p>Redis Sentinel需要至少部署3个实例才能形成选举关系。</p>
-<p>关键配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sentinel monitor mymaster 127.0.0.1 6379 2  <span class="comment">#Master实例的IP、端口，以及选举需要的赞成票数</span></div><div class="line">sentinel down-after-milliseconds mymaster 60000  <span class="comment">#多长时间没有响应视为Master失效</span></div><div class="line">sentinel failover-timeout mymaster 180000  <span class="comment">#两次failover尝试间的间隔时长</span></div><div class="line">sentinel parallel-syncs mymaster 1  <span class="comment">#如果有多个Slave，可以通过此配置指定同时从新Master进行数据同步的Slave数，避免所有Slave同时进行数据同步导致查询服务也不可用</span></div></pre></td></tr></table></figure></p>
-<p>另外需要注意的是，Redis Sentinel实现的自动failover不是在同一个IP和端口上完成的，也就是说自动failover产生的新Master提供服务的IP和端口与之前的Master是不一样的，所以要实现HA，还要求客户端必须支持Sentinel，能够与Sentinel交互获得新Master的信息才行。</p>
-<h2 id="集群分片"><a href="#集群分片" class="headerlink" title="集群分片"></a>集群分片</h2><p>为何要做集群分片：</p>
-<ul>
-<li>Redis中存储的数据量大，一台主机的物理内存已经无法容纳</li>
-<li>Redis的写请求并发量大，一个Redis实例以无法承载</li>
-</ul>
-<p>当上述两个问题出现时，就必须要对Redis进行分片了。<br>Redis的分片方案有很多种，例如很多Redis的客户端都自行实现了分片功能，也有向Twemproxy这样的以代理方式实现的Redis分片方案。然而首选的方案还应该是Redis官方在3.0版本中推出的Redis Cluster分片方案。</p>
-<p>本文不会对Redis Cluster的具体安装和部署细节进行介绍，重点介绍Redis Cluster带来的好处与弊端。</p>
-<h3 id="Redis-Cluster的能力"><a href="#Redis-Cluster的能力" class="headerlink" title="Redis Cluster的能力"></a>Redis Cluster的能力</h3><ul>
-<li>能够自动将数据分散在多个节点上</li>
-<li>当访问的key不在当前分片上时，能够自动将请求转发至正确的分片</li>
-<li>当集群中部分节点失效时仍能提供服务</li>
-</ul>
-<p>其中第三点是基于主从复制来实现的，Redis Cluster的每个数据分片都采用了主从复制的结构，原理和前文所述的主从复制完全一致，唯一的区别是省去了Redis Sentinel这一额外的组件，由Redis Cluster负责进行一个分片内部的节点监控和自动failover。</p>
-<h3 id="Redis-Cluster分片原理"><a href="#Redis-Cluster分片原理" class="headerlink" title="Redis Cluster分片原理"></a>Redis Cluster分片原理</h3><p>Redis Cluster中共有16384个hash slot，Redis会计算每个key的CRC16，将结果与16384取模，来决定该key存储在哪一个hash slot中，同时需要指定Redis Cluster中每个数据分片负责的Slot数。Slot的分配在任何时间点都可以进行重新分配。</p>
-<p>客户端在对key进行读写操作时，可以连接Cluster中的任意一个分片，如果操作的key不在此分片负责的Slot范围内，Redis Cluster会自动将请求重定向到正确的分片上。</p>
-<h3 id="hash-tags"><a href="#hash-tags" class="headerlink" title="hash tags"></a>hash tags</h3><p>在基础的分片原则上，Redis还支持hash tags功能，以hash tags要求的格式明明的key，将会确保进入同一个Slot中。例如：{uiv}user:1000和{uiv}user:1001拥有同样的hash tag {uiv}，会保存在同一个Slot中。</p>
-<p>使用Redis Cluster时，pipelining、事务和LUA Script功能涉及的key必须在同一个数据分片上，否则将会返回错误。如要在Redis Cluster中使用上述功能，就必须通过hash tags来确保一个pipeline或一个事务中操作的所有key都位于同一个Slot中。</p>
-<blockquote>
-<p>有一些客户端（如Redisson）实现了集群化的pipelining操作，可以自动将一个pipeline里的命令按key所在的分片进行分组，分别发到不同的分片上执行。但是Redis不支持跨分片的事务，事务和LUA Script还是必须遵循所有key在一个分片上的规则要求。</p>
-</blockquote>
-<h2 id="主从复制-vs-集群分片"><a href="#主从复制-vs-集群分片" class="headerlink" title="主从复制 vs 集群分片"></a>主从复制 vs 集群分片</h2><p>设计软件架构时，要如何在主从复制和集群分片两种部署方案中取舍呢？</p>
-<p>从各个方面看，Redis Cluster都是优于主从复制的方案</p>
-<ul>
-<li>Redis Cluster能够解决单节点上数据量过大的问题</li>
-<li>Redis Cluster能够解决单节点访问压力过大的问题</li>
-<li>Redis Cluster包含了主从复制的能力<br>那是不是代表Redis Cluster永远是优于主从复制的选择呢？</li>
-</ul>
-<p>并不是。</p>
-<p>软件架构永远不是越复杂越好，复杂的架构在带来显著好处的同时，一定也会带来相应的弊端。采用Redis Cluster的弊端包括：</p>
-<ul>
-<li>维护难度增加。在使用Redis Cluster时，需要维护的Redis实例数倍增，需要监控的主机数量也相应增加，数据备份/持久化的复杂度也会增加。同时在进行分片的增减操作时，还需要进行reshard操作，远比主从模式下增加一个Slave的复杂度要高。</li>
-<li>客户端资源消耗增加。当客户端使用连接池时，需要为每一个数据分片维护一个连接池，客户端同时需要保持的连接数成倍增多，加大了客户端本身和操作系统资源的消耗。</li>
-<li>性能优化难度增加。你可能需要在多个分片上查看Slow Log和Swap日志才能定位性能问题。</li>
-<li>事务和LUA Script的使用成本增加。在Redis Cluster中使用事务和LUA Script特性有严格的限制条件，事务和Script中操作的key必须位于同一个分片上，这就使得在开发时必须对相应场景下涉及的key进行额外的规划和规范要求。如果应用的场景中大量涉及事务和Script的使用，如何在保证这两个功能的正常运作前提下把数据平均分到多个数据分片中就会成为难点。</li>
-</ul>
-<p>所以说，在主从复制和集群分片两个方案中做出选择时，应该从应用软件的功能特性、数据和访问量级、未来发展规划等方面综合考虑，只在确实有必要引入数据分片时再使用Redis Cluster。<br>下面是一些建议：</p>
-<ol>
-<li>需要在Redis中存储的数据有多大？未来2年内可能发展为多大？这些数据是否都需要长期保存？是否可以使用LRU算法进行非热点数据的淘汰？综合考虑前面几个因素，评估出Redis需要使用的物理内存。</li>
-<li>用于部署Redis的主机物理内存有多大？有多少可以分配给Redis使用？对比(1)中的内存需求评估，是否足够用？</li>
-<li>Redis面临的并发写压力会有多大？在不使用pipelining时，Redis的写性能可以超过10万次/秒（更多的benchmark可以参考 <a href="https://redis.io/topics/benchmarks" target="_blank" rel="external">https://redis.io/topics/benchmarks</a> ）</li>
-<li>在使用Redis时，是否会使用到pipelining和事务功能？使用的场景多不多？</li>
-</ol>
-<p>综合上面几点考虑，如果单台主机的可用物理内存完全足以支撑对Redis的容量需求，且Redis面临的并发写压力距离Benchmark值还尚有距离，建议采用主从复制的架构，可以省去很多不必要的麻烦。同时，如果应用中大量使用pipelining和事务，也建议尽可能选择主从复制架构，可以减少设计和开发时的复杂度。</p>
-<h1 id="Redis-Java客户端的选择"><a href="#Redis-Java客户端的选择" class="headerlink" title="Redis Java客户端的选择"></a>Redis Java客户端的选择</h1><p>Redis的Java客户端很多，官方推荐的有三种：Jedis、Redisson和lettuce。</p>
-<p>在这里对Jedis和Redisson进行对比介绍</p>
-<p>Jedis：</p>
-<ul>
-<li>轻量，简洁，便于集成和改造</li>
-<li>支持连接池</li>
-<li>支持pipelining、事务、LUA Scripting、Redis Sentinel、Redis Cluster</li>
-<li>不支持读写分离，需要自己实现</li>
-<li>文档差（真的很差，几乎没有……）</li>
-</ul>
-<p>Redisson：</p>
-<ul>
-<li>基于Netty实现，采用非阻塞IO，性能高</li>
-<li>支持异步请求</li>
-<li>支持连接池</li>
-<li>支持pipelining、LUA Scripting、Redis Sentinel、Redis Cluster</li>
-<li>不支持事务，官方建议以LUA Scripting代替事务</li>
-<li>支持在Redis Cluster架构下使用pipelining</li>
-<li>支持读写分离，支持读负载均衡，在主从复制和Redis Cluster架构下都可以使用</li>
-<li>内建Tomcat Session Manager，为Tomcat 6/7/8提供了会话共享功能</li>
-<li>可以与Spring Session集成，实现基于Redis的会话共享</li>
-<li>文档较丰富，有中文文档</li>
-</ul>
-<p>对于Jedis和Redisson的选择，同样应遵循前述的原理，尽管Jedis比起Redisson有各种各样的不足，但也应该在需要使用Redisson的高级特性时再选用Redisson，避免造成不必要的程序复杂度提升。</p>
-<p>Jedis：<br>github：<a href="https://github.com/xetorthio/jedis" target="_blank" rel="external">https://github.com/xetorthio/jedis</a><br>文档：<a href="https://github.com/xetorthio/jedis/wiki" target="_blank" rel="external">https://github.com/xetorthio/jedis/wiki</a></p>
-<p>Redisson：<br>github：<a href="https://github.com/redisson/redisson" target="_blank" rel="external">https://github.com/redisson/redisson</a><br>文档：<a href="https://github.com/redisson/redisson/wiki" target="_blank" rel="external">https://github.com/redisson/redisson/wiki</a></p>
-<p>from <a href="http://www.jianshu.com/p/2f14bc570563" target="_blank" rel="external">http://www.jianshu.com/p/2f14bc570563</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;本文将从Redis的基本特性入手，通过讲述Redis的数据结构和主要命令对Redis的基本能力进行直观介绍。之后概览Redis提供的高级能力，并在部署、维护、性能调优等多个方面进行更深入的介绍和指导。&lt;br&gt;本文适合使用Redis的普通开发人员，以及对Redis进行选型、架构设计和性能调优的架构设计人员。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;Redis是一个开源的，基于内存的结构化数据存储媒介，可以作为数据库、缓存服务或消息服务使用。&lt;br&gt;Redis支持多种数据结构，包括字符串、哈希表、链表、集合、有序集合、位图、Hyperloglogs等。&lt;br&gt;Redis具备LRU淘汰、事务实现、以及不同级别的硬盘持久化等能力，并且支持副本集和通过Redis Sentinel实现的高可用方案，同时还支持通过Redis Cluster实现的数据自动分片能力。&lt;/p&gt;
-&lt;p&gt;Redis的主要功能都基于单线程模型实现，也就是说Redis使用一个线程来服务所有的客户端请求，同时Redis采用了非阻塞式IO，并精细地优化各种命令的算法时间复杂度，这些信息意味着：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Redis是线程安全的（因为只有一个线程），其所有操作都是原子的，不会因并发产生数据异常&lt;/li&gt;
-&lt;li&gt;Redis的速度非常快（因为使用非阻塞式IO，且大部分命令的算法时间复杂度都是O(1))&lt;/li&gt;
-&lt;li&gt;使用高耗时的Redis命令是很危险的，会占用唯一的一个线程的大量处理时间，导致所有的请求都被拖慢。（例如时间复杂度为O(N)的KEYS命令，严格禁止在生产环境中使用）&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
-    
-    
-      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
-    
-      <category term="redis cluster" scheme="http://idiotsky.me/tags/redis-cluster/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Dockerfile 指令 VOLUME 介绍</title>
-    <link href="http://idiotsky.me/2017/04/06/docker-dockerfile-volume/"/>
-    <id>http://idiotsky.me/2017/04/06/docker-dockerfile-volume/</id>
-    <published>2017-04-06T14:47:17.000Z</published>
-    <updated>2017-09-06T15:03:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在介绍VOLUME指令之前，我们来看下如下场景需求：</p>
-<ol>
-<li>容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。</li>
-<li>当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环境是放在docker容器上。<br>这样的话，我在主机上修改文件（如html，js等）后，需要再同步到容器中。这显然比较麻烦。</li>
-<li>多个容器运行一组相关联的服务，如果他们要共享一些数据怎么办？<br>对于这些问题，我们当然能想到各种解决方案。而docker本身提供了一种机制，可以将主机上的某个目录与容器的某个目录（称为挂载点、或者叫卷）关联起来，容器上的挂载点下的内容就是主机的这个目录下的内容，这类似linux系统下mount的机制。 这样的话，我们修改主机上该目录的内容时，不需要同步容器，对容器来说是立即生效的。 挂载点可以让多个容器共享。</li>
-</ol>
-<p>下面我们来介绍具体的机制。<br><a id="more"></a></p>
-<h1 id="通过docker-run命令"><a href="#通过docker-run命令" class="headerlink" title="通过docker run命令"></a>通过docker run命令</h1><ol>
-<li><p>运行命令：<code>docker run --name test -it -v /home/xqh/myimage:/data ubuntu /bin/bash</code><br>其中的 -v 标记 在容器中设置了一个挂载点 /data（就是容器中的一个目录），并将主机上的 /home/xqh/myimage 目录中的内容关联到 /data下。<br>这样在容器中对/data目录下的操作，还是在主机上对/home/xqh/myimage的操作，都是完全实时同步的，因为这两个目录实际都是指向主机目录。</p>
-</li>
-<li><p>运行命令：<code>docker run --name test1 -it -v /data ubuntu /bin/bash</code><br>上面-v的标记只设置了容器的挂载点，并没有指定关联的主机目录。这时docker会自动绑定主机上的一个目录。通过docker inspect 命令可以查看到。</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Mounts"</span>: [</div><div class="line">    &#123;</div><div class="line">        <span class="string">"Name"</span>: <span class="string">"0ab0aaf0d6ef391cb68b72bd8c43216a8f8ae9205f0ae941ef16ebe32dc9fc01"</span>,</div><div class="line">        <span class="string">"Source"</span>: <span class="string">"/var/lib/docker/volumes/0ab0aaf0d6ef391cb68b72bd8c43216a8f8ae9205f0ae941ef16ebe32dc9fc01/_data"</span>,</div><div class="line">        <span class="string">"Destination"</span>: <span class="string">"/data"</span>,</div><div class="line">        <span class="string">"Driver"</span>: <span class="string">"local"</span>,</div><div class="line">        <span class="string">"Mode"</span>: <span class="string">""</span>,</div><div class="line">        <span class="string">"RW"</span>: <span class="literal">true</span></div><div class="line">    &#125;</div><div class="line">],</div></pre></td></tr></table></figure>
-<p> 上面 Mounts下的每条信息记录了容器上一个挂载点的信息，”Destination” 值是容器的挂载点，”Source”值是对应的主机目录。<br> 可以看出这种方式对应的主机目录是自动创建的，其目的不是让在主机上修改，而是让多个容器共享。</p>
-</li>
-</ol>
-<h1 id="通过dockerfile创建挂载点"><a href="#通过dockerfile创建挂载点" class="headerlink" title="通过dockerfile创建挂载点"></a>通过dockerfile创建挂载点</h1><p>上面介绍的通过docker run命令的-v标识创建的挂载点只能对创建的容器有效。<br>通过dockerfile的 VOLUME 指令可以在镜像中创建挂载点，这样只要通过该镜像创建的容器都有了挂载点。<br>还有一个区别是，通过 VOLUME 指令创建的挂载点，无法指定主机上对应的目录，是自动生成的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#test</div><div class="line">FROM ubuntu</div><div class="line">MAINTAINER hello1</div><div class="line">VOLUME [&quot;/data1&quot;,&quot;/data2&quot;]</div></pre></td></tr></table></figure></p>
-<p>上面的dockfile文件通过VOLUME指令指定了两个挂载点 /data1 和 /data2.<br>我们通过docker inspect 查看通过该dockerfile创建的镜像生成的容器，可以看到如下信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&quot;Mounts&quot;: [</div><div class="line">        &#123;</div><div class="line">            &quot;Name&quot;: &quot;d411f6b8f17f4418629d4e5a1ab69679dee369b39e13bb68bed77aa4a0d12d21&quot;,</div><div class="line">            &quot;Source&quot;: &quot;/var/lib/docker/volumes/d411f6b8f17f4418629d4e5a1ab69679dee369b39e13bb68bed77aa4a0d12d21/_data&quot;,</div><div class="line">            &quot;Destination&quot;: &quot;/data1&quot;,</div><div class="line">            &quot;Driver&quot;: &quot;local&quot;,</div><div class="line">            &quot;Mode&quot;: &quot;&quot;,</div><div class="line">            &quot;RW&quot;: true</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            &quot;Name&quot;: &quot;6d3badcf47c4ac5955deda6f6ae56f4aaf1037a871275f46220c14ebd762fc36&quot;,</div><div class="line">            &quot;Source&quot;: &quot;/var/lib/docker/volumes/6d3badcf47c4ac5955deda6f6ae56f4aaf1037a871275f46220c14ebd762fc36/_data&quot;,</div><div class="line">            &quot;Destination&quot;: &quot;/data2&quot;,</div><div class="line">            &quot;Driver&quot;: &quot;local&quot;,</div><div class="line">            &quot;Mode&quot;: &quot;&quot;,</div><div class="line">            &quot;RW&quot;: true</div><div class="line">        &#125;</div><div class="line">    ],</div></pre></td></tr></table></figure></p>
-<p>可以看到两个挂载点的信息。</p>
-<h1 id="容器共享卷（挂载点）"><a href="#容器共享卷（挂载点）" class="headerlink" title="容器共享卷（挂载点）"></a>容器共享卷（挂载点）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test1 -it myimage /bin/bash</div></pre></td></tr></table></figure>
-<p>上面命令中的 myimage是用前面的dockerfile文件构建的镜像。 这样容器test1就有了 /data1 和 /data2两个挂载点。<br>下面我们创建另一个容器可以和test1共享 /data1 和 /data2卷 ，这是在 docker run中使用 –volumes-from标记，如：<br>可以是来源不同镜像，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test2 -it --volumes-from test1  ubuntu  /bin/bash</div></pre></td></tr></table></figure></p>
-<p>也可以是同一镜像，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test3 -it --volumes-from test1  myimage  /bin/bash</div></pre></td></tr></table></figure></p>
-<p>上面的三个容器 test1 , test2 , test3 均有 /data1 和 /data2 两个目录，且目录中内容是共享的，任何一个容器修改了内容，别的容器都能获取到。</p>
-<h1 id="最佳实践：数据容器"><a href="#最佳实践：数据容器" class="headerlink" title="最佳实践：数据容器"></a>最佳实践：数据容器</h1><p>如果多个容器需要共享数据（如持久化数据库、配置文件或者数据文件等），可以考虑创建一个特定的数据容器，该容器有1个或多个卷。<br>其它容器通过–volumes-from 来共享这个数据容器的卷。<br>因为容器的卷本质上对应主机上的目录，所以这个数据容器也不需要启动。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name dbdata myimage echo &quot;data container&quot;</div></pre></td></tr></table></figure></p>
-<p>from <a href="http://www.cnblogs.com/51kata/p/5266626.html" target="_blank" rel="external">http://www.cnblogs.com/51kata/p/5266626.html</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在介绍VOLUME指令之前，我们来看下如下场景需求：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。&lt;/li&gt;
-&lt;li&gt;当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环境是放在docker容器上。&lt;br&gt;这样的话，我在主机上修改文件（如html，js等）后，需要再同步到容器中。这显然比较麻烦。&lt;/li&gt;
-&lt;li&gt;多个容器运行一组相关联的服务，如果他们要共享一些数据怎么办？&lt;br&gt;对于这些问题，我们当然能想到各种解决方案。而docker本身提供了一种机制，可以将主机上的某个目录与容器的某个目录（称为挂载点、或者叫卷）关联起来，容器上的挂载点下的内容就是主机的这个目录下的内容，这类似linux系统下mount的机制。 这样的话，我们修改主机上该目录的内容时，不需要同步容器，对容器来说是立即生效的。 挂载点可以让多个容器共享。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;下面我们来介绍具体的机制。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="docker" scheme="http://idiotsky.me/categories/docker/"/>
-    
-    
-      <category term="docker" scheme="http://idiotsky.me/tags/docker/"/>
     
   </entry>
   

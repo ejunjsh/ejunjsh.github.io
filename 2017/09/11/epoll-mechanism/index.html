@@ -112,7 +112,7 @@
 <meta property="og:description" content="epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。   先看看使用c封装的3个epoll系统调用：  int epoll_create(int size)  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。 int epoll_ctl(int epfd, int op,">
 <meta property="og:image" content="http://idiotsky.me/images/epoll-mechanism-1.png">
 <meta property="og:image" content="http://idiotsky.me/images/epoll-mechanism-2.png">
-<meta property="og:updated_time" content="2017-09-13T12:54:05.000Z">
+<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux epoll原理">
 <meta name="twitter:description" content="epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。   先看看使用c封装的3个epoll系统调用：  int epoll_create(int size)  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。 int epoll_ctl(int epfd, int op,">
@@ -442,8 +442,8 @@
 <li><strong>LT</strong>：level-trigger，水平触发模式，只要某个socket处于readable/writable状态，无论什么时候进行epoll_wait都会返回该socket。</li>
 <li><strong>ET</strong>：edge-trigger，边缘触发模式，只有某个socket从unreadable变为readable或从unwritable变为writable时，epoll_wait才会返回该socket。</li>
 </ul>
-<p>socket读数据<br><a href="/images/epoll-mechanism-1.png"><img src="/images/epoll-mechanism-1.png" alt=""></a></p>
-<p>socket写数据<br><a href="/images/epoll-mechanism-2.png"><img src="/images/epoll-mechanism-2.png" alt=""></a></p>
+<p>socket读数据<br><a href="http://idiotsky.me/images/epoll-mechanism-1.png"><img src="http://idiotsky.me/images/epoll-mechanism-1.png" alt=""></a></p>
+<p>socket写数据<br><a href="http://idiotsky.me/images/epoll-mechanism-2.png"><img src="http://idiotsky.me/images/epoll-mechanism-2.png" alt=""></a></p>
 <p>参考 <a href="http://www.jianshu.com/p/0d497fe5484a" target="_blank" rel="external">http://www.jianshu.com/p/0d497fe5484a</a></p>
 
       
@@ -489,8 +489,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/09/13/kafka-design/" rel="prev" title="kafka学习（一）">
-                kafka学习（一） <i class="fa fa-chevron-right"></i>
+              <a href="/2017/09/11/redis-string/" rel="prev" title="redis数据结构-简单动态字符串">
+                redis数据结构-简单动态字符串 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -559,7 +559,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -581,7 +581,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-count">68</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
