@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="mysql," />
 
 
 
@@ -103,15 +103,17 @@
 
 
 
-<meta name="description" content="code freak">
-<meta property="og:type" content="website">
-<meta property="og:title" content="IdiotSky">
-<meta property="og:url" content="http://idiotsky.me/tags/死锁/index.html">
+<meta name="description" content="MySQL目前主要有以下几种索引方法：B-Tree，Hash，R-Tree。 B-TreeB-Tree是最常见的索引类型，所有值（被索引的列）都是排过序的，每个叶节点到跟节点距离相等。所以B-Tree适合用来查找某一范围内的数据，而且可以直接支持数据排序（ORDER BY）B-Tree在MyISAM里的形式和Innodb稍有不同：MyISAM表数据文件和索引文件是分离的，索引文件仅保存数据记录的磁">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL索引方法">
+<meta property="og:url" content="http://idiotsky.me/2017/09/20/mysql-index-method/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="code freak">
+<meta property="og:description" content="MySQL目前主要有以下几种索引方法：B-Tree，Hash，R-Tree。 B-TreeB-Tree是最常见的索引类型，所有值（被索引的列）都是排过序的，每个叶节点到跟节点距离相等。所以B-Tree适合用来查找某一范围内的数据，而且可以直接支持数据排序（ORDER BY）B-Tree在MyISAM里的形式和Innodb稍有不同：MyISAM表数据文件和索引文件是分离的，索引文件仅保存数据记录的磁">
+<meta property="og:updated_time" content="2017-09-20T14:14:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IdiotSky">
-<meta name="twitter:description" content="code freak">
+<meta name="twitter:title" content="MySQL索引方法">
+<meta name="twitter:description" content="MySQL目前主要有以下几种索引方法：B-Tree，Hash，R-Tree。 B-TreeB-Tree是最常见的索引类型，所有值（被索引的列）都是排过序的，每个叶节点到跟节点距离相等。所以B-Tree适合用来查找某一范围内的数据，而且可以直接支持数据排序（ORDER BY）B-Tree在MyISAM里的形式和Innodb稍有不同：MyISAM表数据文件和索引文件是分离的，索引文件仅保存数据记录的磁">
 
 
 
@@ -140,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/tags/死锁/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/09/20/mysql-index-method/"/>
 
 
 
 
 
-  <title>Tag: 死锁 | IdiotSky</title>
+  <title>MySQL索引方法 | IdiotSky</title>
   
 
 
@@ -175,7 +177,7 @@
     
   
 
-  <div class="container sidebar-position-right  ">
+  <div class="container sidebar-position-right page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -313,54 +315,182 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>死锁<small>Tag</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/20/mysql-index-method/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2016/08/27/sql-trasaction-isolation-deadlock/" itemprop="url">
-              
-                <span itemprop="name">全面解析-SQL事务+隔离级别+阻塞+死锁</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">MySQL索引方法</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T18:15:18+08:00"
-              content="27 Aug 16" >
-          08-27
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-20T21:58:53+08:00">
+                20 Sep 17
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>MySQL目前主要有以下几种索引方法：B-Tree，Hash，R-Tree。</p>
+<h1 id="B-Tree"><a href="#B-Tree" class="headerlink" title="B-Tree"></a>B-Tree</h1><p>B-Tree是最常见的索引类型，所有值（被索引的列）都是排过序的，每个叶节点到跟节点距离相等。所以B-Tree适合用来查找某一范围内的数据，而且可以直接支持数据排序（ORDER BY）<br>B-Tree在MyISAM里的形式和Innodb稍有不同：<br>MyISAM表数据文件和索引文件是分离的，索引文件仅保存数据记录的磁盘地址<br>InnoDB表数据文件本身就是主索引，叶节点data域保存了完整的数据记录<br><a id="more"></a></p>
+<h1 id="Hash索引"><a href="#Hash索引" class="headerlink" title="Hash索引"></a>Hash索引</h1><ol>
+<li>仅支持”=”,”IN”和”&lt;=&gt;”精确查询，不能使用范围查询：<br> 由于Hash索引比较的是进行Hash运算之后的Hash值，所以它只能用于等值的过滤，不能用于基于范围的过滤，因为经过相应的Hash算法处理之后的Hash</li>
+<li>不支持排序：<br> 由于Hash索引中存放的是经过Hash计算之后的Hash值，而且Hash值的大小关系并不一定和Hash运算前的键值完全一样，所以数据库无法利用索引的数据来避免任何排序运算</li>
+<li>在任何时候都不能避免表扫描：<br> 由于Hash索引比较的是进行Hash运算之后的Hash值，所以即使取满足某个Hash键值的数据的记录条数，也无法从Hash索引中直接完成查询，还是要通过访问表中的实际数据进行相应的比较，并得到相应的结果</li>
+<li>检索效率高，索引的检索可以一次定位，不像B-Tree索引需要从根节点到枝节点，最后才能访问到页节点这样多次的IO访问，所以Hash索引的查询效率要远高于B-Tree索引</li>
+<li>只有Memory引擎支持显式的Hash索引，但是它的Hash是nonunique的，冲突太多时也会影响查找性能。Memory引擎默认的索引类型即是Hash索引，虽然它也支持B-Tree索引</li>
+</ol>
+<h1 id="R-Tree索引"><a href="#R-Tree索引" class="headerlink" title="R-Tree索引"></a>R-Tree索引</h1><p>R-Tree在MySQL很少使用，仅支持geometry数据类型，支持该类型的存储引擎只有MyISAM、BDb、InnoDb、NDb、Archive几种。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/20/mysql-slow-query/" rel="next" title="开启mysql慢查询">
+                <i class="fa fa-chevron-left"></i> 开启mysql慢查询
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/20/mysql-index-type/" rel="prev" title="MySQL索引类型">
+                MySQL索引类型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -368,6 +498,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -388,8 +522,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -404,7 +547,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-count">75</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -426,7 +569,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-count">67</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -504,6 +647,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#B-Tree"><span class="nav-number">1.</span> <span class="nav-text">B-Tree</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hash索引"><span class="nav-number">2.</span> <span class="nav-text">Hash索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#R-Tree索引"><span class="nav-number">3.</span> <span class="nav-text">R-Tree索引</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -638,10 +797,10 @@
 
 
   
-    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-  
+
 
   
 
