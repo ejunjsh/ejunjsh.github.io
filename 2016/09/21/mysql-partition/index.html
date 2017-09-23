@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mysql," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="概念 为什么要分表和分区？日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。 什么是分表？分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL分区和分表">
+<meta property="og:url" content="http://idiotsky.me/2016/09/21/mysql-partition/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="概念 为什么要分表和分区？日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。 什么是分表？分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称">
+<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-1.png">
+<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-2.png">
+<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-3.png">
+<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-4.png">
+<meta property="og:updated_time" content="2017-09-23T09:51:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL分区和分表">
+<meta name="twitter:description" content="概念 为什么要分表和分区？日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。 什么是分表？分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称">
+<meta name="twitter:image" content="http://idiotsky.me/images/mysql-partition-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2016/09/21/mysql-partition/"/>
+
+
+
+
+
+  <title>MySQL分区和分表 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/21/mysql-partition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MySQL分区和分表</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-21T23:29:55+08:00">
+                21 Sep 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><ol>
+<li>为什么要分表和分区？<br>日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。</li>
+<li>什么是分表？<br>分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称为子表，每个表都对应三个文件，MYD数据文件，.MYI索引文件，.frm表结构文件。这些子表可以分布在同一块磁盘上，也可以在不同的机器上。app读写的时候根据事先定义好的规则得到对应的子表名，然后去操作它。</li>
+<li>什么是分区？<br>分区和分表相似，都是按照规则分解表。不同在于分表将大表分解为若干个独立的实体表，而分区是将数据分段划分在多个位置存放，可以是同一块磁盘也可以在不同的机器。分区后，表面上还是一张表，但数据散列到多个位置了。app读写的时候操作的还是大表名字，db自动去组织分区的数据。</li>
+<li>mysql分表和分区有什么联系呢？<br>（1）都能提高mysql的性高，在高并发状态下都有一个良好的表现。<br>（2）分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表和分区结合的方式（如果merge这种分表方式，不能和分区配合的话，可以用其他的分表试），访问量不大，但是表数据很多的表，我们可以采取分区的方式等。<br>（3）分表技术是比较麻烦的，需要手动去创建子表，app服务端读写时候需要计算子表名。采用merge好一些，但也要创建子表和配置子表间的union关系。<br>（4）表分区相对于分表，操作方便，不需要创建子表。<a id="more"></a>
+</li>
+</ol>
+<h1 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h1><h2 id="分区的类型："><a href="#分区的类型：" class="headerlink" title="分区的类型："></a>分区的类型：</h2><ol>
+<li><p>Range：把连续区间按范围划分<br>例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">user</span>(</div><div class="line">    <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">11</span>),</div><div class="line">    money <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">not</span> <span class="literal">null</span>,</div><div class="line">    <span class="built_in">date</span> datetime</div><div class="line">)</div><div class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(<span class="keyword">YEAR</span>(<span class="built_in">date</span>))(</div><div class="line">    <span class="keyword">partition</span> p2014 <span class="keyword">values</span> <span class="keyword">less</span> <span class="keyword">than</span> (<span class="number">2015</span>),</div><div class="line">    <span class="keyword">partition</span> p2015 <span class="keyword">values</span> <span class="keyword">less</span> <span class="keyword">than</span> (<span class="number">2016</span>),</div><div class="line">    <span class="keyword">partition</span> p2016 <span class="keyword">values</span> <span class="keyword">less</span> <span class="keyword">than</span> (<span class="number">2017</span>),</div><div class="line">    <span class="keyword">partition</span> p2017 <span class="keyword">values</span> <span class="keyword">less</span> <span class="keyword">than</span> maxvalue</div><div class="line">);</div></pre></td></tr></table></figure>
+</li>
+<li><p>List：把离散值分成集合，按集合划分，适合有固定取值列的表<br>例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">user</span>(</div><div class="line">    a <span class="built_in">int</span>(<span class="number">11</span>),</div><div class="line">    b <span class="built_in">int</span>(<span class="number">11</span>)</div><div class="line">)</div><div class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">list</span>(b)(</div><div class="line">    <span class="keyword">partition</span> p0 <span class="keyword">values</span> <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">9</span>),</div><div class="line">    <span class="keyword">partition</span> p1 <span class="keyword">values</span> <span class="keyword">in</span> (<span class="number">2</span>,<span class="number">4</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">0</span>)</div><div class="line">);</div></pre></td></tr></table></figure>
+</li>
+<li><p>Hash：随机分配，分区数固定<br>例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">user</span>(</div><div class="line">    a <span class="built_in">int</span>(<span class="number">11</span>),</div><div class="line">    b datetime</div><div class="line">)</div><div class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">hash</span>(<span class="keyword">YEAR</span>(b))</div><div class="line"><span class="keyword">partitions</span> <span class="number">4</span>;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Key：类似Hash，区别是只支持1列或多列,且mysql提供自身的Hash函数<br>例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">user</span>(</div><div class="line">    a <span class="built_in">int</span>(<span class="number">11</span>),</div><div class="line">    b datetime</div><div class="line">)</div><div class="line"><span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">key</span>(b)</div><div class="line"><span class="keyword">partitions</span> <span class="number">4</span>;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="分区管理"><a href="#分区管理" class="headerlink" title="分区管理"></a>分区管理</h2><ol>
+<li><p>新增分区</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> sale_data</div><div class="line"><span class="keyword">ADD</span> <span class="keyword">PARTITION</span> (<span class="keyword">PARTITION</span> p201710 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">201711</span>));</div></pre></td></tr></table></figure>
+</li>
+<li><p>删除分区</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">--当删除了一个分区，也同时删除了该分区中所有的数据。</span></div><div class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> sale_data <span class="keyword">DROP</span> <span class="keyword">PARTITION</span> p201710;</div></pre></td></tr></table></figure>
+</li>
+<li><p>分区的合并<br>下面的SQL，将p201701 - p201709 合并为3个分区p2017Q1 - p2017Q3</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> sale_data</div><div class="line">REORGANIZE <span class="keyword">PARTITION</span> p201701,p201702,p201703,</div><div class="line">p201704,p201705,p201706,</div><div class="line">p201707,p201708,p201709 <span class="keyword">INTO</span></div><div class="line">(</div><div class="line">    <span class="keyword">PARTITION</span> p2017Q1 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">201704</span>),</div><div class="line">    <span class="keyword">PARTITION</span> p2017Q2 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">201707</span>),</div><div class="line">    <span class="keyword">PARTITION</span> p2017Q3 <span class="keyword">VALUES</span> <span class="keyword">LESS</span> <span class="keyword">THAN</span> (<span class="number">201710</span>)</div><div class="line">);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="分区应该注意的事项："><a href="#分区应该注意的事项：" class="headerlink" title="分区应该注意的事项："></a>分区应该注意的事项：</h2><ul>
+<li>做分区时，要么不定义主键，要么把分区字段加入到主键中。</li>
+<li>分区字段不能为NULL，要不然怎么确定分区范围呢，所以尽量NOT NULL</li>
+</ul>
+<h1 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h1><h2 id="垂直分表"><a href="#垂直分表" class="headerlink" title="垂直分表"></a>垂直分表</h2><p>把原来有很多列的表拆分成多个表，原则是：<br>（1）把常用、不常用的字段分开放<br>（2）把大字段独立存放在一个表中</p>
+<h2 id="水平分表"><a href="#水平分表" class="headerlink" title="水平分表"></a>水平分表</h2><p>为了解决单表数据量过大的问题，每个水平拆分表的结构完全一致。</p>
+<h3 id="按时间结构"><a href="#按时间结构" class="headerlink" title="按时间结构"></a>按时间结构</h3><p>如果业务系统对时效性较高，比如新闻发布系统的文章表，可以把数据库设计成时间结构，按时间分有几种结构：<br>（a）平板式<br>表类似：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">article_201701</div><div class="line">article_201702</div><div class="line">article_201703</div></pre></td></tr></table></figure></p>
+<p>用年来分还是用月可自定，但用日期的话表就太多了，也没这必要。一般建议是按月分就可以。<br>这种分法，其难处在于，假设我要列20条数据，结果这三张表里都有2条，那么业务上很有可能要求读三次表。如果时间长了，有几十张表，而每张表是0条，那不就是要读完整个系统的表才行么?另外这个结构，要作分页是比较难实现的。<br>主键：在这个系统中，主键是13位带毫秒的时间戳，不要用自动编号，否则难以通过主键定位到表，也可以在查询时带上时间，但比较烦琐。<br>（b）归档式<br>表类似：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">article_old</div><div class="line">article_new</div></pre></td></tr></table></figure></p>
+<p>为了解决平板式的缺点，可以采用时间归档式设计，可以看到这个系统只有两张表。一张是旧文章表，一张是新文章表，新文章表放2个月的信息，每天定期把2个月中的最早一天的文章归入旧表中。这样一方面可以解决性能问题，因为一般新闻发布系统读取的都是新的内容，旧的内容读取少;第二可以委婉地解决功能问题，比如平板式所说的问题，在归档式中最多也只需要读2张表就完成了。<br>归档式的缺点在于旧表容量还是相对比较大，如果业务允许，可对旧表中的超旧内容进行再归档或直接清理掉。</p>
+<h3 id="按版块结构"><a href="#按版块结构" class="headerlink" title="按版块结构"></a>按版块结构</h3><p>如果按照文章的所属版块进行拆表，比如新闻、体育版块拆表，一方面可以使每个表数据量分离，另一方面是各版块之间相互影响可降到最低。假如新闻版块的数据表损坏或需要维护，并不会影响到体育版块的正常工作，从而降低了风险。版块结构同时常用于bbs这样的系统。<br>板块结构也有几种分法：<br>（a）对应式<br>对于版块数量不多，而且较为固定的形式，就直接对应就好。比如新闻版块，可以分出新闻的目录表，新闻的文章表等。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">news_category</div><div class="line">news_article</div><div class="line">sports_category</div><div class="line">sports_article</div></pre></td></tr></table></figure></p>
+<p>可看到每一个版块都对应着一组相同的表结构，好处就是一目了然。在功能上，因为版块之间还是有一些隔阂，所以需要联合查询的需求不多，开发上比时间结构的方式要轻松。<br>主键：依旧要考虑的，在这个系统中，主键是版块+时间戳，单纯的时间戳或自动编号也能用，查询时要记得带上版块用于定位表。<br>（b）冷热式<br>对应式的缺点是，如果版块数量很大而且不确定，那要分出的表数量就太多了。举个例子：百度贴吧，如果按一个词条一个表设计，那得有多少张表呢?<br>用这样的方式吧。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tieba_汽车</div><div class="line">tieba_飞机</div><div class="line">tieba_火箭</div><div class="line">tieba_unite</div></pre></td></tr></table></figure></p>
+<p>这个表汽车、火箭表是属于热门表，定义为新建的版块放在unite表里面，待到其超过一万张主贴的时候才开对应表结构。因为在贴吧这种系统中，冷门版块<br>肯定比热门版块多得多，这些冷门版块通常只有几张帖子，为它们开表也太浪费了;同时热门版块数量和访问量等，又比冷门版块多得多，非常有特点。<br>unite表还可以扩展成哈希表，利用词条的md5编码，可以分成n张表，我算了一下，md5前一位可分36张表，两位即是1296张表，足够了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tieba_unite_ab</div><div class="line">tieba_unite_ac</div></pre></td></tr></table></figure></p>
+<h3 id="按哈希结构"><a href="#按哈希结构" class="headerlink" title="按哈希结构"></a>按哈希结构</h3><p>哈希结构通常用于博客之类的基于用户的场合，在博客这样的系统里有几个特点，1是用户数量非常多，2是每个用户发的文章数量都较少，3是用户发文章不定<br>期，4是每个用户发得不多，但总量仍非常之大。基于这些特点，用以上所说的任何一种分表方式都不合适，一没有固定的时效不宜用时间拆，二用户很多，而且还<br>偏偏都是冷门，所以也不宜用版块(用户)拆。<br>哈希结构在上面有所提及，既然按每个用户不好直接拆，那就把一群用户归进一个表好了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">blog_aa</div><div class="line">blog_ab</div><div class="line">blog_ac</div></pre></td></tr></table></figure></p>
+<p>如上所说，md5取前两位哈希可以达到1296张表，如果觉得不够，那就再加一位，总数可达46656张表，还不够?<br>表的数量太多，要创建这些表也是挺麻烦的，可以考虑在程序里往数据库insert之前，多执行一句判断表存在与否并创建表的语句，很实用，消耗也并不很大。<br>主键：依旧要考虑的，在这个系统中，主键是用户ID+时间戳，单纯的时间戳或自动编号也能用，但查询时要记得带上用户名用于定位表。</p>
+<h2 id="merge存储引擎分表"><a href="#merge存储引擎分表" class="headerlink" title="merge存储引擎分表"></a>merge存储引擎分表</h2><h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>Merge表有点类似于视图。使用Merge存储引擎实现MySQL分表，这种方法比较适合那些没有事先考虑分表，随着数据的增多，已经出现了数据查询慢的情况。</p>
+<p>这个时候如果要把已有的大数据量表分开比较痛苦，最痛苦的事就是改代码。所以使用Merge存储引擎实现MySQL分表可以避免改代码。</p>
+<p>　　Merge引擎下每一张表只有一个MRG文件。MRG里面存放着分表的关系，以及插入数据的方式。它就像是一个外壳，或者是连接池，数据存放在分表里面。</p>
+<p>对于增删改查，直接操作总表即可。</p>
+<h3 id="建表"><a href="#建表" class="headerlink" title="建表"></a>建表</h3><ol>
+<li><p>用户1表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`user1`</span> (</div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`sex`</span> <span class="built_in">int</span>(<span class="number">1</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span>,</div><div class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</div><div class="line">) <span class="keyword">ENGINE</span>=MyISAM <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</div></pre></td></tr></table></figure>
+</li>
+<li><p>用户2表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> user2 <span class="keyword">like</span> user1;</div></pre></td></tr></table></figure>
+</li>
+<li><p>主表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`alluser`</span> (</div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`sex`</span> <span class="built_in">int</span>(<span class="number">1</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span>,</div><div class="line">  <span class="keyword">KEY</span> <span class="string">`id`</span> (<span class="string">`id`</span>)</div><div class="line">) <span class="keyword">ENGINE</span>=MRG_MyISAM <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 INSERT_METHOD=<span class="keyword">LAST</span> <span class="keyword">UNION</span>=(<span class="string">`user1`</span>,<span class="string">`user2`</span>);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>1) ENGINE = MERGE 和 ENGINE = MRG_MyISAM是一样的意思，都是代表使用的存储引擎是 Merge。<br>2) INSERT_METHOD，表示插入方式，取值可以是：0 和 1，0代表不允许插入，1代表可以插入；<br>3) FIRST插入到UNION中的第一个表，LAST插入到UNION中的最后一个表。</p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><ol>
+<li>先在user1表中增加一条数据，然后再在user2表中增加一条数据，查看 alluser中的数据。<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user1(<span class="keyword">name</span>,sex) <span class="keyword">values</span> (<span class="string">'张三'</span>,<span class="number">1</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user2(<span class="keyword">name</span>,sex) <span class="keyword">values</span> (<span class="string">'李四'</span>,<span class="number">2</span>);</div><div class="line"><span class="keyword">select</span> * <span class="keyword">from</span> alluser;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>发现是刚刚插入的数据如下：<br><a href="http://idiotsky.me/images/mysql-partition-1.png"><img src="http://idiotsky.me/images/mysql-partition-1.png" alt=""></a><br>这就出现了一个id重复，这就造成了当删除和修改的时候异常，解决办法是给 alluser的id赋唯一值。<br>我们解决方法是，重新建立一张表tb_ids(id int)，用来专门存一个id的，并插入一条初始数据，同时删除掉user1和user2中的数据。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_ids(<span class="keyword">id</span> <span class="built_in">int</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_ids <span class="keyword">values</span>(<span class="number">1</span>);</div><div class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user1;</div><div class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user2;</div></pre></td></tr></table></figure></p>
+<p>然后在user1和user2表中建立一个触发器，触发器的功能是 当在user1或者user2表中增加一条记录时，取出tb_ids中的id值，赋给user1和user2的id，然后将tb_ids的id值加1，<br>触发器内容如下（将user1改为user2）：　　　<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">DELIMITER $$</div><div class="line">   <span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> tr_seq</div><div class="line">   <span class="keyword">BEFORE</span> <span class="keyword">INSERT</span> <span class="keyword">on</span> user1</div><div class="line">   <span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> <span class="keyword">BEGIN</span> </div><div class="line">      <span class="keyword">select</span> <span class="keyword">id</span>  <span class="keyword">into</span> @testid <span class="keyword">from</span> tb_ids <span class="keyword">limit</span> <span class="number">1</span>;</div><div class="line">      <span class="keyword">update</span> tb_ids <span class="keyword">set</span> <span class="keyword">id</span> = @testid + <span class="number">1</span>;</div><div class="line">   <span class="keyword">set</span> new.id =  @testid;</div><div class="line">   <span class="keyword">END</span>$$</div><div class="line">   DELIMITER;</div></pre></td></tr></table></figure></p>
+<ol>
+<li><p>在user1和user2表中分别增加一条数据，</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user1(<span class="keyword">name</span>,sex) <span class="keyword">values</span>(<span class="string">'王五'</span>,<span class="number">1</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user2(<span class="keyword">name</span>,sex) <span class="keyword">values</span>(<span class="string">'赵六'</span>,<span class="number">2</span>);</div></pre></td></tr></table></figure>
+</li>
+<li><p>查询user1和user2中的数据：<br><a href="http://idiotsky.me/images/mysql-partition-2.png"><img src="http://idiotsky.me/images/mysql-partition-2.png" alt=""></a><br><a href="http://idiotsky.me/images/mysql-partition-3.png"><img src="http://idiotsky.me/images/mysql-partition-3.png" alt=""></a></p>
+</li>
+<li>查询总表alluser中的数据，发现id没有重复的：<br><a href="http://idiotsky.me/images/mysql-partition-4.png"><img src="http://idiotsky.me/images/mysql-partition-4.png" alt=""></a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/20/mysql-index-type/" rel="next" title="MySQL索引类型">
+                <i class="fa fa-chevron-left"></i> MySQL索引类型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/19/mysql-select-for-update/" rel="prev" title="SELECT * ...... FOR UPDATE 锁机制">
+                SELECT * ...... FOR UPDATE 锁机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分区"><span class="nav-number">2.</span> <span class="nav-text">分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分区的类型："><span class="nav-number">2.1.</span> <span class="nav-text">分区的类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区管理"><span class="nav-number">2.2.</span> <span class="nav-text">分区管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区应该注意的事项："><span class="nav-number">2.3.</span> <span class="nav-text">分区应该注意的事项：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分表"><span class="nav-number">3.</span> <span class="nav-text">分表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#垂直分表"><span class="nav-number">3.1.</span> <span class="nav-text">垂直分表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#水平分表"><span class="nav-number">3.2.</span> <span class="nav-text">水平分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#按时间结构"><span class="nav-number">3.2.1.</span> <span class="nav-text">按时间结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按版块结构"><span class="nav-number">3.2.2.</span> <span class="nav-text">按版块结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按哈希结构"><span class="nav-number">3.2.3.</span> <span class="nav-text">按哈希结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#merge存储引擎分表"><span class="nav-number">3.3.</span> <span class="nav-text">merge存储引擎分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用场景"><span class="nav-number">3.3.1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建表"><span class="nav-number">3.3.2.</span> <span class="nav-text">建表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作"><span class="nav-number">3.3.3.</span> <span class="nav-text">操作</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
