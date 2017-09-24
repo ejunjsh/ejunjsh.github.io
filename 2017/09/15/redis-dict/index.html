@@ -127,7 +127,7 @@
 <meta property="og:image" content="http://idiotsky.me/images/redis-dict-15.png">
 <meta property="og:image" content="http://idiotsky.me/images/redis-dict-16.png">
 <meta property="og:image" content="http://idiotsky.me/images/redis-dict-17.png">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:updated_time" content="2017-09-24T06:27:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis数据结构-字典">
 <meta name="twitter:description" content="Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。  哈希表Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：12345678910111213141516typedef struct dictht &amp;#123;">
@@ -506,6 +506,13 @@
 <p>图 4-12 至图 4-17 展示了一次完整的渐进式 rehash 过程， 注意观察在整个 rehash 过程中， 字典的 rehashidx 属性是如何变化的。<br><a href="http://idiotsky.me/images/redis-dict-12.png"><img src="http://idiotsky.me/images/redis-dict-12.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-13.png"><img src="http://idiotsky.me/images/redis-dict-13.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-14.png"><img src="http://idiotsky.me/images/redis-dict-14.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-15.png"><img src="http://idiotsky.me/images/redis-dict-15.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-16.png"><img src="http://idiotsky.me/images/redis-dict-16.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-17.png"><img src="http://idiotsky.me/images/redis-dict-17.png" alt=""></a></p>
 <h1 id="渐进式-rehash-执行期间的哈希表操作"><a href="#渐进式-rehash-执行期间的哈希表操作" class="headerlink" title="渐进式 rehash 执行期间的哈希表操作"></a>渐进式 rehash 执行期间的哈希表操作</h1><p>因为在进行渐进式 rehash 的过程中， 字典会同时使用 ht[0] 和 ht[1] 两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。</p>
 <p>另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1] 里面， 而 ht[0] 则不再进行任何添加操作： 这一措施保证了 ht[0] 包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</p>
+<h1 id="重点回顾"><a href="#重点回顾" class="headerlink" title="重点回顾"></a>重点回顾</h1><ul>
+<li>字典被广泛用于实现 Redis 的各种功能， 其中包括数据库和哈希键。</li>
+<li>Redis 中的字典使用哈希表作为底层实现， 每个字典带有两个哈希表， 一个用于平时使用， 另一个仅在进行 rehash 时使用。</li>
+<li>当字典被用作数据库的底层实现， 或者哈希键的底层实现时， Redis 使用 MurmurHash2 算法来计算键的哈希值。</li>
+<li>哈希表使用链地址法来解决键冲突， 被分配到同一个索引上的多个键值对会连接成一个单向链表。</li>
+<li>在对哈希表进行扩展或者收缩操作时， 程序需要将现有哈希表包含的所有键值对 rehash 到新哈希表里面， 并且这个 rehash 过程并不是一次性地完成的， 而是渐进式地完成的。</li>
+</ul>
 <p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
 
       
@@ -740,7 +747,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表"><span class="nav-number">1.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表节点"><span class="nav-number">2.</span> <span class="nav-text">哈希表节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字典"><span class="nav-number">3.</span> <span class="nav-text">字典</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希算法"><span class="nav-number">4.</span> <span class="nav-text">哈希算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决键冲突"><span class="nav-number">5.</span> <span class="nav-text">解决键冲突</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rehash"><span class="nav-number">6.</span> <span class="nav-text">rehash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表的扩展与收缩"><span class="nav-number">7.</span> <span class="nav-text">哈希表的扩展与收缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渐进式-rehash"><span class="nav-number">8.</span> <span class="nav-text">渐进式 rehash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渐进式-rehash-执行期间的哈希表操作"><span class="nav-number">9.</span> <span class="nav-text">渐进式 rehash 执行期间的哈希表操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表"><span class="nav-number">1.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表节点"><span class="nav-number">2.</span> <span class="nav-text">哈希表节点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#字典"><span class="nav-number">3.</span> <span class="nav-text">字典</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希算法"><span class="nav-number">4.</span> <span class="nav-text">哈希算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决键冲突"><span class="nav-number">5.</span> <span class="nav-text">解决键冲突</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rehash"><span class="nav-number">6.</span> <span class="nav-text">rehash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#哈希表的扩展与收缩"><span class="nav-number">7.</span> <span class="nav-text">哈希表的扩展与收缩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渐进式-rehash"><span class="nav-number">8.</span> <span class="nav-text">渐进式 rehash</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渐进式-rehash-执行期间的哈希表操作"><span class="nav-number">9.</span> <span class="nav-text">渐进式 rehash 执行期间的哈希表操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重点回顾"><span class="nav-number">10.</span> <span class="nav-text">重点回顾</span></a></li></ol></div>
             
 
           </div>

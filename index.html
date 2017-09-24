@@ -481,7 +481,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/16/redis-intset/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/17/redis-intset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -500,7 +500,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/09/16/redis-intset/" itemprop="url">redis数据结构-整数集合</a></h1>
+                <a class="post-title-link" href="/2017/09/17/redis-intset/" itemprop="url">redis数据结构-整数集合</a></h1>
         
 
         <div class="post-meta">
@@ -512,8 +512,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-16T12:07:30+08:00">
-                16 Sep 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-17T12:07:30+08:00">
+                17 Sep 17
               </time>
             
 
@@ -575,10 +575,12 @@
         
           <blockquote>
 <p>整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。</p>
-<h1 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h1></blockquote>
+<h1 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h1><p>整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。</p>
+</blockquote>
+<p>每个 intset.h/intset 结构表示一个整数集合：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">intset</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 编码方式</span></div><div class="line">    <span class="keyword">uint32_t</span> encoding;</div><div class="line"></div><div class="line">    <span class="comment">// 集合包含的元素数量</span></div><div class="line">    <span class="keyword">uint32_t</span> length;</div><div class="line"></div><div class="line">    <span class="comment">// 保存元素的数组</span></div><div class="line">    <span class="keyword">int8_t</span> contents[];</div><div class="line"></div><div class="line">&#125; intset;</div></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/09/16/redis-intset/#more" rel="contents">
+            <a class="btn" href="/2017/09/17/redis-intset/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
