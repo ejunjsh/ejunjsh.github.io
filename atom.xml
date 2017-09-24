@@ -63,12 +63,12 @@
     <link href="http://idiotsky.me/2017/09/17/redis-intset/"/>
     <id>http://idiotsky.me/2017/09/17/redis-intset/</id>
     <published>2017-09-17T04:07:30.000Z</published>
-    <updated>2017-09-24T06:26:22.000Z</updated>
+    <updated>2017-09-24T06:34:26.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。</p>
-<h1 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h1><p>整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。</p>
 </blockquote>
+<h1 id="整数集合的实现"><a href="#整数集合的实现" class="headerlink" title="整数集合的实现"></a>整数集合的实现</h1><p>整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。</p>
 <p>每个 intset.h/intset 结构表示一个整数集合：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">intset</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 编码方式</span></div><div class="line">    <span class="keyword">uint32_t</span> encoding;</div><div class="line"></div><div class="line">    <span class="comment">// 集合包含的元素数量</span></div><div class="line">    <span class="keyword">uint32_t</span> length;</div><div class="line"></div><div class="line">    <span class="comment">// 保存元素的数组</span></div><div class="line">    <span class="keyword">int8_t</span> contents[];</div><div class="line"></div><div class="line">&#125; intset;</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
 <p>contents 数组是整数集合的底层实现： 整数集合的每个元素都是 contents 数组的一个数组项（item）， 各个项在数组中按值的大小从小到大有序地排列， 并且数组中不包含任何重复项。</p>
@@ -121,8 +121,8 @@
     
       &lt;blockquote&gt;
 &lt;p&gt;整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。&lt;/p&gt;
-&lt;h1 id=&quot;整数集合的实现&quot;&gt;&lt;a href=&quot;#整数集合的实现&quot; class=&quot;headerlink&quot; title=&quot;整数集合的实现&quot;&gt;&lt;/a&gt;整数集合的实现&lt;/h1&gt;&lt;p&gt;整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;h1 id=&quot;整数集合的实现&quot;&gt;&lt;a href=&quot;#整数集合的实现&quot; class=&quot;headerlink&quot; title=&quot;整数集合的实现&quot;&gt;&lt;/a&gt;整数集合的实现&lt;/h1&gt;&lt;p&gt;整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。&lt;/p&gt;
 &lt;p&gt;每个 intset.h/intset 结构表示一个整数集合：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;intset&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 编码方式&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;uint32_t&lt;/span&gt; encoding;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 集合包含的元素数量&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;uint32_t&lt;/span&gt; length;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 保存元素的数组&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;int8_t&lt;/span&gt; contents[];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125; intset;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
     
     </summary>
@@ -1185,9 +1185,9 @@
       <category term="go" scheme="http://idiotsky.me/categories/go/"/>
     
     
-      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
-    
       <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
     
   </entry>
   
