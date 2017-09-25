@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="java,hashmap,数据结构," />
 
 
 
@@ -103,15 +103,15 @@
 
 
 
-<meta name="keywords" content="java">
+<meta name="keywords" content="java,hashmap,数据结构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一张图了解hashmap">
-<meta property="og:url" content="http://idiotsky.me/2017/07/15/hashmap/index.html">
+<meta property="og:title" content="java数据结构-hashmap">
+<meta property="og:url" content="http://idiotsky.me/2017/07/15/java-hashmap/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:image" content="http://idiotsky.me/images/hashmap.png">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:updated_time" content="2017-09-25T14:30:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一张图了解hashmap">
+<meta name="twitter:title" content="java数据结构-hashmap">
 <meta name="twitter:image" content="http://idiotsky.me/images/hashmap.png">
 
 
@@ -141,13 +141,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/07/15/hashmap/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/07/15/java-hashmap/"/>
 
 
 
 
 
-  <title>一张图了解hashmap | IdiotSky</title>
+  <title>java数据结构-hashmap | IdiotSky</title>
   
 
 
@@ -328,7 +328,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/15/hashmap/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/15/java-hashmap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -345,7 +345,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一张图了解hashmap</h1>
+          <h1 class="post-title" itemprop="name headline">java数据结构-hashmap</h1>
         
 
         <div class="post-meta">
@@ -417,8 +417,37 @@
       
 
       
-        <p><a href="http://idiotsky.me/images/hashmap.png"><img src="http://idiotsky.me/images/hashmap.png" alt="one image describes how hashmap works"></a><br><a id="more"></a></p>
-<p>其实hashmap这种结构其实就是为了解决hash冲突，叫做链地址法（拉链法），把冲突的hash放到一个链表里面。</p>
+        <p><a href="http://idiotsky.me/images/hashmap.png"><img src="http://idiotsky.me/images/hashmap.png" alt="one image describes how hashmap works"></a><br><a id="more"></a><br>从这张图可以看到，hashmap是由数组和链表组成的。接下来先说下什么是hash</p>
+<h1 id="什么是hash算法"><a href="#什么是hash算法" class="headerlink" title="什么是hash算法"></a>什么是hash算法</h1><p>很多javaer在使用HashMap时，知道这个数据结构非常好用，存取速度很快，而且任何类型的键值对都能往里面塞，非常方便。但是幕后的实现机制，可能并不理解。</p>
+<p>HashMap的底层数据结构是数组，数组中存放着链表。要保证键值对能快速插入，并保证通过键能快速获取，就必须要将键转换成数组索引，也就是说需要有将任意键转换成Integer类型数据的能力。而这个转换算法就是hash算法。</p>
+<h1 id="jdk中hash算法"><a href="#jdk中hash算法" class="headerlink" title="jdk中hash算法"></a>jdk中hash算法</h1><p>为了让任何键都能转成整数，jdk为每个对象提供了一个hashCode方法，这个方法提供了将键转换成整数的算法。</p>
+<p>拨开云雾见月明，让我们走入源码，看看jdk中几个关键类的hash算法实现。</p>
+<h2 id="Integer"><a href="#Integer" class="headerlink" title="Integer"></a>Integer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> value;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> value;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>非常简单，Integer的hash算法就是直接获取它的数值。效果不错，毕竟int整数范围很大，分散广冲突小。</p>
+<h2 id="Double"><a href="#Double" class="headerlink" title="Double"></a>Double</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> value;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">long</span> bits = doubleToLongBits(value);</div><div class="line">	<span class="keyword">return</span> (<span class="keyword">int</span>)(bits ^ (bits &gt;&gt;&gt; <span class="number">32</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于double不能当成索引，所以需要转换成整数</p>
+<ul>
+<li>由于double数据类型底层采用64位bit码表示，采用IEEE浮点标准编码。如果将它使用8字节整数编码方式，就能获取一个long类型的数字</li>
+<li>long类型作为索引范围太大，需要转为int类型。这里简单的获取低32位容易导致散列不均，因为高位部分没有被利用。所以这里采用逻辑右移32位，让高32位和低32位进行XOR操作，导致高位低位都能被利用到</li>
+<li>最后得到的数字强转int，只保留已经被充分打乱的低32位</li>
+</ul>
+<p>最后得到的int类型整数充分打乱，散列均匀。<br>其中采用XOR操作而不是其他AND、OR等，主要是因为XOR有更好的打乱效果</p>
+<h2 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> value;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> value ? <span class="number">1231</span> : <span class="number">1237</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>简单粗暴，直接采用两个质数作为true或false的索引。这两个质数足够大，用来作为索引时，出现碰撞的可能性低</p>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">char</span> value[];</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> hash = <span class="number">0</span>;</div><div class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; value.length; i++) &#123;</div><div class="line">		hash = hash * <span class="number">31</span> + value[i];</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> hash;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>设字符串位s，利用公式s[0]<em>31^(n-1) + s[1]</em>31^(n-2) + … + s[n-1]实现的打乱算法。这个算法保证了字符串每个字符都能充分利用到，而且采用质数31作为基数，逐位加权，打乱整个字符的权重和排列位置，使得散列效果更好</p>
+<p>如果不能理解上述公式和实现算法的关系，可以将这个公式分解：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">f(n)=s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]</div><div class="line"></div><div class="line">f(n)=f(n-1)*31+s[n-1]</div></pre></td></tr></table></figure></p>
+<p>利用后面这个递推公式，可以很容易写出递归算法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashRecur</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> len = s.length();</div><div class="line">	<span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> <span class="number">31</span> * hashRecur(s.substring(<span class="number">0</span>, len - <span class="number">1</span>)) + s.charAt(len - <span class="number">1</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>根据这个递归算法不难转成迭代算法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashLoop</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> hash = <span class="number">0</span>;</div><div class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; s.length(); i++) &#123;</div><div class="line">		hash = hash * <span class="number">31</span> + s.charAt(i);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> hash;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个算法就跟jdk算法基本一致了（jdk算法做了一点点优化）</p>
+<h2 id="自定义对象"><a href="#自定义对象" class="headerlink" title="自定义对象"></a>自定义对象</h2><p>如果没有实现hashCode方法，会采用系统默认的：使用对象的物理地址，转换成int整数，作为索引。这种方式并不灵活，有时候需要根据情况选择一些属性来标识这个对象<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line"></div><div class="line">	String name;</div><div class="line">	</div><div class="line">	<span class="keyword">int</span> age;</div><div class="line">	</div><div class="line">	String id;</div><div class="line">	</div><div class="line">	<span class="keyword">boolean</span> male;</div><div class="line"></div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">final</span> <span class="keyword">int</span> prime = <span class="number">31</span>;</div><div class="line">		<span class="keyword">int</span> result = <span class="number">1</span>;</div><div class="line">		result = prime * result + age;</div><div class="line">		result = prime * result + ((id == <span class="keyword">null</span>) ? <span class="number">0</span> : id.hashCode());</div><div class="line">		result = prime * result + (male ? <span class="number">1231</span> : <span class="number">1237</span>);</div><div class="line">		result = prime * result + ((name == <span class="keyword">null</span>) ? <span class="number">0</span> : name.hashCode());</div><div class="line">		<span class="keyword">return</span> result;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这是eclipse自动补全的方案，也是系统推荐的。原理跟String的hashCode一致，为每个元素求出hashCode，按位加权求和，保证散列均匀</p>
+<h1 id="数组索引"><a href="#数组索引" class="headerlink" title="数组索引"></a>数组索引</h1><p>上面说了那么多，都是如何从一个值转化成一个32位的整数，那下面就讲解通过这个值如何得到数组索引。<br>按上面的方式求出了每个对象的索引M，看来可以直接插入数组了。不过有个问题，这些整数是32位有符号类型，可能很大，可能是负数，而数组往往会设定一个指定大小N，需要保证M能分散到0 ~ N-1中。</p>
+<p>为了能从M中截取其中一部分，最简单的就是使用M mod N，N为2的k次幂。为了保证负数也能适用，采用M &amp; N-1</p>
+<p>这样仍然有个问题，它的原理是截取了N以内的范围作为最终结果，导致32位整数M的高位并没有被利用到<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> M;</div><div class="line">    <span class="keyword">int</span> hash = (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (M = key.hashCode()) ^ (M &gt;&gt;&gt; <span class="number">16</span>);</div><div class="line">    <span class="keyword">return</span> hash &amp; (N-<span class="number">1</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>所以，就看到了java8中HashMap的第二道hash算法。思路是：将32位整数M逻辑右移16位，让高16位和低16位进行亦或操作，充分打乱，最后截取N以内整数。这样获取的索引，才是均匀打散的。</p>
+<h1 id="冲突"><a href="#冲突" class="headerlink" title="冲突"></a>冲突</h1><p>上面求到数组索引后，很明显就是给这个数组的某个索引元素赋值。那假如另外又来一个值，求出的索引刚好等于之前某个已经赋值的数组元素，怎么办，其实这就发生了冲突了，而解决冲突的方法就是通过链表把相同索引的元素用链表关联起来。这种做法在hash冲突中叫做链地址法（拉链法）。</p>
+<h1 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h1><p>如果当表中的75%已经被占用，即视为需要扩容了<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(threshold = capacity * load factor ) &lt; size</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -437,6 +466,10 @@
         <div class="post-tags">
           
             <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/hashmap/" rel="tag"># hashmap</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
           
         </div>
       
@@ -513,8 +546,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -551,7 +593,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-count">70</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -629,6 +671,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是hash算法"><span class="nav-number">1.</span> <span class="nav-text">什么是hash算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#jdk中hash算法"><span class="nav-number">2.</span> <span class="nav-text">jdk中hash算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Integer"><span class="nav-number">2.1.</span> <span class="nav-text">Integer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Double"><span class="nav-number">2.2.</span> <span class="nav-text">Double</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Boolean"><span class="nav-number">2.3.</span> <span class="nav-text">Boolean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String"><span class="nav-number">2.4.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义对象"><span class="nav-number">2.5.</span> <span class="nav-text">自定义对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数组索引"><span class="nav-number">3.</span> <span class="nav-text">数组索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#冲突"><span class="nav-number">4.</span> <span class="nav-text">冲突</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩容"><span class="nav-number">5.</span> <span class="nav-text">扩容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

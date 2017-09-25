@@ -14,13 +14,13 @@
   <entry>
     <title><![CDATA[redis数据结构-压缩列表]]></title>
     <url>%2F2017%2F09%2F17%2Fredis-ziplist%2F</url>
-    <content type="text"><![CDATA[压缩列表（ziplist）是列表键和哈希键的底层实现之一。当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。]]></content>
+    <content type="text"><![CDATA[压缩列表（ziplist）是列表键和哈希键的底层实现之一。当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。 压缩列表的构成压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的连续内存块组成的顺序型（sequential）数据结构。一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。图 7-1 展示了压缩列表的各个组成部分， 表 7-1 则记录了各个组成部分的类型、长度、以及用途。 表 7-1 压缩列表各个组成部分的详细说明 属性 类型 长度 用途 zlbytes uint32_t 4 字节 记录整个压缩列表占用的内存字节数：在对压缩列表进行内存重分配， 或者计算 zlend 的位置时使用。 zltail uint32_t 4 字节 记录压缩列表表尾节点距离压缩列表的起始地址有多少字节： 通过这个偏移量，程序无须遍历整个压缩列表就可以确定表尾节点的地址。 zllen uint16_t 2 字节 记录了压缩列表包含的节点数量： 当这个属性的值小于 UINT16_MAX （65535）时， 这个属性的值就是压缩列表包含节点的数量； 当这个值等于 UINT16_MAX 时， 节点的真实数量需要遍历整个压缩列表才能计算得出。 entryX 列表节点 不定 压缩列表包含的各个节点，节点的长度由节点保存的内容决定。 zlend uint8_t 1 字节 特殊值 0xFF （十进制 255 ），用于标记压缩列表的末端。 图 7-2 展示了一个压缩列表示例： 列表 zlbytes 属性的值为 0x50 （十进制 80）， 表示压缩列表的总长为 80 字节。 列表 zltail 属性的值为 0x3c （十进制 60）， 这表示如果我们有一个指向压缩列表起始地址的指针 p ， 那么只要用指针 p 加上偏移量 60 ， 就可以计算出表尾节点 entry3 的地址。 列表 zllen 属性的值为 0x3 （十进制 3）， 表示压缩列表包含三个节点。 图 7-3 展示了另一个压缩列表示例： 列表 zlbytes 属性的值为 0xd2 （十进制 210）， 表示压缩列表的总长为 210 字节。 列表 zltail 属性的值为 0xb3 （十进制 179）， 这表示如果我们有一个指向压缩列表起始地址的指针 p ， 那么只要用指针 p 加上偏移量 179 ， 就可以计算出表尾节点 entry5 的地址。 列表 zllen 属性的值为 0x5 （十进制 5）， 表示压缩列表包含五个节点。 压缩列表节点的构成每个压缩列表节点可以保存一个字节数组或者一个整数值， 其中， 字节数组可以是以下三种长度的其中一种： 长度小于等于 63 （2^{6}-1）字节的字节数组； 长度小于等于 16383 （2^{14}-1） 字节的字节数组； 长度小于等于 4294967295 （2^{32}-1）字节的字节数组； 而整数值则可以是以下六种长度的其中一种： 4 位长，介于 0 至 12 之间的无符号整数； 1 字节长的有符号整数； 3 字节长的有符号整数； int16_t 类型整数； int32_t 类型整数； int64_t 类型整数。 每个压缩列表节点都由 previous_entry_length 、 encoding 、 content 三个部分组成， 如图 7-4 所示。接下来的内容将分别介绍这三个组成部分。 previous_entry_length节点的 previous_entry_length 属性以字节为单位， 记录了压缩列表中前一个节点的长度。 previous_entry_length 属性的长度可以是 1 字节或者 5 字节： 如果前一节点的长度小于 254 字节， 那么 previous_entry_length 属性的长度为 1 字节： 前一节点的长度就保存在这一个字节里面。 如果前一节点的长度大于等于 254 字节， 那么 previous_entry_length 属性的长度为 5 字节： 其中属性的第一字节会被设置为 0xFE （十进制值 254）， 而之后的四个字节则用于保存前一节点的长度。 图 7-5 展示了一个包含一字节长 previous_entry_length 属性的压缩列表节点， 属性的值为 0x05 ， 表示前一节点的长度为 5 字节。图 7-6 展示了一个包含五字节长 previous_entry_length 属性的压缩节点， 属性的值为 0xFE00002766 ， 其中值的最高位字节 0xFE 表示这是一个五字节长的 previous_entry_length 属性， 而之后的四字节 0x00002766 （十进制值 10086 ）才是前一节点的实际长度。 因为节点的 previous_entry_length 属性记录了前一个节点的长度， 所以程序可以通过指针运算， 根据当前节点的起始地址来计算出前一个节点的起始地址。 举个例子， 如果我们有一个指向当前节点起始地址的指针 c ， 那么我们只要用指针 c 减去当前节点 previous_entry_length 属性的值， 就可以得出一个指向前一个节点起始地址的指针 p ， 如图 7-7 所示。 压缩列表的从表尾向表头遍历操作就是使用这一原理实现的： 只要我们拥有了一个指向某个节点起始地址的指针， 那么通过这个指针以及这个节点的 previous_entry_length 属性， 程序就可以一直向前一个节点回溯， 最终到达压缩列表的表头节点。 图 7-8 展示了一个从表尾节点向表头节点进行遍历的完整过程： 首先，我们拥有指向压缩列表表尾节点 entry4 起始地址的指针 p1 （指向表尾节点的指针可以通过指向压缩列表起始地址的指针加上 zltail 属性的值得出）； 通过用 p1 减去 entry4 节点 previous_entry_length 属性的值， 我们得到一个指向 entry4 前一节点 entry3 起始地址的指针 p2 ； 通过用 p2 减去 entry3 节点 previous_entry_length 属性的值， 我们得到一个指向 entry3 前一节点 entry2 起始地址的指针 p3 ； 通过用 p3 减去 entry2 节点 previous_entry_length 属性的值， 我们得到一个指向 entry2 前一节点 entry1 起始地址的指针 p4 ， entry1 为压缩列表的表头节点； 最终， 我们从表尾节点向表头节点遍历了整个列表。 encoding节点的 encoding 属性记录了节点的 content 属性所保存数据的类型以及长度： 一字节、两字节或者五字节长， 值的最高位为 00 、 01 或者 10 的是字节数组编码： 这种编码表示节点的 content 属性保存着字节数组， 数组的长度由编码除去最高两位之后的其他位记录； 一字节长， 值的最高位以 11 开头的是整数编码： 这种编码表示节点的 content 属性保存着整数值， 整数值的类型和长度由编码除去最高两位之后的其他位记录； 表 7-2 记录了所有可用的字节数组编码， 而表 7-3 则记录了所有可用的整数编码。 表格中的下划线 _ 表示留空， 而 b 、 x 等变量则代表实际的二进制数据， 为了方便阅读， 多个字节之间用空格隔开。 表 7-2 字节数组编码 编码 编码长度 content 属性保存的值 00bbbbbb 1 字节 长度小于等于 63 字节的字节数组。 01bbbbbb xxxxxxxx 2 字节 长度小于等于 16383 字节的字节数组。 10__ aaaaaaaa bbbbbbbb cccccccc dddddddd 5 字节 长度小于等于 4294967295 的字节数组。 表 7-3 整数编码 编码 编码长度 content 属性保存的值 11000000 1 字节 int16_t 类型的整数。 11010000 1 字节 int32_t 类型的整数。 11100000 1 字节 int64_t 类型的整数。 11110000 1 字节 24 位有符号整数。 11111110 1 字节 8 位有符号整数。 1111xxxx 1 字节 使用这一编码的节点没有相应的 content 属性， 因为编码本身的 xxxx 四个位已经保存了一个介于 0 和 12 之间的值， 所以它无须 content 属性。 content节点的 content 属性负责保存节点的值， 节点值可以是一个字节数组或者整数， 值的类型和长度由节点的 encoding 属性决定。 图 7-9 展示了一个保存字节数组的节点示例： 编码的最高两位 00 表示节点保存的是一个字节数组； 编码的后六位 001011 记录了字节数组的长度 11 ； content 属性保存着节点的值 “hello world” 。 图 7-10 展示了一个保存整数值的节点示例： 编码 11000000 表示节点保存的是一个 int16_t 类型的整数值； content 属性保存着节点的值 10086 。]]></content>
       <categories>
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>压缩列表</tag>
       </tags>
   </entry>
@@ -32,8 +32,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>整数集合</tag>
       </tags>
   </entry>
@@ -45,8 +45,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>跳跃表</tag>
       </tags>
   </entry>
@@ -58,8 +58,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>hashtable</tag>
       </tags>
   </entry>
@@ -71,8 +71,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>链表</tag>
       </tags>
   </entry>
@@ -109,8 +109,8 @@
         <category>redis</category>
       </categories>
       <tags>
-        <tag>redis</tag>
         <tag>数据结构</tag>
+        <tag>redis</tag>
         <tag>字符串</tag>
       </tags>
   </entry>
@@ -207,8 +207,8 @@
         <category>go</category>
       </categories>
       <tags>
-        <tag>gc</tag>
         <tag>go</tag>
+        <tag>gc</tag>
       </tags>
   </entry>
   <entry>
@@ -253,8 +253,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
         <tag>NAS</tag>
       </tags>
   </entry>
@@ -266,8 +266,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -294,14 +294,16 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[一张图了解hashmap]]></title>
-    <url>%2F2017%2F07%2F15%2Fhashmap%2F</url>
-    <content type="text"><![CDATA[其实hashmap这种结构其实就是为了解决hash冲突，叫做链地址法（拉链法），把冲突的hash放到一个链表里面。]]></content>
+    <title><![CDATA[java数据结构-hashmap]]></title>
+    <url>%2F2017%2F07%2F15%2Fjava-hashmap%2F</url>
+    <content type="text"><![CDATA[从这张图可以看到，hashmap是由数组和链表组成的。接下来先说下什么是hash 什么是hash算法很多javaer在使用HashMap时，知道这个数据结构非常好用，存取速度很快，而且任何类型的键值对都能往里面塞，非常方便。但是幕后的实现机制，可能并不理解。 HashMap的底层数据结构是数组，数组中存放着链表。要保证键值对能快速插入，并保证通过键能快速获取，就必须要将键转换成数组索引，也就是说需要有将任意键转换成Integer类型数据的能力。而这个转换算法就是hash算法。 jdk中hash算法为了让任何键都能转成整数，jdk为每个对象提供了一个hashCode方法，这个方法提供了将键转换成整数的算法。 拨开云雾见月明，让我们走入源码，看看jdk中几个关键类的hash算法实现。 Integer12345private final int value;public int hashCode() &#123; return value;&#125; 非常简单，Integer的hash算法就是直接获取它的数值。效果不错，毕竟int整数范围很大，分散广冲突小。 Double123456private final double value;public int hashCode() &#123; long bits = doubleToLongBits(value); return (int)(bits ^ (bits &gt;&gt;&gt; 32));&#125; 由于double不能当成索引，所以需要转换成整数 由于double数据类型底层采用64位bit码表示，采用IEEE浮点标准编码。如果将它使用8字节整数编码方式，就能获取一个long类型的数字 long类型作为索引范围太大，需要转为int类型。这里简单的获取低32位容易导致散列不均，因为高位部分没有被利用。所以这里采用逻辑右移32位，让高32位和低32位进行XOR操作，导致高位低位都能被利用到 最后得到的数字强转int，只保留已经被充分打乱的低32位 最后得到的int类型整数充分打乱，散列均匀。其中采用XOR操作而不是其他AND、OR等，主要是因为XOR有更好的打乱效果 Boolean12345private final boolean value;public int hashCode() &#123; return value ? 1231 : 1237;&#125; 简单粗暴，直接采用两个质数作为true或false的索引。这两个质数足够大，用来作为索引时，出现碰撞的可能性低 String123456789private final char value[];public int hashCode() &#123; int hash = 0; for (int i = 0; i &lt; value.length; i++) &#123; hash = hash * 31 + value[i]; &#125; return hash;&#125; 设字符串位s，利用公式s[0]31^(n-1) + s[1]31^(n-2) + … + s[n-1]实现的打乱算法。这个算法保证了字符串每个字符都能充分利用到，而且采用质数31作为基数，逐位加权，打乱整个字符的权重和排列位置，使得散列效果更好 如果不能理解上述公式和实现算法的关系，可以将这个公式分解：123f(n)=s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]f(n)=f(n-1)*31+s[n-1] 利用后面这个递推公式，可以很容易写出递归算法：1234567public int hashRecur(String s) &#123; int len = s.length(); if (len == 0) &#123; return 0; &#125; return 31 * hashRecur(s.substring(0, len - 1)) + s.charAt(len - 1);&#125; 根据这个递归算法不难转成迭代算法：1234567public int hashLoop(String s) &#123; int hash = 0; for (int i = 0; i &lt; s.length(); i++) &#123; hash = hash * 31 + s.charAt(i); &#125; return hash;&#125; 这个算法就跟jdk算法基本一致了（jdk算法做了一点点优化） 自定义对象如果没有实现hashCode方法，会采用系统默认的：使用对象的物理地址，转换成int整数，作为索引。这种方式并不灵活，有时候需要根据情况选择一些属性来标识这个对象123456789101112131415161718192021public class Person &#123; String name; int age; String id; boolean male; @Override public int hashCode() &#123; final int prime = 31; int result = 1; result = prime * result + age; result = prime * result + ((id == null) ? 0 : id.hashCode()); result = prime * result + (male ? 1231 : 1237); result = prime * result + ((name == null) ? 0 : name.hashCode()); return result; &#125;&#125; 这是eclipse自动补全的方案，也是系统推荐的。原理跟String的hashCode一致，为每个元素求出hashCode，按位加权求和，保证散列均匀 数组索引上面说了那么多，都是如何从一个值转化成一个32位的整数，那下面就讲解通过这个值如何得到数组索引。按上面的方式求出了每个对象的索引M，看来可以直接插入数组了。不过有个问题，这些整数是32位有符号类型，可能很大，可能是负数，而数组往往会设定一个指定大小N，需要保证M能分散到0 ~ N-1中。 为了能从M中截取其中一部分，最简单的就是使用M mod N，N为2的k次幂。为了保证负数也能适用，采用M &amp; N-1 这样仍然有个问题，它的原理是截取了N以内的范围作为最终结果，导致32位整数M的高位并没有被利用到12345public int hash(Object key) &#123; int M; int hash = (key == null) ? 0 : (M = key.hashCode()) ^ (M &gt;&gt;&gt; 16); return hash &amp; (N-1)&#125; 所以，就看到了java8中HashMap的第二道hash算法。思路是：将32位整数M逻辑右移16位，让高16位和低16位进行亦或操作，充分打乱，最后截取N以内整数。这样获取的索引，才是均匀打散的。 冲突上面求到数组索引后，很明显就是给这个数组的某个索引元素赋值。那假如另外又来一个值，求出的索引刚好等于之前某个已经赋值的数组元素，怎么办，其实这就发生了冲突了，而解决冲突的方法就是通过链表把相同索引的元素用链表关联起来。这种做法在hash冲突中叫做链地址法（拉链法）。 扩容如果当表中的75%已经被占用，即视为需要扩容了1(threshold = capacity * load factor ) &lt; size]]></content>
       <categories>
         <category>java</category>
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>hashmap</tag>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -794,9 +796,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
-        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
+        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
