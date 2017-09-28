@@ -329,6 +329,449 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/03/redis-transaction-watch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/09/03/redis-transaction-watch/" itemprop="url">redis的事务和watch</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-03T22:43:12+08:00">
+                03 Sep 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="redis的事务"><a href="#redis的事务" class="headerlink" title="redis的事务"></a>redis的事务</h1><p>严格意义来讲,redis的事务和我们理解的传统数据库(如mysql)的事务是不一样的。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/09/03/redis-transaction-watch/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/08/23/java-mapped-byte-buffer/" itemprop="url">深入浅出MappedByteBuffer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-23T00:36:51+08:00">
+                23 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>java io操作中通常采用<code>BufferedReader</code>，<code>BufferedInputStream</code>等带缓冲的IO类处理大文件，不过java nio中引入了一种基于<code>MappedByteBuffer</code>操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/23/java-mapped-byte-buffer/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/22/java-thread-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/08/22/java-thread-4/" itemprop="url">Java多线程(四) Callable、Future和FutureTask浅析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-22T22:29:02+08:00">
+                22 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>通过前面几篇的学习，我们知道创建线程的方式有两种，一种是实现Runnable接口，另一种是继承Thread，但是这两种方式都有个缺点，那就是在任务执行完成之后无法获取返回结果，那如果我们想要获取返回结果该如何实现呢？还记上一篇Executor框架结构中提到的Callable接口和Future接口吗？，是的，从JAVA SE 5.0开始引入了Callable和Future，通过它们构建的线程，在任务执行完成后就可以获取执行结果，今天我们就来聊聊线程创建的第三种方式，那就是实现Callable接口。</p>
+</blockquote>
+<h1 id="Callable接口"><a href="#Callable接口" class="headerlink" title="Callable接口"></a>Callable<v>接口</v></h1><p>我们先回顾一下java.lang.Runnable接口，就声明了run(),其返回值为void，当然就无法获取结果了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>而Callable的接口定义如下<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callable</span>&lt;<span class="title">V</span>&gt; </span>&#123;   </div><div class="line">      <span class="function">V   <span class="title">call</span><span class="params">()</span>   <span class="keyword">throws</span> Exception</span>;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>该接口声明了一个名称为call()的方法，同时这个方法可以有返回值V，也可以抛出异常。嗯，对该接口我们先了解这么多就行，下面我们来说明如何使用，前篇文章我们说过，无论是Runnable接口的实现类还是Callable接口的实现类，都可以被ThreadPoolExecutor或ScheduledThreadPoolExecutor执行，ThreadPoolExecutor或ScheduledThreadPoolExecutor都实现了ExcutorService接口，而因此Callable需要和Executor框架中的ExcutorService结合使用，我们先看看ExecutorService提供的方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Callable&lt;T&gt; task)</span></span>;  </div><div class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Runnable task, T result)</span></span>;  </div><div class="line">Future&lt;?&gt; submit(Runnable task);</div></pre></td></tr></table></figure></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/22/java-thread-4/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/21/java-thread-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1355,462 +1798,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/04/22/redis-trib/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/04/22/redis-trib/" itemprop="url">redis cluster管理工具redis-trib.rb详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-22T23:40:47+08:00">
-                22 Apr 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>redis-trib.rb是redis官方推出的管理redis集群的工具，集成在redis的源码src目录下，是基于redis提供的集群命令封装成简单、便捷、实用的操作工具。redis-trib.rb是redis作者用ruby完成的。为了看懂redis-trib.rb，我特意花了一个星期学习了ruby，也被ruby的简洁、明了所吸引。ruby是门非常灵活的语言，redis-trib.rb只用了1600行左右的代码，就实现了强大的集群操作。本文对redis-trib.rb的介绍是基于redis 3.0.6版本的源码。阅读本文需要对redis集群功能有一定的了解。关于redis集群功能的介绍，可以参考本人的另一篇文章《redis3.0 cluster功能介绍》。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/04/22/redis-trib/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/03/24/linux-route/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/03/24/linux-route/" itemprop="url">route 命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-24T22:43:22+08:00">
-                24 Mar 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>mark一下，当笔记，以后忘了查看</p>
-</blockquote>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>使用下面的 route 命令可以查看 Linux 内核路由表。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ route  </div><div class="line">Destination     Gateway         Genmask        Flags Metric Ref    Use Iface  </div><div class="line">192.168.0.0     *               255.255.255.0   U     0      0        0 eth0  </div><div class="line">169.254.0.0     *               255.255.0.0     U     0      0        0 eth0  </div><div class="line">default         192.168.0.1     0.0.0.0         UG    0      0        0 eth0</div></pre></td></tr></table></figure></p>
-<p>route 命令的输出项说明<br>输出项 说明<br>Destination    目标网段或者主机<br>Gateway    网关地址，”*” 表示目标是本主机所属的网络，不需要路由<br>Genmask    网络掩码<br>Flags    标记。一些可能的标记如下：<br>     U — 路由是活动的<br>     H — 目标是一个主机<br>     G — 路由指向网关<br>     R — 恢复动态路由产生的表项<br>     D — 由路由的后台程序动态地安装<br>     M — 由路由的后台程序修改<br>     ! — 拒绝路由<br>Metric    路由距离，到达指定网络所需的中转数（linux 内核中没有使用）<br>Ref    路由项引用次数（linux 内核中没有使用）<br>Use    此路由项被路由软件查找的次数<br>Iface    该路由表项对应的输出接口<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/03/24/linux-route/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/02/09/java-arraylist-array/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/02/09/java-arraylist-array/" itemprop="url">在Java中怎样把数组转换为ArrayList?</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-02-09T15:44:21+08:00">
-                09 Feb 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="先来一个数组"><a href="#先来一个数组" class="headerlink" title="先来一个数组"></a>先来一个数组</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Element[] array = &#123;<span class="keyword">new</span> Element(<span class="number">1</span>),<span class="keyword">new</span> Element(<span class="number">2</span>),<span class="keyword">new</span> Element(<span class="number">3</span>)&#125;;</div></pre></td></tr></table></figure>
-<h1 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ArrayList&lt;Element&gt; arrayList = <span class="keyword">new</span> ArrayList&lt;Element&gt;(Arrays.asList(array));</div></pre></td></tr></table></figure>
-<p>首先，我们来看下ArrayList的构造方法的文档。<br>ArrayList(Collection &lt; ? extends E &gt; c) : 构造一个包含特定容器的元素的列表，并且根据容器迭代器的顺序返回。<br>所以构造方法所做的事情如下： </p>
-<ol>
-<li>将容器c转换为一个数组 </li>
-<li>将数组拷贝到ArrayList中称为”elementData”的数组中 </li>
-</ol>
-<p>ArrayList的构造方法的源码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</div><div class="line">       elementData = c.toArray();</div><div class="line">       size = elementData.length;</div><div class="line"> </div><div class="line">       <span class="keyword">if</span> (elementData.getClass() != Object[].class)</div><div class="line">             elementData = Arrays.copyOf(elementData, size, Object[].class);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/02/09/java-arraylist-array/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1856,7 +1848,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">80</span>
+                <span class="site-state-item-count">83</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1878,7 +1870,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">70</span>
+                <span class="site-state-item-count">72</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

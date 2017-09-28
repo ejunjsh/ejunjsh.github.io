@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,装箱,拆箱," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前天遇到了一个 NullPointerException，触发的代码类似下面这样：1234567891011public class Test &amp;#123;    public static long test(long value) &amp;#123;        return value;    &amp;#125;    public static void main(String[] args) &amp;#">
+<meta name="keywords" content="java,装箱,拆箱">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从一个 NullPointerException 探究 Java 的自动装箱拆箱机制">
+<meta property="og:url" content="http://idiotsky.me/2017/09/28/java-box-unbox/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="前天遇到了一个 NullPointerException，触发的代码类似下面这样：1234567891011public class Test &amp;#123;    public static long test(long value) &amp;#123;        return value;    &amp;#125;    public static void main(String[] args) &amp;#">
+<meta property="og:updated_time" content="2017-09-28T15:54:46.025Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从一个 NullPointerException 探究 Java 的自动装箱拆箱机制">
+<meta name="twitter:description" content="前天遇到了一个 NullPointerException，触发的代码类似下面这样：1234567891011public class Test &amp;#123;    public static long test(long value) &amp;#123;        return value;    &amp;#125;    public static void main(String[] args) &amp;#">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2017/09/28/java-box-unbox/"/>
+
+
+
+
+
+  <title>从一个 NullPointerException 探究 Java 的自动装箱拆箱机制 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/28/java-box-unbox/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">从一个 NullPointerException 探究 Java 的自动装箱拆箱机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-28T20:35:44+08:00">
+                28 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前天遇到了一个 NullPointerException，触发的代码类似下面这样：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">test</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Long value = <span class="keyword">null</span>;</div><div class="line">        <span class="comment">// ...</span></div><div class="line">        test(value);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>main 方法里的代码实际上相当于调用 <code>test(null);</code>，为什么不直接这样写呢？因为编译不过，会报 <code>错误: 不兼容的类型: &lt;空值&gt;无法转换为long</code>。</p>
+<h1 id="抛出问题"><a href="#抛出问题" class="headerlink" title="抛出问题"></a>抛出问题</h1><p>运行时提示 <code>test(value);</code> 这一行抛出 NullPointerException，但是看着以上代码会有些许困惑：以上代码里一个对象方法都没有调用啊，NullPointerException 从何而来？<br><a id="more"></a></p>
+<h1 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h1><p>这时，如果留意到 test 方法接受的参数是 long 类型，而我们传入的是 Long 类型（虽然其实是 null），就会想到这会经历一次从类型 Long 到基本数据类型 long 的自动拆箱过程，那会不会是这个过程中抛出的 NullPointerException 呢？因为以前只知道 Java 为一些基础数据类型与对应的包装器类型之间提供了自动装箱拆箱机制，而并不知这机制的具体实现方法是怎么样的，正好学习一下。</p>
+<p>用命令 <code>javap -c Test</code> 将以上代码编译出的 Test.class 文件进行反汇编，可以看到如下输出：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static long test(long);</div><div class="line">    Code:</div><div class="line">       0: lload_0</div><div class="line">       1: lreturn</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: aconst_null</div><div class="line">       1: astore_1</div><div class="line">       2: aload_1</div><div class="line">       3: invokevirtual #2                  // Method java/lang/Long.longValue:()J</div><div class="line">       6: invokestatic  #3                  // Method test:(J)J</div><div class="line">       9: pop2</div><div class="line">      10: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从以上字节码及对应的注释可以看出，<code>test(value);</code> 这一行被编译后等同于如下代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> primitive = value.longValue();</div><div class="line">test(promitive);</div></pre></td></tr></table></figure></p>
+<p>相比实际代码，多出的 <code>long primitive = value.longValue();</code> 这一行看起来就是自动拆箱的过程了，而我们传入的 <code>value</code> 为 null，<code>value.longValue()</code> 会抛出 NullPointerException，一切就解释得通了。用更简洁的代码表达出了更丰富的含义，这就是所谓的语法糖了。</p>
+<h1 id="证实猜想"><a href="#证实猜想" class="headerlink" title="证实猜想"></a>证实猜想</h1><p>那么我们上面得出的自动拆箱机制的结论是否正确呢？选择一种其它基本数据类型，比如 int，来佐证一下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Integer value = <span class="number">10</span>;</div><div class="line">        <span class="keyword">int</span> primitive = value;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>反汇编后对应的字节码：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: bipush        10</div><div class="line">       2: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;</div><div class="line">       5: astore_1</div><div class="line">       6: aload_1</div><div class="line">       7: invokevirtual #3                  // Method java/lang/Integer.intValue:()I</div><div class="line">      10: istore_2</div><div class="line">      11: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由以上字节码我们可以印证下文里的知识点了。</p>
+<h1 id="自动装箱与拆箱"><a href="#自动装箱与拆箱" class="headerlink" title="自动装箱与拆箱"></a>自动装箱与拆箱</h1><p>自动装箱与拆箱是 Java 1.5 引入的新特性，是一种语法糖。</p>
+<p>在此之前，我们要创建一个值为 10 的 Integer 对象，只能写作：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div></pre></td></tr></table></figure></p>
+<p>而现在，我们可以更方便地写为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">10</span>;</div></pre></td></tr></table></figure></p>
+<h1 id="定义与实现机制"><a href="#定义与实现机制" class="headerlink" title="定义与实现机制"></a>定义与实现机制</h1><p>自动装箱，是指从基本数据类型值到其对应的包装类对象的自动转换。比如 <code>Integer value = 10;</code>，是通过调用 Integer.valueOf 方法实现转换的。</p>
+<p>自动拆箱，是指从包装类对象到其对应的基本数据类型值的自动转换。比如 <code>int primitive = value;</code>，是通过调用 Integer.intValue 方法实现转换的。</p>
+<table>
+<thead>
+<tr>
+<th>基本数据类型</th>
+<th>包装类型</th>
+<th>装箱方法</th>
+<th>拆箱方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>Boolean</td>
+<td>Boolean.valueOf(boolean)</td>
+<td>Boolean.booleanValue()</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>Byte</td>
+<td>Byte.valueOf(byte)</td>
+<td>Byte.byteValue()</td>
+</tr>
+<tr>
+<td>char</td>
+<td>Character</td>
+<td>Character.valueOf(char)</td>
+<td>Character.charValue()</td>
+</tr>
+<tr>
+<td>short</td>
+<td>Short</td>
+<td>Short.valueOf(short)</td>
+<td>Short.shortValue()</td>
+</tr>
+<tr>
+<td>int</td>
+<td>Integer</td>
+<td>Integer.valueOf(int)</td>
+<td>Integer.intValue()</td>
+</tr>
+<tr>
+<td>long</td>
+<td>Long</td>
+<td>Long.valueOf(long)</td>
+<td>Long.longValue()</td>
+</tr>
+<tr>
+<td>float</td>
+<td>Float</td>
+<td>Float.valueOf(float)</td>
+<td>Float.floatValue()</td>
+</tr>
+<tr>
+<td>double</td>
+<td>Double</td>
+<td>Double.valueOf(double)</td>
+<td>Double.doubleValue()</td>
+</tr>
+</tbody>
+</table>
+<h1 id="发生时机"><a href="#发生时机" class="headerlink" title="发生时机"></a>发生时机</h1><p>自动装箱与拆箱主要发生在以下四种时机：</p>
+<ol>
+<li><p>赋值时；</p>
+</li>
+<li><p>比较时；</p>
+</li>
+<li><p>算术运算时；</p>
+</li>
+<li><p>方法调用时。</p>
+</li>
+</ol>
+<h1 id="常见应用场景"><a href="#常见应用场景" class="headerlink" title="常见应用场景"></a>常见应用场景</h1><h2 id="Case-1"><a href="#Case-1" class="headerlink" title="Case 1"></a>Case 1</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">10</span>; <span class="comment">// 自动装箱（赋值时）</span></div><div class="line"><span class="keyword">int</span> primitive = value; <span class="comment">// 自动拆箱（方法调用时）</span></div></pre></td></tr></table></figure>
+<h2 id="Case-2"><a href="#Case-2" class="headerlink" title="Case 2"></a>Case 2</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">1000</span>;</div><div class="line"><span class="comment">// ...</span></div><div class="line"><span class="keyword">if</span> (value &lt;= <span class="number">1000</span>) &#123; <span class="comment">// 自动拆箱（比较时）</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Case-3"><a href="#Case-3" class="headerlink" title="Case 3"></a>Case 3</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">list.add(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line"><span class="keyword">int</span> i = list.get(<span class="number">0</span>); <span class="comment">// 自动拆箱（赋值时）</span></div></pre></td></tr></table></figure>
+<p><strong>注：集合（Collections）里不能直接放入原始类型，集合只接收对象。</strong></p>
+<h2 id="Case-4"><a href="#Case-4" class="headerlink" title="Case 4"></a>Case 4</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ThreadLocal&lt;Integer&gt; local = <span class="keyword">new</span> ThreadLocal&lt;Integer&gt;();</div><div class="line">local.set(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line"><span class="keyword">int</span> i = local.get(); <span class="comment">// 自动拆箱（赋值时）</span></div></pre></td></tr></table></figure>
+<p><strong>注：ThreadLocal 不能存储基本数据类型，只接收引用类型。</strong></p>
+<h2 id="Case-5"><a href="#Case-5" class="headerlink" title="Case 5"></a>Case 5</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">(Integer value)</span> </span>&#123;</div><div class="line">    <span class="comment">//</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">    <span class="comment">//</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">    fun1(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line">    Integer value = <span class="number">10</span>;</div><div class="line">    fun2(value); <span class="comment">// 自动拆箱（方法调用时）</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Case-6"><a href="#Case-6" class="headerlink" title="Case 6"></a>Case 6</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v2 = <span class="keyword">new</span> Integer(<span class="number">20</span>);</div><div class="line"><span class="keyword">int</span> v3 = <span class="number">30</span>;</div><div class="line"></div><div class="line"><span class="keyword">int</span> sum = v1 + v2; <span class="comment">// 自动拆箱（算术运算时）</span></div><div class="line">sum = v1 + <span class="number">30</span>; <span class="comment">// 自动拆箱（算术运算时）</span></div></pre></td></tr></table></figure>
+<h1 id="相关知识点"><a href="#相关知识点" class="headerlink" title="相关知识点"></a>相关知识点</h1><h2 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h2><p>除 <code>==</code> 以外，包装类对象与基本数据类型值的比较，包装类对象与包装类对象之间的比较，都是自动拆箱后对基本数据类型值进行比较，所以，<strong>要注意这些类型间进行比较时自动拆箱可能引发的 NullPointerException</strong>。</p>
+<p><code>==</code> 比较特殊，因为可以用于判断左右是否为同一对象，所以两个包装类对象之间 <code>==</code>，会用于判断是否为同一对象，而不会进行自动拆箱操作；包装类对象与基本数据类型值之间 <code>==</code>，会自动拆箱。</p>
+<p>示例代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v2 = <span class="keyword">new</span> Integer(<span class="number">20</span>);</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 &lt; v2) &#123; <span class="comment">// 自动拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 == v2) &#123; <span class="comment">// 不拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 == <span class="number">10</span>) &#123; <span class="comment">// 自动拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>Java 为整型值包装类 Byte、Character、Short、Integer、Long 设置了缓存，用于存储一定范围内的值，详细如下：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>缓存值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Byte</td>
+<td>-128 ~ 127</td>
+</tr>
+<tr>
+<td>Character</td>
+<td>0 ~ 127</td>
+</tr>
+<tr>
+<td>Short</td>
+<td>-128 ~ 127</td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>-128 ~ 127（可配置）</td>
+</tr>
+<tr>
+<td>Long</td>
+<td>-128 ~ 127</td>
+</tr>
+</tbody>
+</table>
+<p>在一些情况下，比如自动装箱时，如果值在缓存值范围内，将不创建新对象，直接从缓存里取出对象返回，比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="number">10</span>;</div><div class="line">Integer v2 = <span class="number">10</span>;</div><div class="line">Integer v3 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v4 = <span class="number">128</span>;</div><div class="line">Integer v5 = <span class="number">128</span>;</div><div class="line">Integer v6 = Integer.valueOf(<span class="number">10</span>);</div><div class="line"></div><div class="line">System.out.println(v1 == v2); <span class="comment">// true</span></div><div class="line">System.out.println(v1 == v3); <span class="comment">// false</span></div><div class="line">System.out.println(v4 == v5); <span class="comment">// false</span></div><div class="line">System.out.println(v1 == v6); <span class="comment">// true</span></div></pre></td></tr></table></figure></p>
+<h3 id="缓存实现机制"><a href="#缓存实现机制" class="headerlink" title="缓存实现机制"></a>缓存实现机制</h3><p>这里使用了设计模式享元模式。</p>
+<p>以 Short 类实现源码为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ...</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Short</span> <span class="keyword">extends</span> <span class="title">Number</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Short</span>&gt; </span>&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ShortCache</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">private</span> <span class="title">ShortCache</span><span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> Short cache[] = <span class="keyword">new</span> Short[-(-<span class="number">128</span>) + <span class="number">127</span> + <span class="number">1</span>];</div><div class="line"></div><div class="line">        <span class="keyword">static</span> &#123;</div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; cache.length; i++)</div><div class="line">                cache[i] = <span class="keyword">new</span> Short((<span class="keyword">short</span>)(i - <span class="number">128</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Short <span class="title">valueOf</span><span class="params">(<span class="keyword">short</span> s)</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> offset = <span class="number">128</span>;</div><div class="line">        <span class="keyword">int</span> sAsInt = s;</div><div class="line">        <span class="keyword">if</span> (sAsInt &gt;= -<span class="number">128</span> &amp;&amp; sAsInt &lt;= <span class="number">127</span>) &#123; <span class="comment">// must cache</span></div><div class="line">            <span class="keyword">return</span> ShortCache.cache[sAsInt + offset];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Short(s);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在第一次调用到 <code>Short.valueOf(short)</code> 方法时，将创建 -128 ~ 127 对应的 256 个对象缓存到堆内存里。</p>
+<p>这种设计，在频繁用到这个范围内的值的时候效率较高，可以避免重复创建和回收对象，否则有可能闲置较多对象在内存中。</p>
+<h3 id="使用不当的情况"><a href="#使用不当的情况" class="headerlink" title="使用不当的情况"></a>使用不当的情况</h3><p>自动装箱和拆箱这种语法糖为我们写代码带来了简洁和便利，但如果使用不当，也有可能带来负面影响。</p>
+<ol>
+<li>性能的损耗<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Integer sum = <span class="number">0</span>;</div><div class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1000</span>; i &lt; <span class="number">5000</span>; i++) &#123;</div><div class="line">       <span class="comment">// 1. 先对 sum 进行自动拆箱</span></div><div class="line">       <span class="comment">// 2. 加法</span></div><div class="line">       <span class="comment">// 3. 自动装箱赋值给 sum，无法命中缓存，会 new Integer(int)</span></div><div class="line">       sum = sum + i;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在循环过程中会分别调用 4000 次 Integer.intValue() 和 Integer.valueOf(int)，并 new 4000 个 Integer 对象，而这些操作将 sum 的类型改为 int 即可避免，节约运行时间和空间，提升性能。</p>
+<ol>
+<li>java.lang.NullPointerException<br>尝试对一个值为 null 的包装类对象进行自动拆箱，就有可能造成 NullPointerException。<br>比如：<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">null</span>;</div><div class="line"><span class="keyword">int</span> v2 = v1; <span class="comment">// NullPointerException</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 &gt; <span class="number">10</span>) &#123; <span class="comment">// NullPointerException</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> v3 = v1 + <span class="number">10</span>; <span class="comment">// NullPointerException</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>还有一种更隐蔽的情形<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">long</span> value = <span class="keyword">true</span> ? <span class="keyword">null</span> : <span class="number">1</span>; <span class="comment">// NullPointerException</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这实际上还是对一个值为 null 的 Long 类型进行自动拆箱，反汇编代码：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: aconst_null</div><div class="line">       1: checkcast     #2                  // class java/lang/Long</div><div class="line">       4: invokevirtual #3                  // Method java/lang/Long.longValue:()J</div><div class="line">       7: lstore_1</div><div class="line">       8: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>转载 <a href="http://mazhuang.org/2017/08/20/java-auto-boxing-unboxing/" target="_blank" rel="external">http://mazhuang.org/2017/08/20/java-auto-boxing-unboxing/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/装箱/" rel="tag"># 装箱</a>
+          
+            <a href="/tags/拆箱/" rel="tag"># 拆箱</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/18/go-basic-iota/" rel="next" title="go基础-iota">
+                <i class="fa fa-chevron-left"></i> go基础-iota
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#抛出问题"><span class="nav-number">1.</span> <span class="nav-text">抛出问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原因分析"><span class="nav-number">2.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#证实猜想"><span class="nav-number">3.</span> <span class="nav-text">证实猜想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自动装箱与拆箱"><span class="nav-number">4.</span> <span class="nav-text">自动装箱与拆箱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#定义与实现机制"><span class="nav-number">5.</span> <span class="nav-text">定义与实现机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#发生时机"><span class="nav-number">6.</span> <span class="nav-text">发生时机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见应用场景"><span class="nav-number">7.</span> <span class="nav-text">常见应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-1"><span class="nav-number">7.1.</span> <span class="nav-text">Case 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-2"><span class="nav-number">7.2.</span> <span class="nav-text">Case 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-3"><span class="nav-number">7.3.</span> <span class="nav-text">Case 3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-4"><span class="nav-number">7.4.</span> <span class="nav-text">Case 4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-5"><span class="nav-number">7.5.</span> <span class="nav-text">Case 5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Case-6"><span class="nav-number">7.6.</span> <span class="nav-text">Case 6</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关知识点"><span class="nav-number">8.</span> <span class="nav-text">相关知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#比较"><span class="nav-number">8.1.</span> <span class="nav-text">比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">8.2.</span> <span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存实现机制"><span class="nav-number">8.2.1.</span> <span class="nav-text">缓存实现机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用不当的情况"><span class="nav-number">8.2.2.</span> <span class="nav-text">使用不当的情况</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

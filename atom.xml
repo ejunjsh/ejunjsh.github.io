@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-09-19T13:18:39.000Z</updated>
+  <updated>2017-09-28T15:54:46.025Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,180 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从一个 NullPointerException 探究 Java 的自动装箱拆箱机制</title>
+    <link href="http://idiotsky.me/2017/09/28/java-box-unbox/"/>
+    <id>http://idiotsky.me/2017/09/28/java-box-unbox/</id>
+    <published>2017-09-28T12:35:44.000Z</published>
+    <updated>2017-09-28T15:54:46.025Z</updated>
+    
+    <content type="html"><![CDATA[<p>前天遇到了一个 NullPointerException，触发的代码类似下面这样：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">test</span><span class="params">(<span class="keyword">long</span> value)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Long value = <span class="keyword">null</span>;</div><div class="line">        <span class="comment">// ...</span></div><div class="line">        test(value);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>main 方法里的代码实际上相当于调用 <code>test(null);</code>，为什么不直接这样写呢？因为编译不过，会报 <code>错误: 不兼容的类型: &lt;空值&gt;无法转换为long</code>。</p>
+<h1 id="抛出问题"><a href="#抛出问题" class="headerlink" title="抛出问题"></a>抛出问题</h1><p>运行时提示 <code>test(value);</code> 这一行抛出 NullPointerException，但是看着以上代码会有些许困惑：以上代码里一个对象方法都没有调用啊，NullPointerException 从何而来？<br><a id="more"></a></p>
+<h1 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h1><p>这时，如果留意到 test 方法接受的参数是 long 类型，而我们传入的是 Long 类型（虽然其实是 null），就会想到这会经历一次从类型 Long 到基本数据类型 long 的自动拆箱过程，那会不会是这个过程中抛出的 NullPointerException 呢？因为以前只知道 Java 为一些基础数据类型与对应的包装器类型之间提供了自动装箱拆箱机制，而并不知这机制的具体实现方法是怎么样的，正好学习一下。</p>
+<p>用命令 <code>javap -c Test</code> 将以上代码编译出的 Test.class 文件进行反汇编，可以看到如下输出：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static long test(long);</div><div class="line">    Code:</div><div class="line">       0: lload_0</div><div class="line">       1: lreturn</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: aconst_null</div><div class="line">       1: astore_1</div><div class="line">       2: aload_1</div><div class="line">       3: invokevirtual #2                  // Method java/lang/Long.longValue:()J</div><div class="line">       6: invokestatic  #3                  // Method test:(J)J</div><div class="line">       9: pop2</div><div class="line">      10: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从以上字节码及对应的注释可以看出，<code>test(value);</code> 这一行被编译后等同于如下代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">long</span> primitive = value.longValue();</div><div class="line">test(promitive);</div></pre></td></tr></table></figure></p>
+<p>相比实际代码，多出的 <code>long primitive = value.longValue();</code> 这一行看起来就是自动拆箱的过程了，而我们传入的 <code>value</code> 为 null，<code>value.longValue()</code> 会抛出 NullPointerException，一切就解释得通了。用更简洁的代码表达出了更丰富的含义，这就是所谓的语法糖了。</p>
+<h1 id="证实猜想"><a href="#证实猜想" class="headerlink" title="证实猜想"></a>证实猜想</h1><p>那么我们上面得出的自动拆箱机制的结论是否正确呢？选择一种其它基本数据类型，比如 int，来佐证一下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Integer value = <span class="number">10</span>;</div><div class="line">        <span class="keyword">int</span> primitive = value;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>反汇编后对应的字节码：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: bipush        10</div><div class="line">       2: invokestatic  #2                  // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;</div><div class="line">       5: astore_1</div><div class="line">       6: aload_1</div><div class="line">       7: invokevirtual #3                  // Method java/lang/Integer.intValue:()I</div><div class="line">      10: istore_2</div><div class="line">      11: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>由以上字节码我们可以印证下文里的知识点了。</p>
+<h1 id="自动装箱与拆箱"><a href="#自动装箱与拆箱" class="headerlink" title="自动装箱与拆箱"></a>自动装箱与拆箱</h1><p>自动装箱与拆箱是 Java 1.5 引入的新特性，是一种语法糖。</p>
+<p>在此之前，我们要创建一个值为 10 的 Integer 对象，只能写作：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div></pre></td></tr></table></figure></p>
+<p>而现在，我们可以更方便地写为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">10</span>;</div></pre></td></tr></table></figure></p>
+<h1 id="定义与实现机制"><a href="#定义与实现机制" class="headerlink" title="定义与实现机制"></a>定义与实现机制</h1><p>自动装箱，是指从基本数据类型值到其对应的包装类对象的自动转换。比如 <code>Integer value = 10;</code>，是通过调用 Integer.valueOf 方法实现转换的。</p>
+<p>自动拆箱，是指从包装类对象到其对应的基本数据类型值的自动转换。比如 <code>int primitive = value;</code>，是通过调用 Integer.intValue 方法实现转换的。</p>
+<table>
+<thead>
+<tr>
+<th>基本数据类型</th>
+<th>包装类型</th>
+<th>装箱方法</th>
+<th>拆箱方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>Boolean</td>
+<td>Boolean.valueOf(boolean)</td>
+<td>Boolean.booleanValue()</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>Byte</td>
+<td>Byte.valueOf(byte)</td>
+<td>Byte.byteValue()</td>
+</tr>
+<tr>
+<td>char</td>
+<td>Character</td>
+<td>Character.valueOf(char)</td>
+<td>Character.charValue()</td>
+</tr>
+<tr>
+<td>short</td>
+<td>Short</td>
+<td>Short.valueOf(short)</td>
+<td>Short.shortValue()</td>
+</tr>
+<tr>
+<td>int</td>
+<td>Integer</td>
+<td>Integer.valueOf(int)</td>
+<td>Integer.intValue()</td>
+</tr>
+<tr>
+<td>long</td>
+<td>Long</td>
+<td>Long.valueOf(long)</td>
+<td>Long.longValue()</td>
+</tr>
+<tr>
+<td>float</td>
+<td>Float</td>
+<td>Float.valueOf(float)</td>
+<td>Float.floatValue()</td>
+</tr>
+<tr>
+<td>double</td>
+<td>Double</td>
+<td>Double.valueOf(double)</td>
+<td>Double.doubleValue()</td>
+</tr>
+</tbody>
+</table>
+<h1 id="发生时机"><a href="#发生时机" class="headerlink" title="发生时机"></a>发生时机</h1><p>自动装箱与拆箱主要发生在以下四种时机：</p>
+<ol>
+<li><p>赋值时；</p>
+</li>
+<li><p>比较时；</p>
+</li>
+<li><p>算术运算时；</p>
+</li>
+<li><p>方法调用时。</p>
+</li>
+</ol>
+<h1 id="常见应用场景"><a href="#常见应用场景" class="headerlink" title="常见应用场景"></a>常见应用场景</h1><h2 id="Case-1"><a href="#Case-1" class="headerlink" title="Case 1"></a>Case 1</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">10</span>; <span class="comment">// 自动装箱（赋值时）</span></div><div class="line"><span class="keyword">int</span> primitive = value; <span class="comment">// 自动拆箱（方法调用时）</span></div></pre></td></tr></table></figure>
+<h2 id="Case-2"><a href="#Case-2" class="headerlink" title="Case 2"></a>Case 2</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Integer value = <span class="number">1000</span>;</div><div class="line"><span class="comment">// ...</span></div><div class="line"><span class="keyword">if</span> (value &lt;= <span class="number">1000</span>) &#123; <span class="comment">// 自动拆箱（比较时）</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Case-3"><a href="#Case-3" class="headerlink" title="Case 3"></a>Case 3</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</div><div class="line">list.add(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line"><span class="keyword">int</span> i = list.get(<span class="number">0</span>); <span class="comment">// 自动拆箱（赋值时）</span></div></pre></td></tr></table></figure>
+<p><strong>注：集合（Collections）里不能直接放入原始类型，集合只接收对象。</strong></p>
+<h2 id="Case-4"><a href="#Case-4" class="headerlink" title="Case 4"></a>Case 4</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">ThreadLocal&lt;Integer&gt; local = <span class="keyword">new</span> ThreadLocal&lt;Integer&gt;();</div><div class="line">local.set(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line"><span class="keyword">int</span> i = local.get(); <span class="comment">// 自动拆箱（赋值时）</span></div></pre></td></tr></table></figure>
+<p><strong>注：ThreadLocal 不能存储基本数据类型，只接收引用类型。</strong></p>
+<h2 id="Case-5"><a href="#Case-5" class="headerlink" title="Case 5"></a>Case 5</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">(Integer value)</span> </span>&#123;</div><div class="line">    <span class="comment">//</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</div><div class="line">    <span class="comment">//</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</div><div class="line">    fun1(<span class="number">10</span>); <span class="comment">// 自动装箱（方法调用时）</span></div><div class="line"></div><div class="line">    Integer value = <span class="number">10</span>;</div><div class="line">    fun2(value); <span class="comment">// 自动拆箱（方法调用时）</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Case-6"><a href="#Case-6" class="headerlink" title="Case 6"></a>Case 6</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v2 = <span class="keyword">new</span> Integer(<span class="number">20</span>);</div><div class="line"><span class="keyword">int</span> v3 = <span class="number">30</span>;</div><div class="line"></div><div class="line"><span class="keyword">int</span> sum = v1 + v2; <span class="comment">// 自动拆箱（算术运算时）</span></div><div class="line">sum = v1 + <span class="number">30</span>; <span class="comment">// 自动拆箱（算术运算时）</span></div></pre></td></tr></table></figure>
+<h1 id="相关知识点"><a href="#相关知识点" class="headerlink" title="相关知识点"></a>相关知识点</h1><h2 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h2><p>除 <code>==</code> 以外，包装类对象与基本数据类型值的比较，包装类对象与包装类对象之间的比较，都是自动拆箱后对基本数据类型值进行比较，所以，<strong>要注意这些类型间进行比较时自动拆箱可能引发的 NullPointerException</strong>。</p>
+<p><code>==</code> 比较特殊，因为可以用于判断左右是否为同一对象，所以两个包装类对象之间 <code>==</code>，会用于判断是否为同一对象，而不会进行自动拆箱操作；包装类对象与基本数据类型值之间 <code>==</code>，会自动拆箱。</p>
+<p>示例代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v2 = <span class="keyword">new</span> Integer(<span class="number">20</span>);</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 &lt; v2) &#123; <span class="comment">// 自动拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 == v2) &#123; <span class="comment">// 不拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 == <span class="number">10</span>) &#123; <span class="comment">// 自动拆箱</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p>Java 为整型值包装类 Byte、Character、Short、Integer、Long 设置了缓存，用于存储一定范围内的值，详细如下：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>缓存值范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Byte</td>
+<td>-128 ~ 127</td>
+</tr>
+<tr>
+<td>Character</td>
+<td>0 ~ 127</td>
+</tr>
+<tr>
+<td>Short</td>
+<td>-128 ~ 127</td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>-128 ~ 127（可配置）</td>
+</tr>
+<tr>
+<td>Long</td>
+<td>-128 ~ 127</td>
+</tr>
+</tbody>
+</table>
+<p>在一些情况下，比如自动装箱时，如果值在缓存值范围内，将不创建新对象，直接从缓存里取出对象返回，比如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="number">10</span>;</div><div class="line">Integer v2 = <span class="number">10</span>;</div><div class="line">Integer v3 = <span class="keyword">new</span> Integer(<span class="number">10</span>);</div><div class="line">Integer v4 = <span class="number">128</span>;</div><div class="line">Integer v5 = <span class="number">128</span>;</div><div class="line">Integer v6 = Integer.valueOf(<span class="number">10</span>);</div><div class="line"></div><div class="line">System.out.println(v1 == v2); <span class="comment">// true</span></div><div class="line">System.out.println(v1 == v3); <span class="comment">// false</span></div><div class="line">System.out.println(v4 == v5); <span class="comment">// false</span></div><div class="line">System.out.println(v1 == v6); <span class="comment">// true</span></div></pre></td></tr></table></figure></p>
+<h3 id="缓存实现机制"><a href="#缓存实现机制" class="headerlink" title="缓存实现机制"></a>缓存实现机制</h3><p>这里使用了设计模式享元模式。</p>
+<p>以 Short 类实现源码为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ...</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Short</span> <span class="keyword">extends</span> <span class="title">Number</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Short</span>&gt; </span>&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ShortCache</span> </span>&#123;</div><div class="line">        <span class="function"><span class="keyword">private</span> <span class="title">ShortCache</span><span class="params">()</span></span>&#123;&#125;</div><div class="line"></div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> Short cache[] = <span class="keyword">new</span> Short[-(-<span class="number">128</span>) + <span class="number">127</span> + <span class="number">1</span>];</div><div class="line"></div><div class="line">        <span class="keyword">static</span> &#123;</div><div class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; cache.length; i++)</div><div class="line">                cache[i] = <span class="keyword">new</span> Short((<span class="keyword">short</span>)(i - <span class="number">128</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Short <span class="title">valueOf</span><span class="params">(<span class="keyword">short</span> s)</span> </span>&#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> offset = <span class="number">128</span>;</div><div class="line">        <span class="keyword">int</span> sAsInt = s;</div><div class="line">        <span class="keyword">if</span> (sAsInt &gt;= -<span class="number">128</span> &amp;&amp; sAsInt &lt;= <span class="number">127</span>) &#123; <span class="comment">// must cache</span></div><div class="line">            <span class="keyword">return</span> ShortCache.cache[sAsInt + offset];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Short(s);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在第一次调用到 <code>Short.valueOf(short)</code> 方法时，将创建 -128 ~ 127 对应的 256 个对象缓存到堆内存里。</p>
+<p>这种设计，在频繁用到这个范围内的值的时候效率较高，可以避免重复创建和回收对象，否则有可能闲置较多对象在内存中。</p>
+<h3 id="使用不当的情况"><a href="#使用不当的情况" class="headerlink" title="使用不当的情况"></a>使用不当的情况</h3><p>自动装箱和拆箱这种语法糖为我们写代码带来了简洁和便利，但如果使用不当，也有可能带来负面影响。</p>
+<ol>
+<li>性能的损耗<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Integer sum = <span class="number">0</span>;</div><div class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1000</span>; i &lt; <span class="number">5000</span>; i++) &#123;</div><div class="line">       <span class="comment">// 1. 先对 sum 进行自动拆箱</span></div><div class="line">       <span class="comment">// 2. 加法</span></div><div class="line">       <span class="comment">// 3. 自动装箱赋值给 sum，无法命中缓存，会 new Integer(int)</span></div><div class="line">       sum = sum + i;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在循环过程中会分别调用 4000 次 Integer.intValue() 和 Integer.valueOf(int)，并 new 4000 个 Integer 对象，而这些操作将 sum 的类型改为 int 即可避免，节约运行时间和空间，提升性能。</p>
+<ol>
+<li>java.lang.NullPointerException<br>尝试对一个值为 null 的包装类对象进行自动拆箱，就有可能造成 NullPointerException。<br>比如：<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Integer v1 = <span class="keyword">null</span>;</div><div class="line"><span class="keyword">int</span> v2 = v1; <span class="comment">// NullPointerException</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> (v1 &gt; <span class="number">10</span>) &#123; <span class="comment">// NullPointerException</span></div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> v3 = v1 + <span class="number">10</span>; <span class="comment">// NullPointerException</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>还有一种更隐蔽的情形<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        <span class="keyword">long</span> value = <span class="keyword">true</span> ? <span class="keyword">null</span> : <span class="number">1</span>; <span class="comment">// NullPointerException</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这实际上还是对一个值为 null 的 Long 类型进行自动拆箱，反汇编代码：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Compiled from "Test.java"</div><div class="line">public class Test &#123;</div><div class="line">  public Test();</div><div class="line">    Code:</div><div class="line">       0: aload_0</div><div class="line">       1: invokespecial #1                  // Method java/lang/Object."&lt;init&gt;":()V</div><div class="line">       4: return</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    Code:</div><div class="line">       0: aconst_null</div><div class="line">       1: checkcast     #2                  // class java/lang/Long</div><div class="line">       4: invokevirtual #3                  // Method java/lang/Long.longValue:()J</div><div class="line">       7: lstore_1</div><div class="line">       8: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>转载 <a href="http://mazhuang.org/2017/08/20/java-auto-boxing-unboxing/" target="_blank" rel="external">http://mazhuang.org/2017/08/20/java-auto-boxing-unboxing/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前天遇到了一个 NullPointerException，触发的代码类似下面这样：&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Test&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; value)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; value;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String[] args)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        Long value = &lt;span class=&quot;keyword&quot;&gt;null&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        test(value);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;main 方法里的代码实际上相当于调用 &lt;code&gt;test(null);&lt;/code&gt;，为什么不直接这样写呢？因为编译不过，会报 &lt;code&gt;错误: 不兼容的类型: &amp;lt;空值&amp;gt;无法转换为long&lt;/code&gt;。&lt;/p&gt;
+&lt;h1 id=&quot;抛出问题&quot;&gt;&lt;a href=&quot;#抛出问题&quot; class=&quot;headerlink&quot; title=&quot;抛出问题&quot;&gt;&lt;/a&gt;抛出问题&lt;/h1&gt;&lt;p&gt;运行时提示 &lt;code&gt;test(value);&lt;/code&gt; 这一行抛出 NullPointerException，但是看着以上代码会有些许困惑：以上代码里一个对象方法都没有调用啊，NullPointerException 从何而来？&lt;br&gt;
+    
+    </summary>
+    
+      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
+    
+    
+      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
+    
+      <category term="装箱" scheme="http://idiotsky.me/tags/%E8%A3%85%E7%AE%B1/"/>
+    
+      <category term="拆箱" scheme="http://idiotsky.me/tags/%E6%8B%86%E7%AE%B1/"/>
+    
+  </entry>
   
   <entry>
     <title>go基础-iota</title>
@@ -1513,42 +1687,6 @@
     
     
       <category term="postman" scheme="http://idiotsky.me/tags/postman/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>go的是否需要用goroutine pool？</title>
-    <link href="http://idiotsky.me/2017/08/03/go-worker-pool-if-need/"/>
-    <id>http://idiotsky.me/2017/08/03/go-worker-pool-if-need/</id>
-    <published>2017-08-03T15:10:02.000Z</published>
-    <updated>2017-08-05T14:21:00.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>这几天无聊，想到java有自己的线程池，是否对应go也有它的goroutine pool呢，所以搜了下，标准库没有，github有，但都大同小异，所以自己实现了一个。</p>
-</blockquote>
-<a id="more"></a>
-<h1 id="一个简单的goroutine-pool"><a href="#一个简单的goroutine-pool" class="headerlink" title="一个简单的goroutine pool"></a>一个简单的goroutine pool</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> workerpool</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"sync"</span></div><div class="line">	<span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">type</span> task <span class="function"><span class="keyword">func</span><span class="params">()</span></span></div><div class="line"></div><div class="line"><span class="title">type</span> <span class="title">worker</span> <span class="title">struct</span> &#123;</div><div class="line">	stopC <span class="keyword">chan</span> <span class="keyword">bool</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> WorkerPool <span class="keyword">struct</span> &#123;</div><div class="line">	num <span class="keyword">int</span></div><div class="line">	sync.Mutex</div><div class="line">	taskQ <span class="keyword">chan</span> task</div><div class="line">	workers []*worker</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewWorkerPool</span><span class="params">(workerNum <span class="keyword">int</span>,queueCap <span class="keyword">int</span>)</span> *<span class="title">WorkerPool</span></span>&#123;</div><div class="line">	<span class="keyword">return</span> &amp;WorkerPool&#123;num:workerNum,taskQ:<span class="built_in">make</span>(<span class="keyword">chan</span> task,queueCap),workers:<span class="built_in">make</span>([]*worker,workerNum)&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wp *WorkerPool)</span> <span class="title">Execute</span><span class="params">(t task)</span></span>&#123;</div><div class="line">	wp.taskQ&lt;-t</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wp *WorkerPool)</span> <span class="title">Start</span><span class="params">()</span> *<span class="title">WorkerPool</span></span>&#123;</div><div class="line">	<span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;wp.num;i++&#123;</div><div class="line">		wp.workers[i]=&amp;worker&#123; <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">bool</span>)&#125;</div><div class="line">		w:=wp.workers[i]</div><div class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">			<span class="keyword">for</span> &#123;</div><div class="line">				    stop:=<span class="literal">false</span></div><div class="line">					<span class="keyword">select</span> &#123;</div><div class="line">					    <span class="keyword">case</span> f:=&lt;-wp.taskQ:</div><div class="line">							f()</div><div class="line">					    <span class="keyword">case</span> stop=&lt;-w.stopC:</div><div class="line">						     <span class="keyword">break</span></div><div class="line"></div><div class="line">					&#125;</div><div class="line"></div><div class="line">				<span class="keyword">if</span> stop&#123;</div><div class="line">					<span class="keyword">break</span></div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			fmt.Println(<span class="string">"stop"</span>)</div><div class="line">		&#125;(i)</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> wp</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(wp *WorkerPool)</span> <span class="title">Stop</span><span class="params">()</span></span>&#123;</div><div class="line">	<span class="keyword">for</span> _,w:=<span class="keyword">range</span> wp.workers&#123;</div><div class="line">		w.stopC&lt;- <span class="literal">true</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>代码很简单，就是<code>NewWorkerPool</code>一个池子的时候设置goroutine的数量和任务队列的大小。<code>Start</code>后就创建那么多goroutine去任务队列取任务执行，取不到任务就自循。<code>Execute</code>方法是把任务压进队列，如果队列满了就阻塞。</p>
-<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>要测试性能，肯定要有对比，以下是没有使用pool:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">nopool</span><span class="params">()</span></span> &#123;</div><div class="line">	wg := <span class="built_in">new</span>(sync.WaitGroup)</div><div class="line">    <span class="comment">//执行1000000次，每次都启动一个goroutine</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++ &#123;</div><div class="line">		wg.Add(<span class="number">1</span>)</div><div class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">			<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="number">100000</span>; j++ &#123;</div><div class="line"></div><div class="line">			&#125;</div><div class="line">			<span class="keyword">defer</span> wg.Done()</div><div class="line">		&#125;(i)</div><div class="line">	&#125;</div><div class="line">	wg.Wait()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>以下是简单版的只是单纯限制goroutine数量和任务队列的代码，没有任何封装的:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">gopool</span><span class="params">()</span></span> &#123;</div><div class="line">	wg := <span class="built_in">new</span>(sync.WaitGroup)</div><div class="line">    <span class="comment">//队列100</span></div><div class="line">	data := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">100</span>)</div><div class="line"></div><div class="line">    <span class="comment">//goroutine 数量10个</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</div><div class="line">		wg.Add(<span class="number">1</span>)</div><div class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(n <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">			<span class="keyword">defer</span> wg.Done()</div><div class="line">			<span class="keyword">for</span> _ = <span class="keyword">range</span> data &#123;</div><div class="line">				<span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</div><div class="line">					<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="number">100000</span>; j++ &#123;</div><div class="line"></div><div class="line">					&#125;</div><div class="line">				&#125;()</div><div class="line"></div><div class="line">			&#125;</div><div class="line">		&#125;(i)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">    <span class="comment">//执行1000000个任务</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++ &#123;</div><div class="line">		data &lt;- i</div><div class="line">	&#125;</div><div class="line">	<span class="built_in">close</span>(data)</div><div class="line">	wg.Wait()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>然后是主角:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">workerpool</span><span class="params">()</span></span> &#123;</div><div class="line">	wg := <span class="built_in">new</span>(sync.WaitGroup)</div><div class="line">    <span class="comment">//十个goroutine，队列容量100</span></div><div class="line">	wp:=NewWorkerPool(<span class="number">10</span>,<span class="number">100</span>)</div><div class="line">	wp.Start()</div><div class="line">    <span class="comment">//提交1000000任务</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++ &#123;</div><div class="line">		wg.Add(<span class="number">1</span>)</div><div class="line">		wp.Execute(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</div><div class="line">			<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="number">100000</span>; j++ &#123;</div><div class="line"></div><div class="line">			&#125;</div><div class="line">			wg.Done()</div><div class="line">		&#125;)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	wg.Wait()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>上面代码基本都是做同样一件事，但是后两个只开10个goroutine，第一个就开了1000000个，结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">BenchmarkNopool-8                      1        7966900091 ns/op</div><div class="line">BenchmarkGopool-8                      1        7949844269 ns/op</div><div class="line">BenchmarkWorkerPool-8                  1        7997732135 ns/op</div></pre></td></tr></table></figure></p>
-<p>可以看出来，没有区别，重新run几次基本没有多大变化。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>由于go本身有对goroutine有调度，所以自己实现的池子来调度其实好像没有什么用。还有可能我自己能力实现不好，没发挥池子的作用😀。<br>但是用更少的goroutine能完成同样的事情，应该是一种优化，而且这里的goroutine执行都是简单的循环，没有复杂的业务，一旦业务复杂，更少goroutine能够减少内存和goroutine切换时的cpu资源，有可能上面性能的比较会拉开。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;这几天无聊，想到java有自己的线程池，是否对应go也有它的goroutine pool呢，所以搜了下，标准库没有，github有，但都大同小异，所以自己实现了一个。&lt;/p&gt;
-&lt;/blockquote&gt;
-    
-    </summary>
-    
-      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
-    
-    
-      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
     
   </entry>
   
