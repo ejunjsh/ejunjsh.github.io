@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-09-28T15:54:46.025Z</updated>
+  <updated>2017-09-29T15:27:20.444Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL优化原理</title>
+    <link href="http://idiotsky.me/2017/09/29/mysql-optimization-mechanism/"/>
+    <id>http://idiotsky.me/2017/09/29/mysql-optimization-mechanism/</id>
+    <published>2017-09-29T15:20:35.000Z</published>
+    <updated>2017-09-29T15:27:20.444Z</updated>
+    
+    <content type="html"><![CDATA[<p>说起MySQL的查询优化，相信大家收藏了一堆奇技淫巧：不能使用SELECT *、不使用NULL字段、合理创建索引、为字段选择合适的数据类型….. 你是否真的理解这些优化技巧？是否理解其背后的工作原理？在实际场景下性能真有提升吗？我想未必。因而理解这些优化建议背后的原理就尤为重要，希望本文能让你重新审视这些优化建议，并在实际业务场景下合理的运用。</p>
+<h1 id="MySQL逻辑架构"><a href="#MySQL逻辑架构" class="headerlink" title="MySQL逻辑架构"></a>MySQL逻辑架构</h1><p>如果能在头脑中构建一幅MySQL各组件之间如何协同工作的架构图，有助于深入理解MySQL服务器。下图展示了MySQL的逻辑架构图。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg" alt=""></a><br><a id="more"></a><br>MySQL逻辑架构整体分为三层，最上层为客户端层，并非MySQL所独有，诸如：连接处理、授权认证、安全等功能均在这一层处理。</p>
+<p>MySQL大多数核心服务均在中间这一层，包括查询解析、分析、优化、缓存、内置函数(比如：时间、数学、加密等函数)。所有的跨存储引擎的功能也在这一层实现：存储过程、触发器、视图等。</p>
+<p>最下层为存储引擎，其负责MySQL中的数据存储和提取。和Linux下的文件系统类似，每种存储引擎都有其优势和劣势。中间的服务层通过API与存储引擎通信，这些API接口屏蔽了不同存储引擎间的差异。</p>
+<h1 id="MySQL查询过程"><a href="#MySQL查询过程" class="headerlink" title="MySQL查询过程"></a>MySQL查询过程</h1><p>我们总是希望MySQL能够获得更高的查询性能，最好的办法是弄清楚MySQL是如何优化和执行查询的。一旦理解了这一点，就会发现：很多的查询优化工作实际上就是遵循一些原则让MySQL的优化器能够按照预想的合理方式运行而已。</p>
+<p>当向MySQL发送一个请求的时候，MySQL到底做了些什么呢？<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-2.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-2.jpg" alt=""></a></p>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;说起MySQL的查询优化，相信大家收藏了一堆奇技淫巧：不能使用SELECT *、不使用NULL字段、合理创建索引、为字段选择合适的数据类型….. 你是否真的理解这些优化技巧？是否理解其背后的工作原理？在实际场景下性能真有提升吗？我想未必。因而理解这些优化建议背后的原理就尤为重要，希望本文能让你重新审视这些优化建议，并在实际业务场景下合理的运用。&lt;/p&gt;
+&lt;h1 id=&quot;MySQL逻辑架构&quot;&gt;&lt;a href=&quot;#MySQL逻辑架构&quot; class=&quot;headerlink&quot; title=&quot;MySQL逻辑架构&quot;&gt;&lt;/a&gt;MySQL逻辑架构&lt;/h1&gt;&lt;p&gt;如果能在头脑中构建一幅MySQL各组件之间如何协同工作的架构图，有助于深入理解MySQL服务器。下图展示了MySQL的逻辑架构图。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="http://idiotsky.me/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="http://idiotsky.me/tags/mysql/"/>
+    
+  </entry>
   
   <entry>
     <title>从一个 NullPointerException 探究 Java 的自动装箱拆箱机制</title>
@@ -1676,44 +1708,6 @@
       <category term="java" scheme="http://idiotsky.me/tags/java/"/>
     
       <category term="gc" scheme="http://idiotsky.me/tags/gc/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>postman的几种body的使用介绍</title>
-    <link href="http://idiotsky.me/2017/08/10/postman/"/>
-    <id>http://idiotsky.me/2017/08/10/postman/</id>
-    <published>2017-08-10T12:11:55.000Z</published>
-    <updated>2017-09-19T17:05:02.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>postman,用来模拟发送http请求的工具，里面涉及的请求body有以下几个类型，所以记下，而且也能理解http body的几种格式，分享之。。</p>
-</blockquote>
-<a id="more"></a>
-<h1 id="form-data"><a href="#form-data" class="headerlink" title="form-data"></a>form-data</h1><p>就是http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。既可以上传键值对，也可以上传文件。当上传的字段是文件时，会有Content-Type来表名文件类型；content-disposition，用来说明字段的一些信息；<br>由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。</p>
-<p><a href="http://idiotsky.me/images/postman-1.png"><img src="http://idiotsky.me/images/postman-1.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 9843651a-5bf9-0544-03c1-fcc2a16f484b</div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;username&quot;</div><div class="line"></div><div class="line">admin</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;password&quot;</div><div class="line"></div><div class="line">admin123</div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;abc&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW</div><div class="line">Content-Disposition: form-data; name=&quot;tttt&quot;; filename=&quot;&quot;</div><div class="line">Content-Type: </div><div class="line"></div><div class="line"></div><div class="line">------WebKitFormBoundary7MA4YWxkTrZu0gW--</div></pre></td></tr></table></figure></p>
-<h1 id="x-www-form-urlencoded"><a href="#x-www-form-urlencoded" class="headerlink" title="x-www-form-urlencoded"></a>x-www-form-urlencoded</h1><p>就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，并以urlencode为格式<br><a href="http://idiotsky.me/images/postman-2.png"><img src="http://idiotsky.me/images/postman-2.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/x-www-form-urlencoded</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: e6887900-a46e-2ff4-8232-de878b75f5fd</div><div class="line"></div><div class="line">username=admin&amp;password=admin123</div></pre></td></tr></table></figure></p>
-<h1 id="raw"><a href="#raw" class="headerlink" title="raw"></a>raw</h1><p>可以上传任意格式的文本，可以上传text、json、xml、html等<br><a href="http://idiotsky.me/images/postman-3.png"><img src="http://idiotsky.me/images/postman-3.png" alt=""></a><br>内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">POST /login HTTP/1.1</div><div class="line">Host: 10.170.56.67</div><div class="line">Content-Type: application/json</div><div class="line">Cache-Control: no-cache</div><div class="line">Postman-Token: 233df0e0-c6d9-98c7-4d7e-736329322683</div><div class="line"></div><div class="line">&#123;</div><div class="line">  &quot;abc&quot;:&quot;cba&quot;,</div><div class="line">  &quot;cba&quot;:&quot;abc&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>从图片和内容对比，可以发现，基本，粘什么，就发什么，不会进行任何转意。</p>
-<h1 id="binary"><a href="#binary" class="headerlink" title="binary"></a>binary</h1><p>相当于Content-Type:application/octet-stream,从字面意思得知，只可以上传二进制数据，通常用来上传文件，由于没有键值，所以，一次只能上传一个文件。</p>
-<h1 id="multipart-form-data与x-www-form-urlencoded区别"><a href="#multipart-form-data与x-www-form-urlencoded区别" class="headerlink" title="multipart/form-data与x-www-form-urlencoded区别"></a>multipart/form-data与x-www-form-urlencoded区别</h1><ul>
-<li>multipart/form-data：既可以上传文件等二进制数据，也可以上传表单键值对，只是最后会转化为一条信息；</li>
-<li>x-www-form-urlencoded：只能上传键值对，并且键值对都是间隔分开的</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;postman,用来模拟发送http请求的工具，里面涉及的请求body有以下几个类型，所以记下，而且也能理解http body的几种格式，分享之。。&lt;/p&gt;
-&lt;/blockquote&gt;
-    
-    </summary>
-    
-      <category term="http" scheme="http://idiotsky.me/categories/http/"/>
-    
-    
-      <category term="postman" scheme="http://idiotsky.me/tags/postman/"/>
     
   </entry>
   
