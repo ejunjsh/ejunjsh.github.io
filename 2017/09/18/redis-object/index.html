@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="gc,go," />
+  <meta name="keywords" content="数据结构,redis," />
 
 
 
@@ -103,16 +103,17 @@
 
 
 
-<meta name="keywords" content="gc,go">
+<meta name="description" content="前言在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。 Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。 通过">
+<meta name="keywords" content="数据结构,redis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一张图了解三色标记法">
-<meta property="og:url" content="http://idiotsky.me/2017/08/16/gc-three-color/index.html">
+<meta property="og:title" content="redis数据结构-对象">
+<meta property="og:url" content="http://idiotsky.me/2017/09/18/redis-object/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:image" content="http://idiotsky.me/images/gc-1.gif">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:description" content="前言在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。 Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。 通过">
+<meta property="og:updated_time" content="2017-10-02T14:01:45.933Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一张图了解三色标记法">
-<meta name="twitter:image" content="http://idiotsky.me/images/gc-1.gif">
+<meta name="twitter:title" content="redis数据结构-对象">
+<meta name="twitter:description" content="前言在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。 Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。 通过">
 
 
 
@@ -141,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/08/16/gc-three-color/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/09/18/redis-object/"/>
 
 
 
 
 
-  <title>一张图了解三色标记法 | IdiotSky</title>
+  <title>redis数据结构-对象 | IdiotSky</title>
   
 
 
@@ -328,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/16/gc-three-color/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/18/redis-object/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -345,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">一张图了解三色标记法</h1>
+          <h1 class="post-title" itemprop="name headline">redis数据结构-对象</h1>
         
 
         <div class="post-meta">
@@ -357,8 +358,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-16T01:02:35+08:00">
-                16 Aug 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T01:29:58+08:00">
+                18 Sep 17
               </time>
             
 
@@ -380,8 +381,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
                   </a>
                 </span>
 
@@ -417,17 +418,262 @@
       
 
       
-        <p><a href="http://idiotsky.me/images/gc-1.gif"><img src="http://idiotsky.me/images/gc-1.gif" alt=""></a><br><a id="more"></a><br>三色标记法是传统 Mark-Sweep 的一个改进，它是一个并发的 GC 算法。<br>原理如下，</p>
-<ol>
-<li>首先创建三个集合：白、灰、黑。</li>
-<li>将所有对象放入白色集合中。</li>
-<li>然后从根节点开始遍历所有对象（注意这里并不<strong>递归遍历</strong>），把遍历到的对象从白色集合放入灰色集合。</li>
-<li>之后遍历灰色集合，将灰色对象引用的对象从白色集合放入灰色集合，之后将此灰色对象放入黑色集合</li>
-<li>重复 4 直到灰色中无任何对象</li>
-<li>通过write-barrier检测对象有变化，重复以上操作</li>
-<li>收集所有白色对象（垃圾）</li>
-</ol>
-<p>这个算法可以实现 “on-the-fly”，也就是在程序执行的同时进行收集，并不需要暂停整个程序。<br>但是也会有一个缺陷，可能程序中的垃圾产生的速度会大于垃圾收集的速度，这样会导致程序中的垃圾越来越多无法被收集掉。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。</p>
+<p>Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。</p>
+<p>通过这五种不同类型的对象， Redis 可以在执行命令之前， 根据对象的类型来判断一个对象是否可以执行给定的命令。 使用对象的另一个好处是， 我们可以针对不同的使用场景， 为对象设置多种不同的数据结构实现， 从而优化对象在不同场景下的使用效率。</p>
+<p>除此之外， Redis 的对象系统还实现了基于引用计数技术的内存回收机制： 当程序不再使用某个对象的时候， 这个对象所占用的内存就会被自动释放； 另外， Redis 还通过引用计数技术实现了对象共享机制， 这一机制可以在适当的条件下， 通过让多个数据库键共享同一个对象来节约内存。</p>
+<p>最后， Redis 的对象带有访问时间记录信息， 该信息可以用于计算数据库键的空转时长， 在服务器启用了 maxmemory 功能的情况下， 空转时长较大的那些键可能会优先被服务器删除。</p>
+<p>本章接下来将逐一介绍以上提到的 Redis 对象系统的各个特性。<br><a id="more"></a></p>
+<h1 id="对象的类型与编码"><a href="#对象的类型与编码" class="headerlink" title="对象的类型与编码"></a>对象的类型与编码</h1><p>Redis 使用对象来表示数据库中的键和值， 每次当我们在 Redis 的数据库中新创建一个键值对时， 我们至少会创建两个对象， 一个对象用作键值对的键（键对象）， 另一个对象用作键值对的值（值对象）。</p>
+<p>举个例子， 以下 SET 命令在数据库中创建了一个新的键值对， 其中键值对的键是一个包含了字符串值 “msg” 的对象， 而键值对的值则是一个包含了字符串值 “hello world” 的对象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">redis&gt;</span><span class="bash"> SET msg <span class="string">"hello world"</span></span></div><div class="line">OK</div></pre></td></tr></table></figure></p>
+<p>Redis 中的每个对象都由一个 redisObject 结构表示， 该结构中和保存数据有关的三个属性分别是 type 属性、 encoding 属性和 ptr 属性：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisObject</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 类型</span></div><div class="line">    <span class="keyword">unsigned</span> type:<span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="comment">// 编码</span></div><div class="line">    <span class="keyword">unsigned</span> encoding:<span class="number">4</span>;</div><div class="line"></div><div class="line">    <span class="comment">// 指向底层实现数据结构的指针</span></div><div class="line">    <span class="keyword">void</span> *ptr;</div><div class="line"></div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">&#125; robj;</div></pre></td></tr></table></figure></p>
+<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>对象的 type 属性记录了对象的类型， 这个属性的值可以是表 8-1 列出的常量的其中一个。</p>
+<table>
+<thead>
+<tr>
+<th>类型常量</th>
+<th>对象的名称</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REDIS_STRING</td>
+<td>字符串对象</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>列表对象</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>哈希对象</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>集合对象</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>有序集合对象</td>
+</tr>
+</tbody>
+</table>
+<p>对于 Redis 数据库保存的键值对来说， 键总是一个字符串对象， 而值则可以是字符串对象、列表对象、哈希对象、集合对象或者有序集合对象的其中一种， 因此：</p>
+<ul>
+<li>当我们称呼一个数据库键为“字符串键”时， 我们指的是“这个数据库键所对应的值为字符串对象”；</li>
+<li>当我们称呼一个键为“列表键”时， 我们指的是“这个数据库键所对应的值为列表对象”，</li>
+</ul>
+<p>诸如此类。</p>
+<p>TYPE 命令的实现方式也与此类似， 当我们对一个数据库键执行 TYPE 命令时， 命令返回的结果为数据库键对应的值对象的类型， 而不是键对象的类型：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash"> 键为字符串对象，值为字符串对象</span></div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> SET msg <span class="string">"hello world"</span></span></div><div class="line">OK</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> TYPE msg</span></div><div class="line">string</div><div class="line"><span class="meta"></span></div><div class="line">#<span class="bash"> 键为字符串对象，值为列表对象</span></div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> RPUSH numbers 1 3 5</span></div><div class="line">(integer) 6</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> TYPE numbers</span></div><div class="line">list</div><div class="line"><span class="meta"></span></div><div class="line">#<span class="bash"> 键为字符串对象，值为哈希对象</span></div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> HMSET profile name Tome age 25 career Programmer</span></div><div class="line">OK</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> TYPE profile</span></div><div class="line">hash</div><div class="line"><span class="meta"></span></div><div class="line">#<span class="bash"> 键为字符串对象，值为集合对象</span></div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> SADD fruits apple banana cherry</span></div><div class="line">(integer) 3</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> TYPE fruits</span></div><div class="line">set</div><div class="line"><span class="meta"></span></div><div class="line">#<span class="bash"> 键为字符串对象，值为有序集合对象</span></div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> ZADD price 8.5 apple 5.0 banana 6.0 cherry</span></div><div class="line">(integer) 3</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> TYPE price</span></div><div class="line">zset</div></pre></td></tr></table></figure></p>
+<p>表 8-2 列出了 TYPE 命令在面对不同类型的值对象时所产生的输出。</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>对象 type 属性的值</th>
+<th>TYPE 命令的输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字符串对象</td>
+<td>REDIS_STRING</td>
+<td>“string”</td>
+</tr>
+<tr>
+<td>列表对象</td>
+<td>REDIS_LIST</td>
+<td>“list”</td>
+</tr>
+<tr>
+<td>哈希对象</td>
+<td>REDIS_HASH</td>
+<td>“hash”</td>
+</tr>
+<tr>
+<td>集合对象</td>
+<td>REDIS_SET</td>
+<td>“set”</td>
+</tr>
+<tr>
+<td>有序集合对象</td>
+<td>REDIS_ZSET</td>
+<td>“zset”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="编码和底层实现"><a href="#编码和底层实现" class="headerlink" title="编码和底层实现"></a>编码和底层实现</h2><p>对象的 ptr 指针指向对象的底层实现数据结构， 而这些数据结构由对象的 encoding 属性决定。</p>
+<p>encoding 属性记录了对象所使用的编码， 也即是说这个对象使用了什么数据结构作为对象的底层实现， 这个属性的值可以是表 8-3 列出的常量的其中一个。</p>
+<table>
+<thead>
+<tr>
+<th>编码常量</th>
+<th>编码所对应的底层数据结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REDIS_ENCODING_INT</td>
+<td>long 类型的整数</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_EMBSTR</td>
+<td>embstr 编码的简单动态字符串</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_RAW</td>
+<td>简单动态字符串</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_HT</td>
+<td>字典</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_LINKEDLIST</td>
+<td>双端链表</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>压缩列表</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_INTSET</td>
+<td>整数集合</td>
+</tr>
+<tr>
+<td>REDIS_ENCODING_SKIPLIST</td>
+<td>跳跃表和字典</td>
+</tr>
+</tbody>
+</table>
+<p>每种类型的对象都至少使用了两种不同的编码， 表 8-4 列出了每种类型的对象可以使用的编码。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>编码</th>
+<th>对象</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_INT</td>
+<td>使用整数值实现的字符串对象。</td>
+</tr>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_EMBSTR</td>
+<td>使用 embstr 编码的简单动态字符串实现的字符串对象。</td>
+</tr>
+<tr>
+<td>REDIS_STRING</td>
+<td>REDIS_ENCODING_RAW</td>
+<td>使用简单动态字符串实现的字符串对象。</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩列表实现的列表对象。</td>
+</tr>
+<tr>
+<td>REDIS_LIST</td>
+<td>REDIS_ENCODING_LINKEDLIST</td>
+<td>使用双端链表实现的列表对象。</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩列表实现的哈希对象。</td>
+</tr>
+<tr>
+<td>REDIS_HASH</td>
+<td>REDIS_ENCODING_HT</td>
+<td>使用字典实现的哈希对象。</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>REDIS_ENCODING_INTSET</td>
+<td>使用整数集合实现的集合对象。</td>
+</tr>
+<tr>
+<td>REDIS_SET</td>
+<td>REDIS_ENCODING_HT</td>
+<td>使用字典实现的集合对象。</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>使用压缩列表实现的有序集合对象。</td>
+</tr>
+<tr>
+<td>REDIS_ZSET</td>
+<td>REDIS_ENCODING_SKIPLIST</td>
+<td>使用跳跃表和字典实现的有序集合对象。</td>
+</tr>
+</tbody>
+</table>
+<p>使用 OBJECT ENCODING 命令可以查看一个数据库键的值对象的编码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="meta">redis&gt;</span><span class="bash"> SET msg <span class="string">"hello wrold"</span></span></div><div class="line">OK</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> OBJECT ENCODING msg</span></div><div class="line">"embstr"</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> SET story <span class="string">"long long long long long long ago ..."</span></span></div><div class="line">OK</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> OBJECT ENCODING story</span></div><div class="line">"raw"</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> SADD numbers 1 3 5</span></div><div class="line">(integer) 3</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> OBJECT ENCODING numbers</span></div><div class="line">"intset"</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> SADD numbers <span class="string">"seven"</span></span></div><div class="line">(integer) 1</div><div class="line"><span class="meta"></span></div><div class="line">redis&gt;<span class="bash"> OBJECT ENCODING numbers</span></div><div class="line">"hashtable"</div></pre></td></tr></table></figure></p>
+<p>表 8-5 列出了不同编码的对象所对应的 OBJECT ENCODING 命令输出。</p>
+<table>
+<thead>
+<tr>
+<th>对象所使用的底层数据结构</th>
+<th>编码常量</th>
+<th>OBJECT ENCODING 命令输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整数</td>
+<td>REDIS_ENCODING_INT</td>
+<td>“int”</td>
+</tr>
+<tr>
+<td>embstr 编码的简单动态字符串（SDS）</td>
+<td>REDIS_ENCODING_EMBSTR</td>
+<td>“embstr”</td>
+</tr>
+<tr>
+<td>简单动态字符串</td>
+<td>REDIS_ENCODING_RAW</td>
+<td>“raw”</td>
+</tr>
+<tr>
+<td>字典</td>
+<td>REDIS_ENCODING_HT</td>
+<td>“hashtable”</td>
+</tr>
+<tr>
+<td>双端链表</td>
+<td>REDIS_ENCODING_LINKEDLIST</td>
+<td>“linkedlist”</td>
+</tr>
+<tr>
+<td>压缩列表</td>
+<td>REDIS_ENCODING_ZIPLIST</td>
+<td>“ziplist”</td>
+</tr>
+<tr>
+<td>整数集合</td>
+<td>REDIS_ENCODING_INTSET</td>
+<td>“intset”</td>
+</tr>
+<tr>
+<td>跳跃表和字典</td>
+<td>REDIS_ENCODING_SKIPLIST</td>
+<td>“skiplist”</td>
+</tr>
+</tbody>
+</table>
+<p>通过 encoding 属性来设定对象所使用的编码， 而不是为特定类型的对象关联一种固定的编码， 极大地提升了 Redis 的灵活性和效率， 因为 Redis 可以根据不同的使用场景来为一个对象设置不同的编码， 从而优化对象在某一场景下的效率。</p>
+<p>举个例子， 在列表对象包含的元素比较少时， Redis 使用压缩列表作为列表对象的底层实现：</p>
+<ul>
+<li>因为压缩列表比双端链表更节约内存， 并且在元素数量较少时， 在内存中以连续块方式保存的压缩列表比起双端链表可以更快被载入到缓存中；</li>
+<li>随着列表对象包含的元素越来越多， 使用压缩列表来保存元素的优势逐渐消失时， 对象就会将底层实现从压缩列表转向功能更强、也更适合保存大量元素的双端链表上面；</li>
+</ul>
+<p>其他类型的对象也会通过使用多种不同的编码来进行类似的优化。</p>
+<p>在接下来的内容中， 我们将分别介绍 Redis 中的五种不同类型的对象， 说明这些对象底层所使用的编码方式， 列出对象从一种编码转换成另一种编码所需的条件， 以及同一个命令在多种不同编码上的实现方法。</p>
 
       
     </div>
@@ -445,9 +691,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/gc/" rel="tag"># gc</a>
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
           
-            <a href="/tags/go/" rel="tag"># go</a>
+            <a href="/tags/redis/" rel="tag"># redis</a>
           
         </div>
       
@@ -460,8 +706,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/16/gc-mark-sweep/" rel="next" title="一张图了解标记清除算法">
-                <i class="fa fa-chevron-left"></i> 一张图了解标记清除算法
+              <a href="/2017/09/17/redis-ziplist/" rel="next" title="redis数据结构-压缩列表">
+                <i class="fa fa-chevron-left"></i> redis数据结构-压缩列表
               </a>
             
           </div>
@@ -470,8 +716,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/08/18/openstack-install-prepare-1/" rel="prev" title="openstack安装准备(一)">
-                openstack安装准备(一) <i class="fa fa-chevron-right"></i>
+              <a href="/2017/09/18/go-basic-iota/" rel="prev" title="go基础-iota">
+                go基础-iota <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -524,8 +770,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -640,6 +895,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对象的类型与编码"><span class="nav-number">2.</span> <span class="nav-text">对象的类型与编码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类型"><span class="nav-number">2.1.</span> <span class="nav-text">类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码和底层实现"><span class="nav-number">2.2.</span> <span class="nav-text">编码和底层实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
