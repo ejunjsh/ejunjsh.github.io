@@ -1311,7 +1311,7 @@
 <p>按数组下标访问元素—get(i)/set(i,e) 的性能很高，这是数组的基本优势。</p>
 <p>直接在数组末尾加入元素—add(e)的性能也高，但如果按下标插入、删除元素—add(i,e), remove(i), remove(e)，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了，这是基本劣势。</p>
 <p>ArrayList是一个相对来说比较简单的数据结构，最重要的一点就是它的自动扩容，可以认为就是我们常说的“动态数组”。<br>来看一段简单的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</div><div class="line">list.add(<span class="string">"语文: 99"</span>);</div><div class="line">list.add(<span class="string">"数学: 98"</span>);</div><div class="line">list.add(<span class="string">"英语: 100"</span>);</div><div class="line">list.remove(<span class="number">0</span>);</div></pre></td></tr></table></figure></p>
-<p>在执行这四条语句时，是这么变化的：<br><a href="http://idiotsky.me/images1/java-arraylist-1.png"><img src="http://idiotsky.me/images1/java-arraylist-1.png" alt=""></a><br>接下来看看几个常用的方法的源码分析。<br>
+<p>在执行这四条语句时，是这么变化的：<br><a href="http://idiotsky.me/images1/java-arraylist-3.png"><img src="http://idiotsky.me/images1/java-arraylist-3.png" alt=""></a><br>接下来看看几个常用的方法的源码分析。<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/07/16/java-arraylist/#more" rel="contents">
