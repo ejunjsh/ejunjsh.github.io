@@ -834,9 +834,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
-        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
+        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
