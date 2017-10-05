@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。 这个系列的第一篇博客专注于介绍对于引擎，运行时以及调用栈的概述。第二篇博客近距离地检测了Google V8 引擎的内部并且提供了一些如何写出更好的JavaScript代码的建议。 在第三篇博客中，我们将会讨论另外一">
+<meta name="keywords" content="javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript是如何工作的(三)">
+<meta property="og:url" content="http://idiotsky.me/2017/10/05/javascript-how-work-3/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。 这个系列的第一篇博客专注于介绍对于引擎，运行时以及调用栈的概述。第二篇博客近距离地检测了Google V8 引擎的内部并且提供了一些如何写出更好的JavaScript代码的建议。 在第三篇博客中，我们将会讨论另外一">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-1.png">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-2.png">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-3.png">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-4.png">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-5.gif">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-6.png">
+<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-7.jpg">
+<meta property="og:updated_time" content="2017-10-05T12:53:16.270Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript是如何工作的(三)">
+<meta name="twitter:description" content="几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。 这个系列的第一篇博客专注于介绍对于引擎，运行时以及调用栈的概述。第二篇博客近距离地检测了Google V8 引擎的内部并且提供了一些如何写出更好的JavaScript代码的建议。 在第三篇博客中，我们将会讨论另外一">
+<meta name="twitter:image" content="http://idiotsky.me/images1/javascript-how-work-3-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2017/10/05/javascript-how-work-3/"/>
+
+
+
+
+
+  <title>JavaScript是如何工作的(三) | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/10/05/javascript-how-work-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JavaScript是如何工作的(三)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-05T20:01:15+08:00">
+                05 Oct 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。</p>
+<p>这个系列的第一篇博客专注于介绍<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">对于引擎，运行时以及调用栈的概述</a>。<a href="http://idiotsky.me/2017/08/26/javascript-how-work-2/">第二篇博客近距离地检测了Google V8 引擎的内部</a>并且提供了一些如何写出更好的JavaScript代码的建议。</p>
+<p>在第三篇博客中，我们将会讨论另外一个关键的话题。这个话题由于随着编程语言的逐渐成熟和复杂化，越来越被开发者所忽视，这个话题就是在日常工作中使用到的——内存管理。</p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>语言，比如C，具有低层次的内存管理方法，比如<code>malloc()</code>以及<code>free()</code>。开发者利用这些方法精确地为操作系统分配以及释放内存。</p>
+<p>同时，JavaScript会在创建一些变量（对象，字符串等等）的时候分配内存，并且会在这些不被使用之后“自动地”释放这些内存，这个过程被称为<em>垃圾收集</em>。这个看起来“自动化的”特性其实就是产生误解的原因，并且给JavaScript（以及其他高层次语言）开发者一个假象，他们不需要关心内存管理。<strong>大错特错。</strong></p>
+<p>即使是使用高层次语言，开发者应该对于内存管理有一定的理解（或者最基本的理解）。有时候自动的内存管理会存在一些问题（比如一些bug或者垃圾收集器的一些限制等等），对于这些开发者必须能够理解从而能够合适地处理（或者使用最小的代价以及代码债务去绕过这个问题）。<br><a id="more"></a></p>
+<h1 id="内存生命周期"><a href="#内存生命周期" class="headerlink" title="内存生命周期"></a>内存生命周期</h1><p>不管你在使用什么编程语言，内存的生命周期基本上都是一样的：</p>
+<p><a href="http://idiotsky.me/images1/javascript-how-work-3-1.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-1.png" alt=""></a></p>
+<p>下面是对于周期中每一步所发生的情况的概述：</p>
+<ul>
+<li><strong>分配内存</strong>——操作系统为你的程序分配内存并且允许其使用。在低层次语言中（比如C），这正是开发者应该处理的操作。在高层次的语言，然而，就由语言帮你实现了。</li>
+<li><strong>使用内存</strong>——当你的程序确实在使用之前分配的内存的阶段。当你在使用你代码里面分配的变量的时候会发生<strong>读</strong>以及<strong>写</strong>操作。</li>
+<li><strong>释放内存</strong>——这个阶段就是释放你不再需要的内存，从而这些内存被释放并且能够再次被使用。和<strong>分配内存</strong>操作一样，这在低层次的语言也是开发者需要明确的操作。</li>
+</ul>
+<p>对于调用栈以及内存堆有一个快速的概念认识，你可以阅读我们<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">关于这个话题的第一篇博客</a>。</p>
+<h1 id="什么是内存？"><a href="#什么是内存？" class="headerlink" title="什么是内存？"></a>什么是内存？</h1><p>在我们讲述JavaScript内存之前，我们将简要地讨论一下内存是什么以及它们是如何在 nutshell 中工作的。</p>
+<p>在硬件层次上，计算机内存由大量的 <a href="https://en.wikipedia.org/wiki/Flip-flop_%28electronics%29" target="_blank" rel="external">寄存器</a> 组成。每一个寄存器都包含一些晶体管并且能够存储一比特。单独的寄存器可以通过<strong>独特的标识符</strong>去访问，因此我们能够读取以及重写它们。因此，从概念上来说，我们可以认为我们的整个计算机内存就是一个我们能够读写的大型比特数组。</p>
+<p>因为作为人类，我们不擅长直接基于比特进行思考以及算术，我们将它们组织成大规模群组，它们在一起可以代表一个数字。8个比特称为一个字节。除了字节，还有词（有时候是16比特，有时候是32比特）。</p>
+<p>内存中存储了很多东西：</p>
+<ol>
+<li>所有程序使用的变量和其他数据</li>
+<li>程序的代码，包括操作系统的代码。</li>
+</ol>
+<p>编译器和操作系统共同合作为你处理大部分的内存管理，但是我们建议你应该了解其内部的运行原理。</p>
+<p>当你编译你的代码的时候，编译器将会检查原始数据类型并且提前计算好它们需要多少内存。需要的内存被分配给程序，这被称为<strong>栈空间</strong>。这些被分配给变量的空间被称为栈空间，因为一旦函数被调用，它们的内存就会增加到现有内存的上面。当它们终止的时候，它们就会以后进先出(LIFO)的顺序移除。比如，考虑下面的声明。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> n; <span class="comment">// 4 bytes</span></div><div class="line"><span class="keyword">int</span> x[<span class="number">4</span>]; <span class="comment">// array of 4 elements, each 4 bytes</span></div><div class="line"><span class="keyword">double</span> m; <span class="comment">// 8 bytes</span></div></pre></td></tr></table></figure>
+<p>编译器能够立即计算出代码需要</p>
+<p>4 + 4 × 4 + 8 = 28 字节</p>
+<blockquote>
+<p>那就是它如何对于现有的整形以及双浮点型工作。大约20年前，整形典型都是2个字节，双浮点型是4个字节。你的代码不应该取决于当下基本数据类型的大小。</p>
+</blockquote>
+<p>编译器将会插入能够与操作系统交互的代码，从而在栈上获取你需要存储变量需要的字节数。</p>
+<p>在上述的例子中，编译器知道每一个变量的准确的内存地址。事实上，无论我们何时写变量 n ，这都会在内部转化为类似于“内存地址 4127963”的东西。</p>
+<p>注意如果我们希望在这访问 x[4] 我们将会需要访问和 m 相关联的数据。这是因为我们在访问数组里面并不存在的元素——它比数组实际分配的最后一个元素 x[3] 要多4个字节，并且最后可能是阅读（或者重写）一些 m 的比特。这将很可能给程序的其他部分带来一些不良的后果。<br><a href="http://idiotsky.me/images1/javascript-how-work-3-2.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-2.png" alt=""></a></p>
+<p>当函数调用其它函数的时候，当它被调用的时候都会获取它自己的堆栈块。它在那保存了它所有的局部变量，但是还会有一个程序计数器记录它执行的位置。当这个函数执行完毕，它的内存块就可以再次用于其他目的。</p>
+<h3 id="动态分配"><a href="#动态分配" class="headerlink" title="动态分配"></a>动态分配</h3><p>不幸的是，当我们在编译的时候不知道变量需要多少内存的话事情可能就不那么简单。假设我们想做下面的事情：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">int</span> n = readInput(); <span class="comment">// reads input from the user</span></div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment">// create an array with "n" elements</span></div></pre></td></tr></table></figure></p>
+<p>在此，在编译阶段中，编译器就没有办法知道数组需要多少内存，因为它取决于用户的输入。</p>
+<p>因此，它就不能够为栈上的变量分配空间。相反，我们的程序需要明确地询问操作运行时需要的空间数量。这个内存是从<strong>堆空间</strong>中分配出来的。动态内存和静态内存分配的区别总结如下表格：<br><a href="http://idiotsky.me/images1/javascript-how-work-3-3.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-3.png" alt=""></a></p>
+<p>为了深入地理解动态内存分配是如何工作的，我们需要花费更多的时间在<strong>指针</strong>，这个可能有点偏离这篇博客的话题。如果你感兴趣了解更多，在评论里面告诉我，我将会在后续的博客中挖掘更多的细节。</p>
+<h3 id="JavaScript中的分配"><a href="#JavaScript中的分配" class="headerlink" title="JavaScript中的分配"></a>JavaScript中的分配</h3><p>现在我们将解释JavaScript中的第一步（分配内存）。</p>
+<p>JavaScript 将开发者从内存分配的处理中解放出来——JavaScript自身可以利用声明变量来完成这些任务。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> n = <span class="number">374</span>; <span class="comment">// allocates memory for a number</span></div><div class="line"><span class="keyword">var</span> s = <span class="string">'sessionstack'</span>; <span class="comment">// allocates memory for a string </span></div><div class="line"></div><div class="line"><span class="keyword">var</span> o = &#123;</div><div class="line">  <span class="attr">a</span>: <span class="number">1</span>,</div><div class="line">  <span class="attr">b</span>: <span class="literal">null</span></div><div class="line">&#125;; <span class="comment">// allocates memory for an object and its contained values</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="literal">null</span>, <span class="string">'str'</span>];  <span class="comment">// (like object) allocates memory for the</span></div><div class="line">                           <span class="comment">// array and its contained values</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params">a</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> a + <span class="number">3</span>;</div><div class="line">&#125; <span class="comment">// allocates a function (which is a callable object)</span></div><div class="line"></div><div class="line"><span class="comment">// function expressions also allocate an object</span></div><div class="line">someElement.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  someElement.style.backgroundColor = <span class="string">'blue'</span>;</div><div class="line">&#125;, <span class="literal">false</span>);</div></pre></td></tr></table></figure>
+<p>一些函数调用也会导致一些对象的分配：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>(); <span class="comment">// allocates a Date object</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> e = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>); <span class="comment">// allocates a DOM element</span></div></pre></td></tr></table></figure>
+<p>能够分配新的值或者对象的方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> s1 = <span class="string">'sessionstack'</span>;</div><div class="line"><span class="keyword">var</span> s2 = s1.substr(<span class="number">0</span>, <span class="number">3</span>); <span class="comment">// s2 is a new string</span></div><div class="line"><span class="comment">// Since strings are immutable, </span></div><div class="line"><span class="comment">// JavaScript may decide to not allocate memory, </span></div><div class="line"><span class="comment">// but just store the [0, 3] range.</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> a1 = [<span class="string">'str1'</span>, <span class="string">'str2'</span>];</div><div class="line"><span class="keyword">var</span> a2 = [<span class="string">'str3'</span>, <span class="string">'str4'</span>];</div><div class="line"><span class="keyword">var</span> a3 = a1.concat(a2); </div><div class="line"><span class="comment">// new array with 4 elements being</span></div><div class="line"><span class="comment">// the concatenation of a1 and a2 elements</span></div></pre></td></tr></table></figure>
+<h3 id="在JavaScript中使用内存"><a href="#在JavaScript中使用内存" class="headerlink" title="在JavaScript中使用内存"></a>在JavaScript中使用内存</h3><p>基本上在JavaScript中分配内存，就意味着在其中读写。</p>
+<p>这可以通过对一个变量或者一个对象的属性甚至是向函数传递一个参数来完成。</p>
+<h3 id="当内存不再需要的时候释放它"><a href="#当内存不再需要的时候释放它" class="headerlink" title="当内存不再需要的时候释放它"></a>当内存不再需要的时候释放它</h3><p>大多数的内存管理的问题就来自于这个阶段。</p>
+<p>最困难的任务就是如何知道何时被分配的不再需要了。它经常需要开发者决定在程序的什么地方某段内存不再需要了并且对其进行释放。</p>
+<p>高层次语言内嵌了一个称为<strong>垃圾收集器</strong>的软件，他的任务就是跟踪内存分配并且用于需找不再需要的分配过的内存，并且自动地对其进行释放。</p>
+<p>不幸的是，这个过程是一个近似，因为知道是否某块内存是需要的问题是<a href="http://en.wikipedia.org/wiki/Decidability_%28logic%29" target="_blank" rel="external">不可决定的</a>（无法通过算法解决）</p>
+<p>大多数的垃圾收集器通过收集再也无法访问的内存工作，比如：指向它的所有变量都超出了作用域。然而，这依然是对于可以收集的内存空间的预估，因为在任何位置仍可能一些变量在作用域内指向这个内存，然而它再也不能被访问了。</p>
+<h3 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h3><p>由于找到一些是“不再需要的”是不可决定的事实，垃圾收集实现了对一般问题的解决方案的限制。这一节将会解释理解主要的垃圾收集算法以及它们的限制的需要注意的事项。</p>
+<h3 id="内存引用"><a href="#内存引用" class="headerlink" title="内存引用"></a>内存引用</h3><p>垃圾收集算法依赖的主要概念之一就是<strong>引用</strong>。</p>
+<p>在内存管理的上下文中，一个对象被称为是对于另外一个对象的引用，如果前者可以访问后者（隐含或明确的）。例如，一个JavaScript对象都有一个指向其<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain" target="_blank" rel="external">原型</a>的引用（<strong>隐含的引用</strong>）</p>
+<p>在这个上下文中，“对象”的概念扩展到比普通的JavaScript对象要广并且包括函数作用域（或者全局<strong>词法作用域</strong>）。</p>
+<blockquote>
+<p> 词法作用域定义了变量名称是如何在嵌套函数中解析的：内部函数包含了父函数的作用域即使父函数已经返回了。</p>
+<h3 id="基于引用计数的垃圾收集器"><a href="#基于引用计数的垃圾收集器" class="headerlink" title="基于引用计数的垃圾收集器"></a>基于引用计数的垃圾收集器</h3></blockquote>
+<p>这是最简单的垃圾收集器算法。如果没有引用指向这个对象的时候，这个对象就被认为是“可以作为垃圾收集”。</p>
+<p>请看如下代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> o1 = &#123;</div><div class="line">  <span class="attr">o2</span>: &#123;</div><div class="line">    <span class="attr">x</span>: <span class="number">1</span></div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 2 objects are created. </span></div><div class="line"><span class="comment">// 'o2' is referenced by 'o1' object as one of its properties.</span></div><div class="line"><span class="comment">// None can be garbage-collected</span></div><div class="line"><span class="keyword">var</span> o3 = o1; <span class="comment">// the 'o3' variable is the second thing that </span></div><div class="line">            <span class="comment">// has a reference to the object pointed by 'o1'. </span></div><div class="line">o1 = <span class="number">1</span>;      <span class="comment">// now, the object that was originally in 'o1' has a         </span></div><div class="line">            <span class="comment">// single reference, embodied by the 'o3' variable</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> o4 = o3.o2; <span class="comment">// reference to 'o2' property of the object.</span></div><div class="line">                <span class="comment">// This object has now 2 references: one as</span></div><div class="line">                <span class="comment">// a property. </span></div><div class="line">                <span class="comment">// The other as the 'o4' variable</span></div><div class="line"></div><div class="line">o3 = <span class="string">'374'</span>; <span class="comment">// The object that was originally in 'o1' has now zero</span></div><div class="line">            <span class="comment">// references to it. </span></div><div class="line">            <span class="comment">// It can be garbage-collected.</span></div><div class="line">            <span class="comment">// However, what was its 'o2' property is still</span></div><div class="line">            <span class="comment">// referenced by the 'o4' variable, so it cannot be</span></div><div class="line">            <span class="comment">// freed.</span></div><div class="line"></div><div class="line">o4 = <span class="literal">null</span>; <span class="comment">// what was the 'o2' property of the object originally in</span></div><div class="line">           <span class="comment">// 'o1' has zero references to it. </span></div><div class="line">           <span class="comment">// It can be garbage collected.</span></div></pre></td></tr></table></figure>
+<h3 id="循环在产生问题"><a href="#循环在产生问题" class="headerlink" title="循环在产生问题"></a>循环在产生问题</h3><p>当遇到循环的时候就会有一个限制。在下面的实例之中，创建两个对象，并且互相引用，因此就会产生一个循环。当函数调用结束之后它们会走出作用域之外，因此它们就没什么用并且可以被释放。但是，基于引用计数的算法认为这两个对象都会被至少引用一次，所以它俩都不会被垃圾收集器收集。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> o1 = &#123;&#125;;</div><div class="line">  <span class="keyword">var</span> o2 = &#123;&#125;;</div><div class="line">  o1.p = o2; <span class="comment">// o1 references o2</span></div><div class="line">  o2.p = o1; <span class="comment">// o2 references o1. This creates a cycle.</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">f();</div></pre></td></tr></table></figure>
+<p><a href="http://idiotsky.me/images1/javascript-how-work-3-4.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-4.png" alt=""></a></p>
+<h3 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h3><p>为了决定哪个对象是需要的，算法会决定是否这个对象是可访问的。</p>
+<p>这个算法由以下步骤组成：</p>
+<ol>
+<li>这个垃圾收集器构建一个“roots”列表。Root是全局变量，被代码中的引用所保存。在 JavaScript中，“window”就是这样的作为root的全局变量的例子。</li>
+<li>所有的root都会被监测并且被标志成活跃的（比如不是垃圾）。所有的子代也会递归地被监测。所有能够由root访问的一切都不会被认为是垃圾。</li>
+<li>所有不再被标志成活跃的内存块都被认为是垃圾。这个收集器现在就可以释放这些内存并将它们返还给操作系统。</li>
+</ol>
+<p><a href="http://idiotsky.me/images1/javascript-how-work-3-5.gif"><img src="http://idiotsky.me/images1/javascript-how-work-3-5.gif" alt=""></a></p>
+<p>这个算法要优于之前的因为“一个具有0引用的对象”可以让一个对象不能够再被访问。但是相反的却不一定成立，比如我们遇到循环的时候。</p>
+<p>在2012年，所有的现代浏览器都使用标记-清除垃圾收集器。过去几年，JavaScript垃圾收集（代数/增量/并行/并行垃圾收集）领域的所有改进都是对该算法（标记和扫描）的实现进行了改进，但并没有对垃圾收集算法本身的改进， 其目标是确定一个对象是否可达。</p>
+<p><a href="https://en.wikipedia.org/wiki/Tracing_garbage_collection" target="_blank" rel="external">在这篇文章中</a>，你可以得到更多关于垃圾收集追踪并且也覆盖到了关于标记-清除算法的优化。</p>
+<h3 id="循环不再是一个问题"><a href="#循环不再是一个问题" class="headerlink" title="循环不再是一个问题"></a>循环不再是一个问题</h3><p>在上述的第一个例子中，在函数调用返回之后，这两个对象不能够被全局对象所访问。因此，垃圾收集器就会发现它们不能够被访问了。</p>
+<p><a href="http://idiotsky.me/images1/javascript-how-work-3-6.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-6.png" alt=""></a></p>
+<p>即使在这两个对象之间存在着引用，它们再也不能从root访问了。</p>
+<h3 id="列举垃圾收集器的直观行为"><a href="#列举垃圾收集器的直观行为" class="headerlink" title="列举垃圾收集器的直观行为"></a>列举垃圾收集器的直观行为</h3><p>虽然垃圾收集器很方便，但它们自己也有自己的代价。 其中一个是非确定论。 换句话说，GC是不可预测的。 你不能真正地告诉你什么时候会收集。 这意味着在某些情况下，程序会使用实际需要的更多内存。 在其他情况下，特别敏感的应用程序可能会引起短暂暂停。 虽然非确定性意味着在执行集合时无法确定，但大多数GC实现共享在分配期间执行收集遍历的常见模式。 如果没有执行分配，大多数GC保持空闲状态。 考虑以下情况：</p>
+<ol>
+<li>执行相当大的一组分配。</li>
+<li>这些元素中的大多数（或全部）被标记为不可访问（假设我们将指向我们不再需要的缓存的引用置空）。</li>
+<li>不再执行分配。</li>
+</ol>
+<p>在这种情况下，大多数GC不会再运行收集处理。换句话说，即使存在对于收集器来说不可访问的引用，它们也不会被收集器所认领。严格意义来说这并不是泄露，但是依然会导致比平常更多的内存使用。</p>
+<h3 id="什么是内存泄露？"><a href="#什么是内存泄露？" class="headerlink" title="什么是内存泄露？"></a>什么是内存泄露？</h3><p>实质上，内存泄漏可以被定义为应用程序不再需要的内存，但是由于某些原因不会返回到操作系统或可用内存池。</p>
+<p><a href="http://idiotsky.me/images1/javascript-how-work-3-7.jpg"><img src="http://idiotsky.me/images1/javascript-how-work-3-7.jpg" alt=""></a></p>
+<p>编程语言有支持管理内存的不同方法。 然而，某块内存是否被使用实际上是一个<a href="ttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management#Release_when_the_memory_is_not_needed_anymore" target="_blank" rel="external">不可判定的问题</a>。 换句话说，只有开发人员可以清楚一个内存是否可以返回到操作系统。</p>
+<p>某些编程语言提供了帮助开发者执行此操作的功能。其他的则期望开发人员能够完全明确何时使用一块内存。 维基百科有关于<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="external">手动</a>和<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="external">自动</a>内存管理的好文章。</p>
+<h3 id="四种常见的JavaScript泄露"><a href="#四种常见的JavaScript泄露" class="headerlink" title="四种常见的JavaScript泄露"></a>四种常见的JavaScript泄露</h3><h3 id="1-全局变量"><a href="#1-全局变量" class="headerlink" title="1: 全局变量"></a>1: 全局变量</h3><p>JavaScript 使用一种有趣的方式处理未声明的变量：一个未声明变量的引用会在<em>全局</em>对象内部产生一个新的变量。在浏览器的情况，这个全局变量就会是window。换句话说：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">arg</span>) </span>&#123;</div><div class="line">    bar = <span class="string">"some text"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>等同于：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">arg</span>) </span>&#123;</div><div class="line">    <span class="built_in">window</span>.bar = <span class="string">"some text"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果bar被期望仅仅在foo函数作用域内保持对变量的引用，并且你忘记使用var去声明它，一个意想不到的全局变量就产生了。</p>
+<p>在这个例子中，泄露就仅仅是一个字符串并不会带来太多危害，但是它可能会变得更糟。</p>
+<p>另外一种可能产生意外的全局变量的方式是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.var1 = <span class="string">"potential accidental global"</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Foo called on its own, this points to the global object (window)</span></div><div class="line"><span class="comment">// rather than being undefined.</span></div><div class="line">foo();</div></pre></td></tr></table></figure>
+<blockquote>
+<p> 为了阻止这些错误的发生，可以在js文件头部添加’use strict’。这将会使用严格模式来解析 JavaScript 从而阻止意外的全局变量。<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode" target="_blank" rel="external">了解更多</a>关于JavaScript执行的模式。</p>
+</blockquote>
+<p>即使我们讨论了未预期的全局变量，但仍然有很多代码用显式的全局变量填充。 这些定义是不可收集的（除非分配为null或重新分配）。 特别是，用于临时存储和处理大量信息的全局变量值得关注。 如果你必须使用全局变量来存储大量数据，请确保在完成之后<strong>将其分配为null或重新分配</strong>。</p>
+<h3 id="2-被遗忘的计时器和回调"><a href="#2-被遗忘的计时器和回调" class="headerlink" title="2: 被遗忘的计时器和回调"></a>2: 被遗忘的计时器和回调</h3><p><code>setInterval</code> 在 JavaScript 中是经常被使用的。</p>
+<p>大多数提供观察者和其他模式的回调函数库都会在调用自己的实例变得无法访问之后对其任何引用也设置为不可访问。 但是在<code>setInterval</code>的情况下，这样的代码很常见：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> serverData = loadData();</div><div class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> renderer = <span class="built_in">document</span>.getElementById(<span class="string">'renderer'</span>);</div><div class="line">    <span class="keyword">if</span>(renderer) &#123;</div><div class="line">        renderer.innerHTML = <span class="built_in">JSON</span>.stringify(serverData);</div><div class="line">    &#125;</div><div class="line">&#125;, <span class="number">5000</span>); <span class="comment">//This will be executed every ~5 seconds.</span></div></pre></td></tr></table></figure>
+<p>这个例子说明了计时器可能发生的情况：计时器可能会产生再也不被需要的节点或者数据的引用。</p>
+<p><code>renderer</code>所代表的对象在未来可能被移除，让部分interval 处理器中代码变得不再被需要。然而，这个处理器不能够被收集因为interval依然活跃的（这个interval需要被停止从而表面这种情况）。如果这个interval处理器不能够被收集，那么它的依赖也不能够被收集。这意味这存储大量数据的<code>severData</code>也不能够被收集。</p>
+<p>在这种观察者的情况下，做出准确的调用从而在不需要它们的时候立即将其移除是非常重要的（或者相关的对象被置为不可访问的）。</p>
+<p>过去，以前特别重要的是某些浏览器（好的老IE 6）无法管理好循环引用（有关更多信息，请参见下文）。 如今，大多数浏览器一旦观察到的对象变得无法访问，就能收集观察者处理器，即使侦听器没有被明确删除。 但是，在处理对象之前，明确删除这些观察者仍然是一个很好的做法。 例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> element = <span class="built_in">document</span>.getElementById(<span class="string">'launch-button'</span>);</div><div class="line"><span class="keyword">var</span> counter = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">onClick</span>(<span class="params">event</span>) </span>&#123;</div><div class="line">   counter++;</div><div class="line">   element.innerHtml = <span class="string">'text '</span> + counter;</div><div class="line">&#125;</div><div class="line"></div><div class="line">element.addEventListener(<span class="string">'click'</span>, onClick);</div><div class="line"></div><div class="line"><span class="comment">// Do stuff</span></div><div class="line"></div><div class="line">element.removeEventListener(<span class="string">'click'</span>, onClick);</div><div class="line">element.parentNode.removeChild(element);</div><div class="line"></div><div class="line"><span class="comment">// Now when element goes out of scope,</span></div><div class="line"><span class="comment">// both element and onClick will be collected even in old browsers // that don't handle cycles well.</span></div></pre></td></tr></table></figure>
+<p>当今，现在浏览器（报错IE和Edge）都使用了现代的垃圾收集算法，其能够检测到这些循环并且进行适宜的处理。换句话说，再也不是严格需要在将节点置为不可访问之前调用removeEventListener 。</p>
+<p>框架和库（如jQuery）在处理节点之前（在为其使用特定的API时）会删除侦听器。 这是由库内部处理的，这也确保没有泄漏，即使在有问题的浏览器下运行，如…是的，IE 6。</p>
+<h3 id="3-闭包"><a href="#3-闭包" class="headerlink" title="3: 闭包"></a>3: 闭包</h3><p>JavaScript 开发的一个关键方面是闭包：一个可以访问外部（封闭）函数变量的内部函数。 由于JavaScript运行时的实现细节，可以通过以下方式泄漏内存：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">var</span> theThing = <span class="literal">null</span>;</div><div class="line"> <span class="keyword">var</span> replaceThing = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line"> 	<span class="keyword">var</span> originalThing = theThing;</div><div class="line"> 	<span class="keyword">var</span> unused = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    	<span class="keyword">if</span> (originalThing) <span class="comment">// a reference to 'originalThing'</span></div><div class="line">      		<span class="built_in">console</span>.log(<span class="string">"hi"</span>);</div><div class="line">  	&#125;;</div><div class="line"></div><div class="line">  	theThing = &#123;</div><div class="line">    	<span class="attr">longStr</span>: <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>).join(<span class="string">'*'</span>),</div><div class="line">    	<span class="attr">someMethod</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">      		<span class="built_in">console</span>.log(<span class="string">"message"</span>);</div><div class="line">    	&#125;</div><div class="line">  &#125;;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">setInterval(replaceThing, <span class="number">1000</span>);</div></pre></td></tr></table></figure>
+<p>这个代码段会做一件事情：每次 <code>replaceThing</code> 被调用时，<code>theThing</code> 都会获取一个一个包含一个大数组的以及一个新的闭包（<code>someMethod</code>）。同时，<code>unused</code> 会保持一个指向<code>originalThing</code>引用的闭包（从上一个调用的<code>theThing</code>到<code>replaceThing</code>）。可能已经很迷惑了，是不是？重要的事情是<strong>一旦在相同的父级作用域为闭包产生作用域，这个作用域就会被共享</strong>。</p>
+<p>在这种情况下，为<code>someMethod</code>闭包产生的作用域就会被<code>unused</code> 所共享。<code>unused</code> 具有对于<code>originaThing</code>的引用。即使 <code>unused</code>  不再被使用，<code>someMethod</code>依然可以通过<code>replaceThing</code>作用域之外的<code>theThing</code>来使用。并且由于<code>somethod</code>和<code>unused</code> 共享闭包作用域，unused指向originalThing的引用强迫其保持活跃（两个闭包之间的整个共享作用域）。这将会阻止垃圾手机。</p>
+<p>当这个代码段重复运行时，可以观察到内存使用量的稳定增长。 当GC运行时，这不会变小。 实质上，创建了一个关闭的链接列表（其root以TheThing变量的形式），并且这些闭包的范围中的每一个都对大数组进行间接引用，导致相当大的泄漏。</p>
+<p>这个问题由Meteor团队发现，他们有<a href="https://blog.meteor.com/an-interesting-kind-of-javascript-memory-leak-8b47d2e7f156" target="_blank" rel="external">一篇很好的文章</a>，详细描述了这个问题。</p>
+<h3 id="4-DOM-之外的引用"><a href="#4-DOM-之外的引用" class="headerlink" title="4: DOM 之外的引用"></a>4: DOM 之外的引用</h3><p>有时将DOM节点存储在数据结构中可能是有用的。 假设要快速更新表中的几行内容。 存储对字典或数组中每个DOM行的引用可能是有意义的。 当发生这种情况时，会保留对同一DOM元素的两个引用：一个在DOM树中，另一个在字典中。 如果将来某个时候您决定删除这些行，则需要使两个引用置为不可访问。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> elements = &#123;</div><div class="line">    <span class="attr">button</span>: <span class="built_in">document</span>.getElementById(<span class="string">'button'</span>),</div><div class="line">    <span class="attr">image</span>: <span class="built_in">document</span>.getElementById(<span class="string">'image'</span>)</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">doStuff</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    image.src = <span class="string">'http://example.com/image_name.png'</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">removeImage</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// The image is a direct child of the body element.</span></div><div class="line">    <span class="built_in">document</span>.body.removeChild(<span class="built_in">document</span>.getElementById(<span class="string">'image'</span>));</div><div class="line"></div><div class="line">    <span class="comment">// At this point, we still have a reference to #button in the</span></div><div class="line">    <span class="comment">//global elements object. In other words, the button element is</span></div><div class="line">    <span class="comment">//still in memory and cannot be collected by the GC.</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>还有一个额外的考虑，当涉及对DOM树内部的内部或叶节点的引用时，必须考虑这一点。 假设你在JavaScript代码中保留对表格特定单元格（<td>标记）的引用。 有一天，你决定从DOM中删除该表，但保留对该单元格的引用。 直观地，可以假设GC将收集除了该单元格之外的所有内容。 实际上，这不会发生：该单元格是该表的子节点，并且孩子们保持对父代的引用。 也就是说，从JavaScript代码引用表格单元会导致整个表保留在内存中。 保持对DOM元素的引用时需要仔细考虑。</td></p>
+<p>参考<br><a href="https://segmentfault.com/a/1190000011229300" target="_blank" rel="external">https://segmentfault.com/a/1190000011229300</a><br><a href="https://blog.sessionstack.com/how-javascript-works-memory-management-how-to-handle-4-common-memory-leaks-3f28b94cfbec" target="_blank" rel="external">https://blog.sessionstack.com/how-javascript-works-memory-management-how-to-handle-4-common-memory-leaks-3f28b94cfbec</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/29/mysql-optimization-mechanism/" rel="next" title="MySQL优化原理">
+                <i class="fa fa-chevron-left"></i> MySQL优化原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内存生命周期"><span class="nav-number">2.</span> <span class="nav-text">内存生命周期</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是内存？"><span class="nav-number">3.</span> <span class="nav-text">什么是内存？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态分配"><span class="nav-number">3.0.1.</span> <span class="nav-text">动态分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript中的分配"><span class="nav-number">3.0.2.</span> <span class="nav-text">JavaScript中的分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在JavaScript中使用内存"><span class="nav-number">3.0.3.</span> <span class="nav-text">在JavaScript中使用内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#当内存不再需要的时候释放它"><span class="nav-number">3.0.4.</span> <span class="nav-text">当内存不再需要的时候释放它</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#垃圾收集器"><span class="nav-number">3.0.5.</span> <span class="nav-text">垃圾收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存引用"><span class="nav-number">3.0.6.</span> <span class="nav-text">内存引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于引用计数的垃圾收集器"><span class="nav-number">3.0.7.</span> <span class="nav-text">基于引用计数的垃圾收集器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环在产生问题"><span class="nav-number">3.0.8.</span> <span class="nav-text">循环在产生问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标记-清除算法"><span class="nav-number">3.0.9.</span> <span class="nav-text">标记-清除算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环不再是一个问题"><span class="nav-number">3.0.10.</span> <span class="nav-text">循环不再是一个问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#列举垃圾收集器的直观行为"><span class="nav-number">3.0.11.</span> <span class="nav-text">列举垃圾收集器的直观行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是内存泄露？"><span class="nav-number">3.0.12.</span> <span class="nav-text">什么是内存泄露？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四种常见的JavaScript泄露"><span class="nav-number">3.0.13.</span> <span class="nav-text">四种常见的JavaScript泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-全局变量"><span class="nav-number">3.0.14.</span> <span class="nav-text">1: 全局变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-被遗忘的计时器和回调"><span class="nav-number">3.0.15.</span> <span class="nav-text">2: 被遗忘的计时器和回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-闭包"><span class="nav-number">3.0.16.</span> <span class="nav-text">3: 闭包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-DOM-之外的引用"><span class="nav-number">3.0.17.</span> <span class="nav-text">4: DOM 之外的引用</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
