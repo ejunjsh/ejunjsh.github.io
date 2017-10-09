@@ -306,6 +306,19 @@
       </tags>
   </entry>
   <entry>
+    <title><![CDATA[java数据结构-红黑树]]></title>
+    <url>%2F2017%2F07%2F20%2Fjava-red-black-tree%2F</url>
+    <content type="text"><![CDATA[]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>数据结构</tag>
+        <tag>红黑树</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[利用树莓派实现一个能播放天气的闹钟]]></title>
     <url>%2F2017%2F07%2F18%2Fraspberry-weather-clock%2F</url>
     <content type="text"><![CDATA[前提你要有个pi😄 获取天气接口这里我是用图灵机器人来获取天气的接口，你可以自己上去注册一个，下面代码URL的Key是我注册的机器人给的。1234567891011def getWeatherText(): try: response = requests.get( "http://www.tuling123.com/openapi/api?key=652ae4a714794fe6b01faa990d7a981f&amp;info=%s" % "广州今日天气") json = response.json() if json["code"] == 100000: return json["text"] else: return "" except: return "" 播放文字利用百度的接口可以转换文本为语音。默认只有女声12345def text2voice(text): url = 'http://tts.baidu.com/text2audio?idx=1&amp;tex=&#123;0&#125;&amp;cuid=baidu_speech_' \ 'demo&amp;cod=2&amp;lan=zh&amp;ctp=1&amp;pdt=1&amp;spd=4&amp;per=4&amp;vol=5&amp;pit=5'.format(text) # 用mplayer播放语音 os.system('mplayer "%s"' % url) 安装播放媒体软件上面代码你看到的mplayer,就是用来播放语音的，传个url作为参数12sudo apt-get install mplayerusage: mplayer [url] 播放音乐有了上面这个神器，你可以给播报语音前后加一首音乐😄12def playMusic(path): os.system('mplayer %s' % path) 总结利用上面的东东，可以组合些好玩的东西了，至于闹钟的唤醒，可以cron job 做，也可以代码里面实现，enjoy…😄全部代码地址 https://github.com/ejunjsh/raspberrypi-code/blob/master/clock/weather.py]]></content>
@@ -895,9 +908,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
-        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
+        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
