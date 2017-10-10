@@ -254,8 +254,8 @@
         <category>go</category>
       </categories>
       <tags>
-        <tag>gc</tag>
         <tag>go</tag>
+        <tag>gc</tag>
       </tags>
   </entry>
   <entry>
@@ -300,15 +300,15 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
         <tag>NAS</tag>
       </tags>
   </entry>
   <entry>
     <title><![CDATA[java数据结构-红黑树]]></title>
     <url>%2F2017%2F07%2F20%2Fjava-red-black-tree%2F</url>
-    <content type="text"><![CDATA[]]></content>
+    <content type="text"><![CDATA[由于treemap 和 treeset的实现都用到红黑树，所以先讲讲红黑树。]]></content>
       <categories>
         <category>java</category>
       </categories>
@@ -326,8 +326,8 @@
         <category>raspberrypi</category>
       </categories>
       <tags>
-        <tag>python</tag>
         <tag>raspberrypi</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -908,9 +908,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
+        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
-        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
