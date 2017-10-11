@@ -254,8 +254,8 @@
         <category>go</category>
       </categories>
       <tags>
-        <tag>go</tag>
         <tag>gc</tag>
+        <tag>go</tag>
       </tags>
   </entry>
   <entry>
@@ -920,9 +920,9 @@
       </categories>
       <tags>
         <tag>awk</tag>
+        <tag>grep</tag>
         <tag>kill</tag>
         <tag>ps</tag>
-        <tag>grep</tag>
         <tag>killall</tag>
         <tag>pkill</tag>
         <tag>pgrep</tag>
