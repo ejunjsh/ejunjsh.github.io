@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="引言我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：12345678#include &amp;lt;stdio.h&amp;gt;int main() &amp;#123;  int x = 10;  int y = 100;  printf(&quot;x + y = %d&quot;, x + y);  return 0;&amp;#125; 大家都能理解上面这段 C 语言代码完成的功能，但是…这段">
 <meta property="og:image" content="http://idiotsky.me/images1/asm-learning-road-1-1.png">
-<meta property="og:updated_time" content="2017-10-12T12:12:50.155Z">
+<meta property="og:updated_time" content="2017-10-17T14:04:11.689Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（1）">
 <meta name="twitter:description" content="引言我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：12345678#include &amp;lt;stdio.h&amp;gt;int main() &amp;#123;  int x = 10;  int y = 100;  printf(&quot;x + y = %d&quot;, x + y);  return 0;&amp;#125; 大家都能理解上面这段 C 语言代码完成的功能，但是…这段">
@@ -433,11 +433,11 @@
 <li>数据段（data section）</li>
 <li>代码段（text section）</li>
 </ul>
-<p>数据段用来定义常量（constant），常量是在运行时不会改变的数据。你可以定义数字或其他常量等等，声明一个数据段的语法如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">section .data</div></pre></td></tr></table></figure></p>
-<p>代码段是存放代码（code）的，该段必须以 global _start 开始，告诉内核这里是程序开始执行的地方。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">section .text</div><div class="line">global _start</div><div class="line">_start:</div></pre></td></tr></table></figure></p>
-<p>注释是以 ; 开始。每个 NASM 代码行包含下面四个字段的组合：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[label:] instruction [operands] [; comment]</div></pre></td></tr></table></figure></p>
-<p>中括号括起来的字段表示是可选的。基本 NASM 指令由两部分组成，第一部分是需要执行指令的名字，第二部分是该指令的操作数。例如：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MOV COUNT, 48  ;将数值 48 存放到 COUNT 变量中</div></pre></td></tr></table></figure></p>
-<h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>让我们用 NASM 汇编来写第一个程序吧，当然是传统的打印 “Hello world” 的程序。这是代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    msg db      "hello, world!"</div><div class="line"> </div><div class="line">section .text</div><div class="line">    global _start</div><div class="line">_start:</div><div class="line">    mov     rax, 1</div><div class="line">    mov     rdi, 1</div><div class="line">    mov     rsi, msg</div><div class="line">    mov     rdx, 13</div><div class="line">    syscall</div><div class="line">    mov    rax, 60</div><div class="line">    mov    rdi, 0</div><div class="line">    syscall</div></pre></td></tr></table></figure></p>
+<p>数据段用来定义常量（constant），常量是在运行时不会改变的数据。你可以定义数字或其他常量等等，声明一个数据段的语法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">section .data</div></pre></td></tr></table></figure></p>
+<p>代码段是存放代码（code）的，该段必须以 global _start 开始，告诉内核这里是程序开始执行的地方。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">section .text</div><div class="line">global _start</div><div class="line">_start:</div></pre></td></tr></table></figure></p>
+<p>注释是以 ; 开始。每个 NASM 代码行包含下面四个字段的组合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[label:] instruction [operands] [; comment]</div></pre></td></tr></table></figure></p>
+<p>中括号括起来的字段表示是可选的。基本 NASM 指令由两部分组成，第一部分是需要执行指令的名字，第二部分是该指令的操作数。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MOV COUNT, 48  ;将数值 48 存放到 COUNT 变量中</div></pre></td></tr></table></figure></p>
+<h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>让我们用 NASM 汇编来写第一个程序吧，当然是传统的打印 “Hello world” 的程序。这是代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    msg db      &quot;hello, world!&quot;</div><div class="line"> </div><div class="line">section .text</div><div class="line">    global _start</div><div class="line">_start:</div><div class="line">    mov     rax, 1</div><div class="line">    mov     rdi, 1</div><div class="line">    mov     rsi, msg</div><div class="line">    mov     rdx, 13</div><div class="line">    syscall</div><div class="line">    mov    rax, 60</div><div class="line">    mov    rdi, 0</div><div class="line">    syscall</div></pre></td></tr></table></figure></p>
 <p>是的，看起来不像 printf(“Hello world”)，我们试着去理解它是什么、怎么工作的。先看 1-2 行，我们定义了一个数据段，并且有一个 msg 常量，值为 Hello world，那么我们就可以在代码中使用这个常量了。下一步是定义了一个代码段，以及程序的入口，代码从第 7 行开始执行。现在到了程序最有意思的部分了。我们已经了解了 mov 指令的功能，它带有两个操作数，将第二个操作数的值放到第一个操作数中。但是，rax、rdi 等等这些是什么呢？我们找到维基百科的解释：</p>
 <blockquote>
 <p>中央处理单元（CPU）是计算机中的硬件，它读取计算机程序中的指令，完成系统中基本的算术、逻辑、输入/输出操作。</p>
@@ -581,7 +581,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">93</span>
+                <span class="site-state-item-count">95</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

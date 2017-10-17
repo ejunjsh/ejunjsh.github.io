@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="asm,nasm," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出） 我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），">
+<meta name="keywords" content="asm,nasm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的汇编学习之路（3）">
+<meta property="og:url" content="http://idiotsky.me/2016/05/14/asm-learning-road-3/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出） 我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），">
+<meta property="og:image" content="http://idiotsky.me/images1/asm-learning-road-3-1.png">
+<meta property="og:updated_time" content="2017-10-17T13:51:26.958Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="我的汇编学习之路（3）">
+<meta name="twitter:description" content="栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出） 我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），">
+<meta name="twitter:image" content="http://idiotsky.me/images1/asm-learning-road-3-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2016/05/14/asm-learning-road-3/"/>
+
+
+
+
+
+  <title>我的汇编学习之路（3） | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/14/asm-learning-road-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">我的汇编学习之路（3）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-14T14:21:33+08:00">
+                14 May 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/汇编/" itemprop="url" rel="index">
+                    <span itemprop="name">汇编</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出）</p>
+<p>我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），应用程序就可以从函数调用的下个位置继续执行。<br>举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">global _start</div><div class="line"></div><div class="line">section .text</div><div class="line"></div><div class="line">_start:</div><div class="line">		mov rax, 1</div><div class="line">		call incRax</div><div class="line">		cmp rax, 2</div><div class="line">		jne exit</div><div class="line">		;;</div><div class="line">		;; Do something</div><div class="line">		;;</div><div class="line"></div><div class="line">incRax:</div><div class="line">		inc rax</div><div class="line">		ret</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>这里我能看到，程序运行时，rax等于1.当调用incRax,一个给rax加一的函数之后，rax等于2.函数调用后，从第八行继续，那里我们比较了rax是否等于2.我们也可以在<a href="https://en.wikipedia.org/wiki/X86_calling_conventions#x86-64_calling_conventions" target="_blank" rel="external">这里</a>看到，函数的前六个参数使用寄存器来传递的，他们是：</p>
+<ul>
+<li><code>rdi</code> - 第一个参数</li>
+<li><code>rsi</code> - 第二个参数</li>
+<li><code>rdx</code> - 第三个参数</li>
+<li><code>rcx</code> - 第四个参数</li>
+<li><code>r8</code> - 第五个参数</li>
+<li><code>r9</code> - 第六个参数</li>
+</ul>
+<p>接下来的参赛将用栈来传递。所以假如我有以下一个函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> a1, <span class="keyword">int</span> a2, <span class="keyword">int</span> a3, <span class="keyword">int</span> a4, <span class="keyword">int</span> a5, <span class="keyword">int</span> a6, <span class="keyword">int</span> a7)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> (a1 + a2 - a3 - a4 + a5 - a6) * a7;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>前六个参数使用寄存器传递，第七个用栈来传递。</p>
+<h1 id="栈指针"><a href="#栈指针" class="headerlink" title="栈指针"></a>栈指针</h1><p>之前写的，我们有16个通用寄存器，其中两个是有趣的：RSP和RBP。RBP是个基础指针寄存器。它指向当前栈帧的底部。RSP是栈地址，指向当前栈帧顶部。</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>我们有两个命令用来操作栈：</p>
+<ul>
+<li><code>push 参数</code> - 增加栈指针（RSP），存储参数到栈地址指向的位置。</li>
+<li><code>pop 参数</code> - 拷贝栈地址指向位置的数据到参数。</li>
+</ul>
+<p>让我们看一个例子吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">global _start</div><div class="line"></div><div class="line">section .text</div><div class="line"></div><div class="line">_start:</div><div class="line">		mov rax, 1</div><div class="line">		mov rdx, 2</div><div class="line">		push rax</div><div class="line">		push rdx</div><div class="line"></div><div class="line">		mov rax, [rsp + 8]</div><div class="line"></div><div class="line">		;;</div><div class="line">		;; Do something</div><div class="line">		;;</div></pre></td></tr></table></figure></p>
+<p>这里我们能看到我们把1放到rax，2放到rdx，之后用这些寄存器依次放入到栈。栈是LIFO（后进先出）。所以这个栈或者应用程序将是下面这个结构：<br><a href="http://idiotsky.me/images1/asm-learning-road-3-1.png"><img src="http://idiotsky.me/images1/asm-learning-road-3-1.png" alt=""></a><br>然后我们从堆栈中复制具有地址rsp + 8的值。这意味着我们获取堆栈顶部的地址，加上8并将该地址的值复制到rax。之后rax值将为1。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>我们来看一个例子。我们将编写简单的程序，这将得到两个命令行参数。将得到两个参数总和并打印结果。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">		SYS_WRITE equ 1</div><div class="line">		STD_IN    equ 1</div><div class="line">		SYS_EXIT  equ 60</div><div class="line">		EXIT_CODE equ 0</div><div class="line"></div><div class="line">		NEW_LINE   db 0xa</div><div class="line">		WRONG_ARGC db &quot;Must be two command line argument&quot;, 0xa</div></pre></td></tr></table></figure></p>
+<p>首先我们.data用一些值定义section。这里我们有四个常量用于linux系统调用，sys_write，sys_exit等等。还有两个字符串：第一个是新行符号，第二个是错误消息。</p>
+<p>我们来看看这个.text部分，它由程序代码组成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">section .text</div><div class="line">        global _start</div><div class="line"></div><div class="line">_start:</div><div class="line">		pop rcx</div><div class="line">		cmp rcx, 3</div><div class="line">		jne argcError</div><div class="line"></div><div class="line">		add rsp, 8</div><div class="line">		pop rsi</div><div class="line">		call str_to_int</div><div class="line"></div><div class="line">		mov r10, rax</div><div class="line">		pop rsi</div><div class="line">		call str_to_int</div><div class="line">		mov r11, rax</div><div class="line"></div><div class="line">		add r10, r11</div></pre></td></tr></table></figure></p>
+<p>我们来试试看看这里发生了什么：在_start标签第一条指令从栈中获取第一个值并将其放到rcx寄存器之后。如果我们使用命令行参数运行应用程序，则它们将按照以下顺序运行在堆栈中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[rsp] - top of stack will contain arguments count.</div><div class="line">[rsp + 8] - will contain argv[0]</div><div class="line">[rsp + 16] - will contain argv[1]</div><div class="line">and so on...</div></pre></td></tr></table></figure></p>
+<p>所以我们得到命令行参数count并把它放到rcx。之后，我们比较rcx和3.如果它们不相等，我们跳转到刚刚打印错误消息的argcError标签：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">argcError:</div><div class="line">    ;; sys_write syscall</div><div class="line">    mov     rax, 1</div><div class="line">    ;; file descritor, standard output</div><div class="line">	mov     rdi, 1</div><div class="line">    ;; message address</div><div class="line">    mov     rsi, WRONG_ARGC</div><div class="line">    ;; length of message</div><div class="line">    mov     rdx, 34</div><div class="line">    ;; call write syscall</div><div class="line">    syscall</div><div class="line">    ;; exit from program</div><div class="line">	jmp exit</div></pre></td></tr></table></figure></p>
+<p>当我们有两个参数时，为什么我们与3比较？这很简单。第一个参数是一个程序名，所有这些都是我们传递给程序的命令行参数。好的，如果我们通过了两个命令行参数，我们将在10行旁边。这里我们将rsp移到8，从而缺少第一个参数 - 程序的名称。现在rsp指向我们传递的第一个命令行参数。我们用pop命令获取它，并将其转换为rsi寄存器并调用函数将其转换为整数。接下来我们阅读<code>str_to_int</code>实现。在我们的函数结束工作后，我们在rax寄存器中有整数值，并将其保存在r10寄存器中。之后，我们做同样的操作，但用r11。最后，我们在r10和r11寄存器中有两个整数值，现在我们可以通过add命令得到它的总和。现在我们必须将结果转换为字符串并打印。让我们看看如何做：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mov rax, r10</div><div class="line">;; number counter</div><div class="line">xor r12, r12</div><div class="line">;; convert to string</div><div class="line">jmp int_to_str</div></pre></td></tr></table></figure></p>
+<p>这里我们将命令行参数的和加到rax寄存器中，将r12设置为零并跳转到<code>int_to_str</code>。好的，现在我们有程序的基础。我们已经知道如何打印字符串，我们有什么打印。我们来看看<code>str_to_int</code>和<code>int_to_str</code>的实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">str_to_int:</div><div class="line">            xor rax, rax</div><div class="line">            mov rcx,  10</div><div class="line">next:</div><div class="line">	    cmp [rsi], byte 0</div><div class="line">	    je return_str</div><div class="line">	    mov bl, [rsi]</div><div class="line">        sub bl, 48</div><div class="line">	    mul rcx</div><div class="line">	    add rax, rbx</div><div class="line">	    inc rsi</div><div class="line">	    jmp next</div><div class="line"></div><div class="line">return_str:</div><div class="line">	    ret</div></pre></td></tr></table></figure></p>
+<p>在<code>str_to_int</code>的开始，我们将rax设置为0，将rcx设置为10.然后我们转到下一个标签。从上面的例子（第一次调用<code>str_to_int</code>之前的第一行）可以看出，我们把argv [1]放在rsi中。现在我们将rsi的第一个字节与0进行比较，因为每个字符串都以NULL符号结尾，如果我们返回。如果它不是0，我们将它的值复制到一个字节bl寄存器，并从其中减去48。为什么48？所有数字从0到9在asci表中有48到57个代码。所以如果我们从数字符号48（例如从57）减去，我们得到数字。然后我们将rax乘以rcx（其值为10）。之后，我们增加rsi以获得下一个字节并重新循环。例如，如果rsi指向’5’’7’’6’’\ 000’序列，那么将遵循以下步骤：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">rax = 0</div><div class="line">get first byte - 5 and put it to rbx</div><div class="line">rax * 10 --&gt; rax = 0 * 10</div><div class="line">rax = rax + rbx = 0 + 5</div><div class="line">Get second byte - 7 and put it to rbx</div><div class="line">rax * 10 --&gt; rax = 5 * 10 = 50</div><div class="line">rax = rax + rbx = 50 + 7 = 57</div><div class="line">and loop it while rsi is not \000</div></pre></td></tr></table></figure></p>
+<p><code>str_to_int</code>之后，rax保存了数字。现在看看<code>int_to_str</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">int_to_str:</div><div class="line">		mov rdx, 0</div><div class="line">		mov rbx, 10</div><div class="line">		div rbx</div><div class="line">		add rdx, 48</div><div class="line">		add rdx, 0x0</div><div class="line">		push rdx</div><div class="line">		inc r12</div><div class="line">		cmp rax, 0x0</div><div class="line">		jne int_to_str</div><div class="line">		jmp print</div></pre></td></tr></table></figure></p>
+<p>这里我们把0放到rdx，把10放到rbx。之后我们执行<code>div rbx</code>。从上面的代码看到，在<code>int_to_str</code>函数调用之前，rax保存了一个整数数字-两个命令行参数之和。执行<code>div rbx</code>指令，我们用rbx除以rax，余数存到rdx，整除部分存到rax。接下来rax加48和0x0。在加这个48之后，我们能得到一个数字的asci码，还有所有字符串都要以0x0结尾。之后，保存这个字符到栈中，然后递增一下r12（第一次迭代的时候它是0，在_start时候设置为0），还有就是跟rax比较下是否等于0，如果是0，代表转换整形为字符串函数结束。算法的为代码如下：假设我们有一个数字为23<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">23 / 10. rax = 2; rdx = 3</div><div class="line">rdx + 48 = &quot;3&quot;</div><div class="line">push &quot;3&quot; to stack</div><div class="line">compare rax with 0 if no go again</div><div class="line">2 / 10. rax = 0; rdx = 2</div><div class="line">rdx + 48 = &quot;2&quot;</div><div class="line">push &quot;2&quot; to stack</div><div class="line">compare rax with 0, if yes we can finish function execution and we will have &quot;2&quot; &quot;3&quot; ... in stack</div></pre></td></tr></table></figure></p>
+<p>我们实现了两个有用的功能int_to_str，str_to_int并将整数转换为字符串，反之亦然。现在我们有两个整数的和，它们被转换成字符串并保存在堆栈中。我们可以打印结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">print:</div><div class="line">	;;;; calculate number length</div><div class="line">	mov rax, 1</div><div class="line">	mul r12</div><div class="line">	mov r12, 8</div><div class="line">	mul r12</div><div class="line">	mov rdx, rax</div><div class="line"></div><div class="line">	;;;; print sum</div><div class="line">	mov rax, SYS_WRITE</div><div class="line">	mov rdi, STD_IN</div><div class="line">	mov rsi, rsp</div><div class="line">	;; call sys_write</div><div class="line">	syscall</div><div class="line"></div><div class="line">    jmp exit</div></pre></td></tr></table></figure></p>
+<p>我们已经知道如何用sys_writesyscall 打印字符串，但这里是一个有趣的部分。我们必须计算字符串的长度。如果你看看<code>int_to_str</code>，你会看到我们每次迭代增加r12寄存器，所以它包含我们要的数字的数量。我们必须还要将它乘与8（因为我们把每个符号推到堆栈），它将是我们需要打印的字符串的长度。之后，我们每次将1放到rax（sys_write number），1到rdi（stdin），字符串长度为rdx，指向堆栈顶部的指针为rsi（字符串开头）。然后结束程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">exit:</div><div class="line">	mov rax, SYS_EXIT</div><div class="line">	exit code</div><div class="line">	mov rdi, EXIT_CODE</div><div class="line">	syscall</div></pre></td></tr></table></figure></p>
+<p>这就是这篇文章的全部。</p>
+<p>翻译 <a href="https://0xax.github.io/asm_3/" target="_blank" rel="external">https://0xax.github.io/asm_3/</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/asm/" rel="tag"># asm</a>
+          
+            <a href="/tags/nasm/" rel="tag"># nasm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/13/asm-learning-road-2/" rel="next" title="我的汇编学习之路（2）">
+                <i class="fa fa-chevron-left"></i> 我的汇编学习之路（2）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/15/asm-learning-road-4/" rel="prev" title="我的汇编学习之路（4）">
+                我的汇编学习之路（4） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">95</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#栈指针"><span class="nav-number">1.</span> <span class="nav-text">栈指针</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令"><span class="nav-number">1.1.</span> <span class="nav-text">命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#例子"><span class="nav-number">2.</span> <span class="nav-text">例子</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
