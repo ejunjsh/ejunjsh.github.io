@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-10-07T13:22:50.983Z</updated>
+  <updated>2017-10-18T16:48:30.729Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,41 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>正向代理和反向代理</title>
+    <link href="http://idiotsky.me/2017/10/19/proxy-reverse-proxy/"/>
+    <id>http://idiotsky.me/2017/10/19/proxy-reverse-proxy/</id>
+    <published>2017-10-18T16:29:53.000Z</published>
+    <updated>2017-10-18T16:48:30.729Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>一直用反向代理，可不知道为什么叫反向，还有何为正向代理</p>
+</blockquote>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>我们常说的代理也就是只正向代理，正向代理的过程，它隐藏了真实的请求客户端，服务端不知道真实的客户端是谁，客户端请求的服务都被代理服务器代替来请求，某些科学上网工具扮演的就是典型的正向代理角色。用浏览器访问 <a href="http://www.google.com" target="_blank" rel="external">http://www.google.com</a> 时，被残忍的block，于是你可以在国外搭建一台代理服务器，让代理帮我去请求google.com，代理把请求返回的相应结果再返回给我。所以说，很多翻墙工具用到的服务器基本都是正向代理服务器<br><a href="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg"><img src="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg" alt=""></a><br><a id="more"></a></p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理隐藏了真实的服务端，www.baidu.com 的时候，背后可能有成千上万台服务器为我们服务，但具体是哪一台，你不知道，也不需要知道，你只需要知道反向代理服务器是谁就好了，www.baidu.com 就是我们的反向代理服务器，反向代理服务器会帮我们把请求转发到真实的服务器那里去。Nginx就是性能非常好的反向代理服务器，用来做负载均衡。<br><a href="http://idiotsky.me/images1/proxy-reverse-proxy-2.jpg"><img src="http://idiotsky.me/images1/proxy-reverse-proxy-2.jpg" alt=""></a></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>两者的区别在于代理的对象不一样：<strong>正向代理</strong>代理的对象是客户端，<strong>反向代理</strong>代理的对象是服务端</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;一直用反向代理，可不知道为什么叫反向，还有何为正向代理&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;正向代理&quot;&gt;&lt;a href=&quot;#正向代理&quot; class=&quot;headerlink&quot; title=&quot;正向代理&quot;&gt;&lt;/a&gt;正向代理&lt;/h1&gt;&lt;p&gt;我们常说的代理也就是只正向代理，正向代理的过程，它隐藏了真实的请求客户端，服务端不知道真实的客户端是谁，客户端请求的服务都被代理服务器代替来请求，某些科学上网工具扮演的就是典型的正向代理角色。用浏览器访问 &lt;a href=&quot;http://www.google.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://www.google.com&lt;/a&gt; 时，被残忍的block，于是你可以在国外搭建一台代理服务器，让代理帮我去请求google.com，代理把请求返回的相应结果再返回给我。所以说，很多翻墙工具用到的服务器基本都是正向代理服务器&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="proxy" scheme="http://idiotsky.me/categories/proxy/"/>
+    
+    
+      <category term="proxy" scheme="http://idiotsky.me/tags/proxy/"/>
+    
+      <category term="正向代理" scheme="http://idiotsky.me/tags/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86/"/>
+    
+      <category term="反向代理" scheme="http://idiotsky.me/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"/>
+    
+  </entry>
   
   <entry>
     <title>JavaScript是如何工作的(三)</title>
@@ -2250,100 +2285,6 @@
 &lt;li&gt;Dashboard (horizon)&lt;/li&gt;
 &lt;li&gt;Block Storage service (cinder)&lt;/li&gt;
 &lt;/ul&gt;
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
-    
-      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
-    
-      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openstack安装准备(一)</title>
-    <link href="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/"/>
-    <id>http://idiotsky.me/2017/08/18/openstack-install-prepare-1/</id>
-    <published>2017-08-18T14:50:07.000Z</published>
-    <updated>2017-09-02T13:53:56.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="准备VMware"><a href="#准备VMware" class="headerlink" title="准备VMware"></a>准备VMware</h1><p>由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。</p>
-<h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
-<a id="more"></a>
-<h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute</p>
-<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">controller</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.10</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.10</div><div class="line">netmask 255.255.255.0</div><div class="line"></div><div class="line">auto ens35</div><div class="line">iface ens35 inet manual</div></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>接口</th>
-<th>ip</th>
-<th>模式</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ens33</td>
-<td>192.168.199.10</td>
-<td>桥接</td>
-</tr>
-<tr>
-<td>ens34</td>
-<td>10.170.56.10</td>
-<td>私有</td>
-</tr>
-<tr>
-<td>ens35</td>
-<td>网关192.168.112.2</td>
-<td>nat</td>
-</tr>
-</tbody>
-</table>
-<h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">compute</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.11</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.11</div><div class="line">netmask 255.255.255.0</div></pre></td></tr></table></figure>
-<table>
-<thead>
-<tr>
-<th>接口</th>
-<th>ip</th>
-<th>模式</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ens33</td>
-<td>192.168.199.11</td>
-<td>桥接</td>
-</tr>
-<tr>
-<td>ens34</td>
-<td>10.170.56.11</td>
-<td>私有</td>
-</tr>
-</tbody>
-</table>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>PS:</p>
-<ul>
-<li>桥接模式是虚拟机可以更物理机所在网络共享一套网络，例如跟物理机同一个WiFi里面的设备都可以访问物理机里面的虚拟机。这里用来做管理节点的网络。</li>
-<li>私有模式代表虚拟机只能跟物理机作为一个网络，其他设备访问不了，一般可以用来做内部网络</li>
-<li>nat模式用来给虚拟机访问互联网用</li>
-</ul>
-<p>PSPS:<br>接下来会在上面的两台虚拟机安装openstack，安装完openstack后，两台虚拟机对于openstack来说，就是物理机，通过openstack，创建的就是云主机（或者叫租户）了。所以必须要谨记这点。</p>
-<p>PSPSPS:</p>
-<ul>
-<li>桥接模式的ip必须是你电脑所在网络的任意不冲突的同子网的ip</li>
-<li>私有模式的ip可以任意一个子网下的ip，这个网络是用来做租户网络的</li>
-<li>nat网络不用配ip，这个给租户用来访问外网的，接下来实验会再提及，注意下他的网关即可，它是你的VMware的nat的一个网关。</li>
-</ul>
-<p>上面网络配置好后，可以开搞了，至于怎么安装虚拟机和配置网络，可以搜索相关文章😈。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;准备VMware&quot;&gt;&lt;a href=&quot;#准备VMware&quot; class=&quot;headerlink&quot; title=&quot;准备VMware&quot;&gt;&lt;/a&gt;准备VMware&lt;/h1&gt;&lt;p&gt;由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。&lt;/p&gt;
-&lt;h1 id=&quot;准备Ubuntu&quot;&gt;&lt;a href=&quot;#准备Ubuntu&quot; class=&quot;headerlink&quot; title=&quot;准备Ubuntu&quot;&gt;&lt;/a&gt;准备Ubuntu&lt;/h1&gt;&lt;p&gt;Ubuntu去官网下载16.04的服务器版本的ISO即可。&lt;/p&gt;
     
     </summary>
     
