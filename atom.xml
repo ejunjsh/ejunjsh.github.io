@@ -51,6 +51,53 @@
   </entry>
   
   <entry>
+    <title>linux TIME_WAIT过多问题</title>
+    <link href="http://idiotsky.me/2017/10/18/linux-too-many-timewait/"/>
+    <id>http://idiotsky.me/2017/10/18/linux-too-many-timewait/</id>
+    <published>2017-10-18T12:08:15.000Z</published>
+    <updated>2017-10-19T14:41:46.154Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> netstat -an |awk <span class="string">'/tcp/ &#123;++S[$NF]&#125;END &#123;for (a in S) print a , S[a]&#125;'</span></span></div><div class="line">TIME_WAIT 41</div><div class="line">CLOSE_WAIT 1</div><div class="line">ESTABLISHED 2</div><div class="line">LISTEN 7</div></pre></td></tr></table></figure>
+<p>可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的socket,停止服务。<br><a id="more"></a></p>
+<h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><p>通信双方建立TCP连接后，主动关闭连接的一方就会进入TIME_WAIT状态<br>客户端主动关闭连接时，会发送最后一个ack后，然后会进入TIME_WAIT状态，再停留2个MSL时间(后有MSL的解释)，进入CLOSED状态。<br>下图是以客户端主动关闭连接为例，说明这一过程的:<br>为什么TIME_WAIT状态还需要等2MSL后才能返回到CLOSED状态？<br>这是因为：虽然双方都同意关闭连接了，而且握手的4个报文也都协调和发送完毕，按理可以直接回到CLOSED状态（就好比从SYN_SEND状态到 ESTABLISH状态那样）；但是因为我们必须要假想网络是不可靠的，你无法保证你最后发送的ACK报文会一定被对方收到，因此对方处于 LAST_ACK状态下的SOCKET可能会因为超时未收到ACK报文，而重发FIN报文，所以这个TIME_WAIT状态的作用就是用来重发可能丢失的 ACK报文，并保证于此。<br><a href="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg"><img src="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg" alt=""></a></p>
+<h1 id="linux网络连接状态"><a href="#linux网络连接状态" class="headerlink" title="linux网络连接状态"></a>linux网络连接状态</h1><p><a href="http://idiotsky.me/images1/linux-too-many-timewait-2.png"><img src="http://idiotsky.me/images1/linux-too-many-timewait-2.png" alt=""></a></p>
+<ul>
+<li>LISTEN:socket正在监听连接请求。</li>
+<li>ESTABLISHED:socket已经建立连接，表示处于连接的状态</li>
+<li>SYN_SENT:socket正在积极尝试建立一个连接，即处于发送后连接前的一个等待但未匹配进入连接的状态。（主动连接）</li>
+<li>SYN_RECV:已经从网络上收到一个连接请求。（被动连接）</li>
+<li>FIN_WAIT1:socket已关闭，连接正在或正要关闭。(主动关闭)</li>
+<li>FIN_WAIT2:连接已关闭，并且socket正在等待远端结束。</li>
+<li>TIME_WAIT:socket正在等待关闭处理仍在网络上的数据包</li>
+<li>CLOSE_WAIT:远端已经结束，等待socket关闭。(被动关闭)</li>
+<li>LAST_ACK：远端已经结束，并且socket也已关闭，等待acknowledgement。</li>
+</ul>
+<h1 id="linux优化"><a href="#linux优化" class="headerlink" title="linux优化"></a>linux优化</h1><p>Linux有很多关于tcp的系统参数，可以有效的优化tcp。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">net.ipv4.tcp_syncookies = 1 #表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击(sync flood 攻击)，默认为0，表示关闭；</div><div class="line">net.ipv4.tcp_tw_reuse = 1 #表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；</div><div class="line">net.ipv4.tcp_tw_recycle = 1 #表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。</div><div class="line">net.ipv4.tcp_fin_timeout = 30 #表示如果套接字由本端要求关闭，这个参数决定了它保持在FIN-WAIT-2状态的时间。</div><div class="line">net.ipv4.tcp_keepalive_time = 1200 #表示当keepalive起用的时候，TCP发送keepalive消息的频度。缺省是2小时，改为20分钟。</div><div class="line">net.ipv4.ip_local_port_range = 1024 65000 #表示用于向外连接的端口范围。缺省情况下很小：32768到61000，改为1024到65000。</div><div class="line">net.ipv4.tcp_max_syn_backlog = 8192 #表示SYN队列的长度，默认为1024，加大队列长度为8192，可以容纳更多等待连接的网络连接数。</div><div class="line">net.ipv4.tcp_max_tw_buckets = 5000 #表示系统同时保持TIME_WAIT套接字的最大数量，如果超过这个数字，TIME_WAIT套接字将立刻被清除并打印警告信息。默 认为180000，改为5000。对于Apache、Nginx等服务器，上几行的参数可以很好地减少TIME_WAIT套接字数量，但是对于Squid，效果却不大。此项参数可以控制TIME_WAIT套接字的最大数量，避免Squid服务器被大量的TIME_WAIT套接字拖死。</div></pre></td></tr></table></figure></p>
+<h1 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h1><p>上面的优化，改了些参数,特别是<code>tcp_tw_reuse</code>和<code>tcp_tw_recycle</code>这两个参数，确实能够明显看到time_wait减少，甚至基本看不到了。其实这个看上去解决了问题，但是其实还会引发其他的问题。<br>TCP有一种行为，可以缓存每个主机最新的时间戳，后续请求中如果时间戳小于缓存的时间戳，即视为无效，相应的数据包会被丢弃。<br>Linux是否启用这种行为取决于<code>tcp_timestamps</code>和<code>tcp_tw_recycle</code>，因为<code>tcp_timestamps</code>缺省就是开启的，所以当<code>tcp_tw_recycle</code>被开启后，实际上这种行为就被激活了，当客户端或服务端以NAT方式构建的时候就可能出现问题，下面以客户端NAT为例来说明：<br>当多个客户端通过NAT方式联网并与服务端交互时，服务端看到的是同一个IP，也就是说对服务端而言这些客户端实际上等同于一个，可惜由于这些客户端的时间戳可能存在差异，于是乎从服务端的视角看，便可能出现时间戳错乱的现象，进而直接导致时间戳小的数据包被丢弃。如果发生了此类问题，具体的表现通常是是客户端明明发送的SYN，但服务端就是不响应ACK，我们可以通过下面命令来确认数据包不断被丢弃的现象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> netstat -s | grep timestamp</span></div><div class="line">... packets rejects in established connections because of timestamp</div></pre></td></tr></table></figure></p>
+<p>安全起见，通常要禁止<code>tcp_tw_recycle</code>。到这里，大家可能会想到另一种解决方案：把<code>tcp_timestamps</code>设置为0，<code>tcp_tw_recycle</code>设置为1，这样不就可以鱼与熊掌兼得了么？可惜一旦关闭了<code>tcp_timestamps</code>，那么即便打开了<code>tcp_tw_recycle</code>，也没有效果。</p>
+<p>好在我们还有另一个内核参数<code>tcp_max_tw_buckets</code>（一般缺省是180000）可用：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sysctl net.ipv4.tcp_max_tw_buckets=100000</span></div></pre></td></tr></table></figure></p>
+<p>通过设置它，系统会将多余的TIME_WAIT删除掉，此时系统日志里可能会显示：「TCP: time wait bucket table overflow」，不过除非不得已，否则不要轻易使用。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过上面的问题，解决time_wait过多，好像没有什么完美的方案，所以，还是看情况使用Linux参数。</p>
+<p>参考<br><a href="https://huoding.com/2012/01/19/142" target="_blank" rel="external">https://huoding.com/2012/01/19/142</a><br><a href="http://blog.csdn.net/dog250/article/details/13760985" target="_blank" rel="external">http://blog.csdn.net/dog250/article/details/13760985</a><br><a href="http://www.cnblogs.com/bass6/p/5794859.html" target="_blank" rel="external">http://www.cnblogs.com/bass6/p/5794859.html</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h1&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;bash&quot;&gt; netstat -an |awk &lt;span class=&quot;string&quot;&gt;&#39;/tcp/ &amp;#123;++S[$NF]&amp;#125;END &amp;#123;for (a in S) print a , S[a]&amp;#125;&#39;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;TIME_WAIT 41&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;CLOSE_WAIT 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;ESTABLISHED 2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;LISTEN 7&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的socket,停止服务。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="http://idiotsky.me/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
+    
+      <category term="tcp" scheme="http://idiotsky.me/tags/tcp/"/>
+    
+  </entry>
+  
+  <entry>
     <title>JavaScript是如何工作的(三)</title>
     <link href="http://idiotsky.me/2017/10/05/javascript-how-work-3/"/>
     <id>http://idiotsky.me/2017/10/05/javascript-how-work-3/</id>
@@ -2235,67 +2282,6 @@
     
     
       <category term="javascript" scheme="http://idiotsky.me/tags/javascript/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openstack安装准备(二)-环境的安装</title>
-    <link href="http://idiotsky.me/2017/08/19/openstack-install-prepare-2/"/>
-    <id>http://idiotsky.me/2017/08/19/openstack-install-prepare-2/</id>
-    <published>2017-08-19T14:50:07.000Z</published>
-    <updated>2017-09-19T17:05:02.000Z</updated>
-    
-    <content type="html"><![CDATA[<p><a href="http://idiotsky.me/images/openstack-install-prepare-2-1.png"><img src="http://idiotsky.me/images/openstack-install-prepare-2-1.png" alt=""></a><br>上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。</p>
-<p>按照官方建议，这次openstack安装的服务为：</p>
-<ul>
-<li>Identity service (keystone)</li>
-<li>Image service (glance)</li>
-<li>Compute service (nova)</li>
-<li>Networking service (neutron)</li>
-<li>Dashboard (horizon)</li>
-<li>Block Storage service (cinder)</li>
-</ul>
-<a id="more"></a>
-<p>在安装上面服务前，先要弄好环境的😁<br>这次安装的openstack为最新的release，<strong>pike</strong></p>
-<h1 id="安装openstack仓库"><a href="#安装openstack仓库" class="headerlink" title="安装openstack仓库"></a>安装openstack仓库</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># change to root</span></div><div class="line">$ sudo -i</div><div class="line">$ apt install software-properties-common</div><div class="line">$ add-apt-repository cloud-archive:pike</div><div class="line">$ apt update &amp;&amp; apt dist-upgrade</div><div class="line">$ apt install python-openstackclient</div></pre></td></tr></table></figure>
-<p>上面的步骤两个节点都要安装。<br><strong>以下步骤安装在controller</strong></p>
-<h1 id="安装数据库"><a href="#安装数据库" class="headerlink" title="安装数据库"></a>安装数据库</h1><p>openstack所用到的数据都会存到数据库里，所以安装一个数据库是准备的一个重要步骤。mariadb是官方建议的数据库。</p>
-<h2 id="安装和配置mariadb"><a href="#安装和配置mariadb" class="headerlink" title="安装和配置mariadb"></a>安装和配置mariadb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ apt install mariadb-server python-pymysql</div><div class="line">$ vi /etc/mysql/mariadb.conf.d/99-openstack.cnf</div><div class="line"><span class="comment"># 加一个[mysqld]区，bind-address为管理网络ip</span></div><div class="line">[mysqld]</div><div class="line"><span class="built_in">bind</span>-address = controller <span class="comment"># 192.168.199.10 </span></div><div class="line"></div><div class="line">default-storage-engine = innodb</div><div class="line">innodb_file_per_table = on</div><div class="line">max_connections = 4096</div><div class="line">collation-server = utf8_general_ci</div><div class="line">character-set-server = utf8</div></pre></td></tr></table></figure>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service mysql restart</div></pre></td></tr></table></figure></p>
-<p>设置下root用户的密码，这个密码后面要用到，务必谨记。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mysql_secure_installation</div></pre></td></tr></table></figure></p>
-<h1 id="安装消息队列"><a href="#安装消息队列" class="headerlink" title="安装消息队列"></a>安装消息队列</h1><p>openstack用消息队列来异步控制各种service，所以要装一个，rabbitmq是官方推荐，装之。</p>
-<h2 id="安装和配置rabbitmq"><a href="#安装和配置rabbitmq" class="headerlink" title="安装和配置rabbitmq"></a>安装和配置rabbitmq</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ apt install rabbitmq-server</div></pre></td></tr></table></figure>
-<p>加一个openstack用户。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl add_user openstack RABBIT_PASS <span class="comment">#用你的密码替换下RABBIT_PASS，谨记这个密码，后面有用。</span></div></pre></td></tr></table></figure></p>
-<p>赋予更多权限给openstack用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl set_permissions openstack <span class="string">".*"</span> <span class="string">".*"</span> <span class="string">".*"</span></div></pre></td></tr></table></figure></p>
-<h1 id="安装缓存"><a href="#安装缓存" class="headerlink" title="安装缓存"></a>安装缓存</h1><p>openstack用到缓存，memcached是官方推荐，还是装之。</p>
-<h2 id="安装和配置memcached"><a href="#安装和配置memcached" class="headerlink" title="安装和配置memcached"></a>安装和配置memcached</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ apt install memcached python-memcache</div><div class="line">$ vi /etc/memcached.conf</div><div class="line"><span class="comment">#监听管理网络ip</span></div><div class="line"><span class="comment">#-l 127.0.0.1 改成下面这样</span></div><div class="line">-l controller <span class="comment"># 192.168.199.10</span></div></pre></td></tr></table></figure>
-<h2 id="收尾-1"><a href="#收尾-1" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service memcached restart</div></pre></td></tr></table></figure></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>基本上环境已经搭好了，接下来就要安装各种服务了。😈</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;a href=&quot;http://idiotsky.me/images/openstack-install-prepare-2-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/openstack-install-prepare-2-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。&lt;/p&gt;
-&lt;p&gt;按照官方建议，这次openstack安装的服务为：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Identity service (keystone)&lt;/li&gt;
-&lt;li&gt;Image service (glance)&lt;/li&gt;
-&lt;li&gt;Compute service (nova)&lt;/li&gt;
-&lt;li&gt;Networking service (neutron)&lt;/li&gt;
-&lt;li&gt;Dashboard (horizon)&lt;/li&gt;
-&lt;li&gt;Block Storage service (cinder)&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
-    
-      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
-    
-      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
     
   </entry>
   
