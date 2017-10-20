@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="linux,vi,vim," />
+  <meta name="keywords" content="linux,lvs," />
 
 
 
@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="vi/vim 用法笔记。">
-<meta name="keywords" content="linux,vi,vim">
+<meta name="description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
+<meta name="keywords" content="linux,lvs">
 <meta property="og:type" content="article">
-<meta property="og:title" content="vi&#x2F;vim 编辑器命令">
-<meta property="og:url" content="http://idiotsky.me/2014/01/03/linux-vi/index.html">
+<meta property="og:title" content="LVS 所提供的 IP 负载均衡的三种技术">
+<meta property="og:url" content="http://idiotsky.me/2014/10/02/linux-lvs-three-lb/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="vi/vim 用法笔记。">
-<meta property="og:updated_time" content="2017-08-05T16:12:48.000Z">
+<meta property="og:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
+<meta property="og:updated_time" content="2017-10-20T16:01:35.583Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="vi&#x2F;vim 编辑器命令">
-<meta name="twitter:description" content="vi/vim 用法笔记。">
+<meta name="twitter:title" content="LVS 所提供的 IP 负载均衡的三种技术">
+<meta name="twitter:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
 
 
 
@@ -142,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2014/01/03/linux-vi/"/>
+  <link rel="canonical" href="http://idiotsky.me/2014/10/02/linux-lvs-three-lb/"/>
 
 
 
 
 
-  <title>vi/vim 编辑器命令 | IdiotSky</title>
+  <title>LVS 所提供的 IP 负载均衡的三种技术 | IdiotSky</title>
   
 
 
@@ -343,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/01/03/linux-vi/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/10/02/linux-lvs-three-lb/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -360,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">vi/vim 编辑器命令</h1>
+          <h1 class="post-title" itemprop="name headline">LVS 所提供的 IP 负载均衡的三种技术</h1>
         
 
         <div class="post-meta">
@@ -372,8 +372,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-01-03T22:43:22+08:00">
-                03 Jan 14
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-10-02T10:18:13+08:00">
+                02 Oct 14
               </time>
             
 
@@ -395,8 +395,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
                   </a>
                 </span>
 
@@ -432,26 +432,27 @@
       
 
       
-        <blockquote>
-<p>vi/vim 用法笔记。</p>
-</blockquote>
-<a id="more"></a>
+        <h1 id="LVS和负载均衡简介"><a href="#LVS和负载均衡简介" class="headerlink" title="LVS和负载均衡简介"></a>LVS和负载均衡简介</h1><p>LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。</p>
+<p>负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。</p>
+<p>广泛使用的是用软件的方式来实现负载均衡，实现效果不错，并且不需要成本是很多企业选择的方式。</p>
+<p>以软件实现的负载均衡有两种方式：</p>
 <ul>
-<li>按 <code>i</code> 进入编辑模式 （一开始是命令模式的）</li>
-<li>按 <code>esc</code> 进入命令模式</li>
-<li>在命令模式中输入<code>:wq</code> 保存 （write and quit）</li>
-<li>在命令模式中输入<code>:q</code> 退出</li>
-<li>在命令模式中输入<code>:q!</code> 强制退出 (不保存)</li>
-<li>在命令模式中输入<code>/</code>后接<code>关键字</code>搜索，<code>n</code>下一个匹配，<code>N</code>上一个匹配</li>
-<li>在命令模式中输入<code>gg</code> 回到顶部，<code>GG</code>到底部</li>
-<li>在命令模式中输入<code>dd</code> 删除当前行</li>
-<li>在命令模式中输入<code>x</code> 删除后一个字符，<code>X</code>删除前一个字符</li>
-<li>在命令模式中输入<code>u</code> undo最后一次修改</li>
-<li>在命令模式中输入<code>yy</code> 复制当前行</li>
-<li>在命令模式中输入<code>p</code> 粘贴到光标后面，<code>P</code>粘贴到光标前面</li>
+<li>基于应用层负载均衡</li>
+<li>基于IP层负载均衡</li>
 </ul>
+<p>文章主要就是介绍基于IP层负载均衡；<br><a id="more"></a></p>
+<h1 id="基于-IP-层负载均衡"><a href="#基于-IP-层负载均衡" class="headerlink" title="基于 IP 层负载均衡"></a>基于 IP 层负载均衡</h1><p>基于 IP 层负载均衡：用户通过虚拟 IP 地址（Virtual IP Address）访问服务时，访问请求的报文会到达负载调度器，由它进行负载均衡调度，从一组真实服务器选出一个，将报文处理并转发给选定服务器的地址。真实服务器的回应报文经过负载调度器时，将报文的源地址和源端口改为 Virtual IP Address 和相应的端口，再把报文发给用户。</p>
+<p>而 IP 的负载技术有以下三种模式：</p>
+<ul>
+<li>通过NAT实现虚拟服务器（VS/NAT）</li>
+<li>通过IP隧道实现虚拟服务器（VS/TUN）</li>
+<li>通过直接路由实现虚拟服务器（VS/DR）</li>
+</ul>
+<h2 id="VS-NAT-实现虚拟服务器"><a href="#VS-NAT-实现虚拟服务器" class="headerlink" title="VS/NAT 实现虚拟服务器"></a>VS/NAT 实现虚拟服务器</h2><p>由于 IPv4 中 IP 地址空间的日益紧张和安全方面的原因，很多网络使用保留 IP 地址（10.0.0.0/255.0.0.0、 172.16.0.0/255.128.0.0和192.168.0.0/255.255.0.0）。这些地址不在 Internet 上使用，而是专门为内部网络预留的。</p>
+<p>当内部网络中的主机要访问 Internet 或被 Internet 访问时，就需要采用网络地址转换（Network Address Translation, 以下简称NAT），将内部地址转化为 Internet 上可用的外部地址。<br>NAT 的工作原理是报文头（目标地址、源地址和端口等）被正确改写后，客户相信 它们连接一个 IP 地址，而不同 IP 地址的服务器组也认为它们是与客户直接相连的。由此，可以用 NAT 方法将不同 IP 地址的并行网络服务变成在一个IP地址上的一个虚拟服务。</p>
+<p>VS/NAT（Virtual Server via Network Address Translation）实现的虚拟服务器是这样的一个结构，主要经过这样的一些步骤：</p>
 <blockquote>
-<p>未完待续…</p>
+<p>to be continue…</p>
 </blockquote>
 
       
@@ -472,9 +473,7 @@
           
             <a href="/tags/linux/" rel="tag"># linux</a>
           
-            <a href="/tags/vi/" rel="tag"># vi</a>
-          
-            <a href="/tags/vim/" rel="tag"># vim</a>
+            <a href="/tags/lvs/" rel="tag"># lvs</a>
           
         </div>
       
@@ -487,8 +486,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/01/01/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2014/08/17/centos-ftp/" rel="next" title="centos 启用ftp功能">
+                <i class="fa fa-chevron-left"></i> centos 启用ftp功能
               </a>
             
           </div>
@@ -497,8 +496,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2014/01/04/threadlocal-understanding/" rel="prev" title="正确理解ThreadLocal">
-                正确理解ThreadLocal <i class="fa fa-chevron-right"></i>
+              <a href="/2014/10/07/linux-lvs/" rel="prev" title="lvs+keepalived 做负载和热备">
+                lvs+keepalived 做负载和热备 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -551,8 +550,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -667,6 +675,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LVS和负载均衡简介"><span class="nav-number">1.</span> <span class="nav-text">LVS和负载均衡简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于-IP-层负载均衡"><span class="nav-number">2.</span> <span class="nav-text">基于 IP 层负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VS-NAT-实现虚拟服务器"><span class="nav-number">2.1.</span> <span class="nav-text">VS/NAT 实现虚拟服务器</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

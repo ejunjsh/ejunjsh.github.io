@@ -933,6 +933,160 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/10/02/linux-lvs-three-lb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2014/10/02/linux-lvs-three-lb/" itemprop="url">LVS 所提供的 IP 负载均衡的三种技术</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-10-02T10:18:13+08:00">
+                02 Oct 14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="LVS和负载均衡简介"><a href="#LVS和负载均衡简介" class="headerlink" title="LVS和负载均衡简介"></a>LVS和负载均衡简介</h1><p>LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。</p>
+<p>负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。</p>
+<p>广泛使用的是用软件的方式来实现负载均衡，实现效果不错，并且不需要成本是很多企业选择的方式。</p>
+<p>以软件实现的负载均衡有两种方式：</p>
+<ul>
+<li>基于应用层负载均衡</li>
+<li>基于IP层负载均衡</li>
+</ul>
+<p>文章主要就是介绍基于IP层负载均衡；<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2014/10/02/linux-lvs-three-lb/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/08/17/centos-ftp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1692,157 +1846,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/03/27/java-slf4j-log4j/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2014/03/27/java-slf4j-log4j/" itemprop="url">为什么要使用SLF4J而不是Log4J</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-03-27T15:27:53+08:00">
-                27 Mar 14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>每一个Java程序员都知道日志对于任何一个Java应用程序，尤其是服务端程序是至关重要的，而很多程序员也已经熟悉各种不同的日志库如java.util.logging、Apache log4j、logback。但如果你还不知道SLF4J（Simple logging facade for Java）的话，那么是时候去在你项目中学习使用SLF4J了。<br>在这篇文章中，我们将学习为什么使用SLF4J比log4j或者java.util.logging要优秀。</p>
-</blockquote>
-<p>不管怎样，让我们回到这个话题，SLF4J不同于其他日志类库，与其它有很大的不同。SLF4J(Simple logging Facade for Java)不是一个真正的日志实现，而是一个抽象层（ abstraction layer），它允许你在后台使用任意一个日志类库。如果是在编写供内外部都可以使用的API或者通用类库，那么你真不会希望使用你类库的客户端必须使用你选择的日志类库。</p>
-<p>如果一个项目已经使用了log4j，而你加载了一个类库，比方说 Apache Active MQ——它依赖于于另外一个日志类库logback，那么你就需要把它也加载进去。但如果Apache Active MQ使用了SLF4J，你可以继续使用你的日志类库而无语忍受加载和维护一个新的日志框架的痛苦。</p>
-<p>总的来说，SLF4J使你的代码独立于任意一个特定的日志API，这是一个对于开发API的开发者很好的思想。虽然抽象日志类库的思想已经不是新鲜的事物而且Apache commons logging也已经在使用这种思想了，但现在SLF4J正迅速成为Java世界的日志标准。让我们再看看几个使用SLF4J而不是log4j、logback或者java.util.logging的理由。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2014/03/27/java-slf4j-log4j/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1893,7 +1896,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">97</span>
+                <span class="site-state-item-count">98</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
