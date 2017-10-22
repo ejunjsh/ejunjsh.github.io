@@ -110,10 +110,13 @@
 <meta property="og:url" content="http://idiotsky.me/2014/10/02/linux-lvs-three-lb/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
-<meta property="og:updated_time" content="2017-10-20T16:01:35.583Z">
+<meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-1.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-2.jpg">
+<meta property="og:updated_time" content="2017-10-22T15:10:46.127Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LVS 所提供的 IP 负载均衡的三种技术">
 <meta name="twitter:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
+<meta name="twitter:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-1.jpg">
 
 
 
@@ -450,9 +453,122 @@
 </ul>
 <h2 id="VS-NAT-实现虚拟服务器"><a href="#VS-NAT-实现虚拟服务器" class="headerlink" title="VS/NAT 实现虚拟服务器"></a>VS/NAT 实现虚拟服务器</h2><p>由于 IPv4 中 IP 地址空间的日益紧张和安全方面的原因，很多网络使用保留 IP 地址（10.0.0.0/255.0.0.0、 172.16.0.0/255.128.0.0和192.168.0.0/255.255.0.0）。这些地址不在 Internet 上使用，而是专门为内部网络预留的。</p>
 <p>当内部网络中的主机要访问 Internet 或被 Internet 访问时，就需要采用网络地址转换（Network Address Translation, 以下简称NAT），将内部地址转化为 Internet 上可用的外部地址。<br>NAT 的工作原理是报文头（目标地址、源地址和端口等）被正确改写后，客户相信 它们连接一个 IP 地址，而不同 IP 地址的服务器组也认为它们是与客户直接相连的。由此，可以用 NAT 方法将不同 IP 地址的并行网络服务变成在一个IP地址上的一个虚拟服务。</p>
-<p>VS/NAT（Virtual Server via Network Address Translation）实现的虚拟服务器是这样的一个结构，主要经过这样的一些步骤：</p>
+<p>VS/NAT（Virtual Server via Network Address Translation）实现的虚拟服务器是这样的一个结构，主要经过这样的一些步骤：<br><a href="http://idiotsky.me/images1/linux-lvs-three-lb-1.jpg"><img src="http://idiotsky.me/images1/linux-lvs-three-lb-1.jpg" alt=""></a></p>
+<ul>
+<li>客户端通过 Internet 向服务器发起请求，而请求的 IP 地址指向的是调度器上对外公布的 IP 地址；（因为它并不是真正处理请求的服务器 IP 地址，所以称之为 虚拟 IP 地址，简称为 VIP，Virtual IP Address）</li>
+<li>请求报文到达调度器（Load Balancer），调度器根据调度算法从一组真实的服务器（因为他们是真正处理用户请求的服务器，所以称为真实服务器，Real server。其 IP 地址也被称为真实 IP，简称为 RIP）中选出一台当前负载不高的服务器。然后将客户端的请求报文中的目标地址（Load Balancer 的 VIP）和端口通过 iptables 的 NAT 改写为选定服务器的 IP 地址和服务的端口。最后将修改后的报文发送给选出的服务器。同时，调度器在连接Hash 表中记录这个连接；当这个连接的下一个报文到达时，从连接Hash表中可以得到原选定服务器的地址和端口，进行同样的改写操作，并将报文传给原选定的服务器。</li>
+<li>Real Server 接收到报文之后，做出了响应的处理，然后将响应的报文发送给 Load Balancer；</li>
+<li>Load Balancer 接收到响应的报文时，将报文的源地址和源端口改为Virtual IP Address和相应的端口，再把报文发给用户。</li>
+</ul>
+<p>这样，客户所看到的只是在 Virtual IP Address 上提供的服务，而服务器集群的结构对用户是透明的。</p>
+<p>下面，举个例子来进一步说明VS/NAT，如图所示：<br><a href="http://idiotsky.me/images1/linux-lvs-three-lb-2.jpg"><img src="http://idiotsky.me/images1/linux-lvs-three-lb-2.jpg" alt=""></a></p>
+<p>VS/NAT 的配置如下表所示，所有到IP地址为205.100.106.2和端口为80的流量都被负载均衡地调度的真实服务器172.16.1.3:80和 172.16.1.4:8080上。目标地址为205.100.106.2:21的报文被转移到172.16.1.3:21上。而到其他端口的报文将被拒绝。</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Virtual IP Address</th>
+<th>Port</th>
+<th>Real IP Address</th>
+<th>Port</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>205.100.106.2</td>
+<td>80</td>
+<td>172.16.1.3</td>
+<td>80</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>172.16.1.4</td>
+<td>8080</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>205.100.106.2</td>
+<td>21</td>
+<td>172.16.1.3</td>
+<td>21</td>
+</tr>
+</tbody>
+</table>
+<p>当客户端访问Web服务的时候，报文中可能有以下的源地址和目标地址：</p>
+<table>
+<thead>
+<tr>
+<th>SOURCE</th>
+<th>DEST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>203.100.106.1:3456</td>
+<td>205.100.106.2:80</td>
+</tr>
+</tbody>
+</table>
+<p>报文到达调度器之后，调度器从调度列表中选出一台服务器，例如是172.16.1.4:8080。该报文会被改写为如下地址，并将它发送给选出的服务器。</p>
+<table>
+<thead>
+<tr>
+<th>SOURCE</th>
+<th>DEST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>203.100.106.1:3456</td>
+<td>172.16.1.4:8080</td>
+</tr>
+</tbody>
+</table>
+<p>Real Server 收到修改后的报文之后，做出响应，然后将响应报文返回到调度器，报文如下：</p>
+<table>
+<thead>
+<tr>
+<th>SOURCE</th>
+<th>DEST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>172.16.1.4:8080</td>
+<td>203.100.106.1:3456</td>
+</tr>
+</tbody>
+</table>
+<p>响应报文的源地址会被 Load Balacer 改写为虚拟服务的地址，再将报文发送给客户：</p>
+<table>
+<thead>
+<tr>
+<th>SOURCE</th>
+<th>DEST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>205.100.106.2:80</td>
+<td>203.100.106.1:3456</td>
+</tr>
+</tbody>
+</table>
+<p>这样，客户认为是从202.103.106.5:80服务得到正确的响应，而不会知道该请求是 Real Server1 还是 Real Server2 处理的。</p>
+<p>这便是 VS/NAT 的处理数据包的整个过程，它有这样的一些特点：</p>
+<ul>
+<li>集群节点，也就是 Real Server 与 Load Balacer 必须在同一个 IP 网络中</li>
+<li>Load Balancer 位于 Real Server 与客户端之间，处理进出的所有通信</li>
+<li>RIP 通常是私有地址，仅用于各个集群节点之间的通信。</li>
+<li>Real Server 的网关必须指向 Load Balancer</li>
+<li>支持端口映射：也就是Real Server 的端口可以自己设定，没有必须是与 Load Balancer 一样</li>
+</ul>
+<p>VS/NAT 的优势在于可以做到端口映射，但是 Load Balancer 将可能成为集群的瓶颈。因为所有的出入报文都需要 Load Balancer 处理，请求报文较小不是问题，但是响应报文往往较大，都需要 NAT 转换的话，大流量的时候，Load Balancer 将会处理不过来。一般使用 VS/NAT 的话，处理 Real Server 数量达到 10~20 台左右将是极限，并且效率往往不高。</p>
 <blockquote>
-<p>to be continue…</p>
+<p>to be contiune…</p>
 </blockquote>
 
       
