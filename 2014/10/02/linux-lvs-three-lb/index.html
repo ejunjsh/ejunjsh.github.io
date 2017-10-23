@@ -112,7 +112,10 @@
 <meta property="og:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
 <meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-2.jpg">
-<meta property="og:updated_time" content="2017-10-22T15:10:46.127Z">
+<meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-3.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-4.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/linux-lvs-three-lb-5.jpg">
+<meta property="og:updated_time" content="2017-10-23T00:28:15.932Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LVS 所提供的 IP 负载均衡的三种技术">
 <meta name="twitter:description" content="LVS和负载均衡简介LVS是Linux Virtual Server的简写，意即Linux虚拟服务器，是一个虚拟的服务器集群系统。 负载均衡就是有两台或者以上的服务器或者站点为我们提供服务，我们将来自客户端的请求靠某种算法尽量平均分摊到这些集群中，从而避免一台服务器因为负载太高而出现故障。简而言之便是将所有的负载均分到多台服务器中，即使其中某个出现故障，用户也能正常访问，得到服务。 广泛使用的是用">
@@ -567,9 +570,35 @@
 <li>支持端口映射：也就是Real Server 的端口可以自己设定，没有必须是与 Load Balancer 一样</li>
 </ul>
 <p>VS/NAT 的优势在于可以做到端口映射，但是 Load Balancer 将可能成为集群的瓶颈。因为所有的出入报文都需要 Load Balancer 处理，请求报文较小不是问题，但是响应报文往往较大，都需要 NAT 转换的话，大流量的时候，Load Balancer 将会处理不过来。一般使用 VS/NAT 的话，处理 Real Server 数量达到 10~20 台左右将是极限，并且效率往往不高。</p>
-<blockquote>
-<p>to be contiune…</p>
-</blockquote>
+<h2 id="VS-DR-实现虚拟服务器"><a href="#VS-DR-实现虚拟服务器" class="headerlink" title="VS/DR 实现虚拟服务器"></a>VS/DR 实现虚拟服务器</h2><p>在VS/NAT 的集群系统中，请求和响应的数据报文都需要通过负载调度器，当真实服务器的数目在10台和20台之间时，负载调度器将成为整个集群系统的新瓶颈。大多数 Internet服务都有这样的特点：请求报文较短而响应报文往往包含大量的数据。</p>
+<p>既然同时处理进出报文会大大的影响效率，增加机器的负载，那么若是仅仅处理进来的报文，即在负载调度器中只负责调度请求,而出去的报文由 Real Server 直接发给客户端这样岂不是高效许多。</p>
+<p>VS/DR（Virtual Server via Direct Routing）利用大多数Internet服务的非对称特点，负载调度器中只负责调度请求，而服务器直接将响应返回给客户，可以极大地提高整个集群 系统的吞吐量。</p>
+<p>VS/DR 实现的虚拟服务器是这样的一个结构，主要经过这样的一些步骤：<br><a href="http://idiotsky.me/images1/linux-lvs-three-lb-3.jpg"><img src="http://idiotsky.me/images1/linux-lvs-three-lb-3.jpg" alt=""></a></p>
+<ul>
+<li>客户端通过 Internet 向服务器发起请求，而请求的 IP 地址指向的是调度器上对外公布的 IP 地址；</li>
+<li>请求报文到达调度器（Load Balancer），调度器根据各个服务器的负载情况，动态地选择一台服务器，不修改也不封装IP报文，而是将数据帧的MAC地址改为选出服务器的MAC地址，再将修改后 的数据帧在与服务器组的局域网上发送。因为数据帧的MAC地址是选出的服务器，所以服务器肯定可以收到这个数据帧；</li>
+<li>Real Server 接收到报文之后，发现报文的目标地址 VIP 是在本地的网络设备上，服务器处理这个报文，然后根据路由表将响应报文直接返回给客户。<br><a href="http://idiotsky.me/images1/linux-lvs-three-lb-4.jpg"><img src="http://idiotsky.me/images1/linux-lvs-three-lb-4.jpg" alt=""></a><br>在VS/DR中，根据缺省的TCP/IP协议栈处理，请求报文的目标地址为VIP，响应报文的源地址肯定也为VIP，所以响应报文不需要作任何修改，可以直接返回给客户，客户认为得到正常的服务，而不会知道是哪一台服务器处理的。</li>
+</ul>
+<p>这便是 VS/DR 的处理数据包的整个过程，它有这样的一些特点：</p>
+<ul>
+<li>集群节点，也就是 Real Server 与 Load Balacer 必须在同一个物理网络中（若是不同网段的话结构将变得复杂）</li>
+<li>RIP 通常是私有地址，也可以是公网地址，以便于远程管理与监控。</li>
+<li>Load Balancer 仅仅负责处理入站的请求，Real Server 将直接响应客户端</li>
+<li>Real Server 的网关不能指向 Load Balancer</li>
+<li>不支持端口映射：也就是Real Server 的端口必须是与 Load Balancer 对外服务的一样</li>
+</ul>
+<h2 id="VS-TUN-实现虚拟服务器"><a href="#VS-TUN-实现虚拟服务器" class="headerlink" title="VS/TUN 实现虚拟服务器"></a>VS/TUN 实现虚拟服务器</h2><p>VS/DR 限制 Real Server 与 Load Balancer 必须在同一个物理网络中，那若是分散在各地岂不是无法使用？所以有了 VS/TUN（Virtual Server via IP Tunneling）的诞生。</p>
+<p>IP隧道（IP tunneling）是将一个IP报文封装在另一个IP报文的技术，这可以使得目标为一个IP地址的数据报文能被封装和转发到另一个IP地址。IP隧道技术亦称为IP封装技术（IP encapsulation）。IP隧道主要用于移动主机和虚拟私有网络（Virtual Private Network），在其中隧道都是静态建立的，隧道一端有一个IP地址，另一端也有唯一的IP地址。</p>
+<p>我们利用IP隧道技术将请求报文封装转发给后端服务器，响应报文能从后端服务器直接返回给客户。但在这里，后端服务器有一组而非一个，所以我们不可能静态地建立一一对应的隧道，而是动态地选择 一台服务器，将请求报文封装和转发给选出的服务器。这样，我们可以利用IP隧道的原理将一组服务器上的网络服务组成在一个IP地址上的虚拟网络服务。 VS/TUN的体系结构如图所示，各个服务器将VIP地址配置在自己的IP隧道设备上。<br><a href="http://idiotsky.me/images1/linux-lvs-three-lb-5.jpg"><img src="http://idiotsky.me/images1/linux-lvs-three-lb-5.jpg" alt=""></a><br>它的连接调度和管理与VS/NAT中的一样，只是它的报文转发方法不同。调度器根据各个服务器的负载情况，动态地选择一台服务器， 将请求报文封装在另一个 IP 报文中，再将封装后的 IP 报文转发给选出的服务器；服务器收到报文后，先将报文解封获得原来目标地址为 VIP的报文，服务器发现VIP地址被配置在本地的 IP隧道设备上，所以就处理这个请求，然后根据路由表将响应报文直接返回给客户。</p>
+<p>这便是 VS/TUN 的处理数据包的整个过程，它有这样的一些特点：</p>
+<ul>
+<li>集群节点，也就是 Real Server 与 Load Balacer 可以跨越公网</li>
+<li>RIP 必须是公网地址。</li>
+<li>Load Balancer 仅仅负责处理入站的请求，Real Server 将直接响应客户端</li>
+<li>Real Server 的网关不能指向 Load Balancer</li>
+<li>不支持端口映射：也就是Real Server 的端口必须是与 Load Balancer 对外服务的一样</li>
+</ul>
+<p>这便是 LVS 所提供的 IP 负载均衡的三种技术，我们可以根据自己的情况做出不同的选择。</p>
 
       
     </div>
@@ -801,7 +830,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LVS和负载均衡简介"><span class="nav-number">1.</span> <span class="nav-text">LVS和负载均衡简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于-IP-层负载均衡"><span class="nav-number">2.</span> <span class="nav-text">基于 IP 层负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VS-NAT-实现虚拟服务器"><span class="nav-number">2.1.</span> <span class="nav-text">VS/NAT 实现虚拟服务器</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LVS和负载均衡简介"><span class="nav-number">1.</span> <span class="nav-text">LVS和负载均衡简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于-IP-层负载均衡"><span class="nav-number">2.</span> <span class="nav-text">基于 IP 层负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#VS-NAT-实现虚拟服务器"><span class="nav-number">2.1.</span> <span class="nav-text">VS/NAT 实现虚拟服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VS-DR-实现虚拟服务器"><span class="nav-number">2.2.</span> <span class="nav-text">VS/DR 实现虚拟服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VS-TUN-实现虚拟服务器"><span class="nav-number">2.3.</span> <span class="nav-text">VS/TUN 实现虚拟服务器</span></a></li></ol></li></ol></div>
             
 
           </div>
