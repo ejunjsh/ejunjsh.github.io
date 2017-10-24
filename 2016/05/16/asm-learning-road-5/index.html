@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="docker," />
+  <meta name="keywords" content="asm,nasm," />
 
 
 
@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="在介绍VOLUME指令之前，我们来看下如下场景需求：  容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。 当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环">
-<meta name="keywords" content="docker">
+<meta name="description" content="这是关于x86_64汇编的第五章，这一章主要说宏。 宏NASM支持两种形式的宏：  单行 多行  所有单行宏必须从％define指令开始。格式如下：1%define macro_name(parameter) value Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：12%define argc rsp + 8%define cliArg1 rsp + 24">
+<meta name="keywords" content="asm,nasm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Dockerfile 指令 VOLUME 介绍">
-<meta property="og:url" content="http://idiotsky.me/2017/04/06/docker-dockerfile-volume/index.html">
+<meta property="og:title" content="我的汇编学习之路（5）">
+<meta property="og:url" content="http://idiotsky.me/2016/05/16/asm-learning-road-5/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="在介绍VOLUME指令之前，我们来看下如下场景需求：  容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。 当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环">
-<meta property="og:updated_time" content="2017-09-06T15:03:23.000Z">
+<meta property="og:description" content="这是关于x86_64汇编的第五章，这一章主要说宏。 宏NASM支持两种形式的宏：  单行 多行  所有单行宏必须从％define指令开始。格式如下：1%define macro_name(parameter) value Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：12%define argc rsp + 8%define cliArg1 rsp + 24">
+<meta property="og:updated_time" content="2017-10-24T15:52:37.039Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dockerfile 指令 VOLUME 介绍">
-<meta name="twitter:description" content="在介绍VOLUME指令之前，我们来看下如下场景需求：  容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。 当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环">
+<meta name="twitter:title" content="我的汇编学习之路（5）">
+<meta name="twitter:description" content="这是关于x86_64汇编的第五章，这一章主要说宏。 宏NASM支持两种形式的宏：  单行 多行  所有单行宏必须从％define指令开始。格式如下：1%define macro_name(parameter) value Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：12%define argc rsp + 8%define cliArg1 rsp + 24">
 
 
 
@@ -142,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/04/06/docker-dockerfile-volume/"/>
+  <link rel="canonical" href="http://idiotsky.me/2016/05/16/asm-learning-road-5/"/>
 
 
 
 
 
-  <title>Dockerfile 指令 VOLUME 介绍 | IdiotSky</title>
+  <title>我的汇编学习之路（5） | IdiotSky</title>
   
 
 
@@ -343,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/04/06/docker-dockerfile-volume/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/16/asm-learning-road-5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -360,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Dockerfile 指令 VOLUME 介绍</h1>
+          <h1 class="post-title" itemprop="name headline">我的汇编学习之路（5）</h1>
         
 
         <div class="post-meta">
@@ -372,8 +372,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-06T22:47:17+08:00">
-                06 Apr 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-16T15:29:39+08:00">
+                16 May 16
               </time>
             
 
@@ -395,8 +395,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
+                  <a href="/categories/汇编/" itemprop="url" rel="index">
+                    <span itemprop="name">汇编</span>
                   </a>
                 </span>
 
@@ -432,30 +432,27 @@
       
 
       
-        <p>在介绍VOLUME指令之前，我们来看下如下场景需求：</p>
-<ol>
-<li>容器是基于镜像创建的，最后的容器文件系统包括镜像的只读层+可写层，容器中的进程操作的数据持久化都是保存在容器的可写层上。一旦容器删除后，这些数据就没了，除非我们人工备份下来（或者基于容器创建新的镜像）。能否可以让容器进程持久化的数据保存在主机上呢？这样即使容器删除了，数据还在。</li>
-<li>当我们在开发一个web应用时，开发环境是在主机本地，但运行测试环境是放在docker容器上。<br>这样的话，我在主机上修改文件（如html，js等）后，需要再同步到容器中。这显然比较麻烦。</li>
-<li>多个容器运行一组相关联的服务，如果他们要共享一些数据怎么办？<br>对于这些问题，我们当然能想到各种解决方案。而docker本身提供了一种机制，可以将主机上的某个目录与容器的某个目录（称为挂载点、或者叫卷）关联起来，容器上的挂载点下的内容就是主机的这个目录下的内容，这类似linux系统下mount的机制。 这样的话，我们修改主机上该目录的内容时，不需要同步容器，对容器来说是立即生效的。 挂载点可以让多个容器共享。</li>
-</ol>
-<p>下面我们来介绍具体的机制。<br><a id="more"></a></p>
-<h1 id="通过docker-run命令"><a href="#通过docker-run命令" class="headerlink" title="通过docker run命令"></a>通过docker run命令</h1><ol>
-<li><p>运行命令：<code>docker run --name test -it -v /home/xqh/myimage:/data ubuntu /bin/bash</code><br>其中的 -v 标记 在容器中设置了一个挂载点 /data（就是容器中的一个目录），并将主机上的 /home/xqh/myimage 目录中的内容关联到 /data下。<br>这样在容器中对/data目录下的操作，还是在主机上对/home/xqh/myimage的操作，都是完全实时同步的，因为这两个目录实际都是指向主机目录。</p>
-</li>
-<li><p>运行命令：<code>docker run --name test1 -it -v /data ubuntu /bin/bash</code><br>上面-v的标记只设置了容器的挂载点，并没有指定关联的主机目录。这时docker会自动绑定主机上的一个目录。通过docker inspect 命令可以查看到。</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Mounts"</span>: [</div><div class="line">    &#123;</div><div class="line">        <span class="string">"Name"</span>: <span class="string">"0ab0aaf0d6ef391cb68b72bd8c43216a8f8ae9205f0ae941ef16ebe32dc9fc01"</span>,</div><div class="line">        <span class="string">"Source"</span>: <span class="string">"/var/lib/docker/volumes/0ab0aaf0d6ef391cb68b72bd8c43216a8f8ae9205f0ae941ef16ebe32dc9fc01/_data"</span>,</div><div class="line">        <span class="string">"Destination"</span>: <span class="string">"/data"</span>,</div><div class="line">        <span class="string">"Driver"</span>: <span class="string">"local"</span>,</div><div class="line">        <span class="string">"Mode"</span>: <span class="string">""</span>,</div><div class="line">        <span class="string">"RW"</span>: <span class="literal">true</span></div><div class="line">    &#125;</div><div class="line">],</div></pre></td></tr></table></figure>
-<p> 上面 Mounts下的每条信息记录了容器上一个挂载点的信息，”Destination” 值是容器的挂载点，”Source”值是对应的主机目录。<br> 可以看出这种方式对应的主机目录是自动创建的，其目的不是让在主机上修改，而是让多个容器共享。</p>
-</li>
-</ol>
-<h1 id="通过dockerfile创建挂载点"><a href="#通过dockerfile创建挂载点" class="headerlink" title="通过dockerfile创建挂载点"></a>通过dockerfile创建挂载点</h1><p>上面介绍的通过docker run命令的-v标识创建的挂载点只能对创建的容器有效。<br>通过dockerfile的 VOLUME 指令可以在镜像中创建挂载点，这样只要通过该镜像创建的容器都有了挂载点。<br>还有一个区别是，通过 VOLUME 指令创建的挂载点，无法指定主机上对应的目录，是自动生成的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#test</div><div class="line">FROM ubuntu</div><div class="line">MAINTAINER hello1</div><div class="line">VOLUME [&quot;/data1&quot;,&quot;/data2&quot;]</div></pre></td></tr></table></figure></p>
-<p>上面的dockfile文件通过VOLUME指令指定了两个挂载点 /data1 和 /data2.<br>我们通过docker inspect 查看通过该dockerfile创建的镜像生成的容器，可以看到如下信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&quot;Mounts&quot;: [</div><div class="line">        &#123;</div><div class="line">            &quot;Name&quot;: &quot;d411f6b8f17f4418629d4e5a1ab69679dee369b39e13bb68bed77aa4a0d12d21&quot;,</div><div class="line">            &quot;Source&quot;: &quot;/var/lib/docker/volumes/d411f6b8f17f4418629d4e5a1ab69679dee369b39e13bb68bed77aa4a0d12d21/_data&quot;,</div><div class="line">            &quot;Destination&quot;: &quot;/data1&quot;,</div><div class="line">            &quot;Driver&quot;: &quot;local&quot;,</div><div class="line">            &quot;Mode&quot;: &quot;&quot;,</div><div class="line">            &quot;RW&quot;: true</div><div class="line">        &#125;,</div><div class="line">        &#123;</div><div class="line">            &quot;Name&quot;: &quot;6d3badcf47c4ac5955deda6f6ae56f4aaf1037a871275f46220c14ebd762fc36&quot;,</div><div class="line">            &quot;Source&quot;: &quot;/var/lib/docker/volumes/6d3badcf47c4ac5955deda6f6ae56f4aaf1037a871275f46220c14ebd762fc36/_data&quot;,</div><div class="line">            &quot;Destination&quot;: &quot;/data2&quot;,</div><div class="line">            &quot;Driver&quot;: &quot;local&quot;,</div><div class="line">            &quot;Mode&quot;: &quot;&quot;,</div><div class="line">            &quot;RW&quot;: true</div><div class="line">        &#125;</div><div class="line">    ],</div></pre></td></tr></table></figure></p>
-<p>可以看到两个挂载点的信息。</p>
-<h1 id="容器共享卷（挂载点）"><a href="#容器共享卷（挂载点）" class="headerlink" title="容器共享卷（挂载点）"></a>容器共享卷（挂载点）</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test1 -it myimage /bin/bash</div></pre></td></tr></table></figure>
-<p>上面命令中的 myimage是用前面的dockerfile文件构建的镜像。 这样容器test1就有了 /data1 和 /data2两个挂载点。<br>下面我们创建另一个容器可以和test1共享 /data1 和 /data2卷 ，这是在 docker run中使用 –volumes-from标记，如：<br>可以是来源不同镜像，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test2 -it --volumes-from test1  ubuntu  /bin/bash</div></pre></td></tr></table></figure></p>
-<p>也可以是同一镜像，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name test3 -it --volumes-from test1  myimage  /bin/bash</div></pre></td></tr></table></figure></p>
-<p>上面的三个容器 test1 , test2 , test3 均有 /data1 和 /data2 两个目录，且目录中内容是共享的，任何一个容器修改了内容，别的容器都能获取到。</p>
-<h1 id="最佳实践：数据容器"><a href="#最佳实践：数据容器" class="headerlink" title="最佳实践：数据容器"></a>最佳实践：数据容器</h1><p>如果多个容器需要共享数据（如持久化数据库、配置文件或者数据文件等），可以考虑创建一个特定的数据容器，该容器有1个或多个卷。<br>其它容器通过–volumes-from 来共享这个数据容器的卷。<br>因为容器的卷本质上对应主机上的目录，所以这个数据容器也不需要启动。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run --name dbdata myimage echo &quot;data container&quot;</div></pre></td></tr></table></figure></p>
-<p>from <a href="http://www.cnblogs.com/51kata/p/5266626.html" target="_blank" rel="external">http://www.cnblogs.com/51kata/p/5266626.html</a></p>
+        <p>这是关于x86_64汇编的第五章，这一章主要说宏。</p>
+<h1 id="宏"><a href="#宏" class="headerlink" title="宏"></a>宏</h1><p>NASM支持两种形式的宏：</p>
+<ul>
+<li>单行</li>
+<li>多行</li>
+</ul>
+<p>所有单行宏必须从％define指令开始。格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%define macro_name(parameter) value</div></pre></td></tr></table></figure></p>
+<p>Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%define argc rsp + 8</div><div class="line">%define cliArg1 rsp + 24</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>在代码中使用它：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">;;</div><div class="line">;; argc will be expanded to rsp + 8</div><div class="line">;;</div><div class="line">mov rax, [argc]</div><div class="line">cmp rax, 3</div><div class="line">jne .mustBe3args</div></pre></td></tr></table></figure></p>
+<p>多行宏以％macro指令开始，并以％endmacro结尾。一般形式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">%macro number_of_parameters</div><div class="line">    instruction</div><div class="line">    instruction</div><div class="line">    instruction</div><div class="line">%endmacro</div></pre></td></tr></table></figure></p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">%macro bootstrap 1</div><div class="line">          push ebp</div><div class="line">          mov ebp,esp</div><div class="line">%endmacro</div></pre></td></tr></table></figure></p>
+<p>我们可以用它：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">_start:</div><div class="line">    bootstrap</div></pre></td></tr></table></figure></p>
+<p>例如我们来看看PRINT宏：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">%macro PRINT 1</div><div class="line">    pusha</div><div class="line">    pushf</div><div class="line">    jmp %%astr</div><div class="line">%%str db %1, 0</div><div class="line">%%strln equ $-%%str</div><div class="line">%%astr: _syscall_write %%str, %%strln</div><div class="line">popf</div><div class="line">popa</div><div class="line">%endmacro</div><div class="line"></div><div class="line">%macro _syscall_write 2</div><div class="line">	mov rax, 1</div><div class="line">        mov rdi, 1</div><div class="line">        mov rsi, %%str</div><div class="line">        mov rdx, %%strln</div><div class="line">        syscall</div><div class="line">%endmacro</div></pre></td></tr></table></figure></p>
+<p>我们来试试看宏，了解它的工作原理：在第一行我们用一个参数定义了PRINT宏。比推送所有通用寄存器（用pusha指令）和标志寄存器（用pushf指令）。之后，我们跳到%% astr标签。注意宏中定义的所有标签必须以%%开头。现在我们转到__syscall_write具有2参数的宏。我们来看__syscall_write的实现。其实就是之前博客用到的将字符串写入系统调用打印到stdout的代码。看起来像这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">;; write syscall number</div><div class="line">mov rax, 1</div><div class="line">;; file descriptor, standard output</div><div class="line">mov rdi, 1</div><div class="line">;; message address</div><div class="line">mov rsi, msg</div><div class="line">;; length of message</div><div class="line">mov rdx, 14</div><div class="line">;; call write syscall</div><div class="line">syscall</div></pre></td></tr></table></figure></p>
+<p>在我们的__syscall_write宏中，我们定义了前两个指令，用于将1置为rax（写系统调用号）和rdi（stdout文件描述符）。然后我们把%%str放到rsi寄存器（指向字符串的指针），其中%%str是PRINT宏的第一个参数（用$parameter_number的宏参数访问）并以0结尾的本地标签（每个字符串必须以零结束）。而%%strln则计算字符串长度。之后，我们使用syscall指令调用系统调用，这就是所有。<br>现在我们可以用它：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">label: PRINT &quot;Hello World!&quot;</div></pre></td></tr></table></figure></p>
+<h1 id="有用的标准宏"><a href="#有用的标准宏" class="headerlink" title="有用的标准宏"></a>有用的标准宏</h1><p>NASM支持以下标准宏：</p>
+<h2 id="STRUC"><a href="#STRUC" class="headerlink" title="STRUC"></a>STRUC</h2><p>我们可以使用<code>STRUC</code>和<code>ENDSTRUC</code>定义数据结构。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">struc person</div><div class="line">   name: resb 10</div><div class="line">   age:  resb 1</div><div class="line">endstruc</div></pre></td></tr></table></figure></p>
+<p>接下来我们就能创建一个数据结构实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    p: istruc person</div><div class="line">      at name db &quot;name&quot;</div><div class="line">      at age  db 25</div><div class="line">    iend</div><div class="line"></div><div class="line">section .text</div><div class="line">_start:</div><div class="line">    mov rax, [p + person.name]</div></pre></td></tr></table></figure></p>
+<h2 id="include"><a href="#include" class="headerlink" title="%include"></a>%include</h2><p>我们可以包括其他汇编文件，并跳转到带有％include指令的标签或调用函数。</p>
+<p>翻译 <a href="https://0xax.github.io/asm_5/" target="_blank" rel="external">https://0xax.github.io/asm_5/</a><br>文中的PRINT macro是有问题的,所以参考看看就好<br>修正的代码见我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a> </p>
 
       
     </div>
@@ -473,7 +470,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/docker/" rel="tag"># docker</a>
+            <a href="/tags/asm/" rel="tag"># asm</a>
+          
+            <a href="/tags/nasm/" rel="tag"># nasm</a>
           
         </div>
       
@@ -486,8 +485,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/03/06/docker-blog/" rel="next" title="一张图理解docker的命令">
-                <i class="fa fa-chevron-left"></i> 一张图理解docker的命令
+              <a href="/2016/05/15/asm-learning-road-4/" rel="next" title="我的汇编学习之路（4）">
+                <i class="fa fa-chevron-left"></i> 我的汇编学习之路（4）
               </a>
             
           </div>
@@ -496,8 +495,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/04/09/redis-summary/" rel="prev" title="redis基础、高级特性与性能调优">
-                redis基础、高级特性与性能调优 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/07/23/bytecode-hello-world/" rel="prev" title="从字节码层面看“HelloWorld”">
+                从字节码层面看“HelloWorld” <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -685,7 +684,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#通过docker-run命令"><span class="nav-number">1.</span> <span class="nav-text">通过docker run命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通过dockerfile创建挂载点"><span class="nav-number">2.</span> <span class="nav-text">通过dockerfile创建挂载点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#容器共享卷（挂载点）"><span class="nav-number">3.</span> <span class="nav-text">容器共享卷（挂载点）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最佳实践：数据容器"><span class="nav-number">4.</span> <span class="nav-text">最佳实践：数据容器</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#宏"><span class="nav-number">1.</span> <span class="nav-text">宏</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#有用的标准宏"><span class="nav-number">2.</span> <span class="nav-text">有用的标准宏</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#STRUC"><span class="nav-number">2.1.</span> <span class="nav-text">STRUC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#include"><span class="nav-number">2.2.</span> <span class="nav-text">%include</span></a></li></ol></li></ol></div>
             
 
           </div>
