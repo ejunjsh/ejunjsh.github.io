@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2016/05/16/asm-learning-road-5/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="这是关于x86_64汇编的第五章，这一章主要说宏。 宏NASM支持两种形式的宏：  单行 多行  所有单行宏必须从％define指令开始。格式如下：1%define macro_name(parameter) value Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：12%define argc rsp + 8%define cliArg1 rsp + 24">
-<meta property="og:updated_time" content="2017-10-24T15:52:37.039Z">
+<meta property="og:updated_time" content="2017-10-24T16:12:52.464Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（5）">
 <meta name="twitter:description" content="这是关于x86_64汇编的第五章，这一章主要说宏。 宏NASM支持两种形式的宏：  单行 多行  所有单行宏必须从％define指令开始。格式如下：1%define macro_name(parameter) value Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：12%define argc rsp + 8%define cliArg1 rsp + 24">
@@ -452,7 +452,7 @@
 <h2 id="STRUC"><a href="#STRUC" class="headerlink" title="STRUC"></a>STRUC</h2><p>我们可以使用<code>STRUC</code>和<code>ENDSTRUC</code>定义数据结构。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">struc person</div><div class="line">   name: resb 10</div><div class="line">   age:  resb 1</div><div class="line">endstruc</div></pre></td></tr></table></figure></p>
 <p>接下来我们就能创建一个数据结构实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    p: istruc person</div><div class="line">      at name db &quot;name&quot;</div><div class="line">      at age  db 25</div><div class="line">    iend</div><div class="line"></div><div class="line">section .text</div><div class="line">_start:</div><div class="line">    mov rax, [p + person.name]</div></pre></td></tr></table></figure></p>
 <h2 id="include"><a href="#include" class="headerlink" title="%include"></a>%include</h2><p>我们可以包括其他汇编文件，并跳转到带有％include指令的标签或调用函数。</p>
-<p>翻译 <a href="https://0xax.github.io/asm_5/" target="_blank" rel="external">https://0xax.github.io/asm_5/</a><br>文中的PRINT macro是有问题的,所以参考看看就好<br>修正的代码见我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a> </p>
+<p>翻译 <a href="https://0xax.github.io/asm_5/" target="_blank" rel="external">https://0xax.github.io/asm_5/</a><br>文中的PRINT宏是有问题的,所以参考看看就好<br>修正的代码见我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a> </p>
 
       
     </div>
@@ -495,8 +495,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/07/23/bytecode-hello-world/" rel="prev" title="从字节码层面看“HelloWorld”">
-                从字节码层面看“HelloWorld” <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/17/asm-learning-road-6/" rel="prev" title="我的汇编学习之路（6）">
+                我的汇编学习之路（6） <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -574,7 +574,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">99</span>
+                <span class="site-state-item-count">100</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

@@ -1232,6 +1232,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/17/asm-learning-road-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/17/asm-learning-road-6/" itemprop="url">我的汇编学习之路（6）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-17T11:23:44+08:00">
+                17 May 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/汇编/" itemprop="url" rel="index">
+                    <span itemprop="name">汇编</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>这是系列的第六篇，接下来要讲一下AT&amp;T汇编语法。之前一直都是用nasm汇编，但是还有其他不同语法的汇编，如fasm，yasm等等。正如我上面写的，我们要看一下gas（GNU汇编）和讲一下与nasm的不同。GCC用的是GNU汇编，所以你会看到一个简单的hello world的汇编输出：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</div><div class="line">	write(<span class="number">1</span>, <span class="string">"Hello World\n"</span>, <span class="number">15</span>);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>汇编输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">	.file	&quot;test.c&quot;</div><div class="line">	.section	.rodata</div><div class="line">.LC0:</div><div class="line">	.string	&quot;Hello World\n&quot;</div><div class="line">	.text</div><div class="line">	.globl	main</div><div class="line">	.type	main, @function</div><div class="line">main:</div><div class="line">.LFB0:</div><div class="line">	.cfi_startproc</div><div class="line">	pushq	%rbp</div><div class="line">	.cfi_def_cfa_offset 16</div><div class="line">	.cfi_offset 6, -16</div><div class="line">	movq	%rsp, %rbp</div><div class="line">	.cfi_def_cfa_register 6</div><div class="line">	movl	$15, %edx</div><div class="line">	movl	$.LC0, %esi</div><div class="line">	movl	$1, %edi</div><div class="line">	call	write</div><div class="line">	movl	$0, %eax</div><div class="line">	popq	%rbp</div><div class="line">	.cfi_def_cfa 7, 8</div><div class="line">	ret</div><div class="line">	.cfi_endproc</div><div class="line">.LFE0:</div><div class="line">	.size	main, .-main</div><div class="line">	.ident	&quot;GCC: (Ubuntu 4.9.1-16ubuntu6) 4.9.1&quot;</div><div class="line">	.section	.note.GNU-stack,&quot;&quot;,@progbits</div></pre></td></tr></table></figure></p>
+<p>看上去跟nasm汇编不同吧，让我们看看他们的不同吧。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/17/asm-learning-road-6/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/16/asm-learning-road-5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1668,159 +1816,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/13/asm-learning-road-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/13/asm-learning-road-2/" itemprop="url">我的汇编学习之路（2）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-13T12:01:12+08:00">
-                13 May 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/汇编/" itemprop="url" rel="index">
-                    <span itemprop="name">汇编</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>对于不折不扣的汇编新手来说，<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一部分</a>中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。</p>
-<h1 id="术语和概念"><a href="#术语和概念" class="headerlink" title="术语和概念"></a>术语和概念</h1><p>当我写了<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一篇</a>之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。</p>
-<p>寄存器（Register）：寄存器是处理器内小容量的存储结构，处理器的主要功能是数据处理，处理器可以从内存中获得数据，但这是一种低速的操作，这就是为什么处理器为什么要有自己数据存储结构，称为“寄存器”。</p>
-<p>L小端（Little-endian）：我们可以假设内存是一个大的数组，它包含一个字节一个字节的数。每个地址存储了内存“数组”中的一个元素，每个元素一个字节。举例来说，我们有 4 字节数：AA 56 AB FF，在小端模式下最低位存放在低地址上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0 FF</div><div class="line">1 AB</div><div class="line">2 56</div><div class="line">3 AA</div></pre></td></tr></table></figure></p>
-<p>这里，0、1、2、3 是内存地址。</p>
-<p>大端（Big-endian）：大端存储数据与小端相反。所有上面的字节序在大端模式下是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0 AA</div><div class="line">1 56</div><div class="line">2 AB</div><div class="line">3 FF</div></pre></td></tr></table></figure></p>
-<p>系统调用（Syscall）：系统调用是用户程序要求操作系统为其完成某些工作的一种方式。你可以在<a href="http://blog.rchapman.org/post/36801038863/linux-system-call-table-for-x86-64" target="_blank" rel="external">这里</a>找到系统调用表。</p>
-<p>栈（Stack）：处理器中寄存器的个数非常有限。所以栈是一块连续的内存空间，可以通过特殊寄存器如 RSP、SS、RIP 等来寻址。在接下来的文章我会专门深入介绍栈。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/05/13/asm-learning-road-2/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1871,7 +1866,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">99</span>
+                <span class="site-state-item-count">100</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
