@@ -2000,11 +2000,119 @@
   </entry>
   
   <entry>
+    <title>openstack安装-glance</title>
+    <link href="http://idiotsky.me/2017/09/10/openstack-install-glance/"/>
+    <id>http://idiotsky.me/2017/09/10/openstack-install-glance/</id>
+    <published>2017-09-10T06:22:32.000Z</published>
+    <updated>2017-10-30T13:06:57.910Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>glance提供镜像服务使用户能够发现，注册和检索虚拟机镜像。它提供了一个 REST API，可让您查询虚拟机镜像元数据并检索实际镜像。您可以存储镜像在各种位置（从简单的文件系统到像OpenStack Object Storage这样的对象存储系统）。<br>为了简单起见，这里只是教你如何配置镜像服务，并把镜像保存到controller节点的文件目录里面，此目录为/var/lib/glance/images/。<br>这一章还是在<code>controller</code>节点操作。。。</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><ul>
+<li><p>用<code>root</code>用户权限执行<code>mysql</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> mysql</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>glance</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; CREATE DATABASE glance;</div></pre></td></tr></table></figure>
+</li>
+<li><p>赋予适合的权限给<code>glance</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;localhost&apos; \</div><div class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;%&apos; \</div><div class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换一下<code>GLANCE_DBPASS</code>为一个合适的密码，后面会用到</p>
+<ul>
+<li>退出mysql<a id="more"></a>
+<h2 id="执行以下命令，进入admin身份"><a href="#执行以下命令，进入admin身份" class="headerlink" title="执行以下命令，进入admin身份"></a>执行以下命令，进入admin身份</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="创建服务"><a href="#创建服务" class="headerlink" title="创建服务"></a>创建服务</h2><ul>
+<li>创建<code>glance</code>用户<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack user create --domain default --password-prompt glance</span></div><div class="line"></div><div class="line">User Password:</div><div class="line">Repeat User Password:</div><div class="line">+---------------------+----------------------------------+</div><div class="line">| Field               | Value                            |</div><div class="line">+---------------------+----------------------------------+</div><div class="line">| domain_id           | default                          |</div><div class="line">| enabled             | True                             |</div><div class="line">| id                  | 3f4e777c4062483ab8d9edd7dff829df |</div><div class="line">| name                | glance                           |</div><div class="line">| options             | &#123;&#125;                               |</div><div class="line">| password_expires_at | None                             |</div><div class="line">+---------------------+----------------------------------+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里会提示输入密码，记住这个密码，下面会用到。</p>
+<ul>
+<li><p>加<code>admin</code>角色到<code>glance</code>用户和<code>service</code>项目</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack role add --project service --user glance admin</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>创建glance服务实体</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack service create --name glance \</span></div><div class="line">  --description "OpenStack Image" image</div><div class="line"></div><div class="line">+-------------+----------------------------------+</div><div class="line">| Field       | Value                            |</div><div class="line">+-------------+----------------------------------+</div><div class="line">| description | OpenStack Image                  |</div><div class="line">| enabled     | True                             |</div><div class="line">| id          | 8c2c7f1b9b5049ea9e63757b5533e6d2 |</div><div class="line">| name        | glance                           |</div><div class="line">| type        | image                            |</div><div class="line">+-------------+----------------------------------+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="创建镜像服务API-endpoints"><a href="#创建镜像服务API-endpoints" class="headerlink" title="创建镜像服务API endpoints"></a>创建镜像服务API endpoints</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack endpoint create --region RegionOne \</span></div><div class="line">  image public http://controller:9292</div><div class="line"></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | 340be3625e9b4239a6415d034e98aace |</div><div class="line">| interface    | public                           |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 8c2c7f1b9b5049ea9e63757b5533e6d2 |</div><div class="line">| service_name | glance                           |</div><div class="line">| service_type | image                            |</div><div class="line">| url          | http://controller:9292           |</div><div class="line">+--------------+----------------------------------+</div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack endpoint create --region RegionOne \</span></div><div class="line">  image internal http://controller:9292</div><div class="line"></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | a6e4b153c2ae4c919eccfdbb7dceb5d2 |</div><div class="line">| interface    | internal                         |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 8c2c7f1b9b5049ea9e63757b5533e6d2 |</div><div class="line">| service_name | glance                           |</div><div class="line">| service_type | image                            |</div><div class="line">| url          | http://controller:9292           |</div><div class="line">+--------------+----------------------------------+</div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack endpoint create --region RegionOne \</span></div><div class="line">  image admin http://controller:9292</div><div class="line"></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | 0c37ed58103f4300a84ff125a539032d |</div><div class="line">| interface    | admin                            |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 8c2c7f1b9b5049ea9e63757b5533e6d2 |</div><div class="line">| service_name | glance                           |</div><div class="line">| service_type | image                            |</div><div class="line">| url          | http://controller:9292           |</div><div class="line">+--------------+----------------------------------+</div></pre></td></tr></table></figure>
+<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> apt install glance</span></div></pre></td></tr></table></figure>
+<h2 id="修改-etc-glance-glance-api-conf"><a href="#修改-etc-glance-glance-api-conf" class="headerlink" title="修改/etc/glance/glance-api.conf"></a>修改<code>/etc/glance/glance-api.conf</code></h2><ul>
+<li>在<code>[database]</code>区域，添加数据访问配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[database]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">connection</span> = mysql+pymysql://glance:GLANCE_DBPASS@controller/glance</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>GLANCE_DBPASS</code>为前一节创建数据库的那个密码</p>
+<ul>
+<li>在<code>[keystone_authtoken]</code>和<code>[paste_deploy]</code>区域，配置keystone<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="section">[keystone_authtoken]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></div><div class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">project_domain_name</span> = default</div><div class="line"><span class="attr">user_domain_name</span> = default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">username</span> = glance</div><div class="line"><span class="attr">password</span> = GLANCE_PASS</div><div class="line"><span class="section"></span></div><div class="line">[paste_deploy]</div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">flavor</span> = keystone</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>GLANCE_PASS</code>为之前你创建glance用户时的密码。</p>
+<ul>
+<li>在<code>[glance_store]</code>区域，配置镜像存储路径。<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="section">[glance_store]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">stores</span> = file,http</div><div class="line"><span class="attr">default_store</span> = file</div><div class="line"><span class="attr">filesystem_store_datadir</span> = /var/lib/glance/images/</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="修改-etc-glance-glance-registry-conf"><a href="#修改-etc-glance-glance-registry-conf" class="headerlink" title="修改/etc/glance/glance-registry.conf"></a>修改<code>/etc/glance/glance-registry.conf</code></h2><ul>
+<li>在<code>[database]</code>区域，添加数据访问配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[database]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">connection</span> = mysql+pymysql://glance:GLANCE_DBPASS@controller/glance</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>GLANCE_DBPASS</code>为前一节创建数据库的那个密码</p>
+<ul>
+<li>在<code>[keystone_authtoken]</code>和<code>[paste_deploy]</code>区域，配置keystone<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="section">[keystone_authtoken]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></div><div class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">project_domain_name</span> = default</div><div class="line"><span class="attr">user_domain_name</span> = default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">username</span> = glance</div><div class="line"><span class="attr">password</span> = GLANCE_PASS</div><div class="line"><span class="section"></span></div><div class="line">[paste_deploy]</div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">flavor</span> = keystone</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>GLANCE_PASS</code>为之前你创建glance用户时的密码。</p>
+<h2 id="初始化镜像服务数据库："><a href="#初始化镜像服务数据库：" class="headerlink" title="初始化镜像服务数据库："></a>初始化镜像服务数据库：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ su -s /bin/sh -c &quot;glance-manage db_sync&quot; glance</div></pre></td></tr></table></figure>
+<h1 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> service glance-registry restart</span></div><div class="line"><span class="meta">$</span><span class="bash"> service glance-api restart</span></div></pre></td></tr></table></figure>
+<h1 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h1><h2 id="进入admin身份"><a href="#进入admin身份" class="headerlink" title="进入admin身份"></a>进入<code>admin</code>身份</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></div></pre></td></tr></table></figure>
+<h2 id="下载测试镜像"><a href="#下载测试镜像" class="headerlink" title="下载测试镜像"></a>下载测试镜像</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> wget http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img</span></div></pre></td></tr></table></figure>
+<h2 id="上传测试镜像到镜像服务"><a href="#上传测试镜像到镜像服务" class="headerlink" title="上传测试镜像到镜像服务"></a>上传测试镜像到镜像服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack image create <span class="string">"cirros"</span> \</span></div><div class="line">  --file cirros-0.3.5-x86_64-disk.img \</div><div class="line">  --disk-format qcow2 --container-format bare \</div><div class="line">  --public</div><div class="line"></div><div class="line">+------------------+------------------------------------------------------+</div><div class="line">| Field            | Value                                                |</div><div class="line">+------------------+------------------------------------------------------+</div><div class="line">| checksum         | 133eae9fb1c98f45894a4e60d8736619                     |</div><div class="line">| container_format | bare                                                 |</div><div class="line">| created_at       | 2015-03-26T16:52:10Z                                 |</div><div class="line">| disk_format      | qcow2                                                |</div><div class="line">| file             | /v2/images/cc5c6982-4910-471e-b864-1098015901b5/file |</div><div class="line">| id               | cc5c6982-4910-471e-b864-1098015901b5                 |</div><div class="line">| min_disk         | 0                                                    |</div><div class="line">| min_ram          | 0                                                    |</div><div class="line">| name             | cirros                                               |</div><div class="line">| owner            | ae7a98326b9c455588edd2656d723b9d                     |</div><div class="line">| protected        | False                                                |</div><div class="line">| schema           | /v2/schemas/image                                    |</div><div class="line">| size             | 13200896                                             |</div><div class="line">| status           | active                                               |</div><div class="line">| tags             |                                                      |</div><div class="line">| updated_at       | 2015-03-26T16:52:10Z                                 |</div><div class="line">| virtual_size     | None                                                 |</div><div class="line">| visibility       | public                                               |</div><div class="line">+------------------+------------------------------------------------------+</div></pre></td></tr></table></figure>
+<h2 id="确认是否上传成功"><a href="#确认是否上传成功" class="headerlink" title="确认是否上传成功"></a>确认是否上传成功</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack image list</span></div><div class="line"></div><div class="line">+--------------------------------------+--------+--------+</div><div class="line">| ID                                   | Name   | Status |</div><div class="line">+--------------------------------------+--------+--------+</div><div class="line">| 38047887-61a7-41ea-9b49-27987d5e8bb9 | cirros | active |</div><div class="line">+--------------------------------------+--------+--------+</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;glance提供镜像服务使用户能够发现，注册和检索虚拟机镜像。它提供了一个 REST API，可让您查询虚拟机镜像元数据并检索实际镜像。您可以存储镜像在各种位置（从简单的文件系统到像OpenStack Object Storage这样的对象存储系统）。&lt;br&gt;为了简单起见，这里只是教你如何配置镜像服务，并把镜像保存到controller节点的文件目录里面，此目录为/var/lib/glance/images/。&lt;br&gt;这一章还是在&lt;code&gt;controller&lt;/code&gt;节点操作。。。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;准备&quot;&gt;&lt;a href=&quot;#准备&quot; class=&quot;headerlink&quot; title=&quot;准备&quot;&gt;&lt;/a&gt;准备&lt;/h1&gt;&lt;h2 id=&quot;创建数据库&quot;&gt;&lt;a href=&quot;#创建数据库&quot; class=&quot;headerlink&quot; title=&quot;创建数据库&quot;&gt;&lt;/a&gt;创建数据库&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;用&lt;code&gt;root&lt;/code&gt;用户权限执行&lt;code&gt;mysql&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;bash&quot;&gt; mysql&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;创建&lt;code&gt;glance&lt;/code&gt;数据库&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;MariaDB [(none)]&amp;gt; CREATE DATABASE glance;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;赋予适合的权限给&lt;code&gt;glance&lt;/code&gt;数据库&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;MariaDB [(none)]&amp;gt; GRANT ALL PRIVILEGES ON glance.* TO &amp;apos;glance&amp;apos;@&amp;apos;localhost&amp;apos; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  IDENTIFIED BY &amp;apos;GLANCE_DBPASS&amp;apos;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;MariaDB [(none)]&amp;gt; GRANT ALL PRIVILEGES ON glance.* TO &amp;apos;glance&amp;apos;@&amp;apos;%&amp;apos; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  IDENTIFIED BY &amp;apos;GLANCE_DBPASS&amp;apos;;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;替换一下&lt;code&gt;GLANCE_DBPASS&lt;/code&gt;为一个合适的密码，后面会用到&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;退出mysql
+    
+    </summary>
+    
+      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
+    
+    
+      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
+    
+      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
+    
+      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
+    
+      <category term="glance" scheme="http://idiotsky.me/tags/glance/"/>
+    
+  </entry>
+  
+  <entry>
     <title>openstack安装-keystone</title>
     <link href="http://idiotsky.me/2017/09/09/openstack-install-keystone/"/>
     <id>http://idiotsky.me/2017/09/09/openstack-install-keystone/</id>
     <published>2017-09-09T07:46:36.000Z</published>
-    <updated>2017-09-14T12:59:17.000Z</updated>
+    <updated>2017-10-30T12:36:21.587Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>keystone 是openstack中所有service的权限管理和接口入口，所以先安装它<br>这一章都是在<code>controller</code>节点操作。。。</p>
@@ -2112,6 +2220,8 @@
       <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
     
       <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
+    
+      <category term="keystone" scheme="http://idiotsky.me/tags/keystone/"/>
     
   </entry>
   
@@ -2229,52 +2339,6 @@
 &lt;p&gt;几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;a href=&quot;/2017/08/26/javascript-how-work&quot;&gt;系列的第一篇&lt;/a&gt;主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="javascript" scheme="http://idiotsky.me/categories/javascript/"/>
-    
-    
-      <category term="javascript" scheme="http://idiotsky.me/tags/javascript/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>JavaScript是如何工作的(一)</title>
-    <link href="http://idiotsky.me/2017/08/26/javascript-how-work/"/>
-    <id>http://idiotsky.me/2017/08/26/javascript-how-work/</id>
-    <published>2017-08-25T17:17:54.000Z</published>
-    <updated>2017-09-19T17:05:02.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p><strong>简评</strong>：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？</p>
-</blockquote>
-<a id="more"></a>
-<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>大家应该都知道 JavaScript 是单线程的，以及听过 V8 引擎的概念。<br>这篇文章将会介绍这些概念，并解释 JavaScript 是如何运行的。通过了解这些细节，开发者能更好地编写代码，正确利用其提供的 API。</p>
-<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="http://idiotsky.me/images/js-how-work.png"><img src="http://idiotsky.me/images/js-how-work.png" alt=""></a></p>
-<p>引擎主要由两个组件组成：</p>
-<ul>
-<li>内存堆（Memory Heap ）：这是内存分配的地方</li>
-<li>调用堆栈（Call Stack）：这是程序运行时函数的调用过程</li>
-</ul>
-<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="http://idiotsky.me/images/js-how-work-1.png"><img src="http://idiotsky.me/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
-<h1 id="调用堆栈（Call-Stack）"><a href="#调用堆栈（Call-Stack）" class="headerlink" title="调用堆栈（Call Stack）"></a>调用堆栈（Call Stack）</h1><p>JavaScript 是单线程语言，这意味着它只有一个单一的调用堆栈。因此，它每次只能做一件事。</p>
-<p>调用堆栈是一个数据结构，按调用顺序保存所有在运行期被调用的方法。既然是个栈，那么它就满足先入后出的特性。</p>
-<p>我们来看一个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> x * y;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">printSquare</span>(<span class="params">x</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> s = multiply(x, x);</div><div class="line">    <span class="built_in">console</span>.log(s);</div><div class="line">&#125;</div><div class="line">printSquare(<span class="number">5</span>);</div></pre></td></tr></table></figure></p>
-<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="http://idiotsky.me/images/js-how-work-2.png"><img src="http://idiotsky.me/images/js-how-work-2.png" alt=""></a></p>
-<p>调用堆栈中的每个条目称为堆栈帧（Stack Frame）。当异常发生时，它基本上是调用堆栈的状态。再看看下面这段代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'SessionStack will help you resolve crashes :)'</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    bar();</div><div class="line">&#125;</div><div class="line">start();</div></pre></td></tr></table></figure></p>
-<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="http://idiotsky.me/images/js-how-work-3.png"><img src="http://idiotsky.me/images/js-how-work-3.png" alt=""></a></p>
-<p>当你达到最大调用堆栈时，会容易发生这种情况，特别是在没有测试代码时随意使用递归。<br>看看这个示例代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line">foo();</div></pre></td></tr></table></figure></p>
-<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="http://idiotsky.me/images/js-how-work-4.png"><img src="http://idiotsky.me/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="http://idiotsky.me/images/js-how-work-5.png"><img src="http://idiotsky.me/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
-<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="http://idiotsky.me/images/js-how-work-6.jpg"><img src="http://idiotsky.me/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
-<p>翻译和参考 <a href="https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf" target="_blank" rel="external">https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;简评&lt;/strong&gt;：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？&lt;/p&gt;
-&lt;/blockquote&gt;
     
     </summary>
     
