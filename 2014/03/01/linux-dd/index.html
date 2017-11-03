@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,dd," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="dd命令dd：用指定大小的块拷贝一个文件，并在拷贝的同时进行指定的转换。参数注释：  if=文件名：输入文件名，缺省为标准输入。即指定源文件。&amp;lt; if=input file &amp;gt; of=文件名：输出文件名，缺省为标准输出。即指定目的文件。&amp;lt; of=output file &amp;gt; ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。 obs=bytes">
+<meta name="keywords" content="linux,dd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux-dd命令详解">
+<meta property="og:url" content="http://idiotsky.me/2014/03/01/linux-dd/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="dd命令dd：用指定大小的块拷贝一个文件，并在拷贝的同时进行指定的转换。参数注释：  if=文件名：输入文件名，缺省为标准输入。即指定源文件。&amp;lt; if=input file &amp;gt; of=文件名：输出文件名，缺省为标准输出。即指定目的文件。&amp;lt; of=output file &amp;gt; ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。 obs=bytes">
+<meta property="og:updated_time" content="2017-11-03T15:18:08.266Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux-dd命令详解">
+<meta name="twitter:description" content="dd命令dd：用指定大小的块拷贝一个文件，并在拷贝的同时进行指定的转换。参数注释：  if=文件名：输入文件名，缺省为标准输入。即指定源文件。&amp;lt; if=input file &amp;gt; of=文件名：输出文件名，缺省为标准输出。即指定目的文件。&amp;lt; of=output file &amp;gt; ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。 obs=bytes">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2014/03/01/linux-dd/"/>
+
+
+
+
+
+  <title>Linux-dd命令详解 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/03/01/linux-dd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux-dd命令详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-03-01T20:13:23+08:00">
+                01 Mar 14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="dd命令"><a href="#dd命令" class="headerlink" title="dd命令"></a>dd命令</h1><p>dd：用指定大小的块拷贝一个文件，并在拷贝的同时进行指定的转换。<br>参数注释：</p>
+<ol>
+<li>if=文件名：输入文件名，缺省为标准输入。即指定源文件。&lt; if=input file &gt;</li>
+<li>of=文件名：输出文件名，缺省为标准输出。即指定目的文件。&lt; of=output file &gt;</li>
+<li>ibs=bytes：一次读入bytes个字节，即指定一个块大小为bytes个字节。</li>
+<li>obs=bytes：一次输出bytes个字节，即指定一个块大小为bytes个字节。</li>
+<li>bs=bytes：同时设置读入/输出的块大小为bytes个字节。</li>
+<li>cbs=bytes：一次转换bytes个字节，即指定转换缓冲区大小。</li>
+<li>skip=blocks：从输入文件开头跳过blocks个块后再开始复制。</li>
+<li>seek=blocks：从输出文件开头跳过blocks个块后再开始复制。注意：通常只用当输出文件是磁盘或磁带时才有效，即备份到磁盘或磁带时才有效。</li>
+<li>count=blocks：仅拷贝blocks个块，块大小等于ibs指定的字节数。</li>
+<li>conv=conversion：用指定的参数转换文件。<ul>
+<li>ascii：转换ebcdic为ascii</li>
+<li>ebcdic：转换ascii为ebcdic</li>
+<li>ibm：转换ascii为alternate ebcdic</li>
+<li>block：把每一行转换为长度为cbs，不足部分用空格填充</li>
+<li>unblock：使每一行的长度都为cbs，不足部分用空格填充</li>
+<li>lcase：把大写字符转换为小写字符</li>
+<li>ucase：把小写字符转换为大写字符</li>
+<li>swab：交换输入的每对字节</li>
+<li>noerror：出错时不停止</li>
+<li>notrunc：不截短输出文件</li>
+<li>sync：将每个输入块填充到ibs个字节，不足部分用空（NUL）字符补齐。</li>
+</ul>
+</li>
+</ol>
+<p>块大小可以使用的计量单位表</p>
+<table>
+<thead>
+<tr>
+<th>单元大小</th>
+<th>代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字节（1B）</td>
+<td>c </td>
+</tr>
+<tr>
+<td>字节（2B）</td>
+<td>w</td>
+</tr>
+<tr>
+<td>块（512B）</td>
+<td>b</td>
+</tr>
+<tr>
+<td>千字节（1024B）</td>
+<td>k</td>
+</tr>
+<tr>
+<td>兆字节（1024KB）</td>
+<td>M </td>
+</tr>
+<tr>
+<td>吉字节（1024MB）</td>
+<td>G</td>
+</tr>
+</tbody>
+</table>
+<p>例如:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> dd <span class="keyword">if</span>=/dev/zero of=sun.txt bs=1M count=1 <span class="comment">#设置块大小为1mb</span></span></div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h1 id="dd应用实例"><a href="#dd应用实例" class="headerlink" title="dd应用实例"></a>dd应用实例</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div></pre></td><td class="code"><pre><div class="line">1.将本地的/dev/hdb整盘备份到/dev/hdd</div><div class="line">heng@me: dd if=/dev/hdb of=/dev/hdd</div><div class="line"></div><div class="line">2.将/dev/hdb全盘数据备份到指定路径的image文件</div><div class="line">heng@me:dd if=/dev/hdb of=/root/image</div><div class="line"></div><div class="line">3.将备份文件恢复到指定盘</div><div class="line">heng@me:dd if=/root/image of=/dev/hdb</div><div class="line"></div><div class="line">4.备份/dev/hdb全盘数据，并利用gzip工具进行压缩，保存到指定路径</div><div class="line">heng@me:dd if=/dev/hdb | gzip &gt; /root/image.gz</div><div class="line"></div><div class="line">5.将压缩的备份文件恢复到指定盘</div><div class="line">heng@me:gzip -dc /root/image.gz | dd of=/dev/hdb</div><div class="line"></div><div class="line">6.备份与恢复MBR</div><div class="line">备份磁盘开始的512个字节大小的MBR信息到指定文件：</div><div class="line">heng@me:dd if=/dev/hda of=/root/image count=1 bs=512</div><div class="line">count=1指仅拷贝一个块；bs=512指块大小为512个字节。</div><div class="line">恢复：</div><div class="line">heng@me:dd if=/root/image of=/dev/had</div><div class="line">将备份的MBR信息写到磁盘开始部分</div><div class="line"></div><div class="line">7.备份软盘</div><div class="line">heng@me:dd if=/dev/fd0 of=disk.img count=1 bs=1440k (即块大小为1.44M)</div><div class="line"></div><div class="line">8.拷贝内存内容到硬盘</div><div class="line">heng@me:dd if=/dev/mem of=/root/mem.bin bs=1024 (指定块大小为1k)</div><div class="line"></div><div class="line">9.拷贝光盘内容到指定文件夹，并保存为cd.iso文件</div><div class="line">heng@me:dd if=/dev/cdrom(hdc) of=/root/cd.iso</div><div class="line"></div><div class="line">10.增加swap分区文件大小</div><div class="line">第一步：创建一个大小为256M的文件：</div><div class="line">heng@me:dd if=/dev/zero of=/swapfile bs=1024 count=262144</div><div class="line">第二步：把这个文件变成swap文件：</div><div class="line">heng@me:mkswap /swapfile</div><div class="line">第三步：启用这个swap文件：</div><div class="line">heng@me:swapon /swapfile</div><div class="line">第四步：编辑/etc/fstab文件，使在每次开机时自动加载swap文件：</div><div class="line">/swapfile swap swap default 0 0</div><div class="line"></div><div class="line">11.销毁磁盘数据</div><div class="line">heng@me:dd if=/dev/urandom of=/dev/hda1</div><div class="line">注意：利用随机的数据填充硬盘，在某些必要的场合可以用来销毁数据。</div><div class="line"></div><div class="line">12.测试硬盘的读写速度</div><div class="line">heng@me:dd if=/dev/zero bs=1024 count=1000000 of=/root/1Gb.file</div><div class="line">heng@me:dd if=/root/1Gb.file bs=64k | dd of=/dev/null</div><div class="line">通过以上两个命令输出的命令执行时间，可以计算出硬盘的读、写速度。</div><div class="line"></div><div class="line">13.确定硬盘的最佳块大小：</div><div class="line">heng@me:dd if=/dev/zero bs=1024 count=1000000 of=/root/1Gb.file</div><div class="line">heng@me:dd if=/dev/zero bs=2048 count=500000 of=/root/1Gb.file</div><div class="line">heng@me:dd if=/dev/zero bs=4096 count=250000 of=/root/1Gb.file</div><div class="line">heng@me:dd if=/dev/zero bs=8192 count=125000 of=/root/1Gb.file</div><div class="line">通过比较以上命令输出中所显示的命令执行时间，即可确定系统最佳的块大小。</div><div class="line"></div><div class="line">14.修复硬盘：</div><div class="line">heng@me:dd if=/dev/sda of=/dev/sda 或dd if=/dev/hda of=/dev/hda</div><div class="line">当硬盘较长时间(一年以上)放置不使用后，磁盘上会产生magnetic flux point，当磁头读到这些区域时会遇到困难，并可能导致I/O错误。当这种情况影响到硬盘的第一个扇区时，可能导致硬盘报废。上边的命令有可能使这些数 据起死回生。并且这个过程是安全、高效的。</div><div class="line"></div><div class="line">15.利用netcat远程备份</div><div class="line">heng@me:dd if=/dev/hda bs=16065b | netcat &lt; targethost-ip &gt; 1234</div><div class="line">在源主机上执行此命令备份/dev/hda</div><div class="line">heng@me:netcat -l -p 1234 | dd of=/dev/hdc bs=16065b</div><div class="line">在目的主机上执行此命令来接收数据并写入/dev/hdc</div><div class="line">heng@me:netcat -l -p 1234 | bzip2 &gt; partition.img</div><div class="line">heng@me:netcat -l -p 1234 | gzip &gt; partition.img</div><div class="line">以上两条指令是目的主机指令的变化分别采用bzip2、gzip对数据进行压缩，并将备份文件保存在当前目录。</div><div class="line">将一个很大的视频文件中的第i个字节的值改成0x41（也就是大写字母A的ASCII值）</div><div class="line">echo A | dd of=bigfile seek=$i bs=1 count=1 conv=notrunc</div></pre></td></tr></table></figure>
+<h1 id="dev-null和-dev-zero的区别"><a href="#dev-null和-dev-zero的区别" class="headerlink" title="/dev/null和/dev/zero的区别"></a>/dev/null和/dev/zero的区别</h1><ul>
+<li>/dev/null，外号叫无底洞，你可以向它输出任何数据，它通吃，并且不会撑着！</li>
+<li>/dev/zero，是一个输入设备，你可你用它来初始化文件。该设备无穷尽地提供0，可以使用任何你需要的数目——设备提供的要多的多。他可以用于向设备或文件写入字符串0。</li>
+<li>/dev/null——它是空设备，也称为位桶（bit bucket）。任何写入它的输出都会被抛弃。如果不想让消息以标准输出显示或写入文件，那么可以将消息重定向到位桶。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">heng@me:if=/dev/zero of=./test.txt bs=1k count=1</div><div class="line">heng@me:ls –l</div><div class="line">total 4</div><div class="line">-rw-r--r-- 1 oracle dba 1024 Jul 15 16:56 test.txt</div><div class="line">heng@me:find / -name access_log 2&gt;/dev/null</div></pre></td></tr></table></figure>
+<h2 id="使用-dev-null"><a href="#使用-dev-null" class="headerlink" title="使用/dev/null"></a>使用/dev/null</h2><p>把/dev/null看作”黑洞”， 它等价于一个只写文件，所有写入它的内容都会永远丢失.，而尝试从它那儿读取内容则什么也读不到。然而， /dev/null对命令行和脚本都非常的有用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">禁止标准输出</div><div class="line">heng@me:cat $filename &gt;/dev/null #文件内容丢失，而不会输出到标准输出.</div><div class="line">禁止标准错误</div><div class="line">heng@me:rm $badname 2&gt;/dev/null #这样错误信息[标准错误]就被丢到太平洋去了</div><div class="line">禁止标准输出和标准错误的输出</div><div class="line">heng@me:cat $filename 2&gt;/dev/null &gt;/dev/null</div></pre></td></tr></table></figure></p>
+<p>如果”$filename”不存在，将不会有任何错误信息提示；如果”$filename”存在， 文件的内容不会打印到标准输出。因此，上面的代码根本不会输出任何信息。当只想测试命令的退出码而不想有任何输出时非常有用。</p>
+<h2 id="使用-dev-zero"><a href="#使用-dev-zero" class="headerlink" title="使用/dev/zero"></a>使用/dev/zero</h2><p>像/dev/null一样， /dev/zero也是一个伪文件， 但它实际上产生连续不断的null的流（二进制的零流，而不是ASCII型的）。 写入它的输出会丢失不见， 而从/dev/zero读出一连串的null也比较困难， 虽然这也能通过od或一个十六进制编辑器来做到。 /dev/zero主要的用处是用来创建一个指定长度用于初始化的空文件，就像临时交换文件。</p>
+<p>用/dev/zero创建一个交换临时文件<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></div><div class="line"><span class="meta">#</span><span class="bash"> 创建一个交换文件.</span></div><div class="line">ROOT_UID=0 # Root 用户的 $UID 是 0.</div><div class="line">E_WRONG_USER=65 # 不是 root?</div><div class="line">FILE=/swap</div><div class="line">BLOCKSIZE=1024</div><div class="line">MINBLOCKS=40</div><div class="line">SUCCESS=0</div><div class="line"><span class="meta">#</span><span class="bash"> 这个脚本必须用root来运行.</span></div><div class="line">if [ "$UID" -ne "$ROOT_UID" ]</div><div class="line">then</div><div class="line">echo; echo "You must be root to run this script."; echo</div><div class="line">exit $E_WRONG_USER</div><div class="line">fi</div><div class="line">blocks=$&#123;1:-$MINBLOCKS&#125; # 如果命令行没有指定，</div><div class="line"><span class="meta">#</span><span class="bash">+ 则设置为默认的40块.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 上面这句等同如：</span></div><div class="line"><span class="meta">#</span><span class="bash"> --------------------------------------------------</span></div><div class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">if</span> [ -n <span class="string">"<span class="variable">$1</span>"</span> ]</span></div><div class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">then</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> blocks=<span class="variable">$1</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">else</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> blocks=<span class="variable">$MINBLOCKS</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">fi</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> --------------------------------------------------</span></div><div class="line">if [ "$blocks" -lt $MINBLOCKS ]</div><div class="line">then</div><div class="line">blocks=$MINBLOCKS # 最少要有 40 个块长.</div><div class="line">fi</div><div class="line">echo "Creating swap file of size $blocks blocks (KB)."</div><div class="line">dd if=/dev/zero of=$FILE bs=$BLOCKSIZE count=$blocks # 把零写入文件.</div><div class="line">mkswap $FILE $blocks # 将此文件建为交换文件（或称交换分区）.</div><div class="line">swapon $FILE # 激活交换文件.</div><div class="line">echo "Swap file created and activated."</div><div class="line">exit $SUCCESS</div></pre></td></tr></table></figure></p>
+<p>关于 /dev/zero 的另一个应用是为特定的目的而用零去填充一个指定大小的文件， 如挂载一个文件系统到环回设备 （loopback device）或”安全地” 删除一个文件</p>
+<p>创建ramdisk<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></div><div class="line"><span class="meta">#</span><span class="bash"> ramdisk.sh</span></div><div class="line"><span class="meta">#</span><span class="bash"> <span class="string">"ramdisk"</span>是系统RAM内存的一段，</span></div><div class="line"><span class="meta">#</span><span class="bash">+ 它可以被当成是一个文件系统来操作.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 它的优点是存取速度非常快 (包括读和写).</span></div><div class="line"><span class="meta">#</span><span class="bash"> 缺点: 易失性, 当计算机重启或关机时会丢失数据.</span></div><div class="line"><span class="meta">#</span><span class="bash">+ 会减少系统可用的RAM.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 10 <span class="comment"># 那么ramdisk有什么作用呢?</span></span></div><div class="line"><span class="meta">#</span><span class="bash"> 保存一个较大的数据集在ramdisk, 比如一张表或字典,</span></div><div class="line"><span class="meta">#</span><span class="bash">+ 这样可以加速数据查询, 因为在内存里查找比在磁盘里查找快得多.</span></div><div class="line">E_NON_ROOT_USER=70 # 必须用root来运行.</div><div class="line">ROOTUSER_NAME=root</div><div class="line">MOUNTPT=/mnt/ramdisk</div><div class="line">SIZE=2000 # 2K 个块 (可以合适的做修改)</div><div class="line">BLOCKSIZE=1024 # 每块有1K (1024 byte) 的大小</div><div class="line">DEVICE=/dev/ram0 # 第一个 ram 设备</div><div class="line">username=`id -nu`</div><div class="line">if [ "$username" != "$ROOTUSER_NAME" ]</div><div class="line">then</div><div class="line">echo "Must be root to run "`basename $0`"."</div><div class="line">exit $E_NON_ROOT_USER</div><div class="line">fi</div><div class="line">if [ ! -d "$MOUNTPT" ] # 测试挂载点是否已经存在了,</div><div class="line">then #+ 如果这个脚本已经运行了好几次了就不会再建这个目录了</div><div class="line">mkdir $MOUNTPT #+ 因为前面已经建立了.</div><div class="line">fi</div><div class="line">dd if=/dev/zero of=$DEVICE count=$SIZE bs=$BLOCKSIZE</div><div class="line"><span class="meta"></span></div><div class="line">#<span class="bash"> 把RAM设备的内容用零填充.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 为何需要这么做?</span></div><div class="line">mke2fs $DEVICE # 在RAM设备上创建一个ext2文件系统.</div><div class="line">mount $DEVICE $MOUNTPT # 挂载设备.</div><div class="line">chmod 777 $MOUNTPT # 使普通用户也可以存取这个ramdisk.</div><div class="line"><span class="meta">#</span><span class="bash"> 但是, 只能由root来缷载它.</span></div><div class="line">echo ""$MOUNTPT" now available for use."</div><div class="line"><span class="meta">#</span><span class="bash"> 现在 ramdisk 即使普通用户也可以用来存取文件了.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 注意, ramdisk是易失的, 所以当计算机系统重启或关机时ramdisk里的内容会消失.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 拷贝所有你想保存文件到一个常规的磁盘目录下.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 重启之后, 运行这个脚本再次建立起一个 ramdisk.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 仅重新加载 /mnt/ramdisk 而没有其他的步骤将不会正确工作.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 如果加以改进, 这个脚本可以放在 /etc/rc.d/rc.local,</span></div><div class="line"><span class="meta">#</span><span class="bash">+ 以使系统启动时能自动设立一个ramdisk.</span></div><div class="line"><span class="meta">#</span><span class="bash"> 这样很合适速度要求高的数据库服务器.</span></div><div class="line">exit 0</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/dd/" rel="tag"># dd</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/03/01/linux-disk-related/" rel="next" title="Linux硬盘分区相关命令">
+                <i class="fa fa-chevron-left"></i> Linux硬盘分区相关命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/03/27/java-slf4j-log4j/" rel="prev" title="为什么要使用SLF4J而不是Log4J">
+                为什么要使用SLF4J而不是Log4J <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">110</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#dd命令"><span class="nav-number">1.</span> <span class="nav-text">dd命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dd应用实例"><span class="nav-number">2.</span> <span class="nav-text">dd应用实例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dev-null和-dev-zero的区别"><span class="nav-number">3.</span> <span class="nav-text">/dev/null和/dev/zero的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-dev-null"><span class="nav-number">3.1.</span> <span class="nav-text">使用/dev/null</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-dev-zero"><span class="nav-number">3.2.</span> <span class="nav-text">使用/dev/zero</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

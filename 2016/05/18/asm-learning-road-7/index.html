@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2016/05/18/asm-learning-road-7/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="这是系列的第七篇，接下来要讲一下如何在c中使用汇编。其实我们有三种方法：  从C代码调用汇编例程 从汇编代码调用c例程 在C代码中使用内联汇编  我们来编写3个简单的Hello World程序，向我们展示如何使用assembly和C在一起。">
-<meta property="og:updated_time" content="2017-10-29T15:48:34.176Z">
+<meta property="og:updated_time" content="2017-11-02T12:14:19.189Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（7）">
 <meta name="twitter:description" content="这是系列的第七篇，接下来要讲一下如何在c中使用汇编。其实我们有三种方法：  从C代码调用汇编例程 从汇编代码调用c例程 在C代码中使用内联汇编  我们来编写3个简单的Hello World程序，向我们展示如何使用assembly和C在一起。">
@@ -463,7 +463,7 @@
 <p>编译如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">build:</div><div class="line">	gcc casm.c -o casm</div></pre></td></tr></table></figure></p>
 <h1 id="汇编里面调用c"><a href="#汇编里面调用c" class="headerlink" title="汇编里面调用c"></a>汇编里面调用c</h1><p>最后一种方法是从汇编代码调用C函数。例如，我们有以下简单的C代码与一个函数，只打印Hello world：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">print</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="built_in">printf</span>(<span class="string">"Hello World\n"</span>);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>现在我们可以在我们的汇编代码中将这个函数定义为extern，并且像以前那样在调用指令中进行调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">global _start</div><div class="line"></div><div class="line">extern print</div><div class="line"></div><div class="line">section .text</div><div class="line"></div><div class="line">_start:</div><div class="line">		call print</div><div class="line"></div><div class="line">		mov rax, 60</div><div class="line">		mov rdi, 0</div><div class="line">		syscall</div></pre></td></tr></table></figure></p>
-<p>编译<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">build:</div><div class="line">	gcc  -c casm.c -o c.o</div><div class="line">	nasm -f elf64 casm.asm -o casm.o</div><div class="line">	ld   -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc casm.o c.o -o casm</div></pre></td></tr></table></figure></p>
+<p>编译<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ gcc  -c casm.c -o c.o</div><div class="line">$ nasm -f elf64 casm.asm -o casm.o</div><div class="line">$ ld   -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc casm.o c.o -o casm</div></pre></td></tr></table></figure></p>
 <p>现在我们可以运行我们的第三个hello world。</p>
 <p>原文质量有些描述冗余，翻译过程进行缩减了，还有语法问题，哎。。。勉强看看吧<br>翻译 <a href="https://0xax.github.io/asm_7" target="_blank" rel="external">https://0xax.github.io/asm_7</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a></p>
 
@@ -587,7 +587,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">106</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -598,7 +598,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -609,7 +609,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">88</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

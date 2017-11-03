@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse">
+<meta name="description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse  首先让我们看看如何将浮点数存储在内存中。有三种浮点数据类型：  单精度 双精度 双倍扩展精度  正如英特尔的64-ia-32架构软件开发者-vol-1手册所述：  The data formats for these data types correspond dir">
 <meta name="keywords" content="asm,nasm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="我的汇编学习之路（8）">
 <meta property="og:url" content="http://idiotsky.me/2016/05/19/asm-learning-road-8/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse">
-<meta property="og:updated_time" content="2017-10-31T13:42:06.492Z">
+<meta property="og:description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse  首先让我们看看如何将浮点数存储在内存中。有三种浮点数据类型：  单精度 双精度 双倍扩展精度  正如英特尔的64-ia-32架构软件开发者-vol-1手册所述：  The data formats for these data types correspond dir">
+<meta property="og:updated_time" content="2017-11-02T12:14:19.189Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（8）">
-<meta name="twitter:description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse">
+<meta name="twitter:description" content="这是系列的第八篇（译者注：最终篇），接下来讲讲怎么在汇编使用非整型（浮点数）。我们有一些方法可以处理浮点数据：  fpu sse  首先让我们看看如何将浮点数存储在内存中。有三种浮点数据类型：  单精度 双精度 双倍扩展精度  正如英特尔的64-ia-32架构软件开发者-vol-1手册所述：  The data formats for these data types correspond dir">
 
 
 
@@ -437,8 +437,70 @@
 <li>fpu</li>
 <li>sse</li>
 </ul>
+<p>首先让我们看看如何将浮点数存储在内存中。有三种浮点数据类型：</p>
+<ul>
+<li>单精度</li>
+<li>双精度</li>
+<li>双倍扩展精度</li>
+</ul>
+<p>正如英特尔的64-ia-32架构软件开发者-vol-1手册所述：</p>
+<blockquote>
+<p>The data formats for these data types correspond directly to formats specified in the IEEE Standard 754 for Binary Floating-Point Arithmetic.</p>
+</blockquote>
+<p>内存中呈现的单精度浮点浮点数据：</p>
+<ul>
+<li>符号 - 1位</li>
+<li>指数 - 8位</li>
+<li>尾数 - 23位</li>
+</ul>
 <a id="more"></a>
-<p>翻译 <a href="https://0xax.github.io/asm_8" target="_blank" rel="external">https://0xax.github.io/asm_8</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a></p>
+<p>所以例如，如果我们有以下号码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">| sign  | exponent | mantissa</div><div class="line">|-------|----------|-------------------------</div><div class="line">| 0     | 00001111 | 110000000000000000000000</div></pre></td></tr></table></figure></p>
+<p>指数是从-128到127的8位有符号整数或从0到255的8位无符号整数。符号位为零，因此我们有正数。指数为00001111b或十进制十进制。对于单精度位移为127，这意味着我们需要计算指数 - 127或15 - 127 = -112。由于尾数的归一化二进制整数部分总是等于1，所以尾数只记录其小数部分，因此尾数或我们的数字是1,110000000000000000000000。结果值为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">value = mantissa * 2^-112</div></pre></td></tr></table></figure></p>
+<p>双精度数是64位内存，其中：</p>
+<ul>
+<li>符号 - 1位</li>
+<li>指数 - 11位</li>
+<li>尾数52位</li>
+</ul>
+<p>结果编号我们可以得到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">value = (-1)^sign * (1 + mantissa / 2 ^ 52) * 2 ^ exponent - 1023)</div></pre></td></tr></table></figure></p>
+<p>扩展精度为80位数，其中：</p>
+<ul>
+<li>符号 - 1位</li>
+<li>指数 - 15位</li>
+<li>尾数 - 112位</li>
+</ul>
+<p>阅读更多关于它 - <a href="https://en.wikipedia.org/wiki/Extended_precision" target="_blank" rel="external">这里</a>。我们来看简单的例子。</p>
+<h1 id="x87-FPU"><a href="#x87-FPU" class="headerlink" title="x87 FPU"></a>x87 FPU</h1><p>x87浮点单元（FPU）提供高性能浮点处理。它支持浮点，整数和压缩的BCD整数数据类型和浮点处理算法。x87提供以下说明：</p>
+<ul>
+<li>数据传输指令</li>
+<li>基本算术指令</li>
+<li>比较指令</li>
+<li>超验指令</li>
+<li>加载常数指令</li>
+<li>x87 FPU控制指令</li>
+</ul>
+<p>当然，我们不会看到x87提供的所有指令，有关其他信息，请参阅64-ia-32-architecture-software-developer-vol-1手册第8章。有几个数据传输指令：</p>
+<ul>
+<li>FDL - 加载浮点数</li>
+<li>FST - 存储浮点数（在ST（0）寄存器中）</li>
+<li>FSTP - 存储浮点和弹出（在ST（0）寄存器中）</li>
+</ul>
+<p>算术指令：</p>
+<ul>
+<li>FADD - 添加浮点数</li>
+<li>FIADD - 将整数添加到浮点</li>
+<li>FSUB - 减去浮点数</li>
+<li>FISUB - 从浮点中减去整数</li>
+<li>FABS - 获得绝对的价值</li>
+<li>FIMUL - 乘整数和浮点数</li>
+<li>FIDIV - 设备整数和浮点数</li>
+</ul>
+<p>等等… FPU有八个10字节寄存器组织在一个环堆栈。堆栈顶部 - 寄存器ST（0），其他寄存器为ST（1），ST（2）… ST（7）。我们通常在使用浮点数据时使用它。<br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    x dw 1.0</div><div class="line"></div><div class="line">fld dword [x]</div></pre></td></tr></table></figure></p>
+<p>将x的值推送到此堆栈。操作员可以是32位，64位或80位。它像普通堆栈一样工作，如果我们用fld推动另一个值，x值将在ST（1）中，新值将在ST（0）中。FPU指令可以使用这些寄存器，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">;;</div><div class="line">;; adds st0 value to st3 and saves it in st0</div><div class="line">;;</div><div class="line">fadd st0, st3</div><div class="line"></div><div class="line">;;</div><div class="line">;; adds x and y and saves it in st0</div><div class="line">;;</div><div class="line">fld dword [x]</div><div class="line">fld dword [y]</div><div class="line">fadd</div></pre></td></tr></table></figure></p>
+<p>我们来看简单的例子。我们将有圆半径并计算圆平方并打印：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">extern printResult</div><div class="line"></div><div class="line">section .data</div><div class="line">		radius    dq  1.7</div><div class="line">		result    dq  0</div><div class="line"></div><div class="line">		SYS_EXIT  equ 60</div><div class="line">		EXIT_CODE equ 0</div><div class="line"></div><div class="line">global _start</div><div class="line">section .text</div><div class="line"></div><div class="line">_start:</div><div class="line">		fld qword [radius]</div><div class="line">		fld qword [radius]</div><div class="line">		fmul</div><div class="line"></div><div class="line">		fldpi</div><div class="line">		fmul</div><div class="line">		fstp qword [result]</div><div class="line"></div><div class="line">		mov rax, 0</div><div class="line">		movq xmm0, [result]</div><div class="line">		call printResult</div><div class="line"></div><div class="line">		mov rax, SYS_EXIT</div><div class="line">		mov rdi, EXIT_CODE</div><div class="line">		syscall</div></pre></td></tr></table></figure></p>
+<p>我们试着去了解它的工作原理：首先，我们将使用预定义的半径数据和结果存储结果的数据部分。之后这2个常量用于调用exit系统调用。接下来我们看到程序的入口点 - _start。我们用fld指令在st0和st1中存储半径值，并将这两个值与fmul指令相乘。在这个操作之后，我们将在st0寄存器中得到半径半径乘积的结果。接下来，我们将带有fldpi指令的数字π加载到st0寄存器，之后它的radius <em> radius值将在st1寄存器中。在st0（pi）和st1（半径</em> radius的值）上执行与fmul执行乘法运算后，结果将在st0寄存器中。好的，现在我们在st0寄存器中有圆形正方形，可以用fstp指令将其解析成结果。下一步是将结果传递给C函数并调用它。记住我们以前的博客文章中的汇编代码调用C函数。我们需要知道x86_64调用约定。以通常的方式，我们通过寄存器rdi（arg1），rsi（arg2）等来传递函数参数，但这里是浮点数据。有特殊寄存器：smm提供的xmm0 - xmm15。首先，我们需要将xmmN寄存器的数量放在rax寄存器（0为我们的情况），并将结果存入xmm0寄存器。现在我们可以调用C函数来打印结果：首先，我们需要将xmmN寄存器的数量放在rax寄存器（0为我们的情况），并将结果存入xmm0寄存器。现在我们可以调用C函数来打印结果：首先，我们需要将xmmN寄存器的数量放在rax寄存器（0为我们的情况），并将结果存入xmm0寄存器。现在我们可以调用C函数来打印结果：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">printResult</span><span class="params">(<span class="keyword">double</span> result)</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">printResult</span><span class="params">(<span class="keyword">double</span> result)</span> </span>&#123;</div><div class="line">	<span class="built_in">printf</span>(<span class="string">"Circle radius is - %f\n"</span>, result);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们可以用来编译：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ gcc  -g -c circle_fpu_87c.c -o c.o</div><div class="line">$ nasm -f elf64 circle_fpu_87.asm -o circle_fpu_87.o</div><div class="line">$ ld   -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc circle_fpu_87.o  c.o -o testFloat1</div></pre></td></tr></table></figure></p>
+<p>这篇我实在看不懂，应该是浮点数比较复杂吧，所以文章大部分是机器直译。。。<br>翻译 <a href="https://0xax.github.io/asm_8" target="_blank" rel="external">https://0xax.github.io/asm_8</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a></p>
 
       
     </div>
@@ -535,8 +597,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -551,7 +622,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">106</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -562,7 +633,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -573,7 +644,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">88</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -651,6 +722,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#x87-FPU"><span class="nav-number">1.</span> <span class="nav-text">x87 FPU</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

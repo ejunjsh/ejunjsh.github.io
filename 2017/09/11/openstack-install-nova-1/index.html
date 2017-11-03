@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/09/11/openstack-install-nova-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="nova是OpenStack一个核心服务，提供计算服务，主要负责虚拟机的各种操作，如启动，销毁，快照，还有选择合适的compute节点部署虚拟机。nova中的服务有controller和compute之分，是一对多的关系，即一个controller可以有多个compute，所以一些controller服务要装到controller节点上，compute服务可以装到compute节点，也可以装到c">
-<meta property="og:updated_time" content="2017-10-31T13:20:54.546Z">
+<meta property="og:updated_time" content="2017-11-01T14:55:13.035Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openstack安装-nova(一)">
 <meta name="twitter:description" content="nova是OpenStack一个核心服务，提供计算服务，主要负责虚拟机的各种操作，如启动，销毁，快照，还有选择合适的compute节点部署虚拟机。nova中的服务有controller和compute之分，是一对多的关系，即一个controller可以有多个compute，所以一些controller服务要装到controller节点上，compute服务可以装到compute节点，也可以装到c">
@@ -472,9 +472,9 @@
 <h2 id="创建布置服务的api入口"><a href="#创建布置服务的api入口" class="headerlink" title="创建布置服务的api入口"></a>创建布置服务的api入口</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack service create --name placement --description <span class="string">"Placement API"</span> placement</span></div><div class="line">+-------------+----------------------------------+</div><div class="line">| Field       | Value                            |</div><div class="line">+-------------+----------------------------------+</div><div class="line">| description | Placement API                    |</div><div class="line">| enabled     | True                             |</div><div class="line">| id          | 2d1a27022e6e4185b86adac4444c495f |</div><div class="line">| name        | placement                        |</div><div class="line">| type        | placement                        |</div><div class="line">+-------------+----------------------------------+</div></pre></td></tr></table></figure>
 <h2 id="创建布置服务api-endpoints"><a href="#创建布置服务api-endpoints" class="headerlink" title="创建布置服务api endpoints"></a>创建布置服务api endpoints</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> openstack endpoint create --region RegionOne placement public http://controller:8778</span></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | 2b1b2637908b4137a9c2e0470487cbc0 |</div><div class="line">| interface    | public                           |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 2d1a27022e6e4185b86adac4444c495f |</div><div class="line">| service_name | placement                        |</div><div class="line">| service_type | placement                        |</div><div class="line">| url          | http://controller:8778           |</div><div class="line">+--------------+----------------------------------+</div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack endpoint create --region RegionOne placement internal http://controller:8778</span></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | 02bcda9a150a4bd7993ff4879df971ab |</div><div class="line">| interface    | internal                         |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 2d1a27022e6e4185b86adac4444c495f |</div><div class="line">| service_name | placement                        |</div><div class="line">| service_type | placement                        |</div><div class="line">| url          | http://controller:8778           |</div><div class="line">+--------------+----------------------------------+</div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack endpoint create --region RegionOne placement admin http://controller:8778</span></div><div class="line">+--------------+----------------------------------+</div><div class="line">| Field        | Value                            |</div><div class="line">+--------------+----------------------------------+</div><div class="line">| enabled      | True                             |</div><div class="line">| id           | 3d71177b9e0f406f98cbff198d74b182 |</div><div class="line">| interface    | admin                            |</div><div class="line">| region       | RegionOne                        |</div><div class="line">| region_id    | RegionOne                        |</div><div class="line">| service_id   | 2d1a27022e6e4185b86adac4444c495f |</div><div class="line">| service_name | placement                        |</div><div class="line">| service_type | placement                        |</div><div class="line">| url          | http://controller:8778           |</div><div class="line">+--------------+----------------------------------+</div></pre></td></tr></table></figure>
 <h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> apt install nova-api nova-conductor nova-consoleauth \</span></div><div class="line">  nova-novncproxy nova-scheduler nova-placement-api</div></pre></td></tr></table></figure>
-<blockquote>
-<p>to be continue…</p>
-</blockquote>
+<h2 id="修改-etc-nova-nova-conf"><a href="#修改-etc-nova-nova-conf" class="headerlink" title="修改/etc/nova/nova.conf"></a>修改<code>/etc/nova/nova.conf</code></h2><ul>
+<li>修改<code>[api_database]</code>和<code>[database]</code>区域</li>
+</ul>
 
       
     </div>
@@ -511,8 +511,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/11/epoll-mechanism/" rel="next" title="linux epoll原理">
-                <i class="fa fa-chevron-left"></i> linux epoll原理
+              <a href="/2017/09/11/openstack-install-neutron-1/" rel="next" title="openstack安装-neutron(一)">
+                <i class="fa fa-chevron-left"></i> openstack安装-neutron(一)
               </a>
             
           </div>
@@ -521,8 +521,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/09/13/redis-string/" rel="prev" title="redis数据结构-简单动态字符串">
-                redis数据结构-简单动态字符串 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/09/11/openstack-install-neutron-2/" rel="prev" title="openstack安装-neutron(二)">
+                openstack安装-neutron(二) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -600,7 +600,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">106</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -611,7 +611,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -622,7 +622,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">88</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -710,7 +710,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数据库"><span class="nav-number">1.1.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行以下命令，进入admin身份"><span class="nav-number">1.2.</span> <span class="nav-text">执行以下命令，进入admin身份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建计算服务相关权限用户"><span class="nav-number">1.3.</span> <span class="nav-text">创建计算服务相关权限用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建计算服务API-endpoints"><span class="nav-number">1.4.</span> <span class="nav-text">创建计算服务API endpoints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个布置服务（Placement-service）的用户"><span class="nav-number">1.5.</span> <span class="nav-text">创建一个布置服务（Placement service）的用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给这个用户添加admin权限"><span class="nav-number">1.6.</span> <span class="nav-text">给这个用户添加admin权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建布置服务的api入口"><span class="nav-number">1.7.</span> <span class="nav-text">创建布置服务的api入口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建布置服务api-endpoints"><span class="nav-number">1.8.</span> <span class="nav-text">创建布置服务api endpoints</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装和配置组件"><span class="nav-number">2.</span> <span class="nav-text">安装和配置组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装包"><span class="nav-number">2.1.</span> <span class="nav-text">安装包</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备"><span class="nav-number">1.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数据库"><span class="nav-number">1.1.</span> <span class="nav-text">创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行以下命令，进入admin身份"><span class="nav-number">1.2.</span> <span class="nav-text">执行以下命令，进入admin身份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建计算服务相关权限用户"><span class="nav-number">1.3.</span> <span class="nav-text">创建计算服务相关权限用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建计算服务API-endpoints"><span class="nav-number">1.4.</span> <span class="nav-text">创建计算服务API endpoints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建一个布置服务（Placement-service）的用户"><span class="nav-number">1.5.</span> <span class="nav-text">创建一个布置服务（Placement service）的用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给这个用户添加admin权限"><span class="nav-number">1.6.</span> <span class="nav-text">给这个用户添加admin权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建布置服务的api入口"><span class="nav-number">1.7.</span> <span class="nav-text">创建布置服务的api入口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建布置服务api-endpoints"><span class="nav-number">1.8.</span> <span class="nav-text">创建布置服务api endpoints</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装和配置组件"><span class="nav-number">2.</span> <span class="nav-text">安装和配置组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装包"><span class="nav-number">2.1.</span> <span class="nav-text">安装包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改-etc-nova-nova-conf"><span class="nav-number">2.2.</span> <span class="nav-text">修改/etc/nova/nova.conf</span></a></li></ol></li></ol></div>
             
 
           </div>

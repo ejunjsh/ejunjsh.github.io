@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="linux,tcp," />
+  <meta name="keywords" content="tcp," />
 
 
 
@@ -103,20 +103,23 @@
 
 
 
-<meta name="description" content="问题12345$ netstat -an |awk &apos;/tcp/ &amp;#123;++S[$NF]&amp;#125;END &amp;#123;for (a in S) print a , S[a]&amp;#125;&apos;TIME_WAIT 41CLOSE_WAIT 1ESTABLISHED 2LISTEN 7 可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的s">
-<meta name="keywords" content="linux,tcp">
+<meta name="description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta name="keywords" content="tcp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux TIME_WAIT过多问题">
-<meta property="og:url" content="http://idiotsky.me/2017/10/18/linux-too-many-timewait/index.html">
+<meta property="og:title" content="TCP 的那些事儿">
+<meta property="og:url" content="http://idiotsky.me/2017/11/01/tcp-something/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="问题12345$ netstat -an |awk &apos;/tcp/ &amp;#123;++S[$NF]&amp;#125;END &amp;#123;for (a in S) print a , S[a]&amp;#125;&apos;TIME_WAIT 41CLOSE_WAIT 1ESTABLISHED 2LISTEN 7 可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的s">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-too-many-timewait-2.png">
-<meta property="og:updated_time" content="2017-10-19T14:41:46.154Z">
+<meta property="og:description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-1.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-2.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-3.png">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-4.jpg">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-5.png">
+<meta property="og:updated_time" content="2017-11-03T15:42:40.861Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux TIME_WAIT过多问题">
-<meta name="twitter:description" content="问题12345$ netstat -an |awk &apos;/tcp/ &amp;#123;++S[$NF]&amp;#125;END &amp;#123;for (a in S) print a , S[a]&amp;#125;&apos;TIME_WAIT 41CLOSE_WAIT 1ESTABLISHED 2LISTEN 7 可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的s">
-<meta name="twitter:image" content="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg">
+<meta name="twitter:title" content="TCP 的那些事儿">
+<meta name="twitter:description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta name="twitter:image" content="http://idiotsky.me/images1/tcp-something-1.jpg">
 
 
 
@@ -145,13 +148,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/10/18/linux-too-many-timewait/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/11/01/tcp-something/"/>
 
 
 
 
 
-  <title>linux TIME_WAIT过多问题 | IdiotSky</title>
+  <title>TCP 的那些事儿 | IdiotSky</title>
   
 
 
@@ -346,7 +349,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/10/18/linux-too-many-timewait/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/01/tcp-something/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -363,7 +366,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">linux TIME_WAIT过多问题</h1>
+          <h1 class="post-title" itemprop="name headline">TCP 的那些事儿</h1>
         
 
         <div class="post-meta">
@@ -375,8 +378,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-18T20:08:15+08:00">
-                18 Oct 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-01T22:56:41+08:00">
+                01 Nov 17
               </time>
             
 
@@ -398,8 +401,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
+                  <a href="/categories/tcp/" itemprop="url" rel="index">
+                    <span itemprop="name">tcp</span>
                   </a>
                 </span>
 
@@ -435,28 +438,40 @@
       
 
       
-        <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> netstat -an |awk <span class="string">'/tcp/ &#123;++S[$NF]&#125;END &#123;for (a in S) print a , S[a]&#125;'</span></span></div><div class="line">TIME_WAIT 41</div><div class="line">CLOSE_WAIT 1</div><div class="line">ESTABLISHED 2</div><div class="line">LISTEN 7</div></pre></td></tr></table></figure>
-<p>可以看到，TIME_WAIT很多，此状态下的socket不能被回收使用，严重影响服务器的处理能力,甚至耗尽可用的socket,停止服务。<br><a id="more"></a></p>
-<h1 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h1><p>通信双方建立TCP连接后，主动关闭连接的一方就会进入TIME_WAIT状态<br>客户端主动关闭连接时，会发送最后一个ack后，然后会进入TIME_WAIT状态，再停留2个MSL时间(后有MSL的解释)，进入CLOSED状态。<br>下图是以客户端主动关闭连接为例，说明这一过程的:<br>为什么TIME_WAIT状态还需要等2MSL后才能返回到CLOSED状态？<br>这是因为：虽然双方都同意关闭连接了，而且握手的4个报文也都协调和发送完毕，按理可以直接回到CLOSED状态（就好比从SYN_SEND状态到 ESTABLISH状态那样）；但是因为我们必须要假想网络是不可靠的，你无法保证你最后发送的ACK报文会一定被对方收到，因此对方处于 LAST_ACK状态下的SOCKET可能会因为超时未收到ACK报文，而重发FIN报文，所以这个TIME_WAIT状态的作用就是用来重发可能丢失的 ACK报文，并保证于此。<br><a href="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg"><img src="http://idiotsky.me/images1/linux-too-many-timewait-1.jpg" alt=""></a></p>
-<h1 id="linux网络连接状态"><a href="#linux网络连接状态" class="headerlink" title="linux网络连接状态"></a>linux网络连接状态</h1><p><a href="http://idiotsky.me/images1/linux-too-many-timewait-2.png"><img src="http://idiotsky.me/images1/linux-too-many-timewait-2.png" alt=""></a></p>
+        <blockquote>
+<p>tcp看了很多的文章，这篇总结的很好。</p>
+</blockquote>
+<p>tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。</p>
+<p>首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。</p>
+<h1 id="TCP头格式"><a href="#TCP头格式" class="headerlink" title="TCP头格式"></a>TCP头格式</h1><p>接下来，我们来看一下TCP头的格式<br><a href="http://idiotsky.me/images1/tcp-something-1.jpg"><img src="http://idiotsky.me/images1/tcp-something-1.jpg" alt=""></a><br>你需要注意这么几点：</p>
 <ul>
-<li>LISTEN:socket正在监听连接请求。</li>
-<li>ESTABLISHED:socket已经建立连接，表示处于连接的状态</li>
-<li>SYN_SENT:socket正在积极尝试建立一个连接，即处于发送后连接前的一个等待但未匹配进入连接的状态。（主动连接）</li>
-<li>SYN_RECV:已经从网络上收到一个连接请求。（被动连接）</li>
-<li>FIN_WAIT1:socket已关闭，连接正在或正要关闭。(主动关闭)</li>
-<li>FIN_WAIT2:连接已关闭，并且socket正在等待远端结束。</li>
-<li>TIME_WAIT:socket正在等待关闭处理仍在网络上的数据包</li>
-<li>CLOSE_WAIT:远端已经结束，等待socket关闭。(被动关闭)</li>
-<li>LAST_ACK：远端已经结束，并且socket也已关闭，等待acknowledgement。</li>
+<li>TCP的包是没有IP地址的，那是IP层上的事。但是有源端口和目标端口。</li>
+<li>一个TCP连接需要四个元组来表示是同一个连接（src_ip, src_port, dst_ip, dst_port）准确说是五元组，还有一个是协议。但因为这里只是说TCP协议，所以，这里我只说四元组。</li>
+<li>注意上图中的四个非常重要的东西：<ul>
+<li>Sequence Number是包的序号，用来解决网络包乱序（reordering）问题。</li>
+<li>Acknowledgement Number就是ACK——用于确认收到，用来解决不丢包的问题。</li>
+<li>Window又叫Advertised-Window，也就是著名的滑动窗口（Sliding Window），用于解决流控的。</li>
+<li>TCP Flag ，也就是包的类型，主要是用于操控TCP的状态机的。</li>
 </ul>
-<h1 id="linux优化"><a href="#linux优化" class="headerlink" title="linux优化"></a>linux优化</h1><p>Linux有很多关于tcp的系统参数，可以有效的优化tcp。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">net.ipv4.tcp_syncookies = 1 #表示开启SYN Cookies。当出现SYN等待队列溢出时，启用cookies来处理，可防范少量SYN攻击(sync flood 攻击)，默认为0，表示关闭；</div><div class="line">net.ipv4.tcp_tw_reuse = 1 #表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭；</div><div class="line">net.ipv4.tcp_tw_recycle = 1 #表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭。</div><div class="line">net.ipv4.tcp_fin_timeout = 30 #表示如果套接字由本端要求关闭，这个参数决定了它保持在FIN-WAIT-2状态的时间。</div><div class="line">net.ipv4.tcp_keepalive_time = 1200 #表示当keepalive起用的时候，TCP发送keepalive消息的频度。缺省是2小时，改为20分钟。</div><div class="line">net.ipv4.ip_local_port_range = 1024 65000 #表示用于向外连接的端口范围。缺省情况下很小：32768到61000，改为1024到65000。</div><div class="line">net.ipv4.tcp_max_syn_backlog = 8192 #表示SYN队列的长度，默认为1024，加大队列长度为8192，可以容纳更多等待连接的网络连接数。</div><div class="line">net.ipv4.tcp_max_tw_buckets = 5000 #表示系统同时保持TIME_WAIT套接字的最大数量，如果超过这个数字，TIME_WAIT套接字将立刻被清除并打印警告信息。默 认为180000，改为5000。对于Apache、Nginx等服务器，上几行的参数可以很好地减少TIME_WAIT套接字数量，但是对于Squid，效果却不大。此项参数可以控制TIME_WAIT套接字的最大数量，避免Squid服务器被大量的TIME_WAIT套接字拖死。</div></pre></td></tr></table></figure></p>
-<h1 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h1><p>上面的优化，改了些参数,特别是<code>tcp_tw_reuse</code>和<code>tcp_tw_recycle</code>这两个参数，确实能够明显看到time_wait减少，甚至基本看不到了。其实这个看上去解决了问题，但是其实还会引发其他的问题。<br>TCP有一种行为，可以缓存每个主机最新的时间戳，后续请求中如果时间戳小于缓存的时间戳，即视为无效，相应的数据包会被丢弃。<br>Linux是否启用这种行为取决于<code>tcp_timestamps</code>和<code>tcp_tw_recycle</code>，因为<code>tcp_timestamps</code>缺省就是开启的，所以当<code>tcp_tw_recycle</code>被开启后，实际上这种行为就被激活了，当客户端或服务端以NAT方式构建的时候就可能出现问题，下面以客户端NAT为例来说明：<br>当多个客户端通过NAT方式联网并与服务端交互时，服务端看到的是同一个IP，也就是说对服务端而言这些客户端实际上等同于一个，可惜由于这些客户端的时间戳可能存在差异，于是乎从服务端的视角看，便可能出现时间戳错乱的现象，进而直接导致时间戳小的数据包被丢弃。如果发生了此类问题，具体的表现通常是是客户端明明发送的SYN，但服务端就是不响应ACK，我们可以通过下面命令来确认数据包不断被丢弃的现象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> netstat -s | grep timestamp</span></div><div class="line">... packets rejects in established connections because of timestamp</div></pre></td></tr></table></figure></p>
-<p>安全起见，通常要禁止<code>tcp_tw_recycle</code>。到这里，大家可能会想到另一种解决方案：把<code>tcp_timestamps</code>设置为0，<code>tcp_tw_recycle</code>设置为1，这样不就可以鱼与熊掌兼得了么？可惜一旦关闭了<code>tcp_timestamps</code>，那么即便打开了<code>tcp_tw_recycle</code>，也没有效果。</p>
-<p>好在我们还有另一个内核参数<code>tcp_max_tw_buckets</code>（一般缺省是180000）可用：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sysctl net.ipv4.tcp_max_tw_buckets=100000</span></div></pre></td></tr></table></figure></p>
-<p>通过设置它，系统会将多余的TIME_WAIT删除掉，此时系统日志里可能会显示：「TCP: time wait bucket table overflow」，不过除非不得已，否则不要轻易使用。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过上面的问题，解决time_wait过多，好像没有什么完美的方案，所以，还是看情况使用Linux参数。</p>
-<p>参考<br><a href="https://huoding.com/2012/01/19/142" target="_blank" rel="external">https://huoding.com/2012/01/19/142</a><br><a href="http://blog.csdn.net/dog250/article/details/13760985" target="_blank" rel="external">http://blog.csdn.net/dog250/article/details/13760985</a><br><a href="http://www.cnblogs.com/bass6/p/5794859.html" target="_blank" rel="external">http://www.cnblogs.com/bass6/p/5794859.html</a></p>
+</li>
+</ul>
+<a id="more"></a>
+<p>关于其它的东西，可以参看下面的图示<br><a href="http://idiotsky.me/images1/tcp-something-2.jpg"><img src="http://idiotsky.me/images1/tcp-something-2.jpg" alt=""></a></p>
+<h1 id="TCP的状态机"><a href="#TCP的状态机" class="headerlink" title="TCP的状态机"></a>TCP的状态机</h1><p>其实，网络上的传输是没有连接的，包括TCP也是一样的。而TCP所谓的“连接”，其实只不过是在通讯的双方维护一个“连接状态”，让它看上去好像有连接一样。所以，TCP的状态变换是非常重要的。</p>
+<p>下面是：“TCP协议的状态机”  和 “TCP建链接”、“TCP断链接”、“传数据” 的对照图，我把两个图并排放在一起，这样方便在你对照着看。另外，下面这两个图非常非常的重要，你一定要记牢。<br><a href="http://idiotsky.me/images1/tcp-something-3.png"><img src="http://idiotsky.me/images1/tcp-something-3.png" alt=""></a><br><a href="http://idiotsky.me/images1/tcp-something-4.jpg"><img src="http://idiotsky.me/images1/tcp-something-4.jpg" alt=""></a><br>很多人会问，为什么建链接要3次握手，断链接需要4次挥手？</p>
+<ul>
+<li><strong>对于建链接的3次握手</strong>，主要是要初始化Sequence Number 的初始值。通信的双方要互相通知对方自己的初始化的Sequence Number（缩写为ISN：Inital Sequence Number）——所以叫SYN，全称Synchronize Sequence Numbers。也就上图中的 x 和 y。这个号要作为以后的数据通信的序号，以保证应用层接收到的数据不会因为网络上的传输的问题而乱序（TCP会用这个序号来拼接数据）。</li>
+<li><strong>对于4次挥手</strong>，其实你仔细看是2次，因为TCP是全双工的，所以，发送方和接收方都需要Fin和Ack。只不过，有一方是被动的，所以看上去就成了所谓的4次挥手。如果两边同时断连接，那就会就进入到CLOSING状态，然后到达TIME_WAIT状态。下图是双方同时断连接的示意图（你同样可以对照着TCP状态机看）：</li>
+</ul>
+<p><a href="http://idiotsky.me/images1/tcp-something-5.png"><img src="http://idiotsky.me/images1/tcp-something-5.png" alt=""></a><br>另外，有几个事情需要注意一下：</p>
+<ul>
+<li><strong>关于建连接时SYN超时</strong>。试想一下，如果server端接到了clien发的SYN后回了SYN-ACK后client掉线了，server端没有收到client回来的ACK，那么，这个连接处于一个中间状态，即没成功，也没失败。于是，server端如果在一定时间内没有收到的TCP会重发SYN-ACK。在Linux下，默认重试次数为5次，重试的间隔时间从1s开始每次都翻售，5次的重试时间间隔为1s, 2s, 4s, 8s, 16s，总共31s，第5次发出后还要等32s都知道第5次也超时了，所以，总共需要 1s + 2s + 4s+ 8s+ 16s + 32s = 2^6 -1 = 63s，TCP才会把断开这个连接。</li>
+<li><strong>关于SYN Flood攻击</strong>。一些恶意的人就为此制造了SYN Flood攻击——给服务器发了一个SYN后，就下线了，于是服务器需要默认等63s才会断开连接，这样，攻击者就可以把服务器的syn连接的队列耗尽，让正常的连接请求不能处理。于是，Linux下给了一个叫tcp_syncookies的参数来应对这个事——当SYN队列满了后，TCP会通过源地址端口、目标地址端口和时间戳打造出一个特别的Sequence Number发回去（又叫cookie），如果是攻击者则不会有响应，如果是正常连接，则会把这个 SYN Cookie发回来，然后服务端可以通过cookie建连接（即使你不在SYN队列中）。请注意，请先千万别用tcp_syncookies来处理正常的大负载的连接的情况。因为，synccookies是妥协版的TCP协议，并不严谨。对于正常的请求，你应该调整三个TCP参数可供你选择，第一个是：tcp_synack_retries 可以用他来减少重试次数；第二个是：tcp_max_syn_backlog，可以增大SYN连接数；第三个是：tcp_abort_on_overflow 处理不过来干脆就直接拒绝连接了。</li>
+<li><strong>关于ISN的初始化</strong>。ISN是不能hard code的，不然会出问题的——比如：如果连接建好后始终用1来做ISN，如果client发了30个segment过去，但是网络断了，于是 client重连，又用了1做ISN，但是之前连接的那些包到了，于是就被当成了新连接的包，此时，client的Sequence Number 可能是3，而Server端认为client端的这个号是30了。全乱了。<a href="http://tools.ietf.org/html/rfc793" target="_blank" rel="external">RFC793</a>中说，ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始。这样，一个ISN的周期大约是4.55个小时。因为，我们假设我们的TCP Segment在网络上的存活时间不会超过Maximum Segment Lifetime（缩写为MSL – <a href="http://en.wikipedia.org/wiki/Maximum_Segment_Lifetime" target="_blank" rel="external">Wikipedia语条</a>），所以，只要MSL的值小于4.55小时，那么，我们就不会重用到ISN。</li>
+</ul>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
 
       
     </div>
@@ -474,8 +489,6 @@
       
         <div class="post-tags">
           
-            <a href="/tags/linux/" rel="tag"># linux</a>
-          
             <a href="/tags/tcp/" rel="tag"># tcp</a>
           
         </div>
@@ -489,8 +502,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/10/05/javascript-how-work-3/" rel="next" title="JavaScript是如何工作的(三)">
-                <i class="fa fa-chevron-left"></i> JavaScript是如何工作的(三)
+              <a href="/2017/10/19/proxy-reverse-proxy/" rel="next" title="正向代理和反向代理">
+                <i class="fa fa-chevron-left"></i> 正向代理和反向代理
               </a>
             
           </div>
@@ -498,10 +511,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/10/19/proxy-reverse-proxy/" rel="prev" title="正向代理和反向代理">
-                正向代理和反向代理 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -578,7 +587,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">106</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -589,7 +598,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -600,7 +609,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">88</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -688,7 +697,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原因"><span class="nav-number">2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux网络连接状态"><span class="nav-number">3.</span> <span class="nav-text">linux网络连接状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux优化"><span class="nav-number">4.</span> <span class="nav-text">linux优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题-1"><span class="nav-number">5.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP头格式"><span class="nav-number">1.</span> <span class="nav-text">TCP头格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP的状态机"><span class="nav-number">2.</span> <span class="nav-text">TCP的状态机</span></a></li></ol></div>
             
 
           </div>
