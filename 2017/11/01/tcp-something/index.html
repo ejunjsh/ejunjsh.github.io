@@ -103,13 +103,13 @@
 
 
 
-<meta name="description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta name="description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
 <meta name="keywords" content="tcp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TCP 的那些事儿">
 <meta property="og:url" content="http://idiotsky.me/2017/11/01/tcp-something/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta property="og:description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-3.png">
@@ -117,11 +117,11 @@
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-5.png">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-6.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-7.png">
-<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-8.png">
-<meta property="og:updated_time" content="2017-11-05T07:21:13.380Z">
+<meta property="og:image" content="http://idiotsky.me/images1/tcp-something-8.jpg">
+<meta property="og:updated_time" content="2017-11-05T07:24:20.882Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP 的那些事儿">
-<meta name="twitter:description" content="tcp看了很多的文章，这篇总结的很好。  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segm">
+<meta name="twitter:description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
 <meta name="twitter:image" content="http://idiotsky.me/images1/tcp-something-1.jpg">
 
 
@@ -442,7 +442,7 @@
 
       
         <blockquote>
-<p>tcp看了很多的文章，这篇总结的很好。</p>
+<p>tcp看了很多的文章，这篇总结的很好。此文有点长👿</p>
 </blockquote>
 <p>tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。</p>
 <p>首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。</p>
@@ -497,7 +497,7 @@
 <p>这两种方式有好也有不好。第一种会节省带宽，但是慢，第二种会快一点，但是会浪费带宽，也可能会有无用功。但总体来说都不好。因为都在等timeout，timeout可能会很长（在下篇会说TCP是怎么动态地计算出timeout的）</p>
 <h2 id="快速重传机制"><a href="#快速重传机制" class="headerlink" title="快速重传机制"></a>快速重传机制</h2><p>于是，TCP引入了一种叫Fast Retransmit 的算法，不以时间驱动，而以数据驱动重传。也就是说，如果，包没有连续到达，就ack最后那个可能被丢了的包，如果发送方连续收到3次相同的ack，就重传。Fast Retransmit的好处是不用等timeout了再重传。</p>
 <p>比如：如果发送方发出了1，2，3，4，5份数据，第一份先到送了，于是就ack回2，结果2因为某些原因没收到，3到达了，于是还是ack回2，后面的4和5都到了，但是还是ack回2，因为2还是没有收到，于是发送端收到了三个ack=2的确认，知道了2还没有到，于是就马上重转2。然后，接收端收到了2，此时因为3，4，5都收到了，于是ack回6。示意图如下：<br><a href="http://idiotsky.me/images1/tcp-something-7.png"><img src="http://idiotsky.me/images1/tcp-something-7.png" alt=""></a><br>Fast Retransmit只解决了一个问题，就是timeout的问题，它依然面临一个艰难的选择，就是，是重传之前的一个还是重传所有的问题。对于上面的示例来说，是重传#2呢还是重传#2，#3，#4，#5呢？因为发送端并不清楚这连续的3个ack(2)是谁传回来的？也许发送端发了20份数据，是#6，#10，#20传来的呢。这样，发送端很有可能要重传从2到20的这堆数据（这就是某些TCP的实际的实现）。可见，这是一把双刃剑。</p>
-<h2 id="SACK-方法"><a href="#SACK-方法" class="headerlink" title="SACK 方法"></a>SACK 方法</h2><p>另外一种更好的方式叫：Selective Acknowledgment (SACK)（参看<a href="http://tools.ietf.org/html/rfc2018" target="_blank" rel="external">RFC 2018</a>），这种方式需要在TCP头里加一个SACK的东西，ACK还是Fast Retransmit的ACK，SACK则是汇报收到的数据碎版。参看下图：<br><a href="http://idiotsky.me/images1/tcp-something-8.png"><img src="http://idiotsky.me/images1/tcp-something-8.png" alt=""></a></p>
+<h2 id="SACK-方法"><a href="#SACK-方法" class="headerlink" title="SACK 方法"></a>SACK 方法</h2><p>另外一种更好的方式叫：Selective Acknowledgment (SACK)（参看<a href="http://tools.ietf.org/html/rfc2018" target="_blank" rel="external">RFC 2018</a>），这种方式需要在TCP头里加一个SACK的东西，ACK还是Fast Retransmit的ACK，SACK则是汇报收到的数据碎版。参看下图：<br><a href="http://idiotsky.me/images1/tcp-something-8.jpg"><img src="http://idiotsky.me/images1/tcp-something-8.jpg" alt=""></a></p>
 <p>这样，在发送端就可以根据回传的SACK来知道哪些数据到了，哪些没有到。于是就优化了Fast Retransmit的算法。当然，这个协议需要两边都支持。在 Linux下，可以通过tcp_sack参数打开这个功能（Linux 2.4后默认打开）。</p>
 <p>这里还需要注意一个问题——接收方Reneging，所谓Reneging的意思就是接收方有权把已经报给发送端SACK里的数据给丢了。这样干是不被鼓励的，因为这个事会把问题复杂化了，但是，接收方这么做可能会有些极端情况，比如要把内存给别的更重要的东西。所以，发送方也不能完全依赖SACK，还是要依赖ACK，并维护Time-Out，如果后续的ACK没有增长，那么还是要把SACK的东西重传，另外，接收端这边永远不能把SACK的包标记为Ack。</p>
 <p>注意：SACK会消费发送方的资源，试想，如果一个攻击者给数据发送方发一堆SACK的选项，这会导致发送方开始要重传甚至遍历已经发出的数据，这会消耗很多发送端的资源。详细的东西请参看《<a href="http://www.ibm.com/developerworks/cn/linux/l-tcp-sack/" target="_blank" rel="external">TCP SACK的性能权衡</a>》</p>
