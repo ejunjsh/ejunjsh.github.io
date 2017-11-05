@@ -116,7 +116,7 @@
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-4.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-5.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-6.jpg">
-<meta property="og:updated_time" content="2017-11-05T15:00:02.269Z">
+<meta property="og:updated_time" content="2017-11-05T15:01:53.993Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git先生的故事">
 <meta name="twitter:description" content="很有意思的通俗的总结了git。👿  Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。 初次见面老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init">
@@ -465,9 +465,8 @@
 <p>导演注：stage相关的命令一般都与Staging Area相关，git add 也可以写成 git stage，这两个命令是一样的。</p>
 <p>不过当老板看到他把树设成了红色，觉得不合理，想放弃这次修改。他要如何去做呢？</p>
 <p><code>git reset &lt;file&gt;</code> 把这个文件的修改从Staging Area中去除<code>git checkout -- &lt;file&gt;</code> 放弃工作区文件的修改<br>导演注：这里使用 <code>git checkout &lt;file&gt;</code> 也行，之所以使用–，因为该命令与切换分支的命令一样，万一这个文件名和某个分支名重名，则<code>git checkout &lt;file&gt;</code>就变成切换分支了。</p>
-<p>老板不禁感叹，幸好自己没有进行commit。Git先生告诉老板说，即使你commit了，也不用怕，我也有几种解决方案。<br>一，放弃整张照片</p>
-<p>git reset HEAD~1HEAD表示指向最新那张照片的指针，～1表示要想起回退一张，此时我们有三种回退方式可选–soft 表示只删除照片，照片的修改恢复到Staging Area中–mixed 不但删除照片，也不恢复Staging Area中的状态（不加选项时就为此中方法）–hard 不但删除照片，而且连工作区域的修改也被回退掉<br>二，我们再产生一张想放弃的照片的反修改的照片</p>
-<p><code>git revert &lt;commit-id&gt;</code> 产生此commit的反修改，并提交此处commit-id不必是最新一次，可以是任意处的。<br>第一种方案适用于，你的commit还未push到云端的场景，第二种，如果你的修改已经push到云端，那么为了尊重历史记录，最好就是生成一个方向修改来回退错误部分，让其他人知道历史。</p>
+<p>老板不禁感叹，幸好自己没有进行commit。Git先生告诉老板说，即使你commit了，也不用怕，我也有几种解决方案。<br>一，放弃整张照片<br>git reset HEAD~1HEAD表示指向最新那张照片的指针，～1表示要想起回退一张，此时我们有三种回退方式可选–soft 表示只删除照片，照片的修改恢复到Staging Area中–mixed 不但删除照片，也不恢复Staging Area中的状态（不加选项时就为此中方法）–hard 不但删除照片，而且连工作区域的修改也被回退掉</p>
+<p>二，我们再产生一张想放弃的照片的反修改的照片<br><code>git revert &lt;commit-id&gt;</code> 产生此commit的反修改，并提交此处commit-id不必是最新一次，可以是任意处的。<br>第一种方案适用于，你的commit还未push到云端的场景，第二种，如果你的修改已经push到云端，那么为了尊重历史记录，最好就是生成一个方向修改来回退错误部分，让其他人知道历史。</p>
 <blockquote>
 <p>导演注：HEAD指针记录了正在操作的节点的commit id，每个分支都有属于自己的HEAD指针，并且只有一个</p>
 </blockquote>
@@ -483,8 +482,8 @@
 <p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
 <blockquote>
 <p>针对老板说的这种情况，我们只需要创建如下分支。然后分别在flower里种花，grass中种草，building中盖楼，最后在master分支中把完成的照片merge过来就行。<br>➜ GitTestRepo git:(master) git branch flower<br>➜ GitTestRepo git:(master) git branch grass<br>➜ GitTestRepo git:(master) git branch building<br>➜ GitTestRepo git:(master) git branch<br>building<br>flower<br>grass<br>* master</p>
-</blockquote>
 <p>导演注：分支前加*号的为当前工作分支</p>
+</blockquote>
 <h1 id="合作共赢"><a href="#合作共赢" class="headerlink" title="合作共赢"></a>合作共赢</h1><p>Git先生：报告老板，您这块地皮很大，要是只有我们开发，那得花上很久时间，何不把它开放出去，让其他老板们一起进来把这块蛋糕做大呢。</p>
 <p>老板：好主意，我们要怎么做呢？</p>
 <p>Git先生：一切交给我，不过因为地皮开放出去后，涉及到多方共同开发。有些注意事项还希望老板能听我说道说道，否则危害甚大。</p>
