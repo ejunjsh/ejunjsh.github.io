@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-11-05T14:58:52.269Z</updated>
+  <updated>2017-11-05T15:00:02.269Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,29 +20,29 @@
     <link href="http://idiotsky.me/2017/11/05/git-story/"/>
     <id>http://idiotsky.me/2017/11/05/git-story/</id>
     <published>2017-11-05T14:44:05.000Z</published>
-    <updated>2017-11-05T14:58:52.269Z</updated>
+    <updated>2017-11-05T15:00:02.269Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>很有意思的通俗的总结了git。👿</p>
 </blockquote>
 <p>Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。</p>
 <h1 id="初次见面"><a href="#初次见面" class="headerlink" title="初次见面"></a>初次见面</h1><p>老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。</p>
-<p>让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。<br><a href="http://idiotsky.me/images1/git-story-1.png"><img src="http://idiotsky.me/images1/git-story-1.png" alt=""></a></p>
+<p>让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。<br><a href="http://idiotsky.me/images1/git-story-1.jpg"><img src="http://idiotsky.me/images1/git-story-1.jpg" alt=""></a></p>
 <p>下面我们来解释下，这几个区域的作用：<br>Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。</p>
 <p>Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。git add 就是把修改搬到摄影棚，git commit就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。</p>
 <p>Repository：Git先生办公室的某个区域，专门用来存储照片用的。</p>
 <p>Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。<br><a id="more"></a></p>
-<h1 id="Go-to-work"><a href="#Go-to-work" class="headerlink" title="Go to work"></a>Go to work</h1><p>一切准备妥当后，Git先生马上就投入到了紧张的工作当中。老板首先就迫不及待的在地皮上上种了一朵花，然后马上命令Git来拍照留念。<br><a href="http://idiotsky.me/images1/git-story-2.png"><img src="http://idiotsky.me/images1/git-story-2.png" alt=""></a><br>当然结果是失败的，Git也很苦恼，自己已经把所有流程和老板说过一遍了，但老板还是会鲁莽行事。然后Git先生又向老板耐心的解释了一下针对Git目录下某个修改的4种状态。</p>
+<h1 id="Go-to-work"><a href="#Go-to-work" class="headerlink" title="Go to work"></a>Go to work</h1><p>一切准备妥当后，Git先生马上就投入到了紧张的工作当中。老板首先就迫不及待的在地皮上上种了一朵花，然后马上命令Git来拍照留念。<br><a href="http://idiotsky.me/images1/git-story-2.jpg"><img src="http://idiotsky.me/images1/git-story-2.jpg" alt=""></a><br>当然结果是失败的，Git也很苦恼，自己已经把所有流程和老板说过一遍了，但老板还是会鲁莽行事。然后Git先生又向老板耐心的解释了一下针对Git目录下某个修改的4种状态。</p>
 <blockquote>
 <p>Untracked/Tracked<br>Not Staged/Staged<br>比如你新建一个文件，它的状态就是 Untracked 的，你不能对 Untracked 的文件进行任何Git操作，除了先使用git add 让它先变为Tracked 状态。一个文件被Track后，以后的修改如果未用git add，那这个修改就叫Not Staged，需要add后，让它变为Staged才能进行Commit。</p>
 </blockquote>
 <p>老板按照Git先生的说法又执行了一遍，这次他成功了。Git又向老板说，你可以用git log来查看我已经拍过的照片。</p>
 <p>老板学会这招后，又给这块地皮创建了树、草，并且也都分别让Git先生拍了照片保存。</p>
-<p>git log后我们看到了这三张照片，如果要查看详情还可以使用git log -p。<br><a href="http://idiotsky.me/images1/git-story-3.png"><img src="http://idiotsky.me/images1/git-story-3.png" alt=""></a></p>
+<p>git log后我们看到了这三张照片，如果要查看详情还可以使用git log -p。<br><a href="http://idiotsky.me/images1/git-story-3.jpg"><img src="http://idiotsky.me/images1/git-story-3.jpg" alt=""></a></p>
 <blockquote>
 <p>导演注：Commit的id为对当前文件夹内容做SHA-1得来。</p>
 </blockquote>
-<h1 id="上点儿色吧"><a href="#上点儿色吧" class="headerlink" title="上点儿色吧"></a>上点儿色吧</h1><p>老板想把树涂成红色的，再给树取个名字叫big tree。他记得Git先生告诉过他可以用git diff来查看自己所做的改动<br><a href="http://idiotsky.me/images1/git-story-4.png"><img src="http://idiotsky.me/images1/git-story-4.png" alt=""></a><br>看到了自己的修改后，老板满意的点点头，然后用git add .把它们都丢进了摄影棚。过后就出去忙其他事情了，回来后他发现自己忘记离开前做了啥事情了。此时他再用git diff查看，发现里面空空如也。老板愤怒的叫来了Git先生问他是咋回事。Git先生友善的解释了原因。</p>
+<h1 id="上点儿色吧"><a href="#上点儿色吧" class="headerlink" title="上点儿色吧"></a>上点儿色吧</h1><p>老板想把树涂成红色的，再给树取个名字叫big tree。他记得Git先生告诉过他可以用git diff来查看自己所做的改动<br><a href="http://idiotsky.me/images1/git-story-4.jpg"><img src="http://idiotsky.me/images1/git-story-4.jpg" alt=""></a><br>看到了自己的修改后，老板满意的点点头，然后用git add .把它们都丢进了摄影棚。过后就出去忙其他事情了，回来后他发现自己忘记离开前做了啥事情了。此时他再用git diff查看，发现里面空空如也。老板愤怒的叫来了Git先生问他是咋回事。Git先生友善的解释了原因。</p>
 <p>“git diff显示了您当前修改和我办公室中所记录的最新一张照片之间的差异，但是您已经把这些改动都挪到我的摄影棚里了，git diff就没法查看了，如果您想看我摄影棚里摆了哪些东西。你可以使用git diff –staged/cached哦”</p>
 <p>老板按照Git先生所说，果然看到了他以前的修改记录。</p>
 <p>导演注：stage相关的命令一般都与Staging Area相关，git add 也可以写成 git stage，这两个命令是一样的。</p>
@@ -55,7 +55,7 @@
 <p>导演注：HEAD指针记录了正在操作的节点的commit id，每个分支都有属于自己的HEAD指针，并且只有一个</p>
 </blockquote>
 <h1 id="拨弄你的指针"><a href="#拨弄你的指针" class="headerlink" title="拨弄你的指针"></a>拨弄你的指针</h1><p>老板经过上次的事件，发现自己可能会因为一时冲动做出一些错误的决定。就问Git先生是否有办法把自己所有操作行为都记录下来，而且还允许自己撤销任何一种错误的操作。Git先生向老板解释说：所有对HEAD指针的操作都会被记录下来。</p>
-<p>可以用git reflog查看到老板的所有HEAD操作<br><a href="http://idiotsky.me/images1/git-story-5.png"><img src="http://idiotsky.me/images1/git-story-5.png" alt=""></a><br>最上面，我们可以看到是老板彻底回退了给树添加名字和颜色修改，执行了git reset –hard HEAD~1，而如果老板突然又后悔了，想恢复添加名字和颜色的修改。那么我们就可以通过执行git reset –hard HEAD@{1}来把操作回退到HEAD@{1}时，也就是加入名字和颜色那次commit。</p>
+<p>可以用git reflog查看到老板的所有HEAD操作<br><a href="http://idiotsky.me/images1/git-story-5.jpg"><img src="http://idiotsky.me/images1/git-story-5.jpg" alt=""></a><br>最上面，我们可以看到是老板彻底回退了给树添加名字和颜色修改，执行了git reset –hard HEAD~1，而如果老板突然又后悔了，想恢复添加名字和颜色的修改。那么我们就可以通过执行git reset –hard HEAD@{1}来把操作回退到HEAD@{1}时，也就是加入名字和颜色那次commit。</p>
 <blockquote>
 <p>这里的reset也有三个选项，–soft，–mixed，–hard，因为这里执行的是恢复操作，所以这三个选项在这里的作用也需要反过来理解，hard自不用说，就是完全恢复到某个操作时的状态，而soft表示，虽然把HEAD指针拨到了某个操作时的状态，但在staging area中会产生可以让恢复后的状态重新修改回来的修改，就像物质与反物质那样。mixed同理。</p>
 </blockquote>
@@ -73,7 +73,7 @@
 <p>Git先生：一切交给我，不过因为地皮开放出去后，涉及到多方共同开发。有些注意事项还希望老板能听我说道说道，否则危害甚大。</p>
 <p>老板：请讲请讲！</p>
 <p>如我们第一张图所示，我们可以利用git push来把自己所有的照片上传到云端，让其他人也可以参与进来开发。既然是云端，那么首先我们就需要指明下这个云端地皮的地址是哪里。</p>
-<p><code>git remote add origin https://github.com/CPPAlien/GitTestRepo.git</code>//这里一般用origin，当然你可以换成其他任何名，你也可以添加多个remote地址git remote -v 可以用来查看所有云端地址信息<br><code>git push -u &lt;remote&gt; &lt;branch&gt; git push --set-upstream &lt;remote&gt; &lt;branch&gt;</code>用这两个命令来指明某个分支所对应到的remote地址。如果不指定，你在执行git push时需要明确写出remote和branch。<br><a href="http://idiotsky.me/images1/git-story-6.png"><img src="http://idiotsky.me/images1/git-story-6.png" alt=""></a></p>
+<p><code>git remote add origin https://github.com/CPPAlien/GitTestRepo.git</code>//这里一般用origin，当然你可以换成其他任何名，你也可以添加多个remote地址git remote -v 可以用来查看所有云端地址信息<br><code>git push -u &lt;remote&gt; &lt;branch&gt; git push --set-upstream &lt;remote&gt; &lt;branch&gt;</code>用这两个命令来指明某个分支所对应到的remote地址。如果不指定，你在执行git push时需要明确写出remote和branch。<br><a href="http://idiotsky.me/images1/git-story-6.jpg"><img src="http://idiotsky.me/images1/git-story-6.jpg" alt=""></a></p>
 <p>因为是多人合作，所以就有可能别人在云端先与你提交了一些修改，而此时就需要进行git pull操作，把别人的修改拉取下来合并到本地。但直接git pull行为是不太安全的，因为它会直接产生merge行为，可能会导致你本地数据错乱。所以我们一般用git fetch，正确流程如下</p>
 <p>git fetch origin master//获取origin上的master分支，会在本地自动创建一个的origin/master的临时分支。<br>git log -p master..origin/master//比较本地的master分支和远端的master分支，看下差别。<br>git merge origin/master 或 git rebase origin/master //如果差别是在自己的认知范围，那么就进行合并操作，这样本地的master分支就与云端保持一致了。如果本地有未push的commit，则会产生Merge的commit行为。Merge的过程中有可能因为多人对同一个文件的修改而造成冲突。<br>git mergetool//打开merge工具，merge完后保存，然后手动提交merge后的结果。完成上述操作后，就可以把自己本地的commit提交到云端了。</p>
 <p>导演注：git merge 和 git rebase的区别，rebase是找到两者共同的commit处，把它者的修改接上去，然后再把自己的修改接在它者的修改后面，不会产生merge行为。看历史图时也不会像merge那样有分叉。</p>
@@ -90,7 +90,7 @@
 &lt;/blockquote&gt;
 &lt;p&gt;Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。&lt;/p&gt;
 &lt;h1 id=&quot;初次见面&quot;&gt;&lt;a href=&quot;#初次见面&quot; class=&quot;headerlink&quot; title=&quot;初次见面&quot;&gt;&lt;/a&gt;初次见面&lt;/h1&gt;&lt;p&gt;老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。&lt;/p&gt;
-&lt;p&gt;让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images1/git-story-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images1/git-story-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images1/git-story-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images1/git-story-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;下面我们来解释下，这几个区域的作用：&lt;br&gt;Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。&lt;/p&gt;
 &lt;p&gt;Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。git add 就是把修改搬到摄影棚，git commit就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。&lt;/p&gt;
 &lt;p&gt;Repository：Git先生办公室的某个区域，专门用来存储照片用的。&lt;/p&gt;
