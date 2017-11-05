@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-11-05T07:24:20.882Z</updated>
+  <updated>2017-11-05T14:58:52.269Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,96 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Git先生的故事</title>
+    <link href="http://idiotsky.me/2017/11/05/git-story/"/>
+    <id>http://idiotsky.me/2017/11/05/git-story/</id>
+    <published>2017-11-05T14:44:05.000Z</published>
+    <updated>2017-11-05T14:58:52.269Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>很有意思的通俗的总结了git。👿</p>
+</blockquote>
+<p>Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。</p>
+<h1 id="初次见面"><a href="#初次见面" class="headerlink" title="初次见面"></a>初次见面</h1><p>老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。</p>
+<p>让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。<br><a href="http://idiotsky.me/images1/git-story-1.png"><img src="http://idiotsky.me/images1/git-story-1.png" alt=""></a></p>
+<p>下面我们来解释下，这几个区域的作用：<br>Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。</p>
+<p>Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。git add 就是把修改搬到摄影棚，git commit就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。</p>
+<p>Repository：Git先生办公室的某个区域，专门用来存储照片用的。</p>
+<p>Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。<br><a id="more"></a></p>
+<h1 id="Go-to-work"><a href="#Go-to-work" class="headerlink" title="Go to work"></a>Go to work</h1><p>一切准备妥当后，Git先生马上就投入到了紧张的工作当中。老板首先就迫不及待的在地皮上上种了一朵花，然后马上命令Git来拍照留念。<br><a href="http://idiotsky.me/images1/git-story-2.png"><img src="http://idiotsky.me/images1/git-story-2.png" alt=""></a><br>当然结果是失败的，Git也很苦恼，自己已经把所有流程和老板说过一遍了，但老板还是会鲁莽行事。然后Git先生又向老板耐心的解释了一下针对Git目录下某个修改的4种状态。</p>
+<blockquote>
+<p>Untracked/Tracked<br>Not Staged/Staged<br>比如你新建一个文件，它的状态就是 Untracked 的，你不能对 Untracked 的文件进行任何Git操作，除了先使用git add 让它先变为Tracked 状态。一个文件被Track后，以后的修改如果未用git add，那这个修改就叫Not Staged，需要add后，让它变为Staged才能进行Commit。</p>
+</blockquote>
+<p>老板按照Git先生的说法又执行了一遍，这次他成功了。Git又向老板说，你可以用git log来查看我已经拍过的照片。</p>
+<p>老板学会这招后，又给这块地皮创建了树、草，并且也都分别让Git先生拍了照片保存。</p>
+<p>git log后我们看到了这三张照片，如果要查看详情还可以使用git log -p。<br><a href="http://idiotsky.me/images1/git-story-3.png"><img src="http://idiotsky.me/images1/git-story-3.png" alt=""></a></p>
+<blockquote>
+<p>导演注：Commit的id为对当前文件夹内容做SHA-1得来。</p>
+</blockquote>
+<h1 id="上点儿色吧"><a href="#上点儿色吧" class="headerlink" title="上点儿色吧"></a>上点儿色吧</h1><p>老板想把树涂成红色的，再给树取个名字叫big tree。他记得Git先生告诉过他可以用git diff来查看自己所做的改动<br><a href="http://idiotsky.me/images1/git-story-4.png"><img src="http://idiotsky.me/images1/git-story-4.png" alt=""></a><br>看到了自己的修改后，老板满意的点点头，然后用git add .把它们都丢进了摄影棚。过后就出去忙其他事情了，回来后他发现自己忘记离开前做了啥事情了。此时他再用git diff查看，发现里面空空如也。老板愤怒的叫来了Git先生问他是咋回事。Git先生友善的解释了原因。</p>
+<p>“git diff显示了您当前修改和我办公室中所记录的最新一张照片之间的差异，但是您已经把这些改动都挪到我的摄影棚里了，git diff就没法查看了，如果您想看我摄影棚里摆了哪些东西。你可以使用git diff –staged/cached哦”</p>
+<p>老板按照Git先生所说，果然看到了他以前的修改记录。</p>
+<p>导演注：stage相关的命令一般都与Staging Area相关，git add 也可以写成 git stage，这两个命令是一样的。</p>
+<p>不过当老板看到他把树设成了红色，觉得不合理，想放弃这次修改。他要如何去做呢？</p>
+<p><code>git reset &lt;file&gt;</code> 把这个文件的修改从Staging Area中去除<code>git checkout -- &lt;file&gt;</code> 放弃工作区文件的修改<br>导演注：这里使用 <code>git checkout &lt;file&gt;</code> 也行，之所以使用–，因为该命令与切换分支的命令一样，万一这个文件名和某个分支名重名，则<code>git checkout &lt;file&gt;</code>就变成切换分支了。</p>
+<p>老板不禁感叹，幸好自己没有进行commit。Git先生告诉老板说，即使你commit了，也不用怕，我也有几种解决方案。<br>一，放弃整张照片</p>
+<p>git reset HEAD~1HEAD表示指向最新那张照片的指针，～1表示要想起回退一张，此时我们有三种回退方式可选–soft 表示只删除照片，照片的修改恢复到Staging Area中–mixed 不但删除照片，也不恢复Staging Area中的状态（不加选项时就为此中方法）–hard 不但删除照片，而且连工作区域的修改也被回退掉<br>二，我们再产生一张想放弃的照片的反修改的照片</p>
+<p><code>git revert &lt;commit-id&gt;</code> 产生此commit的反修改，并提交此处commit-id不必是最新一次，可以是任意处的。<br>第一种方案适用于，你的commit还未push到云端的场景，第二种，如果你的修改已经push到云端，那么为了尊重历史记录，最好就是生成一个方向修改来回退错误部分，让其他人知道历史。</p>
+<blockquote>
+<p>导演注：HEAD指针记录了正在操作的节点的commit id，每个分支都有属于自己的HEAD指针，并且只有一个</p>
+</blockquote>
+<h1 id="拨弄你的指针"><a href="#拨弄你的指针" class="headerlink" title="拨弄你的指针"></a>拨弄你的指针</h1><p>老板经过上次的事件，发现自己可能会因为一时冲动做出一些错误的决定。就问Git先生是否有办法把自己所有操作行为都记录下来，而且还允许自己撤销任何一种错误的操作。Git先生向老板解释说：所有对HEAD指针的操作都会被记录下来。</p>
+<p>可以用git reflog查看到老板的所有HEAD操作<br><a href="http://idiotsky.me/images1/git-story-5.png"><img src="http://idiotsky.me/images1/git-story-5.png" alt=""></a><br>最上面，我们可以看到是老板彻底回退了给树添加名字和颜色修改，执行了git reset –hard HEAD~1，而如果老板突然又后悔了，想恢复添加名字和颜色的修改。那么我们就可以通过执行git reset –hard HEAD@{1}来把操作回退到HEAD@{1}时，也就是加入名字和颜色那次commit。</p>
+<blockquote>
+<p>这里的reset也有三个选项，–soft，–mixed，–hard，因为这里执行的是恢复操作，所以这三个选项在这里的作用也需要反过来理解，hard自不用说，就是完全恢复到某个操作时的状态，而soft表示，虽然把HEAD指针拨到了某个操作时的状态，但在staging area中会产生可以让恢复后的状态重新修改回来的修改，就像物质与反物质那样。mixed同理。</p>
+</blockquote>
+<p>以上可能难以理解，这里我们再举个应用场景来说明下：<br>我们知道git revert每次只能回退某个commit，那我们如何同时revert掉多个commit呢。针对这种场景我们就可以进行以下操作</p>
+<p>//拨动HEAD指针到5add0e9git reset –hard 5add0e9 //恢复到以前的commit处信息，并且在staging area生成了中反修改git reset –soft HEAD@{1} // 注意此处用了–softgit commit -m ‘revert to 5add0e9’</p>
+<h1 id="多干点事"><a href="#多干点事" class="headerlink" title="多干点事"></a>多干点事</h1><p>老板：地皮准备好了， 我们既要种花，种草，还要盖个楼房啥的，种花要花几天功夫，种草好又得花几天。这几样事咱能不能一起干呢？干完了，分别拍个照片再合一块岂不美哉。</p>
+<p>Git先生：老板英明，针对这种情况我也早有准备。</p>
+<p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
+<blockquote>
+<p>针对老板说的这种情况，我们只需要创建如下分支。然后分别在flower里种花，grass中种草，building中盖楼，最后在master分支中把完成的照片merge过来就行。<br>➜ GitTestRepo git:(master) git branch flower<br>➜ GitTestRepo git:(master) git branch grass<br>➜ GitTestRepo git:(master) git branch building<br>➜ GitTestRepo git:(master) git branch<br>building<br>flower<br>grass<br>* master</p>
+</blockquote>
+<p>导演注：分支前加*号的为当前工作分支</p>
+<h1 id="合作共赢"><a href="#合作共赢" class="headerlink" title="合作共赢"></a>合作共赢</h1><p>Git先生：报告老板，您这块地皮很大，要是只有我们开发，那得花上很久时间，何不把它开放出去，让其他老板们一起进来把这块蛋糕做大呢。</p>
+<p>老板：好主意，我们要怎么做呢？</p>
+<p>Git先生：一切交给我，不过因为地皮开放出去后，涉及到多方共同开发。有些注意事项还希望老板能听我说道说道，否则危害甚大。</p>
+<p>老板：请讲请讲！</p>
+<p>如我们第一张图所示，我们可以利用git push来把自己所有的照片上传到云端，让其他人也可以参与进来开发。既然是云端，那么首先我们就需要指明下这个云端地皮的地址是哪里。</p>
+<p><code>git remote add origin https://github.com/CPPAlien/GitTestRepo.git</code>//这里一般用origin，当然你可以换成其他任何名，你也可以添加多个remote地址git remote -v 可以用来查看所有云端地址信息<br><code>git push -u &lt;remote&gt; &lt;branch&gt; git push --set-upstream &lt;remote&gt; &lt;branch&gt;</code>用这两个命令来指明某个分支所对应到的remote地址。如果不指定，你在执行git push时需要明确写出remote和branch。<br><a href="http://idiotsky.me/images1/git-story-6.png"><img src="http://idiotsky.me/images1/git-story-6.png" alt=""></a></p>
+<p>因为是多人合作，所以就有可能别人在云端先与你提交了一些修改，而此时就需要进行git pull操作，把别人的修改拉取下来合并到本地。但直接git pull行为是不太安全的，因为它会直接产生merge行为，可能会导致你本地数据错乱。所以我们一般用git fetch，正确流程如下</p>
+<p>git fetch origin master//获取origin上的master分支，会在本地自动创建一个的origin/master的临时分支。<br>git log -p master..origin/master//比较本地的master分支和远端的master分支，看下差别。<br>git merge origin/master 或 git rebase origin/master //如果差别是在自己的认知范围，那么就进行合并操作，这样本地的master分支就与云端保持一致了。如果本地有未push的commit，则会产生Merge的commit行为。Merge的过程中有可能因为多人对同一个文件的修改而造成冲突。<br>git mergetool//打开merge工具，merge完后保存，然后手动提交merge后的结果。完成上述操作后，就可以把自己本地的commit提交到云端了。</p>
+<p>导演注：git merge 和 git rebase的区别，rebase是找到两者共同的commit处，把它者的修改接上去，然后再把自己的修改接在它者的修改后面，不会产生merge行为。看历史图时也不会像merge那样有分叉。</p>
+<p>从以下执行rebase后的提示，也可知二三<br>➜ GitTest git:(master) git rebase origin/masterFirst, rewinding head to replay your work on top of it…Fast-forwarded master to origin/master.</p>
+<h1 id="其他小技巧"><a href="#其他小技巧" class="headerlink" title="其他小技巧"></a>其他小技巧</h1><p><code>git cherry-pick &lt;commit-id&gt;</code><br>老板如果想把其他分支上的一些照片拣过来使用，可以使用此命令。如果该照片与本分支无冲突，则直接会在本分支上加上一条commit，如果有冲突，则需要解决冲突后重新提交。<br><code>git stash/ git stash pop</code><br>如果老板当前有些工作没有commit。但有些云端的commit或者其他分支的commit是自己后续开发所要依赖的，那就可以使用git stash把当前未提交的修改放入到缓存栈，等合并操作完成后，再用git stash pop，把修改再加回来，你可以用git stash list查看当前的缓存栈。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>Git和Mercurial 都是在2005年时出现，分别由Linus和Matt主导开发。而两者的出现也源于一个共同的事件，2005年初BitKeeper宣布向开源社区收费。Mercurial在英语中有反复无常的意思，而Git也可以翻译成无用之人，Matt直接说他取名Mercurial的用意就是讽刺BitKeeper的开发者。</p>
+<p>from <a href="https://www.toutiao.com/i6484504341452440077/" target="_blank" rel="external">https://www.toutiao.com/i6484504341452440077/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;很有意思的通俗的总结了git。👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。&lt;/p&gt;
+&lt;h1 id=&quot;初次见面&quot;&gt;&lt;a href=&quot;#初次见面&quot; class=&quot;headerlink&quot; title=&quot;初次见面&quot;&gt;&lt;/a&gt;初次见面&lt;/h1&gt;&lt;p&gt;老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。&lt;/p&gt;
+&lt;p&gt;让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images1/git-story-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images1/git-story-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;下面我们来解释下，这几个区域的作用：&lt;br&gt;Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。&lt;/p&gt;
+&lt;p&gt;Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。git add 就是把修改搬到摄影棚，git commit就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。&lt;/p&gt;
+&lt;p&gt;Repository：Git先生办公室的某个区域，专门用来存储照片用的。&lt;/p&gt;
+&lt;p&gt;Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="git" scheme="http://idiotsky.me/categories/git/"/>
+    
+    
+      <category term="git" scheme="http://idiotsky.me/tags/git/"/>
+    
+  </entry>
   
   <entry>
     <title>TCP 的那些事儿</title>
@@ -2196,64 +2286,6 @@
       <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
     
       <category term="nova" scheme="http://idiotsky.me/tags/nova/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>linux epoll原理</title>
-    <link href="http://idiotsky.me/2017/09/11/epoll-mechanism/"/>
-    <id>http://idiotsky.me/2017/09/11/epoll-mechanism/</id>
-    <published>2017-09-10T17:35:15.000Z</published>
-    <updated>2017-09-19T17:05:02.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。 </p>
-</blockquote>
-<p>先看看使用c封装的3个epoll系统调用：</p>
-<ul>
-<li><strong>int epoll_create(int size)</strong><br>  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。</li>
-<li><strong>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</strong><br>  epoll_ctl可以操作epoll_create创建的epoll，如将socket句柄加入到epoll中让其监控，或把epoll正在监控的某个socket句柄移出epoll。</li>
-<li><strong>int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout)</strong><br>  epoll_wait在调用时，在给定的timeout时间内，所监控的句柄中有事件发生时，就返回用户态的进程。</li>
-</ul>
-<a id="more"></a>
-<p>大概看看epoll内部是怎么实现的：</p>
-<ol>
-<li>epoll初始化时，会向内核注册一个文件系统，用于存储被监控的句柄文件，调用epoll_create时，会在这个文件系统中创建一个file节点。同时epoll会开辟自己的内核高速缓存区，以红黑树的结构保存句柄，以支持快速的查找、插入、删除。还会再建立一个list链表，用于存储准备就绪的事件。</li>
-<li>当执行epoll_ctl时，除了把socket句柄放到epoll文件系统里file对象对应的红黑树上之外，还会给内核中断处理程序注册一个回调函数，告诉内核，如果这个句柄的中断到了，就把它放到准备就绪list链表里。所以，当一个socket上有数据到了，内核在把网卡上的数据copy到内核中后，就把socket插入到就绪链表里。</li>
-<li>当epoll_wait调用时，仅仅观察就绪链表里有没有数据，如果有数据就返回，否则就sleep，超时时立刻返回。</li>
-</ol>
-<p>epoll的两种工作模式：</p>
-<ul>
-<li><strong>LT</strong>：level-trigger，水平触发模式，只要某个socket处于readable/writable状态，无论什么时候进行epoll_wait都会返回该socket。</li>
-<li><strong>ET</strong>：edge-trigger，边缘触发模式，只有某个socket从unreadable变为readable或从unwritable变为writable时，epoll_wait才会返回该socket。</li>
-</ul>
-<p>socket读数据<br><a href="http://idiotsky.me/images/epoll-mechanism-1.png"><img src="http://idiotsky.me/images/epoll-mechanism-1.png" alt=""></a></p>
-<p>socket写数据<br><a href="http://idiotsky.me/images/epoll-mechanism-2.png"><img src="http://idiotsky.me/images/epoll-mechanism-2.png" alt=""></a></p>
-<p>参考 <a href="http://www.jianshu.com/p/0d497fe5484a" target="_blank" rel="external">http://www.jianshu.com/p/0d497fe5484a</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。 &lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;先看看使用c封装的3个epoll系统调用：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;int epoll_create(int size)&lt;/strong&gt;&lt;br&gt;  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)&lt;/strong&gt;&lt;br&gt;  epoll_ctl可以操作epoll_create创建的epoll，如将socket句柄加入到epoll中让其监控，或把epoll正在监控的某个socket句柄移出epoll。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout)&lt;/strong&gt;&lt;br&gt;  epoll_wait在调用时，在给定的timeout时间内，所监控的句柄中有事件发生时，就返回用户态的进程。&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-      <category term="linux" scheme="http://idiotsky.me/categories/linux/"/>
-    
-    
-      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
-    
-      <category term="nio" scheme="http://idiotsky.me/tags/nio/"/>
-    
-      <category term="epoll" scheme="http://idiotsky.me/tags/epoll/"/>
     
   </entry>
   

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="git," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="很有意思的通俗的总结了git。👿  Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。 初次见面老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git先生的故事">
+<meta property="og:url" content="http://idiotsky.me/2017/11/05/git-story/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="很有意思的通俗的总结了git。👿  Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。 初次见面老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-1.png">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-2.png">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-3.png">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-4.png">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-5.png">
+<meta property="og:image" content="http://idiotsky.me/images1/git-story-6.png">
+<meta property="og:updated_time" content="2017-11-05T14:58:52.269Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git先生的故事">
+<meta name="twitter:description" content="很有意思的通俗的总结了git。👿  Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。 初次见面老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init">
+<meta name="twitter:image" content="http://idiotsky.me/images1/git-story-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2017/11/05/git-story/"/>
+
+
+
+
+
+  <title>Git先生的故事 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/05/git-story/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Git先生的故事</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-05T22:44:05+08:00">
+                05 Nov 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/git/" itemprop="url" rel="index">
+                    <span itemprop="name">git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>很有意思的通俗的总结了git。👿</p>
+</blockquote>
+<p>Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。</p>
+<h1 id="初次见面"><a href="#初次见面" class="headerlink" title="初次见面"></a>初次见面</h1><p>老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。</p>
+<p>让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。<br><a href="http://idiotsky.me/images1/git-story-1.png"><img src="http://idiotsky.me/images1/git-story-1.png" alt=""></a></p>
+<p>下面我们来解释下，这几个区域的作用：<br>Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。</p>
+<p>Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。git add 就是把修改搬到摄影棚，git commit就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。</p>
+<p>Repository：Git先生办公室的某个区域，专门用来存储照片用的。</p>
+<p>Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。<br><a id="more"></a></p>
+<h1 id="Go-to-work"><a href="#Go-to-work" class="headerlink" title="Go to work"></a>Go to work</h1><p>一切准备妥当后，Git先生马上就投入到了紧张的工作当中。老板首先就迫不及待的在地皮上上种了一朵花，然后马上命令Git来拍照留念。<br><a href="http://idiotsky.me/images1/git-story-2.png"><img src="http://idiotsky.me/images1/git-story-2.png" alt=""></a><br>当然结果是失败的，Git也很苦恼，自己已经把所有流程和老板说过一遍了，但老板还是会鲁莽行事。然后Git先生又向老板耐心的解释了一下针对Git目录下某个修改的4种状态。</p>
+<blockquote>
+<p>Untracked/Tracked<br>Not Staged/Staged<br>比如你新建一个文件，它的状态就是 Untracked 的，你不能对 Untracked 的文件进行任何Git操作，除了先使用git add 让它先变为Tracked 状态。一个文件被Track后，以后的修改如果未用git add，那这个修改就叫Not Staged，需要add后，让它变为Staged才能进行Commit。</p>
+</blockquote>
+<p>老板按照Git先生的说法又执行了一遍，这次他成功了。Git又向老板说，你可以用git log来查看我已经拍过的照片。</p>
+<p>老板学会这招后，又给这块地皮创建了树、草，并且也都分别让Git先生拍了照片保存。</p>
+<p>git log后我们看到了这三张照片，如果要查看详情还可以使用git log -p。<br><a href="http://idiotsky.me/images1/git-story-3.png"><img src="http://idiotsky.me/images1/git-story-3.png" alt=""></a></p>
+<blockquote>
+<p>导演注：Commit的id为对当前文件夹内容做SHA-1得来。</p>
+</blockquote>
+<h1 id="上点儿色吧"><a href="#上点儿色吧" class="headerlink" title="上点儿色吧"></a>上点儿色吧</h1><p>老板想把树涂成红色的，再给树取个名字叫big tree。他记得Git先生告诉过他可以用git diff来查看自己所做的改动<br><a href="http://idiotsky.me/images1/git-story-4.png"><img src="http://idiotsky.me/images1/git-story-4.png" alt=""></a><br>看到了自己的修改后，老板满意的点点头，然后用git add .把它们都丢进了摄影棚。过后就出去忙其他事情了，回来后他发现自己忘记离开前做了啥事情了。此时他再用git diff查看，发现里面空空如也。老板愤怒的叫来了Git先生问他是咋回事。Git先生友善的解释了原因。</p>
+<p>“git diff显示了您当前修改和我办公室中所记录的最新一张照片之间的差异，但是您已经把这些改动都挪到我的摄影棚里了，git diff就没法查看了，如果您想看我摄影棚里摆了哪些东西。你可以使用git diff –staged/cached哦”</p>
+<p>老板按照Git先生所说，果然看到了他以前的修改记录。</p>
+<p>导演注：stage相关的命令一般都与Staging Area相关，git add 也可以写成 git stage，这两个命令是一样的。</p>
+<p>不过当老板看到他把树设成了红色，觉得不合理，想放弃这次修改。他要如何去做呢？</p>
+<p><code>git reset &lt;file&gt;</code> 把这个文件的修改从Staging Area中去除<code>git checkout -- &lt;file&gt;</code> 放弃工作区文件的修改<br>导演注：这里使用 <code>git checkout &lt;file&gt;</code> 也行，之所以使用–，因为该命令与切换分支的命令一样，万一这个文件名和某个分支名重名，则<code>git checkout &lt;file&gt;</code>就变成切换分支了。</p>
+<p>老板不禁感叹，幸好自己没有进行commit。Git先生告诉老板说，即使你commit了，也不用怕，我也有几种解决方案。<br>一，放弃整张照片</p>
+<p>git reset HEAD~1HEAD表示指向最新那张照片的指针，～1表示要想起回退一张，此时我们有三种回退方式可选–soft 表示只删除照片，照片的修改恢复到Staging Area中–mixed 不但删除照片，也不恢复Staging Area中的状态（不加选项时就为此中方法）–hard 不但删除照片，而且连工作区域的修改也被回退掉<br>二，我们再产生一张想放弃的照片的反修改的照片</p>
+<p><code>git revert &lt;commit-id&gt;</code> 产生此commit的反修改，并提交此处commit-id不必是最新一次，可以是任意处的。<br>第一种方案适用于，你的commit还未push到云端的场景，第二种，如果你的修改已经push到云端，那么为了尊重历史记录，最好就是生成一个方向修改来回退错误部分，让其他人知道历史。</p>
+<blockquote>
+<p>导演注：HEAD指针记录了正在操作的节点的commit id，每个分支都有属于自己的HEAD指针，并且只有一个</p>
+</blockquote>
+<h1 id="拨弄你的指针"><a href="#拨弄你的指针" class="headerlink" title="拨弄你的指针"></a>拨弄你的指针</h1><p>老板经过上次的事件，发现自己可能会因为一时冲动做出一些错误的决定。就问Git先生是否有办法把自己所有操作行为都记录下来，而且还允许自己撤销任何一种错误的操作。Git先生向老板解释说：所有对HEAD指针的操作都会被记录下来。</p>
+<p>可以用git reflog查看到老板的所有HEAD操作<br><a href="http://idiotsky.me/images1/git-story-5.png"><img src="http://idiotsky.me/images1/git-story-5.png" alt=""></a><br>最上面，我们可以看到是老板彻底回退了给树添加名字和颜色修改，执行了git reset –hard HEAD~1，而如果老板突然又后悔了，想恢复添加名字和颜色的修改。那么我们就可以通过执行git reset –hard HEAD@{1}来把操作回退到HEAD@{1}时，也就是加入名字和颜色那次commit。</p>
+<blockquote>
+<p>这里的reset也有三个选项，–soft，–mixed，–hard，因为这里执行的是恢复操作，所以这三个选项在这里的作用也需要反过来理解，hard自不用说，就是完全恢复到某个操作时的状态，而soft表示，虽然把HEAD指针拨到了某个操作时的状态，但在staging area中会产生可以让恢复后的状态重新修改回来的修改，就像物质与反物质那样。mixed同理。</p>
+</blockquote>
+<p>以上可能难以理解，这里我们再举个应用场景来说明下：<br>我们知道git revert每次只能回退某个commit，那我们如何同时revert掉多个commit呢。针对这种场景我们就可以进行以下操作</p>
+<p>//拨动HEAD指针到5add0e9git reset –hard 5add0e9 //恢复到以前的commit处信息，并且在staging area生成了中反修改git reset –soft HEAD@{1} // 注意此处用了–softgit commit -m ‘revert to 5add0e9’</p>
+<h1 id="多干点事"><a href="#多干点事" class="headerlink" title="多干点事"></a>多干点事</h1><p>老板：地皮准备好了， 我们既要种花，种草，还要盖个楼房啥的，种花要花几天功夫，种草好又得花几天。这几样事咱能不能一起干呢？干完了，分别拍个照片再合一块岂不美哉。</p>
+<p>Git先生：老板英明，针对这种情况我也早有准备。</p>
+<p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
+<blockquote>
+<p>针对老板说的这种情况，我们只需要创建如下分支。然后分别在flower里种花，grass中种草，building中盖楼，最后在master分支中把完成的照片merge过来就行。<br>➜ GitTestRepo git:(master) git branch flower<br>➜ GitTestRepo git:(master) git branch grass<br>➜ GitTestRepo git:(master) git branch building<br>➜ GitTestRepo git:(master) git branch<br>building<br>flower<br>grass<br>* master</p>
+</blockquote>
+<p>导演注：分支前加*号的为当前工作分支</p>
+<h1 id="合作共赢"><a href="#合作共赢" class="headerlink" title="合作共赢"></a>合作共赢</h1><p>Git先生：报告老板，您这块地皮很大，要是只有我们开发，那得花上很久时间，何不把它开放出去，让其他老板们一起进来把这块蛋糕做大呢。</p>
+<p>老板：好主意，我们要怎么做呢？</p>
+<p>Git先生：一切交给我，不过因为地皮开放出去后，涉及到多方共同开发。有些注意事项还希望老板能听我说道说道，否则危害甚大。</p>
+<p>老板：请讲请讲！</p>
+<p>如我们第一张图所示，我们可以利用git push来把自己所有的照片上传到云端，让其他人也可以参与进来开发。既然是云端，那么首先我们就需要指明下这个云端地皮的地址是哪里。</p>
+<p><code>git remote add origin https://github.com/CPPAlien/GitTestRepo.git</code>//这里一般用origin，当然你可以换成其他任何名，你也可以添加多个remote地址git remote -v 可以用来查看所有云端地址信息<br><code>git push -u &lt;remote&gt; &lt;branch&gt; git push --set-upstream &lt;remote&gt; &lt;branch&gt;</code>用这两个命令来指明某个分支所对应到的remote地址。如果不指定，你在执行git push时需要明确写出remote和branch。<br><a href="http://idiotsky.me/images1/git-story-6.png"><img src="http://idiotsky.me/images1/git-story-6.png" alt=""></a></p>
+<p>因为是多人合作，所以就有可能别人在云端先与你提交了一些修改，而此时就需要进行git pull操作，把别人的修改拉取下来合并到本地。但直接git pull行为是不太安全的，因为它会直接产生merge行为，可能会导致你本地数据错乱。所以我们一般用git fetch，正确流程如下</p>
+<p>git fetch origin master//获取origin上的master分支，会在本地自动创建一个的origin/master的临时分支。<br>git log -p master..origin/master//比较本地的master分支和远端的master分支，看下差别。<br>git merge origin/master 或 git rebase origin/master //如果差别是在自己的认知范围，那么就进行合并操作，这样本地的master分支就与云端保持一致了。如果本地有未push的commit，则会产生Merge的commit行为。Merge的过程中有可能因为多人对同一个文件的修改而造成冲突。<br>git mergetool//打开merge工具，merge完后保存，然后手动提交merge后的结果。完成上述操作后，就可以把自己本地的commit提交到云端了。</p>
+<p>导演注：git merge 和 git rebase的区别，rebase是找到两者共同的commit处，把它者的修改接上去，然后再把自己的修改接在它者的修改后面，不会产生merge行为。看历史图时也不会像merge那样有分叉。</p>
+<p>从以下执行rebase后的提示，也可知二三<br>➜ GitTest git:(master) git rebase origin/masterFirst, rewinding head to replay your work on top of it…Fast-forwarded master to origin/master.</p>
+<h1 id="其他小技巧"><a href="#其他小技巧" class="headerlink" title="其他小技巧"></a>其他小技巧</h1><p><code>git cherry-pick &lt;commit-id&gt;</code><br>老板如果想把其他分支上的一些照片拣过来使用，可以使用此命令。如果该照片与本分支无冲突，则直接会在本分支上加上一条commit，如果有冲突，则需要解决冲突后重新提交。<br><code>git stash/ git stash pop</code><br>如果老板当前有些工作没有commit。但有些云端的commit或者其他分支的commit是自己后续开发所要依赖的，那就可以使用git stash把当前未提交的修改放入到缓存栈，等合并操作完成后，再用git stash pop，把修改再加回来，你可以用git stash list查看当前的缓存栈。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>Git和Mercurial 都是在2005年时出现，分别由Linus和Matt主导开发。而两者的出现也源于一个共同的事件，2005年初BitKeeper宣布向开源社区收费。Mercurial在英语中有反复无常的意思，而Git也可以翻译成无用之人，Matt直接说他取名Mercurial的用意就是讽刺BitKeeper的开发者。</p>
+<p>from <a href="https://www.toutiao.com/i6484504341452440077/" target="_blank" rel="external">https://www.toutiao.com/i6484504341452440077/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/01/tcp-something/" rel="next" title="TCP 的那些事儿">
+                <i class="fa fa-chevron-left"></i> TCP 的那些事儿
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">111</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#初次见面"><span class="nav-number">1.</span> <span class="nav-text">初次见面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Go-to-work"><span class="nav-number">2.</span> <span class="nav-text">Go to work</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#上点儿色吧"><span class="nav-number">3.</span> <span class="nav-text">上点儿色吧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拨弄你的指针"><span class="nav-number">4.</span> <span class="nav-text">拨弄你的指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多干点事"><span class="nav-number">5.</span> <span class="nav-text">多干点事</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#合作共赢"><span class="nav-number">6.</span> <span class="nav-text">合作共赢</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他小技巧"><span class="nav-number">7.</span> <span class="nav-text">其他小技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#后记"><span class="nav-number">8.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
