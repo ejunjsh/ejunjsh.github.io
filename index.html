@@ -343,309 +343,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/07/java-synchronized/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/07/java-synchronized/" itemprop="url">java的synchronized底层原理和优化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-07T20:11:55+08:00">
-                07 Nov 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Synchronized的基本使用"><a href="#Synchronized的基本使用" class="headerlink" title="Synchronized的基本使用"></a>Synchronized的基本使用</h1><p>Synchronized是Java中解决并发问题的一种最常用的方法，也是最简单的一种方法。Synchronized的作用主要有三个：（1）确保线程互斥的访问同步代码（2）保证共享变量的修改能够及时可见（3）有效解决重排序问题。从语法上讲，Synchronized总共有三种用法：</p>
-<ol>
-<li>修饰普通方法</li>
-<li>修饰静态方法</li>
-<li>修饰代码块</li>
-</ol>
-<p>接下来我就通过几个例子程序来说明一下这三种使用方式（为了便于比较，三段代码除了Synchronized的使用方式不同以外，其他基本保持一致）。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/11/07/java-synchronized/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/06/java-volatile/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/06/java-volatile/" itemprop="url">java多线程-volatile 解惑</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-06T20:23:44+08:00">
-                06 Nov 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>volatile 总结很好的文章。</p>
-</blockquote>
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>volatile关键字可能是Java开发人员“熟悉而又陌生”的一个关键字。本文将从volatile关键字的作用、开销和典型应用场景以及Java虚拟机对volatile关键字的实现这几个方面为读者全面深入剖析volatile关键字。</p>
-<p>volatile字面上有“挥发性的，不稳定的”意思，它是用于修饰可变共享变量（Mutable Shared Variable）的一个关键字。所谓“共享”是指一个变量能够被多个线程访问（包括读/写），所谓“可变”是指变量的值可以发生变化。换而言之，volatile关键字用于修饰多个线程并发访问的同一个变量，这些线程中至少有一个线程会更新这个变量的值。我们称volatile修饰的变量为volatile变量。我们知道锁的作用包括保障原子性、保障可见性以及保障有序性。volatile常被称为“轻量级锁”，其作用与锁有类似的地方——volatile也能够保障原子性（仅保障long/double型变量访问操作的原子性）、保障可见性以及保障有序性。</p>
-<p>本文所提及的“Java虚拟机”如无特别说明，均特指Oracle公司的HotSpot Java虚拟机。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/11/06/java-volatile/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/06/java-fullgc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1821,6 +1518,349 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/18/go-basic-iota/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/18/redis-object/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/18/redis-object/" itemprop="url">redis数据结构-对象</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T01:29:58+08:00">
+                18 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。</p>
+<p>Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。</p>
+<p>通过这五种不同类型的对象， Redis 可以在执行命令之前， 根据对象的类型来判断一个对象是否可以执行给定的命令。 使用对象的另一个好处是， 我们可以针对不同的使用场景， 为对象设置多种不同的数据结构实现， 从而优化对象在不同场景下的使用效率。</p>
+<p>除此之外， Redis 的对象系统还实现了基于引用计数技术的内存回收机制： 当程序不再使用某个对象的时候， 这个对象所占用的内存就会被自动释放； 另外， Redis 还通过引用计数技术实现了对象共享机制， 这一机制可以在适当的条件下， 通过让多个数据库键共享同一个对象来节约内存。</p>
+<p>最后， Redis 的对象带有访问时间记录信息， 该信息可以用于计算数据库键的空转时长， 在服务器启用了 maxmemory 功能的情况下， 空转时长较大的那些键可能会优先被服务器删除。</p>
+<p>本章接下来将逐一介绍以上提到的 Redis 对象系统的各个特性。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/18/redis-object/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/17/redis-ziplist/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/17/redis-ziplist/" itemprop="url">redis数据结构-压缩列表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-17T22:07:30+08:00">
+                17 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>压缩列表（ziplist）是列表键和哈希键的底层实现之一。<br>当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。</p>
+</blockquote>
+<h1 id="压缩列表的构成"><a href="#压缩列表的构成" class="headerlink" title="压缩列表的构成"></a>压缩列表的构成</h1><p>压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的连续内存块组成的顺序型（sequential）数据结构。<br>一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。<br>图 7-1 展示了压缩列表的各个组成部分， 表 7-1 则记录了各个组成部分的类型、长度、以及用途。<br><a href="http://idiotsky.me/images1/redis-ziplist-1.png"><img src="http://idiotsky.me/images1/redis-ziplist-1.png" alt=""></a></p>
+<p>表 7-1 压缩列表各个组成部分的详细说明</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>类型</th>
+<th>长度</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zlbytes</td>
+<td>uint32_t</td>
+<td>4 字节</td>
+<td>记录整个压缩列表占用的内存字节数：在对压缩列表进行内存重分配， 或者计算 zlend 的位置时使用。</td>
+</tr>
+<tr>
+<td>zltail</td>
+<td>uint32_t</td>
+<td>4 字节</td>
+<td>记录压缩列表表尾节点距离压缩列表的起始地址有多少字节： 通过这个偏移量，程序无须遍历整个压缩列表就可以确定表尾节点的地址。</td>
+</tr>
+<tr>
+<td>zllen</td>
+<td>uint16_t</td>
+<td>2 字节</td>
+<td>记录了压缩列表包含的节点数量： 当这个属性的值小于 UINT16_MAX （65535）时， 这个属性的值就是压缩列表包含节点的数量； 当这个值等于 UINT16_MAX 时， 节点的真实数量需要遍历整个压缩列表才能计算得出。</td>
+</tr>
+<tr>
+<td>entryX</td>
+<td>列表节点</td>
+<td>不定</td>
+<td>压缩列表包含的各个节点，节点的长度由节点保存的内容决定。</td>
+</tr>
+<tr>
+<td>zlend</td>
+<td>uint8_t</td>
+<td>1 字节</td>
+<td>特殊值 0xFF （十进制 255 ），用于标记压缩列表的末端。</td>
+</tr>
+</tbody>
+</table>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/17/redis-ziplist/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>

@@ -343,318 +343,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/21/mysql-partition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/09/21/mysql-partition/" itemprop="url">MySQL分区和分表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-21T23:29:55+08:00">
-                21 Sep 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><ol>
-<li>为什么要分表和分区？<br>日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。</li>
-<li>什么是分表？<br>分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称为子表，每个表都对应三个文件，MYD数据文件，.MYI索引文件，.frm表结构文件。这些子表可以分布在同一块磁盘上，也可以在不同的机器上。app读写的时候根据事先定义好的规则得到对应的子表名，然后去操作它。</li>
-<li>什么是分区？<br>分区和分表相似，都是按照规则分解表。不同在于分表将大表分解为若干个独立的实体表，而分区是将数据分段划分在多个位置存放，可以是同一块磁盘也可以在不同的机器。分区后，表面上还是一张表，但数据散列到多个位置了。app读写的时候操作的还是大表名字，db自动去组织分区的数据。</li>
-<li>mysql分表和分区有什么联系呢？<br>（1）都能提高mysql的性高，在高并发状态下都有一个良好的表现。<br>（2）分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表和分区结合的方式（如果merge这种分表方式，不能和分区配合的话，可以用其他的分表试），访问量不大，但是表数据很多的表，我们可以采取分区的方式等。<br>（3）分表技术是比较麻烦的，需要手动去创建子表，app服务端读写时候需要计算子表名。采用merge好一些，但也要创建子表和配置子表间的union关系。<br>（4）表分区相对于分表，操作方便，不需要创建子表。
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/09/21/mysql-partition/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/20/mysql-index-type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/09/20/mysql-index-type/" itemprop="url">MySQL索引类型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-20T22:14:48+08:00">
-                20 Sep 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>MySQL目前主要有以下几种索引类型：</p>
-<ol>
-<li>普通索引</li>
-<li>唯一索引</li>
-<li>主键索引</li>
-<li>组合索引</li>
-<li>全文索引</li>
-</ol>
-<h1 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name[col_name <span class="keyword">data</span> <span class="keyword">type</span>]</div><div class="line">[<span class="keyword">unique</span>|fulltext][<span class="keyword">index</span>|<span class="keyword">key</span>][index_name](col_name[<span class="keyword">length</span>])[<span class="keyword">asc</span>|<span class="keyword">desc</span>]</div></pre></td></tr></table></figure>
-<ol>
-<li>unique|fulltext为可选参数，分别表示唯一索引、全文索引</li>
-<li>index和key为同义词，两者作用相同，用来指定创建索引</li>
-<li>col_name为需要创建索引的字段列，该列必须从数据表中该定义的多个列中选择</li>
-<li>index_name指定索引的名称，为可选参数，如果不指定，默认col_name为索引值</li>
-<li>length为可选参数，表示索引的长度，只有字符串类型的字段才能指定索引长度</li>
-<li>asc或desc指定升序或降序的索引值存储</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/09/20/mysql-index-type/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/20/mysql-index-method/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1341,6 +1029,309 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/09/03/redis-transaction-watch/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/27/java-volatile/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/08/27/java-volatile/" itemprop="url">java多线程-volatile 解惑</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-27T20:23:44+08:00">
+                27 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>volatile 总结很好的文章。</p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>volatile关键字可能是Java开发人员“熟悉而又陌生”的一个关键字。本文将从volatile关键字的作用、开销和典型应用场景以及Java虚拟机对volatile关键字的实现这几个方面为读者全面深入剖析volatile关键字。</p>
+<p>volatile字面上有“挥发性的，不稳定的”意思，它是用于修饰可变共享变量（Mutable Shared Variable）的一个关键字。所谓“共享”是指一个变量能够被多个线程访问（包括读/写），所谓“可变”是指变量的值可以发生变化。换而言之，volatile关键字用于修饰多个线程并发访问的同一个变量，这些线程中至少有一个线程会更新这个变量的值。我们称volatile修饰的变量为volatile变量。我们知道锁的作用包括保障原子性、保障可见性以及保障有序性。volatile常被称为“轻量级锁”，其作用与锁有类似的地方——volatile也能够保障原子性（仅保障long/double型变量访问操作的原子性）、保障可见性以及保障有序性。</p>
+<p>本文所提及的“Java虚拟机”如无特别说明，均特指Oracle公司的HotSpot Java虚拟机。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/27/java-volatile/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/26/java-synchronized/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/08/26/java-synchronized/" itemprop="url">java的synchronized底层原理和优化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-26T20:11:55+08:00">
+                26 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Synchronized的基本使用"><a href="#Synchronized的基本使用" class="headerlink" title="Synchronized的基本使用"></a>Synchronized的基本使用</h1><p>Synchronized是Java中解决并发问题的一种最常用的方法，也是最简单的一种方法。Synchronized的作用主要有三个：（1）确保线程互斥的访问同步代码（2）保证共享变量的修改能够及时可见（3）有效解决重排序问题。从语法上讲，Synchronized总共有三种用法：</p>
+<ol>
+<li>修饰普通方法</li>
+<li>修饰静态方法</li>
+<li>修饰代码块</li>
+</ol>
+<p>接下来我就通过几个例子程序来说明一下这三种使用方式（为了便于比较，三段代码除了Synchronized的使用方式不同以外，其他基本保持一致）。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/08/26/java-synchronized/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
