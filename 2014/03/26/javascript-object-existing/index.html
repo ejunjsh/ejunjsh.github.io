@@ -103,25 +103,17 @@
 
 
 
-<meta name="description" content="简评：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？">
+<meta name="description" content="javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。  第一种123　　if (!myObj) &amp;#123;　　　　myObj = &amp;#123; &amp;#125;;　　&amp;#125; 但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？对了，if语句判断myObj是否为空时，这个变">
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JavaScript是如何工作的(一)">
-<meta property="og:url" content="http://idiotsky.me/2017/08/26/javascript-how-work/index.html">
+<meta property="og:title" content="如何判断Javascript对象是否存在">
+<meta property="og:url" content="http://idiotsky.me/2014/03/26/javascript-object-existing/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="简评：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-1.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-3.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-4.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-5.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-6.jpg">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:description" content="javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。  第一种123　　if (!myObj) &amp;#123;　　　　myObj = &amp;#123; &amp;#125;;　　&amp;#125; 但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？对了，if语句判断myObj是否为空时，这个变">
+<meta property="og:updated_time" content="2017-12-09T13:58:10.577Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JavaScript是如何工作的(一)">
-<meta name="twitter:description" content="简评：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？">
-<meta name="twitter:image" content="http://idiotsky.me/images/js-how-work.png">
+<meta name="twitter:title" content="如何判断Javascript对象是否存在">
+<meta name="twitter:description" content="javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。  第一种123　　if (!myObj) &amp;#123;　　　　myObj = &amp;#123; &amp;#125;;　　&amp;#125; 但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？对了，if语句判断myObj是否为空时，这个变">
 
 
 
@@ -150,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/08/26/javascript-how-work/"/>
+  <link rel="canonical" href="http://idiotsky.me/2014/03/26/javascript-object-existing/"/>
 
 
 
 
 
-  <title>JavaScript是如何工作的(一) | IdiotSky</title>
+  <title>如何判断Javascript对象是否存在 | IdiotSky</title>
   
 
 
@@ -351,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/26/javascript-how-work/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/03/26/javascript-object-existing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -368,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JavaScript是如何工作的(一)</h1>
+          <h1 class="post-title" itemprop="name headline">如何判断Javascript对象是否存在</h1>
         
 
         <div class="post-meta">
@@ -380,8 +372,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-26T01:17:54+08:00">
-                26 Aug 17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-03-26T01:17:54+08:00">
+                26 Mar 14
               </time>
             
 
@@ -441,27 +433,35 @@
 
       
         <blockquote>
-<p><strong>简评</strong>：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？</p>
+<p>javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。</p>
 </blockquote>
-<a id="more"></a>
-<h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>大家应该都知道 JavaScript 是单线程的，以及听过 V8 引擎的概念。<br>这篇文章将会介绍这些概念，并解释 JavaScript 是如何运行的。通过了解这些细节，开发者能更好地编写代码，正确利用其提供的 API。</p>
-<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="http://idiotsky.me/images/js-how-work.png"><img src="http://idiotsky.me/images/js-how-work.png" alt=""></a></p>
-<p>引擎主要由两个组件组成：</p>
-<ul>
-<li>内存堆（Memory Heap ）：这是内存分配的地方</li>
-<li>调用堆栈（Call Stack）：这是程序运行时函数的调用过程</li>
-</ul>
-<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="http://idiotsky.me/images/js-how-work-1.png"><img src="http://idiotsky.me/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
-<h1 id="调用堆栈（Call-Stack）"><a href="#调用堆栈（Call-Stack）" class="headerlink" title="调用堆栈（Call Stack）"></a>调用堆栈（Call Stack）</h1><p>JavaScript 是单线程语言，这意味着它只有一个单一的调用堆栈。因此，它每次只能做一件事。</p>
-<p>调用堆栈是一个数据结构，按调用顺序保存所有在运行期被调用的方法。既然是个栈，那么它就满足先入后出的特性。</p>
-<p>我们来看一个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">return</span> x * y;</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">printSquare</span>(<span class="params">x</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> s = multiply(x, x);</div><div class="line">    <span class="built_in">console</span>.log(s);</div><div class="line">&#125;</div><div class="line">printSquare(<span class="number">5</span>);</div></pre></td></tr></table></figure></p>
-<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="http://idiotsky.me/images/js-how-work-2.png"><img src="http://idiotsky.me/images/js-how-work-2.png" alt=""></a></p>
-<p>调用堆栈中的每个条目称为堆栈帧（Stack Frame）。当异常发生时，它基本上是调用堆栈的状态。再看看下面这段代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'SessionStack will help you resolve crashes :)'</span>);</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    bar();</div><div class="line">&#125;</div><div class="line">start();</div></pre></td></tr></table></figure></p>
-<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="http://idiotsky.me/images/js-how-work-3.png"><img src="http://idiotsky.me/images/js-how-work-3.png" alt=""></a></p>
-<p>当你达到最大调用堆栈时，会容易发生这种情况，特别是在没有测试代码时随意使用递归。<br>看看这个示例代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    foo();</div><div class="line">&#125;</div><div class="line">foo();</div></pre></td></tr></table></figure></p>
-<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="http://idiotsky.me/images/js-how-work-4.png"><img src="http://idiotsky.me/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="http://idiotsky.me/images/js-how-work-5.png"><img src="http://idiotsky.me/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
-<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="http://idiotsky.me/images/js-how-work-6.jpg"><img src="http://idiotsky.me/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
-<p>翻译和参考 <a href="https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf" target="_blank" rel="external">https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf</a></p>
+<h1 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">if</span> (!myObj) &#123;</div><div class="line">　　　　myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure>
+<p>但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？<br>对了，if语句判断myObj是否为空时，这个变量还不存在，所以才会报错。改成下面这样，就能正确运行了。<br><a id="more"></a><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">if</span> (!myObj) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>为什么加了一个var以后，就不报错了？难道这种情况下，if语句做判断时，myObj就已经存在了吗？<br>要回答这个问题，就必须知道Javascript解释器的工作方式。Javascript语言是”先解析，后运行”，解析时就已经完成了变量声明，所以上面的代码实际等同于：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">var</span> myObj;</div><div class="line">　　<span class="keyword">if</span> (!myObj) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>因此，if语句做判断时，myObj确实已经存在了，所以就不报错了。这就是var命令的”代码提升”（hoisting）作用。Javascript解释器，只”提升”var命令定义的变量，对不使用var命令、直接赋值的变量不起作用，这就是为什么不加var会报错的原因。</p>
+<h1 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h1><p>除了var命令，还可以有另一种改写，也能得到正确的结果：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!<span class="built_in">window</span>.myObj) &#123;</div><div class="line">　　　　myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>window是javascript的顶层对象，所有的全局变量都是它的属性。所以，判断myobj是否为空，等同于判断window对象是否有myobj属性，这样就可以避免因为myObj没有定义而出现ReferenceError错误。不过，从代码的规范性考虑，最好还是对第二行加上var：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!<span class="built_in">window</span>.myObj) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>或者写成这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!<span class="built_in">window</span>.myObj) &#123;</div><div class="line">　　　　<span class="built_in">window</span>.myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h1><p>上面这种写法的缺点在于，在某些运行环境中（比如V8、Rhino），window未必是顶层对象。所以，考虑改写成：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">if</span> (!<span class="keyword">this</span>.myObj) &#123;</div><div class="line">　　　　<span class="keyword">this</span>.myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>在全局变量的层面中，this关键字总是指向顶层变量，所以就可以独立于不同的运行环境。</p>
+<h1 id="第四种"><a href="#第四种" class="headerlink" title="第四种"></a>第四种</h1><p>但是，上面这样写可读性较差，而且this的指向是可变的，容易出错，所以进一步改写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">var</span> global = <span class="keyword">this</span>;</div><div class="line">　　<span class="keyword">if</span> (!global.myObj) &#123;</div><div class="line">　　　　global.myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>用自定义变量global表示顶层对象，就清楚多了。</p>
+<h1 id="第五种"><a href="#第五种" class="headerlink" title="第五种"></a>第五种</h1><p>还可以使用typeof运算符，判断myObj是否有定义。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> myObj == <span class="string">"undefined"</span>) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>这是目前使用最广泛的判断javascript对象是否存在的方法。</p>
+<h1 id="第六种"><a href="#第六种" class="headerlink" title="第六种"></a>第六种</h1><p>由于在已定义、但未赋值的情况下，myObj的值直接等于undefined，所以上面的写法可以简化：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (myObj == <span class="literal">undefined</span>) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>这里有两个地方需要注意，首先第二行的var关键字不能少，否则会出现ReferenceError错误，其次undefined不能加单引号或双引号，因为这里比较的是undefined这种数据类型，而不是”undefined”这个字符串。</p>
+<h1 id="第七种"><a href="#第七种" class="headerlink" title="第七种"></a>第七种</h1><p>上面的写法在”精确比较”（===）的情况下，依然成立：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (myObj === <span class="literal">undefined</span>) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="第八种"><a href="#第八种" class="headerlink" title="第八种"></a>第八种</h1><p>根据javascript的语言设计，undefined == null，所以比较myObj是否等于null，也能得到正确结果：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (myObj == <span class="literal">null</span>) &#123;</div><div class="line">　　　　<span class="keyword">var</span> myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<p>不过，虽然运行结果正确，但是从语义上看，这种判断方法是错的，应该避免。因为null指的是已经赋值为null的空对象，即这个对象实际上是有值的，而undefined指的是不存在或没有赋值的对象。因此，这里只能使用”比较运算符”（==），如果这里使用”精确比较运算符”（===），就会出错。</p>
+<h1 id="第九种"><a href="#第九种" class="headerlink" title="第九种"></a>第九种</h1><p>还可以使用in运算符，判断myObj是否为顶层对象的一个属性：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!(<span class="string">'myObj'</span> <span class="keyword">in</span> <span class="built_in">window</span>)) &#123;</div><div class="line">　　　　<span class="built_in">window</span>.myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="第十种"><a href="#第十种" class="headerlink" title="第十种"></a>第十种</h1><p>最后，使用hasOwnProperty方法，判断myObj是否为顶层对象的一个属性：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!<span class="keyword">this</span>.hasOwnProperty(<span class="string">'myObj'</span>)) &#123;</div><div class="line">　　　　<span class="keyword">this</span>.myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>如果只判断对象是否存在，推荐使用第五种写法。</li>
+<li>如果除了对象是否存在，还要判断对象是否有null值，推荐使用第一种写法。</li>
+<li>除非特殊情况，所有变量都应该使用var命令声明。</li>
+<li>为了跨平台，建议避免使用window表示顶层对象。</li>
+<li>在Javascript语言中，null和undefined容易产生混淆。在可能同时涉及两者的情况下，建议使用”精确比较”运算符（===）。</li>
+</ol>
 
       
     </div>
@@ -492,8 +492,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/08/19/openstack-install-prepare-2/" rel="next" title="openstack安装准备(二)-环境的安装">
-                <i class="fa fa-chevron-left"></i> openstack安装准备(二)-环境的安装
+              <a href="/2014/03/01/linux-dd/" rel="next" title="Linux-dd命令详解">
+                <i class="fa fa-chevron-left"></i> Linux-dd命令详解
               </a>
             
           </div>
@@ -502,8 +502,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/08/26/javascript-how-work-2/" rel="prev" title="JavaScript是如何工作的(二)">
-                JavaScript是如何工作的(二) <i class="fa fa-chevron-right"></i>
+              <a href="/2014/03/27/java-slf4j-log4j/" rel="prev" title="为什么要使用SLF4J而不是Log4J">
+                为什么要使用SLF4J而不是Log4J <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -691,7 +691,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JavaScript-引擎"><span class="nav-number">2.</span> <span class="nav-text">JavaScript 引擎</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行"><span class="nav-number">3.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调用堆栈（Call-Stack）"><span class="nav-number">4.</span> <span class="nav-text">调用堆栈（Call Stack）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发和事件循环"><span class="nav-number">5.</span> <span class="nav-text">并发和事件循环</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#第一种"><span class="nav-number">1.</span> <span class="nav-text">第一种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第二种"><span class="nav-number">2.</span> <span class="nav-text">第二种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第三种"><span class="nav-number">3.</span> <span class="nav-text">第三种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第四种"><span class="nav-number">4.</span> <span class="nav-text">第四种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第五种"><span class="nav-number">5.</span> <span class="nav-text">第五种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第六种"><span class="nav-number">6.</span> <span class="nav-text">第六种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第七种"><span class="nav-number">7.</span> <span class="nav-text">第七种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第八种"><span class="nav-number">8.</span> <span class="nav-text">第八种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第九种"><span class="nav-number">9.</span> <span class="nav-text">第九种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第十种"><span class="nav-number">10.</span> <span class="nav-text">第十种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

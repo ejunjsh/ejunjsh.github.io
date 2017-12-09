@@ -2431,19 +2431,31 @@
     <link href="http://idiotsky.me/2017/09/12/openstack-install-nova-2/"/>
     <id>http://idiotsky.me/2017/09/12/openstack-install-nova-2/</id>
     <published>2017-09-12T11:11:12.000Z</published>
-    <updated>2017-11-03T15:44:05.632Z</updated>
+    <updated>2017-11-30T15:54:55.239Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
-<p>take the place….</p>
+<p>现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。<br>开始安装吧。。。</p>
 </blockquote>
+<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> apt install nova-compute</span></div></pre></td></tr></table></figure>
+<h2 id="修改-etc-nova-nova-conf"><a href="#修改-etc-nova-nova-conf" class="headerlink" title="修改/etc/nova/nova.conf"></a>修改<code>/etc/nova/nova.conf</code></h2><ul>
+<li>在<code>[DEFAULT]</code>区域，配置<code>RabbitMQ</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">transport_url</span> = rabbit://openstack:RABBIT_PASS@controller</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>RABBIT_PASS</code>为当时为<code>RabbitMQ</code>创建<code>openstack</code>用户时指定的密码</p>
+<ul>
+<li>在<code>[api]</code>和<code>[keystone——authtoken]</code>区域，配置keystone相关配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="section">[api]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_strategy</span> = keystone</div><div class="line"><span class="section"></span></div><div class="line">[keystone_authtoken]</div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></div><div class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">project_domain_name</span> = default</div><div class="line"><span class="attr">user_domain_name</span> = default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">username</span> = nova</div><div class="line"><span class="attr">password</span> = NOVA_PASS</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>NOVA_PASS</code>为你创建nova用户时的密码</p>
+<ul>
+<li>在<code>[DEFAULT]</code>区域，配置<code>my_ip</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">my_ip</span> = MANAGEMENT_INTERFACE_IP_ADDRESS</div></pre></td></tr></table></figure></li>
+</ul>
 ]]></content>
     
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;take the place….&lt;/p&gt;
-&lt;/blockquote&gt;
-
+&lt;p&gt;现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。&lt;br&gt;开始安装吧。。。&lt;/p&gt;
     
     </summary>
     
