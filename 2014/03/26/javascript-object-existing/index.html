@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2014/03/26/javascript-object-existing/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。  第一种123　　if (!myObj) &amp;#123;　　　　myObj = &amp;#123; &amp;#125;;　　&amp;#125; 但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？对了，if语句判断myObj是否为空时，这个变">
-<meta property="og:updated_time" content="2017-12-09T13:58:10.577Z">
+<meta property="og:updated_time" content="2017-12-09T13:59:35.531Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何判断Javascript对象是否存在">
 <meta name="twitter:description" content="javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。  第一种123　　if (!myObj) &amp;#123;　　　　myObj = &amp;#123; &amp;#125;;　　&amp;#125; 但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？对了，if语句判断myObj是否为空时，这个变">
@@ -462,6 +462,7 @@
 <li>为了跨平台，建议避免使用window表示顶层对象。</li>
 <li>在Javascript语言中，null和undefined容易产生混淆。在可能同时涉及两者的情况下，建议使用”精确比较”运算符（===）。</li>
 </ol>
+<p>参考 <a href="http://www.ruanyifeng.com/blog/2011/05/how_to_judge_the_existence_of_a_global_object_in_javascript.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2011/05/how_to_judge_the_existence_of_a_global_object_in_javascript.html</a></p>
 
       
     </div>
