@@ -2431,7 +2431,7 @@
     <link href="http://idiotsky.me/2017/09/12/openstack-install-nova-2/"/>
     <id>http://idiotsky.me/2017/09/12/openstack-install-nova-2/</id>
     <published>2017-09-12T11:11:12.000Z</published>
-    <updated>2017-11-30T15:54:55.239Z</updated>
+    <updated>2017-12-10T12:25:49.138Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。<br>开始安装吧。。。</p>
@@ -2448,8 +2448,43 @@
 </ul>
 <p>替换<code>NOVA_PASS</code>为你创建nova用户时的密码</p>
 <ul>
-<li>在<code>[DEFAULT]</code>区域，配置<code>my_ip</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">my_ip</span> = MANAGEMENT_INTERFACE_IP_ADDRESS</div></pre></td></tr></table></figure></li>
+<li><p>在<code>[DEFAULT]</code>区域，配置<code>my_ip</code></p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">my_ip</span> = <span class="number">192.168</span>.<span class="number">199.11</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>[DEFAULT]</code>区域，关掉防火墙和使用neutron</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></div><div class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</div></pre></td></tr></table></figure>
+</li>
 </ul>
+<p>以前nova是提供网络服务的，现在有了neutron之后，就不用了，所以这里要关掉先。</p>
+<ul>
+<li><p>在<code>[vnc]</code>区域，配置远程访问：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="section">[vnc]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">enabled</span> = <span class="literal">True</span></div><div class="line"><span class="attr">vncserver_listen</span> = <span class="number">0.0</span>.<span class="number">0.0</span></div><div class="line"><span class="attr">vncserver_proxyclient_address</span> = <span class="variable">$my_ip</span></div><div class="line"><span class="attr">novncproxy_base_url</span> = http://controller:<span class="number">6080</span>/vnc_auto.html</div></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>[glance]</code>区域，配置镜像访问接口：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[glance]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">api_servers</span> = http://controller:<span class="number">9292</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>在<code>[DEFAULT]</code>区域,<code>log_dir</code>选项</p>
+</li>
+<li>在<code>[placement]</code>区域，配置Placement API:<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="section">[placement]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">os_region_name</span> = RegionOne</div><div class="line"><span class="attr">project_domain_name</span> = Default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">user_domain_name</span> = Default</div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span>/v3</div><div class="line"><span class="attr">username</span> = placement</div><div class="line"><span class="attr">password</span> = PLACEMENT_PASS</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换<code>PLACEMENT_PASS</code>为之前配置placement用户时候设置的密码</p>
+<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="配置虚拟机类型"><a href="#配置虚拟机类型" class="headerlink" title="配置虚拟机类型"></a>配置虚拟机类型</h2><p>执行以下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> egrep -c <span class="string">'(vmx|svm)'</span> /proc/cpuinfo</span></div></pre></td></tr></table></figure></p>
+<p>如果返回多个，就代表你机子已经硬件支持kvm，所以不用配置什么<br>如果返回0，代表你机子不支持kvm，所以就需要修改为qemu<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[libvirt]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">virt_type</span> = qemu</div></pre></td></tr></table></figure></p>
+<h2 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> service nova-compute restart</span></div></pre></td></tr></table></figure>
+<h1 id="添加compute节点到cell数据库"><a href="#添加compute节点到cell数据库" class="headerlink" title="添加compute节点到cell数据库"></a>添加compute节点到cell数据库</h1><blockquote>
+<p>以下操作只能在controller节点执行</p>
+</blockquote>
+<ol>
+<li><p>执行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack compute service list --service nova-compute</span></div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div></pre></td></tr></table></figure>
+</li>
+<li><p>发现compute节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash"> su -s /bin/sh -c <span class="string">"nova-manage cell_v2 discover_hosts --verbose"</span> nova</span></div><div class="line"></div><div class="line">Found 2 cell mappings.</div><div class="line">Skipping cell0 since it does not contain hosts.</div><div class="line">Getting compute nodes from cell 'cell1': ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Found 1 computes in cell: ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Checking host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div><div class="line">Creating host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>如果你新加了个compute，必须要再执行一遍上面的命令，或者在nova的配置文件改一个合适的间隔来自动发现吧。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="section">[scheduler]</span></div><div class="line"><span class="attr">discover_hosts_in_cells_interval</span> = <span class="number">300</span></div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>nova服务到这里已经都装完了，如果你controller也安装了compute的服务的话，那就有两台compute node了😄<br>接下来要进入重头戏的网络服务neutron的安装了👿</p>
 ]]></content>
     
     <summary type="html">
