@@ -1033,7 +1033,7 @@
 </blockquote>
 <h1 id="二分查找"><a href="#二分查找" class="headerlink" title="二分查找"></a>二分查找</h1><p>二分查找又称折半查找，优点是比较次数少，查找速度快，平均性能好，占用系统内存较少；其缺点是要求待查表为有序表，且插入删除困难。因此，折半查找方法适用于不经常变动而查找频繁的有序列表。首先，假设表中元素是按升序排列，将表中间位置记录的关键字与查找关键字比较，如果两者相等，则查找成功；否则利用中间位置记录将表分成前、后两个子表，如果中间位置记录的关键字大于查找关键字，则进一步查找前一子表，否则进一步查找后一子表。重复以上过程，直到找到满足条件的记录，使查找成功，或直到子表不存在为止，此时查找不成功。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">binarySearch</span><span class="params">(Integer[] srcArray, <span class="keyword">int</span> des)</span> </span>&#123;</div><div class="line">    <span class="comment">//定义初始最小、最大索引</span></div><div class="line">    <span class="keyword">int</span> low = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> high = srcArray.length - <span class="number">1</span>;</div><div class="line">    <span class="comment">//确保不会出现重复查找，越界</span></div><div class="line">    <span class="keyword">while</span> (low &lt;= high) &#123;</div><div class="line">        <span class="comment">//计算出中间索引值</span></div><div class="line">        <span class="keyword">int</span> middle = (high + low)&gt;&gt;&gt;<span class="number">1</span> ;<span class="comment">//防止溢出</span></div><div class="line">        <span class="keyword">if</span> (des == srcArray[middle]) &#123;</div><div class="line">            <span class="keyword">return</span> middle;</div><div class="line">        <span class="comment">//判断下限</span></div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (des &lt; srcArray[middle]) &#123;</div><div class="line">            high = middle - <span class="number">1</span>;</div><div class="line">        <span class="comment">//判断上限</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            low = middle + <span class="number">1</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//若没有，则返回-1</span></div><div class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p><a href="http://idiotsky.me/images1/java-treemap.jpg"><img src="http://idiotsky.me/images1/java-treemap.jpg" alt=""></a></p>
-<h1 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h1><p>在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树和二叉堆。二叉树的度就是分支的数目。没有分叉的二叉树节点的度就是0度。如果一个节点只有一个分叉就是1度。两个分叉就是2度的子树。<br><a href="http://idiotsky.me/images1/java-treemap-1.png"><img src="http://idiotsky.me/images1/java-treemap-1.png" alt=""></a></p>
+<h1 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h1><p>在计算机科学中，二叉树是每个节点最多有两个子树的树结构。通常子树被称作“左子树”（left subtree）和“右子树”（right subtree）。二叉树常被用于实现二叉查找树，平衡树，红黑树和二叉堆。二叉树的度就是分支的数目。没有分叉的二叉树节点的度就是0度。如果一个节点只有一个分叉就是1度。两个分叉就是2度的子树。<br><a href="http://idiotsky.me/images1/java-treemap-1.png"><img src="http://idiotsky.me/images1/java-treemap-1.png" alt=""></a></p>
 <h2 id="斜树"><a href="#斜树" class="headerlink" title="斜树"></a>斜树</h2><ul>
 <li>左斜树：所有结点都只有左子树的二叉树；</li>
 <li>右斜树：所有结点都只有右子树的二叉树；</li>
@@ -1050,6 +1050,22 @@
 <li>若结点度为1，则该结点只有左子树，不存在只有右子树的情况；</li>
 <li>结点分配<code>先左后右</code>；<br><a href="http://idiotsky.me/images1/java-treemap-4.png"><img src="http://idiotsky.me/images1/java-treemap-4.png" alt=""></a></li>
 </ul>
+<h2 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h2><ul>
+<li>前序：先访问根结点 -&gt; 遍历左子树 -&gt; 遍历右子树；先访问根结点</li>
+<li>中序：遍历左子树 -&gt; 访问根结点 -&gt; 遍历右子树；中间访问根结点</li>
+<li>后序：遍历左子树 -&gt; 遍历右子树 -&gt; 后访问根结点；后访问根结点</li>
+<li>层序：自上而下，从左到右逐层访问结点；<br><a href="http://idiotsky.me/images1/java-treemap-5.png"><img src="http://idiotsky.me/images1/java-treemap-5.png" alt=""></a></li>
+</ul>
+<h1 id="二叉查找树"><a href="#二叉查找树" class="headerlink" title="二叉查找树"></a>二叉查找树</h1><p>二叉查找树（Binary Search Tree），也称有序二叉树（ordered binary tree）,排序二叉树（sorted binary tree），是指一棵空树或者具有下列性质的二叉树：</p>
+<ol>
+<li>若任意节点的左子树不空，则左子树上所有结点的值均小于它的根结点的值；</li>
+<li>若任意节点的右子树不空，则右子树上所有结点的值均大于它的根结点的值；</li>
+<li>任意节点的左、右子树也分别为二叉查找树。</li>
+<li>没有键值相等的节点（no duplicate nodes）。</li>
+</ol>
+<blockquote>
+<p>to be continue….<br>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a></p>
+</blockquote>
 
           
         
