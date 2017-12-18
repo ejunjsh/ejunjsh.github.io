@@ -1063,9 +1063,36 @@
 <li>任意节点的左、右子树也分别为二叉查找树。</li>
 <li>没有键值相等的节点（no duplicate nodes）。</li>
 </ol>
+<p>如下一个二叉树<br><a href="http://idiotsky.me/images1/java-treemap-6.png"><img src="http://idiotsky.me/images1/java-treemap-6.png" alt=""></a></p>
+<p>在此基础上，加上节点之间的大小关系，就是二叉查找树：<br><a href="http://idiotsky.me/images1/java-treemap-7.png"><img src="http://idiotsky.me/images1/java-treemap-7.png" alt=""></a></p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><p>查找操作和二分查找类似，将key和节点的key比较，如果小于，那么就在Left Node节点查找,如果大于，则在Right Node节点查找，如果相等，直接返回Value。<br><a href="http://idiotsky.me/images1/java-treemap-8.png"><img src="http://idiotsky.me/images1/java-treemap-8.png" alt=""></a></p>
+<h2 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h2><p>插入和查找类似，首先查找有没有和key相同的，如果有，更新；如果没有找到，那么创建新的节点。<br><a href="http://idiotsky.me/images1/java-treemap-9.png"><img src="http://idiotsky.me/images1/java-treemap-9.png" alt=""></a></p>
+<p>下面是插入动画效果：<br><a href="http://idiotsky.me/images1/java-treemap-10.gif"><img src="http://idiotsky.me/images1/java-treemap-10.gif" alt=""></a></p>
+<p>随机插入形成树的动画如下，可以看到，插入的时候树还是能够保持近似平衡状态：<br><a href="http://idiotsky.me/images1/java-treemap-11.gif"><img src="http://idiotsky.me/images1/java-treemap-11.gif" alt=""></a></p>
+<h2 id="最大最小值"><a href="#最大最小值" class="headerlink" title="最大最小值"></a>最大最小值</h2><p>如下图可以看出，二叉查找树的最大最小值是有规律的：<br><a href="http://idiotsky.me/images1/java-treemap-12.png"><img src="http://idiotsky.me/images1/java-treemap-12.png" alt=""></a></p>
+<p>从图中可以看出，二叉查找树中，最左和最右节点即为最小值和最大值</p>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><p>删除元素操作在二叉树的操作中应该是比较复杂的。首先来看下比较简单的删除最大最小值得方法。</p>
+<p>以删除最小值为例，我们首先找到最小值，及最左边左子树为空的节点，然后返回其右子树作为新的左子树。操作示意图如下：<br><a href="http://idiotsky.me/images1/java-treemap-13.png"><img src="http://idiotsky.me/images1/java-treemap-13.png" alt=""></a></p>
+<p>删除最大值也是类似。</p>
+<p>现在来分析一般情况，假定我们要删除指定key的某一个节点。这个问题的难点在于：删除最大最小值的操作，删除的节点只有1个子节点或者没有子节点，这样比较简单。但是如果删除任意节点，就有可能出现删除的节点有0个，1 个，2个子节点的情况，现在来逐一分析。</p>
+<p>当删除的节点没有子节点时，直接将该父节点指向该节点的link设置为null。<br><a href="http://idiotsky.me/images1/java-treemap-14.png"><img src="http://idiotsky.me/images1/java-treemap-14.png" alt=""></a></p>
+<p>当删除的节点只有1个子节点时，将该自己点替换为要删除的节点即可。<br><a href="http://idiotsky.me/images1/java-treemap-15.png"><img src="http://idiotsky.me/images1/java-treemap-15.png" alt=""></a></p>
+<p>当删除的节点有2个子节点时，问题就变复杂了。</p>
+<p>假设我们删除的节点t具有两个子节点。因为t具有右子节点，所以我们需要找到其右子节点中的最小节点，替换t节点的位置。这里有四个步骤：</p>
+<ol>
+<li>保存带删除的节点到临时变量t</li>
+<li>将t的右节点的最小节点min(t.right)保存到临时节点x</li>
+<li>将x的右节点设置为deleteMin(t.right)，该右节点是删除后，所有比x.key最大的节点。</li>
+<li>将x的做节点设置为t的左节点。</li>
+</ol>
+<p>整个过程如下图：<br><a href="http://idiotsky.me/images1/java-treemap-16.png"><img src="http://idiotsky.me/images1/java-treemap-16.png" alt=""></a></p>
+<p>随着删除的进行，二叉树会变得不太平衡，下面是动画演示。<br><a href="http://idiotsky.me/images1/java-treemap-17.gif"><img src="http://idiotsky.me/images1/java-treemap-17.git" alt=""></a></p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>二叉查找树的运行时间和树的形状有关，树的形状又和插入元素的顺序有关。在最好的情况下，节点完全平衡，从根节点到最底层叶子节点只有lgN个节点。在最差的情况下，根节点到最底层叶子节点会有N各节点。在一般情况下，树的形状和最好的情况接近。<br><a href="http://idiotsky.me/images1/java-treemap-18.png"><img src="http://idiotsky.me/images1/java-treemap-18.png" alt=""></a></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>它和二分查找一样，插入和查找的时间复杂度均为lgN，但是在最坏的情况下仍然会有N的时间复杂度。原因在于插入和删除元素的时候，树没有保持平衡。所以我们希望在最坏的情况也有较好的时间复杂度，那就要求树能够尽可能平衡，也就产生了2-3树和红黑树等平衡树。</p>
 <blockquote>
-<p>to be continue….<br>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a></p>
+<p>to be continue….</p>
 </blockquote>
+<p>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a></p>
 
           
         
