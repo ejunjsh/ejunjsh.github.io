@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-2.png">
 <meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-4.jpg">
-<meta property="og:updated_time" content="2017-12-19T14:31:07.636Z">
+<meta property="og:updated_time" content="2017-12-19T14:36:47.523Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux iptables详解">
 <meta name="twitter:description" content="iptables简介netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案，完成封包过滤、封包重定向和网络地址转换（NAT）等功能。 iptables基础规则（rules）其实就是网络管理员预定义的条件，规则一般的定义为“如果数据包头符合这样的条件，就这样处理这个数">
@@ -477,29 +477,23 @@
 </li>
 <li><p>允许防火墙转发除ICMP协议以外的所有数据包</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -p ! icmp -j ACCEPT</div></pre></td></tr></table></figure>
+<p> 说明：使用“！”可以将条件取反。</p>
 </li>
-</ol>
-<p>说明：使用“！”可以将条件取反。</p>
-<ol>
-<li>拒绝转发来自192.168.1.10主机的数据，允许转发来自192.168.0.0/24网段的数据<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -s 192.168.1.11 -j REJECT </div><div class="line">iptables -A FORWARD -s 192.168.0.0/24 -j ACCEPT</div></pre></td></tr></table></figure>
+<li><p>拒绝转发来自192.168.1.10主机的数据，允许转发来自192.168.0.0/24网段的数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -s 192.168.1.11 -j REJECT </div><div class="line">iptables -A FORWARD -s 192.168.0.0/24 -j ACCEPT</div></pre></td></tr></table></figure>
+<p> 说明：注意要把拒绝的放在前面不然就不起作用了啊。</p>
 </li>
-</ol>
-<p>说明：注意要把拒绝的放在前面不然就不起作用了啊。</p>
-<ol>
 <li><p>丢弃从外网接口（eth1）进入防火墙本机的源地址为私网地址的数据包</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -i eth1 -s 192.168.0.0/16 -j DROP </div><div class="line">iptables -A INPUT -i eth1 -s 172.16.0.0/12 -j DROP </div><div class="line">iptables -A INPUT -i eth1 -s 10.0.0.0/8 -j DROP</div></pre></td></tr></table></figure>
 </li>
 <li><p>封堵网段（192.168.1.0/24），两小时后解封。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">iptables -I INPUT -s 10.20.30.0/24 -j DROP </div><div class="line">iptables -I FORWARD -s 10.20.30.0/24 -j DROP </div><div class="line">at now 2 hours at&gt; iptables -D INPUT 1 at&gt; iptables -D FORWARD 1</div></pre></td></tr></table></figure>
+<p> 说明：这个策略咱们借助crond计划任务来完成，就再好不过了。<br> [1]   Stopped     at now 2 hours</p>
 </li>
-</ol>
-<p>说明：这个策略咱们借助crond计划任务来完成，就再好不过了。<br>[1]   Stopped     at now 2 hours</p>
-<ol>
-<li>只允许管理员从202.13.0.0/16网段使用SSH远程登录防火墙主机。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp --dport 22 -s 202.13.0.0/16 -j ACCEPT </div><div class="line">iptables -A INPUT -p tcp --dport 22 -j DROP</div></pre></td></tr></table></figure>
+<li><p>只允许管理员从202.13.0.0/16网段使用SSH远程登录防火墙主机。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp --dport 22 -s 202.13.0.0/16 -j ACCEPT </div><div class="line">iptables -A INPUT -p tcp --dport 22 -j DROP</div></pre></td></tr></table></figure>
+<p> 说明：这个用法比较适合对设备进行远程管理时使用，比如位于分公司中的SQL服务器需要被总公司的管理员管理时。</p>
 </li>
-</ol>
-<p>说明：这个用法比较适合对设备进行远程管理时使用，比如位于分公司中的SQL服务器需要被总公司的管理员管理时。</p>
-<ol>
 <li><p>允许本机开放从TCP端口20-1024提供的应用服务。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp --dport 20:1024 -j ACCEPT </div><div class="line">iptables -A OUTPUT -p tcp --sport 20:1024 -j ACCEPT</div></pre></td></tr></table></figure>
 </li>
@@ -511,31 +505,26 @@
 </li>
 <li><p>禁止转发来自MAC地址为00：0C：29：27：55：3F的和主机的数据包</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -m mac --mac-source 00:0c:29:27:55:3F -j DROP</div></pre></td></tr></table></figure>
-</li>
-</ol>
 <p>说明：iptables中使用“-m 模块关键字”的形式调用显示匹配。咱们这里用“-m mac –mac-source”来表示数据包的源MAC地址。</p>
-<ol>
-<li>允许防火墙本机对外开放TCP端口20、21、25、110以及被动模式FTP端口1250-1280<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp -m multiport --dport 20,21,25,110,1250:1280 -j ACCEPT</div></pre></td></tr></table></figure>
 </li>
-</ol>
+<li><p>允许防火墙本机对外开放TCP端口20、21、25、110以及被动模式FTP端口1250-1280</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp -m multiport --dport 20,21,25,110,1250:1280 -j ACCEPT</div></pre></td></tr></table></figure>
 <p>说明：这里用“-m multiport –dport”来指定目的端口及范围</p>
-<ol>
-<li>禁止转发源IP地址为192.168.1.20-192.168.1.99的TCP数据包。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -p tcp -m iprange --src-range 192.168.1.20-192.168.1.99 -j DROP</div></pre></td></tr></table></figure>
 </li>
-</ol>
+<li><p>禁止转发源IP地址为192.168.1.20-192.168.1.99的TCP数据包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -p tcp -m iprange --src-range 192.168.1.20-192.168.1.99 -j DROP</div></pre></td></tr></table></figure>
 <p>说明：此处用“-m –iprange –src-range”指定IP范围。</p>
-<ol>
-<li>禁止转发与正常TCP连接无关的非—syn请求数据包。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -m state --state NEW -p tcp ! --syn -j DROP</div></pre></td></tr></table></figure>
 </li>
-</ol>
+<li><p>禁止转发与正常TCP连接无关的非—syn请求数据包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">iptables -A FORWARD -m state --state NEW -p tcp ! --syn -j DROP</div></pre></td></tr></table></figure>
 <p>说明：“-m state”表示数据包的连接状态，“NEW”表示与任何连接无关的，新的嘛！</p>
-<ol>
-<li>拒绝访问防火墙的新数据包，但允许响应连接或与已有连接相关的数据包<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp -m state --state NEW -j DROP </div><div class="line">iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT</div></pre></td></tr></table></figure>
 </li>
-</ol>
+<li><p>拒绝访问防火墙的新数据包，但允许响应连接或与已有连接相关的数据包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">iptables -A INPUT -p tcp -m state --state NEW -j DROP </div><div class="line">iptables -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT</div></pre></td></tr></table></figure>
 <p>说明：“ESTABLISHED”表示已经响应请求或者已经建立连接的数据包，“RELATED”表示与已建立的连接有相关性的，比如FTP数据连接等。</p>
-<ol>
-<li>只开放本机的web服务（80）、FTP(20、21、20450-20480)，放行外部主机发住服务器其它端口的应答数据包，将其他入站数据包均予以丢弃处理。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">iptables -I INPUT -p tcp -m multiport --dport 20,21,80 -j ACCEPT </div><div class="line">iptables -I INPUT -p tcp --dport 20450:20480 -j ACCEPT </div><div class="line">iptables -I INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT </div><div class="line">iptables -P INPUT DROP</div></pre></td></tr></table></figure>
+</li>
+<li><p>只开放本机的web服务（80）、FTP(20、21、20450-20480)，放行外部主机发住服务器其它端口的应答数据包，将其他入站数据包均予以丢弃处理。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">iptables -I INPUT -p tcp -m multiport --dport 20,21,80 -j ACCEPT </div><div class="line">iptables -I INPUT -p tcp --dport 20450:20480 -j ACCEPT </div><div class="line">iptables -I INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT </div><div class="line">iptables -P INPUT DROP</div></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>参考 <a href="https://www.cnblogs.com/metoy/p/4320813.html" target="_blank" rel="external">https://www.cnblogs.com/metoy/p/4320813.html</a></p>
