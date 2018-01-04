@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2017-11-07T14:09:00.804Z</updated>
+  <updated>2018-01-04T14:23:57.038Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,42 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>go基础-nil</title>
+    <link href="http://idiotsky.me/2018/01/03/go-nil/"/>
+    <id>http://idiotsky.me/2018/01/03/go-nil/</id>
+    <published>2018-01-03T15:48:13.000Z</published>
+    <updated>2018-01-04T14:23:57.038Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="nil是什么"><a href="#nil是什么" class="headerlink" title="nil是什么"></a>nil是什么</h1><blockquote>
+<p>The “nil” identifier can be used as the “zero value” for interfaces, functions, pointers, maps, slices, and channels</p>
+</blockquote>
+<p>这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个变量但是没有对它进行赋值操作，那么这个变量就会有一个类型的默认零值。这是每种类型对应的零值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">bool      -&gt; false                              </div><div class="line">numbers -&gt; 0                                 </div><div class="line">string    -&gt; &quot;&quot;      </div><div class="line"></div><div class="line">pointers -&gt; nil</div><div class="line">slices -&gt; nil</div><div class="line">maps -&gt; nil</div><div class="line">channels -&gt; nil</div><div class="line">functions -&gt; nil</div><div class="line">interfaces -&gt; nil</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>举个例子，当你定义了一个struct：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</div><div class="line">  AgeYears <span class="keyword">int</span></div><div class="line">  Name <span class="keyword">string</span></div><div class="line">  Friends []Person</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> p Person <span class="comment">// Person&#123;0, "", nil&#125;</span></div></pre></td></tr></table></figure></p>
+<p>上面官方解释还有一句<code>The &quot;nil&quot; identifier</code>,意思就是说nil连go的关键字都不算，是一个预定义的变量而已，你甚至可以改变它<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> <span class="literal">nil</span> = errors.New(<span class="string">"hi"</span>)</div></pre></td></tr></table></figure></p>
+<p>这样是完全可以编译得过的，但是最好不要这样子去做。</p>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;nil是什么&quot;&gt;&lt;a href=&quot;#nil是什么&quot; class=&quot;headerlink&quot; title=&quot;nil是什么&quot;&gt;&lt;/a&gt;nil是什么&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;The “nil” identifier can be used as the “zero value” for interfaces, functions, pointers, maps, slices, and channels&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个变量但是没有对它进行赋值操作，那么这个变量就会有一个类型的默认零值。这是每种类型对应的零值：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;bool      -&amp;gt; false                              &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;numbers -&amp;gt; 0                                 &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;string    -&amp;gt; &amp;quot;&amp;quot;      &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;pointers -&amp;gt; nil&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;slices -&amp;gt; nil&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;maps -&amp;gt; nil&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;channels -&amp;gt; nil&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;functions -&amp;gt; nil&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;interfaces -&amp;gt; nil&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
+    
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+  </entry>
   
   <entry>
     <title>jvm full gc 解惑</title>
@@ -2423,87 +2459,6 @@
       <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
     
       <category term="字符串" scheme="http://idiotsky.me/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openstack安装-nova(二)</title>
-    <link href="http://idiotsky.me/2017/09/12/openstack-install-nova-2/"/>
-    <id>http://idiotsky.me/2017/09/12/openstack-install-nova-2/</id>
-    <published>2017-09-12T11:11:12.000Z</published>
-    <updated>2017-12-10T12:25:49.138Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。<br>开始安装吧。。。</p>
-</blockquote>
-<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> apt install nova-compute</span></div></pre></td></tr></table></figure>
-<h2 id="修改-etc-nova-nova-conf"><a href="#修改-etc-nova-nova-conf" class="headerlink" title="修改/etc/nova/nova.conf"></a>修改<code>/etc/nova/nova.conf</code></h2><ul>
-<li>在<code>[DEFAULT]</code>区域，配置<code>RabbitMQ</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">transport_url</span> = rabbit://openstack:RABBIT_PASS@controller</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>替换<code>RABBIT_PASS</code>为当时为<code>RabbitMQ</code>创建<code>openstack</code>用户时指定的密码</p>
-<ul>
-<li>在<code>[api]</code>和<code>[keystone——authtoken]</code>区域，配置keystone相关配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="section">[api]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_strategy</span> = keystone</div><div class="line"><span class="section"></span></div><div class="line">[keystone_authtoken]</div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></div><div class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">project_domain_name</span> = default</div><div class="line"><span class="attr">user_domain_name</span> = default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">username</span> = nova</div><div class="line"><span class="attr">password</span> = NOVA_PASS</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>替换<code>NOVA_PASS</code>为你创建nova用户时的密码</p>
-<ul>
-<li><p>在<code>[DEFAULT]</code>区域，配置<code>my_ip</code></p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">my_ip</span> = <span class="number">192.168</span>.<span class="number">199.11</span></div></pre></td></tr></table></figure>
-</li>
-<li><p>在<code>[DEFAULT]</code>区域，关掉防火墙和使用neutron</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></div><div class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>以前nova是提供网络服务的，现在有了neutron之后，就不用了，所以这里要关掉先。</p>
-<ul>
-<li><p>在<code>[vnc]</code>区域，配置远程访问：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="section">[vnc]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">enabled</span> = <span class="literal">True</span></div><div class="line"><span class="attr">vncserver_listen</span> = <span class="number">0.0</span>.<span class="number">0.0</span></div><div class="line"><span class="attr">vncserver_proxyclient_address</span> = <span class="variable">$my_ip</span></div><div class="line"><span class="attr">novncproxy_base_url</span> = http://controller:<span class="number">6080</span>/vnc_auto.html</div></pre></td></tr></table></figure>
-</li>
-<li><p>在<code>[glance]</code>区域，配置镜像访问接口：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[glance]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">api_servers</span> = http://controller:<span class="number">9292</span></div></pre></td></tr></table></figure>
-</li>
-<li><p>在<code>[DEFAULT]</code>区域,<code>log_dir</code>选项</p>
-</li>
-<li>在<code>[placement]</code>区域，配置Placement API:<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="section">[placement]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">os_region_name</span> = RegionOne</div><div class="line"><span class="attr">project_domain_name</span> = Default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">user_domain_name</span> = Default</div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span>/v3</div><div class="line"><span class="attr">username</span> = placement</div><div class="line"><span class="attr">password</span> = PLACEMENT_PASS</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>替换<code>PLACEMENT_PASS</code>为之前配置placement用户时候设置的密码</p>
-<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="配置虚拟机类型"><a href="#配置虚拟机类型" class="headerlink" title="配置虚拟机类型"></a>配置虚拟机类型</h2><p>执行以下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> egrep -c <span class="string">'(vmx|svm)'</span> /proc/cpuinfo</span></div></pre></td></tr></table></figure></p>
-<p>如果返回多个，就代表你机子已经硬件支持kvm，所以不用配置什么<br>如果返回0，代表你机子不支持kvm，所以就需要修改为qemu<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[libvirt]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">virt_type</span> = qemu</div></pre></td></tr></table></figure></p>
-<h2 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> service nova-compute restart</span></div></pre></td></tr></table></figure>
-<h1 id="添加compute节点到cell数据库"><a href="#添加compute节点到cell数据库" class="headerlink" title="添加compute节点到cell数据库"></a>添加compute节点到cell数据库</h1><blockquote>
-<p>以下操作只能在controller节点执行</p>
-</blockquote>
-<ol>
-<li><p>执行以下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack compute service list --service nova-compute</span></div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div></pre></td></tr></table></figure>
-</li>
-<li><p>发现compute节点</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash"> su -s /bin/sh -c <span class="string">"nova-manage cell_v2 discover_hosts --verbose"</span> nova</span></div><div class="line"></div><div class="line">Found 2 cell mappings.</div><div class="line">Skipping cell0 since it does not contain hosts.</div><div class="line">Getting compute nodes from cell 'cell1': ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Found 1 computes in cell: ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Checking host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div><div class="line">Creating host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>如果你新加了个compute，必须要再执行一遍上面的命令，或者在nova的配置文件改一个合适的间隔来自动发现吧。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="section">[scheduler]</span></div><div class="line"><span class="attr">discover_hosts_in_cells_interval</span> = <span class="number">300</span></div></pre></td></tr></table></figure></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>nova服务到这里已经都装完了，如果你controller也安装了compute的服务的话，那就有两台compute node了😄<br>接下来要进入重头戏的网络服务neutron的安装了👿</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。&lt;br&gt;开始安装吧。。。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
-    
-      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
-    
-      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
-    
-      <category term="nova" scheme="http://idiotsky.me/tags/nova/"/>
     
   </entry>
   
