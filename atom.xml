@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-01-10T14:02:38.116Z</updated>
+  <updated>2018-01-11T12:05:41.563Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,105 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用scroll实现Elasticsearch数据遍历和深度分页</title>
+    <link href="http://idiotsky.me/2018/01/11/elasticsearch-scroll/"/>
+    <id>http://idiotsky.me/2018/01/11/elasticsearch-scroll/</id>
+    <published>2018-01-11T02:09:18.000Z</published>
+    <updated>2018-01-11T12:05:41.563Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>之前面试被问到深分页的问题，现在mark一下吧</p>
+</blockquote>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用分页的方式、Elasticsearch 搜索执行过程以及为什么深度分页应该被禁止，最后再介绍使用 scroll 的方式遍历数据。</p>
+<h1 id="Elasticsearch-搜索内部执行原理"><a href="#Elasticsearch-搜索内部执行原理" class="headerlink" title="Elasticsearch 搜索内部执行原理"></a>Elasticsearch 搜索内部执行原理</h1><p>一个最基本的 Elasticsearch 查询语句是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">POST /my_index/my_type/_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;,</div><div class="line">    &quot;from&quot;: 100,</div><div class="line">    &quot;size&quot;:  10</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的查询表示从搜索结果中取第100条开始的10条数据。下面讲解搜索过程时也以这个请求为例。</p>
+<p>那么，这个查询语句在 Elasticsearch 集群内部是怎么执行的呢？为了方便描述，我们假设该 index 只有primary shards，没有 replica shards。</p>
+<p>在 Elasticsearch 中，搜索一般包括两个阶段，query 和 fetch 阶段，可以简单的理解，query 阶段确定要取哪些doc，fetch 阶段取出具体的 doc。<br><a id="more"></a></p>
+<h2 id="Query-阶段"><a href="#Query-阶段" class="headerlink" title="Query 阶段"></a>Query 阶段</h2><p><a href="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_query.jpg" target="_blank" rel="external"><img src="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_query.jpg" alt=""></a></p>
+<p>如上图所示，描述了一次搜索请求的 query 阶段。</p>
+<ol>
+<li>Client 发送一次搜索请求，node1 接收到请求，然后，node1 创建一个大小为 from + size 的优先级队列用来存结果，我们管 node1 叫 coordinating node。</li>
+<li>coordinating node将请求广播到涉及到的 shards，每个 shard 在内部执行搜索请求，然后，将结果存到内部的大小同样为 from + size 的优先级队列里，可以把优先级队列理解为一个包含 top N 结果的列表。</li>
+<li>每个 shard 把暂存在自身优先级队列里的数据返回给 coordinating node，coordinating node 拿到各个 shards 返回的结果后对结果进行一次合并，产生一个全局的优先级队列，存到自身的优先级队列里。</li>
+</ol>
+<p>在上面的例子中，coordinating node 拿到 (from + size) * 6 条数据，然后合并并排序后选择前面的 from + size 条数据存到优先级队列，以便 fetch 阶段使用。另外，各个分片返回给 coordinating node 的数据用于选出前 from + size 条数据，所以，只需要返回唯一标记 doc 的 _id 以及用于排序的 _score 即可，这样也可以保证返回的数据量足够小。</p>
+<p>coordinating node 计算好自己的优先级队列后，query 阶段结束，进入 fetch 阶段。</p>
+<h2 id="Fetch-阶段"><a href="#Fetch-阶段" class="headerlink" title="Fetch 阶段"></a>Fetch 阶段</h2><p>query 阶段知道了要取哪些数据，但是并没有取具体的数据，这就是 fetch 阶段要做的。<br><a href="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_fetch.jpg" target="_blank" rel="external"><img src="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_fetch.jpg" alt=""></a></p>
+<p>上图展示了 fetch 过程：</p>
+<ol>
+<li>coordinating node 发送 GET 请求到相关shards。</li>
+<li>shard 根据 doc 的 _id 取到数据详情，然后返回给 coordinating node。</li>
+<li>coordinating node 返回数据给 Client。</li>
+</ol>
+<p>coordinating node 的优先级队列里有 from + size 个 _doc _id，但是，在 fetch 阶段，并不需要取回所有数据，在上面的例子中，前100条数据是不需要取的，只需要取优先级队列里的第101到110条数据即可。</p>
+<p>需要取的数据可能在不同分片，也可能在同一分片，coordinating node 使用 multi-get 来避免多次去同一分片取数据，从而提高性能。</p>
+<h1 id="深度分页的问题"><a href="#深度分页的问题" class="headerlink" title="深度分页的问题"></a>深度分页的问题</h1><p>Elasticsearch 的这种方式提供了分页的功能，同时，也有相应的限制。举个例子，一个索引，有10亿数据，分10个 shards，然后，一个搜索请求，from=1,000,000，size=100，这时候，会带来严重的性能问题：</p>
+<ul>
+<li>CPU</li>
+<li>内存</li>
+<li>IO</li>
+<li>网络带宽</li>
+</ul>
+<p>CPU、内存和IO消耗容易理解，网络带宽问题稍难理解一点。在 query 阶段，每个shards需要返回 1,000,100 条数据给 coordinating node，而 coordinating node 需要接收 10 * 1,000,100 条数据，即使每条数据只有 _doc _id 和 _score，这数据量也很大了，而且，这才一个查询请求，那如果再乘以100呢？</p>
+<p>在另一方面，我们意识到，这种深度分页的请求并不合理，因为我们是很少人为的看很后面的请求的，在很多的业务场景中，都直接限制分页，比如只能看前100页。</p>
+<p>不过，这种深度分页确实存在，比如，被爬虫了，这个时候，直接干掉深度分页就好；又或者，业务上有遍历数据的需要，比如，有1千万粉丝的微信大V，要给所有粉丝群发消息，或者给某省粉丝群发，这时候就需要取得所有符合条件的粉丝，而最容易想到的就是利用 from + size 来实现，不过，这个是不现实的，这时，可以采用 Elasticsearch 提供的 scroll 方式来实现遍历。</p>
+<h1 id="利用-scroll-遍历数据"><a href="#利用-scroll-遍历数据" class="headerlink" title="利用 scroll 遍历数据"></a>利用 scroll 遍历数据</h1><p>可以把 scroll 理解为关系型数据库里的 cursor，因此，scroll 并不适合用来做实时搜索，而更适用于后台批处理任务，比如群发。</p>
+<p>可以把 scroll 分为初始化和遍历两步，初始化时将所有符合搜索条件的搜索结果缓存起来，可以想象成快照，在遍历时，从这个快照里取数据，也就是说，在初始化后对索引插入、删除、更新数据都不会影响遍历结果。</p>
+<h2 id="使用介绍"><a href="#使用介绍" class="headerlink" title="使用介绍"></a>使用介绍</h2><p>下面介绍下scroll的使用，可以通过 Elasticsearch 的 HTTP 接口做试验下，包括初始化和遍历两个部分。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST ip:port/my_index/my_type/_search?scroll=1m</div><div class="line">&#123;</div><div class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>初始化时需要像普通 search 一样，指明 index 和 type (当然，search 是可以不指明 index 和 type 的)，然后，加上参数 scroll，表示暂存搜索结果的时间，其它就像一个普通的search请求一样。</p>
+<p>初始化返回一个 _scroll_id，_scroll_id 用来下次取数据用。</p>
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST /_search?scroll=1m</div><div class="line">&#123;</div><div class="line">    &quot;scroll_id&quot;:&quot;XXXXXXXXXXXXXXXXXXXXXXX I am scroll id XXXXXXXXXXXXXXX&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的 scroll_id 即 上一次遍历取回的 _scroll_id 或者是初始化返回的 _scroll_id，同样的，需要带 scroll 参数。 重复这一步骤，直到返回的数据为空，即遍历完成。注意，每次都要传参数 scroll，刷新搜索结果的缓存时间。另外，不需要指定 index 和 type。</p>
+<p>设置scroll的时候，需要使搜索结果缓存到下一次遍历完成，同时，也不能太长，毕竟空间有限。</p>
+<h2 id="Scroll-Scan"><a href="#Scroll-Scan" class="headerlink" title="Scroll-Scan"></a>Scroll-Scan</h2><p>Elasticsearch 提供了 Scroll-Scan 方式进一步提高遍历性能。还是上面的例子，微信大V要给粉丝群发这种后台任务，是不需要关注顺序的，只要能遍历所有数据即可，这时候，就可以用Scroll-Scan。</p>
+<p>Scroll-Scan 的遍历与普通 Scroll 一样，初始化存在一点差别。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST ip:port/my_index/my_type/_search?search_type=scan&amp;scroll=1m&amp;size=50</div><div class="line">&#123;</div><div class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>需要指明参数：</p>
+<ul>
+<li>search_type。赋值为scan，表示采用 Scroll-Scan 的方式遍历，同时告诉 Elasticsearch 搜索结果不需要排序。</li>
+<li>scroll。同上，传时间。</li>
+<li>size。与普通的 size 不同，这个 size 表示的是每个 shard 返回的 size 数，最终结果最大为 number_of_shards * size。</li>
+</ul>
+<p>Scroll-Scan 方式与普通 scroll 有几点不同：</p>
+<ol>
+<li>Scroll-Scan 结果没有排序，按 index 顺序返回，没有排序，可以提高取数据性能。</li>
+<li>初始化时只返回 _scroll_id，没有具体的 hits 结果。</li>
+<li>size 控制的是每个分片的返回的数据量而不是整个请求返回的数据量。</li>
+</ol>
+<h2 id="Java-实现"><a href="#Java-实现" class="headerlink" title="Java 实现"></a>Java 实现</h2><p>用 Java 举个例子。</p>
+<h3 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    response = esClient.prepareSearch(index)</div><div class="line">            .setTypes(type)</div><div class="line">            .setSearchType(SearchType.SCAN)</div><div class="line">            .setQuery(query)</div><div class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</div><div class="line">            .setSize(size)</div><div class="line">            .execute()</div><div class="line">            .actionGet();</div><div class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</div><div class="line">    <span class="comment">// handle Exception</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>初始化返回 _scroll_id，然后，用 _scroll_id 去遍历，注意，上面的query是一个JSONObject，不过这里很多种实现方式，我这儿只是个例子。</p>
+<h3 id="遍历-1"><a href="#遍历-1" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    response = esClient.prepareSearchScroll(scrollId)</div><div class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</div><div class="line">            .execute()</div><div class="line">            .actionGet();</div><div class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</div><div class="line">    <span class="comment">// handle Exception</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>深度分页不管是关系型数据库还是Elasticsearch还是其他搜索引擎，都会带来巨大性能开销，特别是在分布式情况下。</li>
+<li>有些问题可以考业务解决而不是靠技术解决，比如很多业务都对页码有限制，google 搜索，往后翻到一定页码就不行了。</li>
+<li>Elasticsearch 提供的 Scroll 接口专门用来获取大量数据甚至全部数据，在顺序无关情况下，首推Scroll-Scan。</li>
+<li>描述搜索过程时，为了简化描述，假设 index 没有备份，实际上，index 肯定会有备份，这时候，就涉及到选择 shard。</li>
+</ol>
+<p>from <a href="http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html" target="_blank" rel="external">http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;之前面试被问到深分页的问题，现在mark一下吧&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h1&gt;&lt;p&gt;Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用分页的方式、Elasticsearch 搜索执行过程以及为什么深度分页应该被禁止，最后再介绍使用 scroll 的方式遍历数据。&lt;/p&gt;
+&lt;h1 id=&quot;Elasticsearch-搜索内部执行原理&quot;&gt;&lt;a href=&quot;#Elasticsearch-搜索内部执行原理&quot; class=&quot;headerlink&quot; title=&quot;Elasticsearch 搜索内部执行原理&quot;&gt;&lt;/a&gt;Elasticsearch 搜索内部执行原理&lt;/h1&gt;&lt;p&gt;一个最基本的 Elasticsearch 查询语句是这样的：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;POST /my_index/my_type/_search&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;quot;query&amp;quot;: &amp;#123; &amp;quot;match_all&amp;quot;: &amp;#123;&amp;#125;&amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;quot;from&amp;quot;: 100,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;quot;size&amp;quot;:  10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;上面的查询表示从搜索结果中取第100条开始的10条数据。下面讲解搜索过程时也以这个请求为例。&lt;/p&gt;
+&lt;p&gt;那么，这个查询语句在 Elasticsearch 集群内部是怎么执行的呢？为了方便描述，我们假设该 index 只有primary shards，没有 replica shards。&lt;/p&gt;
+&lt;p&gt;在 Elasticsearch 中，搜索一般包括两个阶段，query 和 fetch 阶段，可以简单的理解，query 阶段确定要取哪些doc，fetch 阶段取出具体的 doc。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="elasticsearch" scheme="http://idiotsky.me/categories/elasticsearch/"/>
+    
+    
+      <category term="elasticsearch" scheme="http://idiotsky.me/tags/elasticsearch/"/>
+    
+  </entry>
   
   <entry>
     <title>用go小试websocket</title>
@@ -2346,40 +2445,6 @@
       <category term="java" scheme="http://idiotsky.me/tags/java/"/>
     
       <category term="kafka" scheme="http://idiotsky.me/tags/kafka/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openstack安装-neutron(一)</title>
-    <link href="http://idiotsky.me/2017/09/13/openstack-install-neutron-1/"/>
-    <id>http://idiotsky.me/2017/09/13/openstack-install-neutron-1/</id>
-    <published>2017-09-13T11:11:12.000Z</published>
-    <updated>2017-11-03T15:44:21.707Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>take the place….</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;take the place….&lt;/p&gt;
-&lt;/blockquote&gt;
-
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
-    
-      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
-    
-      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
-    
-      <category term="neutron" scheme="http://idiotsky.me/tags/neutron/"/>
     
   </entry>
   
