@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-01-11T12:05:41.563Z</updated>
+  <updated>2018-01-11T12:40:46.639Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/01/11/elasticsearch-scroll/"/>
     <id>http://idiotsky.me/2018/01/11/elasticsearch-scroll/</id>
     <published>2018-01-11T02:09:18.000Z</published>
-    <updated>2018-01-11T12:05:41.563Z</updated>
+    <updated>2018-01-11T12:40:46.639Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>之前面试被问到深分页的问题，现在mark一下吧</p>
@@ -30,7 +30,7 @@
 <p>上面的查询表示从搜索结果中取第100条开始的10条数据。下面讲解搜索过程时也以这个请求为例。</p>
 <p>那么，这个查询语句在 Elasticsearch 集群内部是怎么执行的呢？为了方便描述，我们假设该 index 只有primary shards，没有 replica shards。</p>
 <p>在 Elasticsearch 中，搜索一般包括两个阶段，query 和 fetch 阶段，可以简单的理解，query 阶段确定要取哪些doc，fetch 阶段取出具体的 doc。<br><a id="more"></a></p>
-<h2 id="Query-阶段"><a href="#Query-阶段" class="headerlink" title="Query 阶段"></a>Query 阶段</h2><p><a href="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_query.jpg" target="_blank" rel="external"><img src="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_query.jpg" alt=""></a></p>
+<h2 id="Query-阶段"><a href="#Query-阶段" class="headerlink" title="Query 阶段"></a>Query 阶段</h2><p><a href="http://idiotsky.me/images2/es-scroll-1.jpg"><img src="http://idiotsky.me/images2/es-scroll-1.jpg" alt=""></a></p>
 <p>如上图所示，描述了一次搜索请求的 query 阶段。</p>
 <ol>
 <li>Client 发送一次搜索请求，node1 接收到请求，然后，node1 创建一个大小为 from + size 的优先级队列用来存结果，我们管 node1 叫 coordinating node。</li>
@@ -39,7 +39,7 @@
 </ol>
 <p>在上面的例子中，coordinating node 拿到 (from + size) * 6 条数据，然后合并并排序后选择前面的 from + size 条数据存到优先级队列，以便 fetch 阶段使用。另外，各个分片返回给 coordinating node 的数据用于选出前 from + size 条数据，所以，只需要返回唯一标记 doc 的 _id 以及用于排序的 _score 即可，这样也可以保证返回的数据量足够小。</p>
 <p>coordinating node 计算好自己的优先级队列后，query 阶段结束，进入 fetch 阶段。</p>
-<h2 id="Fetch-阶段"><a href="#Fetch-阶段" class="headerlink" title="Fetch 阶段"></a>Fetch 阶段</h2><p>query 阶段知道了要取哪些数据，但是并没有取具体的数据，这就是 fetch 阶段要做的。<br><a href="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_fetch.jpg" target="_blank" rel="external"><img src="http://7sbmb0.com1.z0.glb.clouddn.com/2016_es_fetch.jpg" alt=""></a></p>
+<h2 id="Fetch-阶段"><a href="#Fetch-阶段" class="headerlink" title="Fetch 阶段"></a>Fetch 阶段</h2><p>query 阶段知道了要取哪些数据，但是并没有取具体的数据，这就是 fetch 阶段要做的。<br><a href="http://idiotsky.me/images2/es-scroll-2.jpg"><img src="http://idiotsky.me/images2/es-scroll-2.jpg" alt=""></a></p>
 <p>上图展示了 fetch 过程：</p>
 <ol>
 <li>coordinating node 发送 GET 请求到相关shards。</li>
