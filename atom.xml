@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-01-11T12:40:46.639Z</updated>
+  <updated>2018-01-16T15:58:35.938Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,85 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何实现一个malloc</title>
+    <link href="http://idiotsky.me/2018/01/16/c-malloc/"/>
+    <id>http://idiotsky.me/2018/01/16/c-malloc/</id>
+    <published>2018-01-16T15:46:42.000Z</published>
+    <updated>2018-01-16T15:58:35.938Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>这篇文章很好的总结了很多关于内存的知识，虽然它将的只是一个c函数，mark之👿</p>
+</blockquote>
+<p>任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个普通函数，而且实现malloc的<strong>基本</strong>思想并不复杂，任何一个对C和操作系统有些许了解的程序员都可以很容易理解。</p>
+<p>这篇文章通过实现一个简单的malloc来描述malloc背后的机制。当然与现有C的标准库实现（例如glibc）相比，我们实现的malloc并不是特别高效，但是这个实现比目前真实的malloc实现要简单很多，因此易于理解。重要的是，这个实现和真实实现在基本原理上是一致的。</p>
+<p>这篇文章将首先介绍一些所需的基本知识，如操作系统对进程的内存管理以及相关的系统调用，然后逐步实现一个简单的malloc。为了简单起见，这篇文章将只考虑x86_64体系结构，操作系统为Linux。</p>
+<a id="more"></a>
+<h1 id="什么是malloc"><a href="#什么是malloc" class="headerlink" title="什么是malloc"></a>什么是malloc</h1><p>在实现malloc之前，先要相对正式地对malloc做一个定义。</p>
+<p>根据标准C库函数的定义，malloc具有如下原型：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span>* <span class="title">malloc</span><span class="params">(<span class="keyword">size_t</span> size)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>这个函数要实现的功能是在系统中分配一段连续的可用的内存，具体有如下要求：</p>
+<ul>
+<li>malloc分配的内存大小<strong>至少</strong>为size参数所指定的字节数</li>
+<li>malloc的返回值是一个指针，指向一段可用内存的起始地址</li>
+<li>多次调用malloc所分配的地址不能有重叠部分，除非某次malloc所分配的地址被释放掉</li>
+<li>malloc应该尽快完成内存分配并返回（不能使用<a href="http://en.wikipedia.org/wiki/NP-hard" target="_blank" rel="external">NP-hard</a>的内存分配算法）</li>
+<li>实现malloc时应同时实现内存大小调整和内存释放函数（即realloc和free）</li>
+</ul>
+<p>对于malloc更多的说明可以在命令行中键入以下命令查看：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">man malloc</div></pre></td></tr></table></figure></p>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p>在实现malloc之前，需要先解释一些Linux系统内存相关的知识。</p>
+<h2 id="Linux内存管理"><a href="#Linux内存管理" class="headerlink" title="Linux内存管理"></a>Linux内存管理</h2><h3 id="虚拟内存地址与物理内存地址"><a href="#虚拟内存地址与物理内存地址" class="headerlink" title="虚拟内存地址与物理内存地址"></a>虚拟内存地址与物理内存地址</h3><p>为了简单，现代操作系统在处理内存地址时，普遍采用虚拟内存地址技术。即在汇编程序（或机器语言）层面，当涉及内存地址时，都是使用虚拟内存地址。采用这种技术时，每个进程仿佛自己独享一片$2{N}$</p>
+<p>from <a href="http://blog.codinglabs.org/articles/a-malloc-tutorial.html" target="_blank" rel="external">http://blog.codinglabs.org/articles/a-malloc-tutorial.html</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;这篇文章很好的总结了很多关于内存的知识，虽然它将的只是一个c函数，mark之👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个普通函数，而且实现malloc的&lt;strong&gt;基本&lt;/strong&gt;思想并不复杂，任何一个对C和操作系统有些许了解的程序员都可以很容易理解。&lt;/p&gt;
+&lt;p&gt;这篇文章通过实现一个简单的malloc来描述malloc背后的机制。当然与现有C的标准库实现（例如glibc）相比，我们实现的malloc并不是特别高效，但是这个实现比目前真实的malloc实现要简单很多，因此易于理解。重要的是，这个实现和真实实现在基本原理上是一致的。&lt;/p&gt;
+&lt;p&gt;这篇文章将首先介绍一些所需的基本知识，如操作系统对进程的内存管理以及相关的系统调用，然后逐步实现一个简单的malloc。为了简单起见，这篇文章将只考虑x86_64体系结构，操作系统为Linux。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="c" scheme="http://idiotsky.me/categories/c/"/>
+    
+    
+      <category term="c" scheme="http://idiotsky.me/tags/c/"/>
+    
+      <category term="malloc" scheme="http://idiotsky.me/tags/malloc/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入go接口</title>
+    <link href="http://idiotsky.me/2018/01/15/go-interface/"/>
+    <id>http://idiotsky.me/2018/01/15/go-interface/</id>
+    <published>2018-01-15T07:44:21.000Z</published>
+    <updated>2018-01-16T15:42:06.008Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能</p>
+</blockquote>
+<h1 id="接口是一个抽象类型"><a href="#接口是一个抽象类型" class="headerlink" title="接口是一个抽象类型"></a>接口是一个抽象类型</h1><h1 id="接口是一个方法集合"><a href="#接口是一个方法集合" class="headerlink" title="接口是一个方法集合"></a>接口是一个方法集合</h1><h1 id="接口实现多态"><a href="#接口实现多态" class="headerlink" title="接口实现多态"></a>接口实现多态</h1><h1 id="接口实现泛型"><a href="#接口实现泛型" class="headerlink" title="接口实现泛型"></a>接口实现泛型</h1><p><a href="https://zhuanlan.zhihu.com/p/27652856" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/27652856</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;接口是一个抽象类型&quot;&gt;&lt;a href=&quot;#接口是一个抽象类型&quot; class=&quot;headerlin
+    
+    </summary>
+    
+      <category term="go" scheme="http://idiotsky.me/categories/go/"/>
+    
+    
+      <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+  </entry>
   
   <entry>
     <title>使用scroll实现Elasticsearch数据遍历和深度分页</title>
@@ -2382,69 +2461,6 @@
       <category term="jvm" scheme="http://idiotsky.me/tags/jvm/"/>
     
       <category term="jit" scheme="http://idiotsky.me/tags/jit/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>openstack安装-neutron(二)</title>
-    <link href="http://idiotsky.me/2017/09/14/openstack-install-neutron-2/"/>
-    <id>http://idiotsky.me/2017/09/14/openstack-install-neutron-2/</id>
-    <published>2017-09-14T11:11:12.000Z</published>
-    <updated>2017-11-03T15:44:33.615Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>take the place….</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;take the place….&lt;/p&gt;
-&lt;/blockquote&gt;
-
-    
-    </summary>
-    
-      <category term="openstack" scheme="http://idiotsky.me/categories/openstack/"/>
-    
-    
-      <category term="openstack" scheme="http://idiotsky.me/tags/openstack/"/>
-    
-      <category term="ubuntu" scheme="http://idiotsky.me/tags/ubuntu/"/>
-    
-      <category term="kvm" scheme="http://idiotsky.me/tags/kvm/"/>
-    
-      <category term="neutron" scheme="http://idiotsky.me/tags/neutron/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>kafka学习（一）</title>
-    <link href="http://idiotsky.me/2017/09/13/kafka-design/"/>
-    <id>http://idiotsky.me/2017/09/13/kafka-design/</id>
-    <published>2017-09-13T13:38:51.000Z</published>
-    <updated>2017-09-14T13:22:33.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>to be continue</p>
-</blockquote>
-<a id="more"></a>]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;to be continue&lt;/p&gt;
-&lt;/blockquote&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.me/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.me/tags/java/"/>
-    
-      <category term="kafka" scheme="http://idiotsky.me/tags/kafka/"/>
     
   </entry>
   
