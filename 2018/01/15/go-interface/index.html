@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能  接口是一个抽象类型接口是一个方法集合接口实现多态接口实现泛型https://zhuanlan.zhihu.com/p/27652856">
+<meta name="description" content="接口是什么接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。12345type human interface&amp;#123;	walk()	run()	eat()&amp;#125; 上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样class woman implements human 声明woman实现了huma">
 <meta name="keywords" content="go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入go接口">
 <meta property="og:url" content="http://idiotsky.me/2018/01/15/go-interface/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能  接口是一个抽象类型接口是一个方法集合接口实现多态接口实现泛型https://zhuanlan.zhihu.com/p/27652856">
-<meta property="og:updated_time" content="2018-01-16T15:42:06.008Z">
+<meta property="og:description" content="接口是什么接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。12345type human interface&amp;#123;	walk()	run()	eat()&amp;#125; 上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样class woman implements human 声明woman实现了huma">
+<meta property="og:updated_time" content="2018-01-18T15:19:03.861Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入go接口">
-<meta name="twitter:description" content="接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能  接口是一个抽象类型接口是一个方法集合接口实现多态接口实现泛型https://zhuanlan.zhihu.com/p/27652856">
+<meta name="twitter:description" content="接口是什么接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。12345type human interface&amp;#123;	walk()	run()	eat()&amp;#125; 上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样class woman implements human 声明woman实现了huma">
 
 
 
@@ -432,10 +432,16 @@
       
 
       
-        <blockquote>
-<p>接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能</p>
+        <h1 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h1><p>接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> human <span class="keyword">interface</span>&#123;</div><div class="line">	walk()</div><div class="line">	run()</div><div class="line">	eat()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样<code>class woman implements human</code> 声明<code>woman</code>实现了<code>human</code>。但是go上使用了一种<code>duck typing</code>来定义具体类型。<br><a id="more"></a></p>
+<blockquote>
+<p>When I see a bird that walks like a duck and swins like a duck and quacks like a duck, I call that bird a duck. – James Whitcomb Riley</p>
 </blockquote>
-<h1 id="接口是一个抽象类型"><a href="#接口是一个抽象类型" class="headerlink" title="接口是一个抽象类型"></a>接口是一个抽象类型</h1><h1 id="接口是一个方法集合"><a href="#接口是一个方法集合" class="headerlink" title="接口是一个方法集合"></a>接口是一个方法集合</h1><h1 id="接口实现多态"><a href="#接口实现多态" class="headerlink" title="接口实现多态"></a>接口实现多态</h1><h1 id="接口实现泛型"><a href="#接口实现泛型" class="headerlink" title="接口实现泛型"></a>接口实现泛型</h1><p><a href="https://zhuanlan.zhihu.com/p/27652856" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/27652856</a></p>
+<p>结合维基百科的<a href="https://en.wikipedia.org/wiki/Duck_typing" target="_blank" rel="external">定义</a>，duck typing是面向对象编程语言的一种类型定义方法。我们判断一个对象是什么不是通过它的类型定义来判断，而是判断它是否满足某些特定的方法和属性定义。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> man <span class="keyword">struct</span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *man)</span> <span class="title">walk</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(<span class="string">"man walk"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *man)</span> <span class="title">run</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(<span class="string">"man run"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *man)</span> <span class="title">eat</span><span class="params">()</span></span>&#123;</div><div class="line">	fmt.Println(<span class="string">"man eat"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面定义的<code>man</code> 并没有声明它实现了哪些接口，但是，它确切是<code>human</code>的具体类型<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</div><div class="line">	<span class="keyword">var</span> h human=&amp;man&#123;&#125;</div><div class="line">	h.eat()</div><div class="line">	h.run()</div><div class="line">	h.walk()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">man eat</div><div class="line">man run</div><div class="line">man walk</div></pre></td></tr></table></figure></p>
+<p>上面结果说明了，不用声明某具体类型实现哪个接口，只要它有某接口的所有方法，那它就是某接口的具体类型。</p>
+<h1 id="接口实现多态"><a href="#接口实现多态" class="headerlink" title="接口实现多态"></a>接口实现多态</h1><h1 id="接口实现泛型"><a href="#接口实现泛型" class="headerlink" title="接口实现泛型"></a>接口实现泛型</h1><h1 id="深入源码"><a href="#深入源码" class="headerlink" title="深入源码"></a>深入源码</h1><p><a href="https://zhuanlan.zhihu.com/p/27652856" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/27652856</a></p>
 
       
     </div>
@@ -665,7 +671,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#接口是一个抽象类型"><span class="nav-number">1.</span> <span class="nav-text">接口是一个抽象类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口是一个方法集合"><span class="nav-number">2.</span> <span class="nav-text">接口是一个方法集合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口实现多态"><span class="nav-number">3.</span> <span class="nav-text">接口实现多态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口实现泛型"><span class="nav-number">4.</span> <span class="nav-text">接口实现泛型</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#接口是什么"><span class="nav-number">1.</span> <span class="nav-text">接口是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口实现多态"><span class="nav-number">2.</span> <span class="nav-text">接口实现多态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口实现泛型"><span class="nav-number">3.</span> <span class="nav-text">接口实现泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深入源码"><span class="nav-number">4.</span> <span class="nav-text">深入源码</span></a></li></ol></div>
             
 
           </div>

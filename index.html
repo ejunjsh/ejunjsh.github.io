@@ -586,13 +586,15 @@
 
       
         
-          
-            <blockquote>
-<p>接口在go里面是一个抽象类型，它是一系列抽象方法的集合，它的具体实现类型具有类似多态或者泛型的功能</p>
-</blockquote>
-<h1 id="接口是一个抽象类型"><a href="#接口是一个抽象类型" class="headerlink" title="接口是一个抽象类型"></a>接口是一个抽象类型</h1><h1 id="接口是一个方法集合"><a href="#接口是一个方法集合" class="headerlink" title="接口是一个方法集合"></a>接口是一个方法集合</h1><h1 id="接口实现多态"><a href="#接口实现多态" class="headerlink" title="接口实现多态"></a>接口实现多态</h1><h1 id="接口实现泛型"><a href="#接口实现泛型" class="headerlink" title="接口实现泛型"></a>接口实现泛型</h1><p><a href="https://zhuanlan.zhihu.com/p/27652856" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/27652856</a></p>
-
-          
+          <h1 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h1><p>接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> human <span class="keyword">interface</span>&#123;</div><div class="line">	walk()</div><div class="line">	run()</div><div class="line">	eat()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样<code>class woman implements human</code> 声明<code>woman</code>实现了<code>human</code>。但是go上使用了一种<code>duck typing</code>来定义具体类型。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/15/go-interface/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
