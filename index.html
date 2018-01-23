@@ -436,7 +436,7 @@
       
         
           <blockquote>
-<p>这篇文章很好的总结了很多关于内存的知识，虽然它将的只是一个c函数，mark之👿</p>
+<p>这篇文章很好的总结了很多关于内存的知识，虽然它讲的只是一个c函数，mark之👿</p>
 </blockquote>
 <p>任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个普通函数，而且实现malloc的<strong>基本</strong>思想并不复杂，任何一个对C和操作系统有些许了解的程序员都可以很容易理解。</p>
 <p>这篇文章通过实现一个简单的malloc来描述malloc背后的机制。当然与现有C的标准库实现（例如glibc）相比，我们实现的malloc并不是特别高效，但是这个实现比目前真实的malloc实现要简单很多，因此易于理解。重要的是，这个实现和真实实现在基本原理上是一致的。</p>
@@ -587,7 +587,7 @@
       
         
           <h1 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h1><p>接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> human <span class="keyword">interface</span>&#123;</div><div class="line">	walk()</div><div class="line">	run()</div><div class="line">	eat()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样<code>class woman implements human</code> 声明<code>woman</code>实现了<code>human</code>。但是go上使用了一种<code>duck typing</code>来定义具体类型。<br>
+<p>上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样<code>class man implements human</code> 声明<code>man</code>实现了<code>human</code>。但是go上使用了一种<code>duck typing</code>来定义具体类型。<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/01/15/go-interface/#more" rel="contents">
