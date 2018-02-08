@@ -139,7 +139,7 @@
 <meta property="og:image" content="http://idiotsky.me/images2/java-treemap-26.png">
 <meta property="og:image" content="http://idiotsky.me/images2/java-treemap-27.png">
 <meta property="og:image" content="http://idiotsky.me/images2/java-treemap-28.png">
-<meta property="og:updated_time" content="2018-02-08T06:26:02.269Z">
+<meta property="og:updated_time" content="2018-02-08T06:33:00.728Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java数据结构-TreeMap">
 <meta name="twitter:description" content="treemap的底层实现是红黑树，红黑树是出了名难懂的，所以这篇文章先说说相关的算法先，再慢慢回归到红黑树。还有此文章有点长。👿  二分查找二分查找又称折半查找，优点是比较次数少，查找速度快，平均性能好，占用系统内存较少，时间复杂度为lgN；其缺点是要求待查表为有序表，且插入删除困难。因此，折半查找方法适用于不经常变动而查找频繁的有序列表。首先，假设表中元素是按升序排列，将表中间位置记录的关键">
@@ -523,9 +523,6 @@
 <p>随着删除的进行，二叉树会变得不太平衡，下面是动画演示。<br><a href="http://idiotsky.me/images1/java-treemap-17.gif"><img src="http://idiotsky.me/images1/java-treemap-17.gif" alt=""></a></p>
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>二叉查找树的运行时间和树的形状有关，树的形状又和插入元素的顺序有关。在最好的情况下，节点完全平衡，从根节点到最底层叶子节点只有lgN个节点。在最差的情况下，根节点到最底层叶子节点会有N各节点。在一般情况下，树的形状和最好的情况接近。<br><a href="http://idiotsky.me/images1/java-treemap-18.png"><img src="http://idiotsky.me/images1/java-treemap-18.png" alt=""></a></p>
 <h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>它和二分查找一样，插入和查找的时间复杂度均为lgN，但是在最坏的情况下仍然会有N的时间复杂度。原因在于插入和删除元素的时候，树没有保持平衡。所以我们希望在最坏的情况也有较好的时间复杂度，那就要求树能够尽可能平衡，也就产生了2-3树和红黑树等平衡树。</p>
-<blockquote>
-<p>to be continue….</p>
-</blockquote>
 <h1 id="2-3树"><a href="#2-3树" class="headerlink" title="2-3树"></a>2-3树</h1><p>2-3树就是一种以平衡为目的而诞生的数据结构，为了保证在新节点插入后也能保证很好的平衡。</p>
 <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>和二叉查找树不一样，2-3树运行每个节点保存1个或者两个的值。对于普通的2节点(2-node)，他保存1个key和左右两个自己点。对应3节点(3-node)，保存两个Key，2-3查找树的定义如下：</p>
 <ol>
@@ -557,6 +554,9 @@
 <p>距离来说，对于1百万个节点的2-3树，树的高度为12-20之间，对于10亿个节点的2-3树，树的高度为18-30之间。</p>
 <p>对于插入来说，只需要常数次操作即可完成，因为他只需要修改与该节点关联的节点即可，不需要检查其他节点，所以效率和查找类似。</p>
 <h2 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h2><p>2-3查找树作为一种比较重要的概念和思路对于后文要讲到的红黑树非常重要。在2-3查找树基础上改进的红黑树不仅具有较高的效率，并且实现起来较2-3查找树简单。</p>
+<blockquote>
+<p>to be continue….</p>
+</blockquote>
 <p>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a></p>
 
       
