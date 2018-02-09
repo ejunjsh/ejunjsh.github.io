@@ -1886,7 +1886,54 @@
 <blockquote>
 <p>to be continue….</p>
 </blockquote>
-<p>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-2-3-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-2-3-Search-Tree.html</a><br><a href="https://algs4.cs.princeton.edu/33balanced/" target="_blank" rel="external">https://algs4.cs.princeton.edu/33balanced/</a></p>
+<h2 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h2><h3 id="查找-2"><a href="#查找-2" class="headerlink" title="查找"></a>查找</h3><p>红黑树是一种特殊的二叉查找树，他的查找方法也和二叉查找树一样，不需要做太多更改。</p>
+<p>但是由于红黑树比一般的二叉查找树具有更好的平衡，所以查找起来更快。</p>
+<h3 id="平衡化"><a href="#平衡化" class="headerlink" title="平衡化"></a>平衡化</h3><p>在介绍插入之前，我们先介绍如何让红黑树保持平衡，因为一般的，我们插入完成之后，需要对树进行平衡化操作以使其满足平衡化。</p>
+<h4 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h4><p>旋转又分为<strong>左旋</strong>和<strong>右旋</strong>。通常左旋操作用于将一个向右倾斜的红色链接旋转为向左链接。对比操作前后，可以看出，该操作实际上是将红线链接的两个节点中的一个较大的节点移动到根节点上。</p>
+<p>左旋的动画效果如下：<br><a href="http://idiotsky.me/images2/java-treemap-32.gif"><img src="http://idiotsky.me/images2/java-treemap-32.gif" alt=""></a></p>
+<p>右旋的动画效果如下：<br><a href="http://idiotsky.me/images2/java-treemap-33.gif"><img src="http://idiotsky.me/images2/java-treemap-33.gif" alt=""></a></p>
+<h4 id="颜色反转"><a href="#颜色反转" class="headerlink" title="颜色反转"></a>颜色反转</h4><p>当出现一个临时的4-node的时候，即一个节点的两个子节点均为红色，如下图：<br><a href="http://idiotsky.me/images2/java-treemap-34.png"><img src="http://idiotsky.me/images2/java-treemap-34.png" alt=""></a></p>
+<p><a href="http://idiotsky.me/images2/java-treemap-35.png"><img src="http://idiotsky.me/images2/java-treemap-35.png" alt=""></a></p>
+<p>这其实是个A，E，S 4-node连接，我们需要将E提升至父节点，操作方法很简单，就是把E对子节点的连线设置为黑色，自己的颜色设置为红色。</p>
+<p>有了以上基本操作方法之后，我们现在对应之前对<strong>2-3树的平衡操作来对红黑树进行平衡操作</strong>，这两者是可以一一对应的，如下图：<br><a href="http://idiotsky.me/images2/java-treemap-36.png"><img src="http://idiotsky.me/images2/java-treemap-36.png" alt=""></a></p>
+<p>现在来讨论各种情况：</p>
+<h4 id="Case-1-往一个2-node节点底部插入新的节点"><a href="#Case-1-往一个2-node节点底部插入新的节点" class="headerlink" title="Case 1 往一个2-node节点底部插入新的节点"></a>Case 1 往一个2-node节点底部插入新的节点</h4><p>先热身一下，首先我们看对于只有一个节点的红黑树，插入一个新的节点的操作：<br><a href="http://idiotsky.me/images2/java-treemap-37.png"><img src="http://idiotsky.me/images2/java-treemap-37.png" alt=""></a></p>
+<p>这种情况很简单，只需要：</p>
+<ul>
+<li>标准的二叉查找树遍历即可。<strong>新插入的节点标记为红色</strong></li>
+<li>如果新插入的节点在父节点的右子节点，则需要进行左旋操作</li>
+</ul>
+<h4 id="Case-2往一个3-node节点底部插入新的节点"><a href="#Case-2往一个3-node节点底部插入新的节点" class="headerlink" title="Case 2往一个3-node节点底部插入新的节点"></a>Case 2往一个3-node节点底部插入新的节点</h4><p>先热身一下，假设我们往一个只有两个节点的树中插入元素，如下图，根据待插入元素与已有元素的大小，又可以分为如下三种情况：<br><a href="http://idiotsky.me/images2/java-treemap-38.png"><img src="http://idiotsky.me/images2/java-treemap-38.png" alt=""></a></p>
+<ul>
+<li>如果带插入的节点比现有的两个节点都大，这种情况最简单。我们只需要将新插入的节点连接到右边子树上即可，然后将中间的元素提升至根节点。这样根节点的左右子树都是红色的节点了，我们只需要调研FlipColor方法即可。其他情况经过反转操作后都会和这一样。</li>
+<li>如果插入的节点比最小的元素要小，那么将新节点添加到最左侧，这样就有两个连接红色的节点了，这是对中间节点进行右旋操作，使中间结点成为根节点。这是就转换到了第一种情况，这时候只需要再进行一次FlipColor操作即可。</li>
+<li>如果插入的节点的值位于两个节点之间，那么将新节点插入到左侧节点的右子节点。因为该节点的右子节点是红色的，所以需要进行左旋操作。操作完之后就变成第二种情况了，再进行一次右旋，然后再调用FlipColor操作即可完成平衡操作。</li>
+</ul>
+<p>有了以上基础，我们现在来总结一下往一个3-node节点底部插入新的节点的操作步骤，下面是一个典型的操作过程图：<br><a href="http://idiotsky.me/images2/java-treemap-39.png"><img src="http://idiotsky.me/images2/java-treemap-39.png" alt=""></a></p>
+<p>可以看出，操作步骤如下：</p>
+<ol>
+<li>执行标准的二叉查找树插入操作，<strong>新插入的节点元素用红色标识</strong>。</li>
+<li>如果需要对4-node节点进行旋转操作</li>
+<li>如果需要，调用FlipColor方法将红色节点提升</li>
+<li>如果需要，<strong>左旋操作使红色节点左倾</strong>。</li>
+<li>在有些情况下，需要递归调用Case1 Case2，来进行递归操作。如下：</li>
+</ol>
+<p><a href="http://idiotsky.me/images2/java-treemap-40.png"><img src="http://idiotsky.me/images2/java-treemap-40.png" alt=""></a></p>
+<h3 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h3><p>对红黑树的分析其实就是对2-3查找树的分析，红黑树能够保证在最坏的情况下都能保证对数的时间复杂度，也就是树的高度。</p>
+<p>在分析之前，为了更加直观，下面是以升序，降序和随机构建一颗红黑树的动画：</p>
+<p>以升序插入构建红黑树：<br><a href="http://idiotsky.me/images2/java-treemap-41.gif"><img src="http://idiotsky.me/images2/java-treemap-41.gif" alt=""></a></p>
+<p>以降序插入构建红黑树：<br><a href="http://idiotsky.me/images2/java-treemap-42.gif"><img src="http://idiotsky.me/images2/java-treemap-42.gif" alt=""></a></p>
+<p>随机插入构建红黑树:<br><a href="http://idiotsky.me/images2/java-treemap-43.gif"><img src="http://idiotsky.me/images2/java-treemap-43.gif" alt=""></a></p>
+<p>从上面三张动画效果中，可以很直观的看出，红黑树在各种情况下都能维护良好的平衡性，从而能够保证最差情况下的查找，插入效率。</p>
+<p>下面来分析下红黑树的效率：</p>
+<h4 id="在最坏的情况下，红黑树的高度不超过2lgN"><a href="#在最坏的情况下，红黑树的高度不超过2lgN" class="headerlink" title="在最坏的情况下，红黑树的高度不超过2lgN"></a>在最坏的情况下，红黑树的高度不超过2lgN</h4><p>最坏的情况就是，红黑树中除了最左侧路径全部是由3-node节点组成，即<strong>红黑相间的路径长度是全黑路径长度的2倍</strong>。</p>
+<p>下图是一个典型的红黑树，从中可以看到最长的路径(红黑相间的路径)是最短路径的2倍：<br><a href="http://idiotsky.me/images2/java-treemap-44.png"><img src="http://idiotsky.me/images2/java-treemap-44.png" alt=""></a></p>
+<h4 id="红黑树的平均高度大约为lgN"><a href="#红黑树的平均高度大约为lgN" class="headerlink" title="红黑树的平均高度大约为lgN"></a>红黑树的平均高度大约为lgN</h4><p>由于红黑树是2-3查找树的一种实现，所以平均高度大约为lgN</p>
+<h2 id="小结-2"><a href="#小结-2" class="headerlink" title="小结"></a>小结</h2><p>前面讲解了自平衡查找树中的2-3查找树，这种数据结构在插入之后能够进行自平衡操作，从而保证了树的高度在一定的范围内进而能够保证最坏情况下的时间复杂度。但是2-3查找树实现起来比较困难，红黑树是2-3树的一种简单高效的实现，他巧妙地使用颜色标记来替代2-3树中比较难处理的3-node节点问题。红黑树是一种比较高效的平衡查找树，应用非常广泛，很多编程语言的内部实现都或多或少的采用了红黑树。</p>
+<h1 id="红黑树在java中的实现"><a href="#红黑树在java中的实现" class="headerlink" title="红黑树在java中的实现"></a>红黑树在java中的实现</h1><blockquote>
+<p>to be continue….</p>
+</blockquote>
+<p>参考<br><a href="http://www.jianshu.com/p/43b6b90555ca" target="_blank" rel="external">http://www.jianshu.com/p/43b6b90555ca</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Binary-Search-Tree.html</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-2-3-Search-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-2-3-Search-Tree.html</a><br><a href="https://algs4.cs.princeton.edu/33balanced/" target="_blank" rel="external">https://algs4.cs.princeton.edu/33balanced/</a><br><a href="http://www.cnblogs.com/yangecnu/p/Introduce-Red-Black-Tree.html" target="_blank" rel="external">http://www.cnblogs.com/yangecnu/p/Introduce-Red-Black-Tree.html</a></p>
 
           
         
