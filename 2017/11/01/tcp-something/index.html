@@ -126,7 +126,7 @@
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-14.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-15.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-16.jpg">
-<meta property="og:updated_time" content="2017-11-11T07:14:37.652Z">
+<meta property="og:updated_time" content="2018-02-26T11:25:41.824Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP 的那些事儿">
 <meta name="twitter:description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
@@ -492,6 +492,7 @@
 </blockquote>
 <p>其实，TIME_WAIT表示的是你主动断连接，所以，这就是所谓的“不作死不会死”。试想，如果让对端断连接，那么这个破问题就是对方的了，呵呵。另外，如果你的服务器是于HTTP服务器，那么设置一个<a href="http://en.wikipedia.org/wiki/HTTP_persistent_connection" target="_blank" rel="external">HTTP的KeepAlive</a>有多重要（浏览器会重用一个TCP连接来处理多个HTTP请求），然后让客户端去断链接（你要小心，浏览器可能会非常贪婪，他们不到万不得已不会主动断连接）。</p>
 <h1 id="数据传输中的Sequence-Number"><a href="#数据传输中的Sequence-Number" class="headerlink" title="数据传输中的Sequence Number"></a>数据传输中的Sequence Number</h1><p>下图是我从Wireshark中截了个我在访问coolshell.cn时的有数据传输的图给你看一下，SeqNum是怎么变的。（使用Wireshark菜单中的Statistics -&gt;Flow Graph… ）<br><a href="http://idiotsky.me/images1/tcp-something-6.jpg"><img src="http://idiotsky.me/images1/tcp-something-6.jpg" alt=""></a><br>你可以看到，<strong>SeqNum的增加是和传输的字节数相关的</strong>。上图中，三次握手后，来了两个Len:1440的包，而第二个包的SeqNum就成了1441。然后第一个ACK回的是1441，表示第一个1440收到了。</p>
+<p><em>SeqNum为当前成功发送的数据字节数，ACK为当前成功接收的数据字节数</em></p>
 <p><strong>注意</strong>：如果你用Wireshark抓包程序看3次握手，你会发现SeqNum总是为0，不是这样的，Wireshark为了显示更友好，使用了Relative SeqNum——相对序号，你只要在右键菜单中的protocol preference 中取消掉就可以看到“Absolute SeqNum”了</p>
 <h1 id="TCP重传机制"><a href="#TCP重传机制" class="headerlink" title="TCP重传机制"></a>TCP重传机制</h1><p>TCP要保证所有的数据包都可以到达，所以，必需要有重传机制。</p>
 <p>注意，接收端给发送端的Ack确认只会确认最后一个连续的包，比如，发送端发了1,2,3,4,5一共五份数据，接收端收到了1，2，于是回ack 3，然后收到了4（注意此时3没收到），此时的TCP会怎么办？我们要知道，因为正如前面所说的，SeqNum和Ack是以字节数为单位，所以ack的时候，不能跳着确认，只能确认最大的连续收到的包，不然，发送端就以为之前的都收到了。</p>
@@ -804,7 +805,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">124</span>
+                <span class="site-state-item-count">125</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -826,7 +827,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">104</span>
+                <span class="site-state-item-count">105</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
