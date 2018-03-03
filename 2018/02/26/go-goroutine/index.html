@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="go,goroutine," />
+  <meta name="keywords" content="go,goroutine,协程,并发,并行,多线程," />
 
 
 
@@ -103,22 +103,22 @@
 
 
 
-<meta name="description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执">
-<meta name="keywords" content="go,goroutine">
+<meta name="description" content="goroutine是go的核心，没有goroutine，go就没什么意思了，goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执行">
+<meta name="keywords" content="go,goroutine,协程,并发,并行,多线程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入go之goroutine">
 <meta property="og:url" content="http://idiotsky.me/2018/02/26/go-goroutine/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执">
+<meta property="og:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了，goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执行">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-4.jpg">
-<meta property="og:updated_time" content="2018-03-03T06:04:50.312Z">
+<meta property="og:updated_time" content="2018-03-03T06:10:33.217Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入go之goroutine">
-<meta name="twitter:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执">
+<meta name="twitter:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了，goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执行">
 <meta name="twitter:image" content="http://idiotsky.me/images2/go-goroutine.jpg">
 
 
@@ -439,7 +439,7 @@
 
       
         <blockquote>
-<p>goroutine是go的核心，没有goroutine，go就没什么意思了👿<br>goroutine离不开协程，线程和并发，所以下面会说说相关的内容。</p>
+<p>goroutine是go的核心，没有goroutine，go就没什么意思了，goroutine离不开协程，线程和并发，所以下面会说说相关的内容。</p>
 </blockquote>
 <h1 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h1><p>协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执行。函数在执行时，内核调度会保存当前线程的栈和上下文，这样的操作是会陷入内核，代价比较重。而协程的调度，不用陷入内核，用户线程只是保存栈和上下文，恢复之前的协程继续执行。</p>
 <p>还有种说法是说函数是协程的一种特例。因为函数只有在return语句才会返回，而协程可以在任何时刻返回。</p>
@@ -471,6 +471,12 @@
 </tbody>
 </table>
 <p>从上表可以发现，线程比协程更加耗费内存，而且还会造成陷入内核。但是协程的切换完全交给用户线程来调度，这个增加了实现的难度。还有就是协程的调度是由单个线程调度，如果处理器是多核的话，没办法充分利用。很庆幸的是，go已经实现了它自己的协程调度逻辑，并且充分利用多线程来调度goroutine。</p>
+<h1 id="要协程何用？"><a href="#要协程何用？" class="headerlink" title="要协程何用？"></a>要协程何用？</h1><p>协程能火也是有各种理由的。</p>
+<ul>
+<li>高并发处理。在用户空间切换上下文，不用陷入内核来做线程切换，避免不必要用户空间和内核空间的数据拷贝。</li>
+<li>用同步的方式去写异步代码，高效率且不容易出错</li>
+<li>非抢占式模型，能控制中断位置，不会发生由于强行切换线程导致的资源竞争。(极端情况下还是会执行抢占，防止协程长时间占用CPU，但这不是标准抢占式模型）</li>
+</ul>
 <h1 id="并发-VS-并行"><a href="#并发-VS-并行" class="headerlink" title="并发 VS 并行"></a>并发 VS 并行</h1><p>先上图：</p>
 <p><a href="http://idiotsky.me/images2/go-goroutine.jpg"><img src="http://idiotsky.me/images2/go-goroutine.jpg" alt=""></a></p>
 <ul>
@@ -484,7 +490,7 @@
 </blockquote>
 <p>如果并发交替的速度够快，就能达到“逻辑并行”的效果，对外看起来就和并行一样。</p>
 <p>并发执行多线程并不能真的充分利用CPU，达到减少单个线程执行时间的效果，这种交替挂起执行的方式却能够给用户带来每个线程都在”同时执行“的感觉，从而增强了服务的响应速度。就像上面例子中的病人B不用一直排队等待 A拍完X光并且医生确定A的病看完了 才能去看病。</p>
-<h1 id="goroutine-调度"><a href="#goroutine-调度" class="headerlink" title="goroutine 调度"></a>goroutine 调度</h1><p>goroutine的调度可以理解为多线程调度协程（goroutine）。所以这里调度会有三个角色：线程，调度器，协程。它们分别用M,P,G来表示吧。</p>
+<h1 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h1><p>goroutine的调度可以理解为多线程调度协程（goroutine）。所以这里调度会有三个角色：线程，调度器，协程。它们分别用M,P,G来表示吧。</p>
 <p><a href="http://idiotsky.me/images2/go-goroutine-1.jpg"><img src="http://idiotsky.me/images2/go-goroutine-1.jpg" alt=""></a></p>
 <ul>
 <li>M代表系统线程，也就是前面说的普通线程。</li>
@@ -506,6 +512,9 @@
 <p><strong>最后一个问题，关于抢占。如果一个P连续执行长时间，没有切换G，怎么处理？</strong></p>
 <p>虽然协程强调的是协作式调度，但是如果其中一个协程不够“合作”，不主动让出控制权，那么会导致这个线程一直被占用，降低并发度。Go中有相应的处理方案~</p>
 <p>首先，Go 在启动时会创建一个系统线程，这个系统线程会监控所有Goroutine的状态。它是通过遍历所有的P，如果P连续长时间执行，就会被抢占。表现为改P对应当前执行的G会被移除，放置到全局Goroutine队列中，然后P去捞新的G来执行。</p>
+<blockquote>
+<p>to be continue….</p>
+</blockquote>
 
       
     </div>
@@ -526,6 +535,14 @@
             <a href="/tags/go/" rel="tag"># go</a>
           
             <a href="/tags/goroutine/" rel="tag"># goroutine</a>
+          
+            <a href="/tags/协程/" rel="tag"># 协程</a>
+          
+            <a href="/tags/并发/" rel="tag"># 并发</a>
+          
+            <a href="/tags/并行/" rel="tag"># 并行</a>
+          
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
           
         </div>
       
@@ -645,7 +662,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">105</span>
+                <span class="site-state-item-count">108</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -733,7 +750,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程-vs-线程"><span class="nav-number">2.</span> <span class="nav-text">协程 vs 线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发-VS-并行"><span class="nav-number">3.</span> <span class="nav-text">并发 VS 并行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#goroutine-调度"><span class="nav-number">4.</span> <span class="nav-text">goroutine 调度</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程-vs-线程"><span class="nav-number">2.</span> <span class="nav-text">协程 vs 线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#要协程何用？"><span class="nav-number">3.</span> <span class="nav-text">要协程何用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发-VS-并行"><span class="nav-number">4.</span> <span class="nav-text">并发 VS 并行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调度"><span class="nav-number">5.</span> <span class="nav-text">调度</span></a></li></ol></div>
             
 
           </div>
