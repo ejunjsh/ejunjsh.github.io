@@ -111,7 +111,11 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine.jpg">
-<meta property="og:updated_time" content="2018-03-03T04:40:12.903Z">
+<meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-1.jpg">
+<meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-2.jpg">
+<meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-3.jpg">
+<meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-4.jpg">
+<meta property="og:updated_time" content="2018-03-03T06:04:50.312Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入go之goroutine">
 <meta name="twitter:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面运行的，线程的调度由内核触发，所以函数过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执">
@@ -468,7 +472,7 @@
 </table>
 <p>从上表可以发现，线程比协程更加耗费内存，而且还会造成陷入内核。但是协程的切换完全交给用户线程来调度，这个增加了实现的难度。还有就是协程的调度是由单个线程调度，如果处理器是多核的话，没办法充分利用。很庆幸的是，go已经实现了它自己的协程调度逻辑，并且充分利用多线程来调度goroutine。</p>
 <h1 id="并发-VS-并行"><a href="#并发-VS-并行" class="headerlink" title="并发 VS 并行"></a>并发 VS 并行</h1><p>先上图：</p>
-<p><a href="http://idiotsky.me/images1/go-goroutine.jpg"><img src="http://idiotsky.me/images2/go-goroutine.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.me/images2/go-goroutine.jpg"><img src="http://idiotsky.me/images2/go-goroutine.jpg" alt=""></a></p>
 <ul>
 <li>并发：处理器被划分为一个个时间分片，多个线程在处理器中交替执行，同一个时刻，只有一个线程被执行（通用地来说，支持并发是一种系统拥有交替执行多个任务的能力的表现）</li>
 <li>并行：多个线程，在多个处理器上同时执行。</li>
@@ -480,9 +484,28 @@
 </blockquote>
 <p>如果并发交替的速度够快，就能达到“逻辑并行”的效果，对外看起来就和并行一样。</p>
 <p>并发执行多线程并不能真的充分利用CPU，达到减少单个线程执行时间的效果，这种交替挂起执行的方式却能够给用户带来每个线程都在”同时执行“的感觉，从而增强了服务的响应速度。就像上面例子中的病人B不用一直排队等待 A拍完X光并且医生确定A的病看完了 才能去看病。</p>
-<h1 id="goroutine-调度"><a href="#goroutine-调度" class="headerlink" title="goroutine 调度"></a>goroutine 调度</h1><blockquote>
-<p>to be continue…</p>
-</blockquote>
+<h1 id="goroutine-调度"><a href="#goroutine-调度" class="headerlink" title="goroutine 调度"></a>goroutine 调度</h1><p>goroutine的调度可以理解为多线程调度协程（goroutine）。所以这里调度会有三个角色：线程，调度器，协程。它们分别用M,P,G来表示吧。</p>
+<p><a href="http://idiotsky.me/images2/go-goroutine-1.jpg"><img src="http://idiotsky.me/images2/go-goroutine-1.jpg" alt=""></a></p>
+<ul>
+<li>M代表系统线程，也就是前面说的普通线程。</li>
+<li>P代表调度器，我们可以把它当做单线程的本地调度器。（注：GOMAXPROCS环境变量代表的个数是P的个数，推荐值为CPU的核心数）</li>
+<li>G代表goroutine，它包含了SP、PC寄存器，以及其它调度相关信息。</li>
+</ul>
+<p><a href="http://idiotsky.me/images2/go-goroutine-2.jpg"><img src="http://idiotsky.me/images2/go-goroutine-2.jpg" alt=""></a></p>
+<p>上图是2个M（线程），每个线程对应一个处理器（P），M是必须关联P才能执行协程（G）的。图中蓝G代表的是运行中的goroutine，灰G表示的待执行的Goroutine，待执行的Goroutine存储在 P 中的一个局部队列中，此时P执行Goroutine会这个队列中取，不用加锁，提高了并发度。（Go1.0版本中，调度器取Goroutine是去一个全局队列中取，需要加锁，线程会经常阻塞等待锁）</p>
+<p><strong>如果其中一个G执行的时候，发生了系统调用，阻塞了怎么办？</strong></p>
+<p><a href="http://idiotsky.me/images2/go-goroutine-3.jpg"><img src="http://idiotsky.me/images2/go-goroutine-3.jpg" alt=""></a></p>
+<p>上图左边，G0中陷入系统调用，导致M0阻塞。</p>
+<p>此时，M0放弃了它的P，让M1去处理P中剩下的Goroutine。这里的M1可能是在线程缓存中取的，或者运行中生成的。</p>
+<p>当M0从系统调用中恢复，它会去别的M中找P来执行G0（比如说别的M阻塞丢出了P），如果没有P，那么它会把G0放到全局队列中，并且把它自己放到线程缓存中。</p>
+<p>全局队列保存了Goroutine，当各自P中的局部队列没有Goroutine时，P会到全局队列中取Goroutine。并且即使P中局部队列有Goroutine，也会周期性地从全局队列中取Goroutine，保持全局队列中的Goroutine能够尽快被执行。</p>
+<p>处理系统调用，也是go程序为什么跑在多线程上的一个原因，即使GOMAXPROCS是1，也可能会有多个工作线程。</p>
+<p><strong>当P局部队列不均衡时怎么处理？如果有多个P，其中一个P的局部队列Goroutine执行完了。</strong></p>
+<p><a href="http://idiotsky.me/images2/go-goroutine-4.jpg"><img src="http://idiotsky.me/images2/go-goroutine-4.jpg" alt=""></a></p>
+<p>如果一个P局部队列为空，那么它尝试从全局队列中取Goroutine，如全局队列为空，则会随机从其它P的局部队列中“挪”一半Goroutine到自己的队列当中， 以保证所有的M都是有任务执行的，间接做到负载均衡（可以参考go源码的findrunnable()函数 ）</p>
+<p><strong>最后一个问题，关于抢占。如果一个P连续执行长时间，没有切换G，怎么处理？</strong></p>
+<p>虽然协程强调的是协作式调度，但是如果其中一个协程不够“合作”，不主动让出控制权，那么会导致这个线程一直被占用，降低并发度。Go中有相应的处理方案~</p>
+<p>首先，Go 在启动时会创建一个系统线程，这个系统线程会监控所有Goroutine的状态。它是通过遍历所有的P，如果P连续长时间执行，就会被抢占。表现为改P对应当前执行的G会被移除，放置到全局Goroutine队列中，然后P去捞新的G来执行。</p>
 
       
     </div>
