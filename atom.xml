@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-03-06T14:36:34.738Z</updated>
+  <updated>2018-03-06T14:46:11.292Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/03/04/b-tree/"/>
     <id>http://idiotsky.me/2018/03/04/b-tree/</id>
     <published>2018-03-04T14:23:29.000Z</published>
-    <updated>2018-03-06T14:36:34.738Z</updated>
+    <updated>2018-03-06T14:46:11.292Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>转一个不错的文章，里面的干货还是很多的，包括局部性，硬盘等数据库以外的东西，Mark之👿</p>
@@ -159,7 +159,7 @@
 <p>此时再执行一遍按名字查询，比较分析一下与建索引前的结果：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SHOW</span> <span class="keyword">PROFILES</span>;</div><div class="line">+<span class="comment">----------+------------+---------------------------------------------------------------------------------+</span></div><div class="line">| Query_ID | Duration   | Query                                                                           |</div><div class="line">+<span class="comment">----------+------------+---------------------------------------------------------------------------------+</span></div><div class="line">|       87 | 0.11941700 | <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> employees.employees <span class="keyword">WHERE</span> first_name=<span class="string">'Eric'</span> <span class="keyword">AND</span> last_name=<span class="string">'Anido'</span> |</div><div class="line">|       <span class="number">90</span> | <span class="number">0.00092400</span> | <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> employees.employees <span class="keyword">WHERE</span> first_name=<span class="string">'Eric'</span> <span class="keyword">AND</span> last_name=<span class="string">'Anido'</span> |</div><div class="line">+<span class="comment">----------+------------+---------------------------------------------------------------------------------+</span></div></pre></td></tr></table></figure></p>
 <p>性能的提升是显著的，查询速度提高了120多倍。</p>
 <p>前缀索引兼顾索引大小和查询速度，但是其缺点是不能用于ORDER BY和GROUP BY操作，也不能用于Covering index（即当索引本身包含查询所需全部数据时，不再访问数据文件本身）。</p>
-<h3 id="InnoDB的主键选择与插入优化"><a href="#InnoDB的主键选择与插入优化" class="headerlink" title="InnoDB的主键选择与插入优化"></a>InnoDB的主键选择与插入优化</h3><p>在使用InnoDB存储引擎时，如果没有特别的需要，请永远使用一个与业务无关的自增字段作为主键。</p>
+<h2 id="InnoDB的主键选择与插入优化"><a href="#InnoDB的主键选择与插入优化" class="headerlink" title="InnoDB的主键选择与插入优化"></a>InnoDB的主键选择与插入优化</h2><p>在使用InnoDB存储引擎时，如果没有特别的需要，请永远使用一个与业务无关的自增字段作为主键。</p>
 <p>经常看到有帖子或博客讨论主键选择问题，有人建议使用业务无关的自增主键，有人觉得没有必要，完全可以使用如学号或身份证号这种唯一字段作为主键。不论支持哪种论点，大多数论据都是业务层面的。如果从数据库索引优化角度看，使用InnoDB引擎而不使用自增主键绝对是一个糟糕的主意。</p>
 <p>上文讨论过InnoDB的索引实现，InnoDB使用聚集索引，数据记录本身被存于主索引（一颗B+Tree）的叶子节点上。这就要求同一个叶子节点内（大小为一个内存页或磁盘页）的各条数据记录按主键顺序存放，因此每当有一条新的记录插入时，MySQL会根据其主键将其插入适当的节点和位置，如果页面达到装载因子（InnoDB默认为15/16），则开辟一个新的页（节点）。</p>
 <p>如果表使用自增主键，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如下图所示：</p>
