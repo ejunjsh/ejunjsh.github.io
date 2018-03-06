@@ -115,7 +115,7 @@
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/go-goroutine-4.jpg">
-<meta property="og:updated_time" content="2018-03-03T15:46:36.834Z">
+<meta property="og:updated_time" content="2018-03-04T02:59:12.654Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入go之goroutine">
 <meta name="twitter:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程(coroutine)其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面执行的，线程的调度由内核触发，所以函数在执行过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控">
@@ -474,7 +474,7 @@
 <h1 id="要协程何用？"><a href="#要协程何用？" class="headerlink" title="要协程何用？"></a>要协程何用？</h1><p>协程能火也是有各种理由的。</p>
 <ul>
 <li>高并发处理。在用户空间切换上下文，不用陷入内核来做线程切换，避免不必要用户空间和内核空间的数据拷贝。</li>
-<li>用同步的方式去写异步代码，高效率且不容易出错</li>
+<li>用同步的方式去写异步代码，高效率且不容易出错 (nodejs里面的asyn/await，就是这种)</li>
 <li>非抢占式模型，能控制中断位置，不会发生由于强行切换线程导致的资源竞争。(极端情况下还是会执行抢占，防止协程长时间占用CPU，但这不是标准抢占式模型）</li>
 </ul>
 <h1 id="并发-VS-并行"><a href="#并发-VS-并行" class="headerlink" title="并发 VS 并行"></a>并发 VS 并行</h1><p>先上图：</p>
@@ -565,6 +565,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/03/04/b-tree/" rel="prev" title="MySQL索引背后的数据结构及算法原理">
+                MySQL索引背后的数据结构及算法原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -640,7 +644,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">125</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -662,7 +666,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">108</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

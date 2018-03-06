@@ -343,6 +343,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/03/04/b-tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/03/04/b-tree/" itemprop="url">MySQL索引背后的数据结构及算法原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-04T22:23:29+08:00">
+                04 Mar 18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>转一个不错的文章，里面的干货还是很多的，包括局部性，硬盘等数据库以外的东西，Mark之👿</p>
+</blockquote>
+<h1 id="数据结构及算法基础"><a href="#数据结构及算法基础" class="headerlink" title="数据结构及算法基础"></a>数据结构及算法基础</h1><h2 id="索引的本质"><a href="#索引的本质" class="headerlink" title="索引的本质"></a>索引的本质</h2><p>MySQL官方对索引的定义为：索引（Index）是帮助MySQL高效获取数据的数据结构。提取句子主干，就可以得到索引的本质：索引是数据结构。</p>
+<p>我们知道，数据库查询是数据库的最主要功能之一。我们都希望查询数据的速度能尽可能的快，因此数据库系统的设计者会从查询算法的角度进行优化。最基本的查询算法当然是<a href="http://en.wikipedia.org/wiki/Linear_search" target="_blank" rel="external">顺序查找</a>（linear search），这种复杂度为O(n)的算法在数据量很大时显然是糟糕的，好在计算机科学的发展提供了很多更优秀的查找算法，例如<a href="http://en.wikipedia.org/wiki/Binary_search_algorithm" target="_blank" rel="external">二分查找</a>（binary search）、<a href="http://en.wikipedia.org/wiki/Binary_search_tree" target="_blank" rel="external">二叉树查找树</a>（binary tree search）等。如果稍微分析一下会发现，每种查找算法都只能应用于特定的数据结构之上，例如二分查找要求被检索数据有序，而二叉树查找只能应用于<a href="http://en.wikipedia.org/wiki/Binary_search_tree" target="_blank" rel="external">二叉查找树</a>上，但是数据本身的组织结构不可能完全满足各种数据结构（例如，理论上不可能同时将两列都按顺序进行组织），所以，在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。</p>
+<p>看一个例子：</p>
+<p><a href="http://idiotsky.me/images2/b-tree-1.png"><img src="http://idiotsky.me/images2/b-tree-1.png" alt=""></a></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/03/04/b-tree/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/02/26/go-goroutine/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1709,155 +1861,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/10/19/proxy-reverse-proxy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/19/proxy-reverse-proxy/" itemprop="url">正向代理和反向代理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-19T00:29:53+08:00">
-                19 Oct 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/proxy/" itemprop="url" rel="index">
-                    <span itemprop="name">proxy</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>一直用反向代理，可不知道为什么叫反向，还有何为正向代理</p>
-</blockquote>
-<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>我们常说的代理也就是只正向代理，正向代理的过程，它隐藏了真实的请求客户端，服务端不知道真实的客户端是谁，客户端请求的服务都被代理服务器代替来请求，某些科学上网工具扮演的就是典型的正向代理角色。用浏览器访问 <a href="http://www.google.com" target="_blank" rel="external">http://www.google.com</a> 时，被残忍的block，于是你可以在国外搭建一台代理服务器，让代理帮我去请求google.com，代理把请求返回的相应结果再返回给我。所以说，很多翻墙工具用到的服务器基本都是正向代理服务器<br><a href="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg"><img src="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg" alt=""></a><br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/10/19/proxy-reverse-proxy/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1908,7 +1911,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">125</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1930,7 +1933,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">108</span>
+                <span class="site-state-item-count">110</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
