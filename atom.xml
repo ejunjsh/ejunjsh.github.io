@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-03-06T14:46:11.292Z</updated>
+  <updated>2018-03-12T14:58:25.548Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -14,6 +14,65 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>epoll通俗理解</title>
+    <link href="http://idiotsky.me/2018/03/12/epoll-easy-understanding/"/>
+    <id>http://idiotsky.me/2018/03/12/epoll-easy-understanding/</id>
+    <published>2018-03-12T14:39:46.000Z</published>
+    <updated>2018-03-12T14:58:25.548Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>一个epoll通俗简单理解的文章，mark👿</p>
+</blockquote>
+<p>首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。<br>不管是文件，还是套接字，还是管道，我们都可以把他们看作流。<br>之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从socket读如数据，但是服务器还没有把数据传回来），这时候该怎么办？</p>
+<ul>
+<li>阻塞。阻塞是个什么概念呢？比如某个时候你在等快递，但是你不知道快递什么时候过来，而且你没有别的事可以干（或者说接下来的事要等快递来了才能做）；那么你可以去睡觉了，因为你知道快递把货送来时一定会给你打个电话（假定一定能叫醒你）。</li>
+<li>非阻塞忙轮询。接着上面等快递的例子，如果用忙轮询的方法，那么你需要知道快递员的手机号，然后每分钟给他挂个电话：“你到了没？”</li>
+</ul>
+<a id="more"></a>
+<p>很明显一般人不会用第二种做法，不仅显很无脑，浪费话费不说，还占用了快递员大量的时间。<br>大部分程序也不会用第二种做法，因为第一种方法经济而简单，经济是指消耗很少的CPU时间，如果线程睡眠了，就掉出了系统的调度队列，暂时不会去瓜分CPU宝贵的时间片了。</p>
+<p>为了了解阻塞是如何进行的，我们来讨论缓冲区，以及内核缓冲区，最终把I/O事件解释清楚。缓冲区的引入是为了减少频繁I/O操作而引起频繁的系统调用（你知道它很慢的），当你操作一个流时，更多的是以缓冲区为单位进行操作，这是相对于用户空间而言。对于内核来说，也需要缓冲区。<br>假设有一个管道，进程A为管道的写入方，Ｂ为管道的读出方。</p>
+<ol>
+<li>假设一开始内核缓冲区是空的，B作为读出方，被阻塞着。然后首先A往管道写入，这时候内核缓冲区由空的状态变到非空状态，内核就会产生一个事件告诉Ｂ该醒来了，这个事件姑且称之为“缓冲区非空”。</li>
+<li>但是“缓冲区非空”事件通知B后，B却还没有读出数据；且内核许诺了不能把写入管道中的数据丢掉这个时候，Ａ写入的数据会滞留在内核缓冲区中，如果内核也缓冲区满了，B仍未开始读数据，最终内核缓冲区会被填满，这个时候会产生一个I/O事件，告诉进程A，你该等等（阻塞）了，我们把这个事件定义为“缓冲区满”。</li>
+<li>假设后来Ｂ终于开始读数据了，于是内核的缓冲区空了出来，这时候内核会告诉A，内核缓冲区有空位了，你可以从长眠中醒来了，继续写数据了，我们把这个事件叫做“缓冲区非满”</li>
+<li>也许像3那样已经通知了A，但是A也没有数据写入了，而Ｂ继续读出数据，直到内核缓冲区空了。这个时候内核就告诉B，你需要阻塞了！，我们把这个时间定为“缓冲区空”。</li>
+</ol>
+<p>这四个情形涵盖了四个I/O事件，缓冲区满，缓冲区空，缓冲区非空，缓冲区非满（注都是说的内核缓冲区，且这四个术语都是我生造的，仅为解释其原理而造）。这四个I/O事件是进行阻塞同步的根本。（如果不能理解“同步”是什么概念，请学习操作系统的锁，信号量，条件变量等任务同步方面的相关知识）。</p>
+<p>然后我们来说说阻塞I/O的缺点。但是阻塞I/O模式下，一个线程只能处理一个流的I/O事件。如果想要同时处理多个流，要么多进程(fork)，要么多线程(pthread_create)，很不幸这两种方法效率都不高。<br>于是再来考虑非阻塞忙轮询的I/O方式，我们发现我们可以同时处理多个流了（把一个流从阻塞模式切换到非阻塞模式再此不予讨论）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">while true &#123;</div><div class="line">for i in stream[]; &#123;</div><div class="line">if i has data</div><div class="line">read until unavailable</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们只要不停的把所有流从头到尾问一遍，又从头开始。这样就可以处理多个流了，但这样的做法显然不好，因为如果所有的流都没有数据，那么只会白白浪费CPU。这里要补充一点，阻塞模式下，内核对于I/O事件的处理是阻塞或者唤醒，而非阻塞模式下则把I/O事件交给其他对象（后文介绍的select以及epoll）处理甚至直接忽略。</p>
+<p>为了避免CPU空转，可以引进了一个代理（一开始有一位叫做select的代理，后来又有一位叫做poll的代理，不过两者的本质是一样的）。这个代理比较厉害，可以同时观察许多流的I/O事件，在空闲的时候，会把当前线程阻塞掉，当有一个或多个流有I/O事件时，就从阻塞态中醒来，于是我们的程序就会轮询一遍所有的流（于是我们可以把“忙”字去掉了）。代码长这样:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">while true &#123;</div><div class="line">select(streams[])</div><div class="line">for i in streams[] &#123;</div><div class="line">if i has data</div><div class="line">read until unavailable</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>于是，如果没有I/O事件产生，我们的程序就会阻塞在select处。但是依然有个问题，我们从select那里仅仅知道了，有I/O事件发生了，但却并不知道是那几个流（可能有一个，多个，甚至全部），我们只能无差别轮询所有流，找出能读出数据，或者写入数据的流，对他们进行操作。<br>但是使用select，我们有O(n)的无差别轮询复杂度，同时处理的流越多，每一次无差别轮询时间就越长。再次</p>
+<p><strong>说了这么多，终于能好好解释epoll了</strong></p>
+<p>epoll可以理解为event poll，不同于忙轮询和无差别轮询，epoll之会把哪个流发生了怎样的I/O事件通知我们。此时我们对这些流的操作都是有意义的。（复杂度降低到了O(k)，k为产生I/O事件的流的个数)<br>在讨论epoll的实现细节之前，先把epoll的相关操作列出：<br>epoll_create 创建一个epoll对象，一般epollfd = epoll_create()<br>epoll_ctl （epoll_add/epoll_del的合体），往epoll对象中增加/删除某一个流的某一个事件<br>比如<br>epoll_ctl(epollfd, EPOLL_CTL_ADD, socket, EPOLLIN);//有缓冲区内有数据时epoll_wait返回<br>epoll_ctl(epollfd, EPOLL_CTL_ADD, socket, EPOLLOUT);//缓冲区可写入时epoll_wait返回<br>epoll_wait(epollfd,…)等待直到注册的事件发生<br>（注：当对一个非阻塞流的读写发生缓冲区满或缓冲区空，write/read会返回-1，并设置errno=EAGAIN。而epoll只关心缓冲区非满和缓冲区非空事件）。<br>一个epoll模式的代码大概的样子是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">while true &#123;</div><div class="line">active_stream[] = epoll_wait(epollfd)</div><div class="line">for i in active_stream[] &#123;</div><div class="line">read or write till unavailable</div><div class="line">&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>限于篇幅，我只说这么多，以揭示原理性的东西，至于epoll的使用细节，请参考man和google，实现细节，请参阅linux kernel source。</p>
+<p>ref <a href="https://www.zhihu.com/question/20122137" target="_blank" rel="external">https://www.zhihu.com/question/20122137</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;一个epoll通俗简单理解的文章，mark👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。&lt;br&gt;不管是文件，还是套接字，还是管道，我们都可以把他们看作流。&lt;br&gt;之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从socket读如数据，但是服务器还没有把数据传回来），这时候该怎么办？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;阻塞。阻塞是个什么概念呢？比如某个时候你在等快递，但是你不知道快递什么时候过来，而且你没有别的事可以干（或者说接下来的事要等快递来了才能做）；那么你可以去睡觉了，因为你知道快递把货送来时一定会给你打个电话（假定一定能叫醒你）。&lt;/li&gt;
+&lt;li&gt;非阻塞忙轮询。接着上面等快递的例子，如果用忙轮询的方法，那么你需要知道快递员的手机号，然后每分钟给他挂个电话：“你到了没？”&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="http://idiotsky.me/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
+    
+      <category term="nio" scheme="http://idiotsky.me/tags/nio/"/>
+    
+      <category term="epoll" scheme="http://idiotsky.me/tags/epoll/"/>
+    
+  </entry>
   
   <entry>
     <title>MySQL索引背后的数据结构及算法原理</title>
@@ -200,7 +259,7 @@
     <link href="http://idiotsky.me/2018/02/26/go-goroutine/"/>
     <id>http://idiotsky.me/2018/02/26/go-goroutine/</id>
     <published>2018-02-26T11:56:31.000Z</published>
-    <updated>2018-03-04T02:59:12.654Z</updated>
+    <updated>2018-03-07T14:54:37.664Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。</p>
@@ -279,6 +338,7 @@
 <blockquote>
 <p>to be continue….</p>
 </blockquote>
+<p>ref<br><a href="https://zhuanlan.zhihu.com/p/32497435" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/32497435</a></p>
 ]]></content>
     
     <summary type="html">
@@ -2640,114 +2700,6 @@
       <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
     
       <category term="跳跃表" scheme="http://idiotsky.me/tags/%E8%B7%B3%E8%B7%83%E8%A1%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>redis数据结构-字典</title>
-    <link href="http://idiotsky.me/2017/09/15/redis-dict/"/>
-    <id>http://idiotsky.me/2017/09/15/redis-dict/</id>
-    <published>2017-09-14T16:59:31.000Z</published>
-    <updated>2017-09-24T06:27:48.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一<br>Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。</p>
-</blockquote>
-<h1 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h1><p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 哈希表数组</span></div><div class="line">    dictEntry **table;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></div><div class="line">    <span class="comment">// 总是等于 size - 1</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</div><div class="line"></div><div class="line">    <span class="comment">// 该哈希表已有节点的数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</div><div class="line"></div><div class="line">&#125; dictht;</div></pre></td></tr></table></figure></p>
-<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。<br>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。<br>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。<br>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br><a href="http://idiotsky.me/images/redis-dict-1.png"><img src="http://idiotsky.me/images/redis-dict-1.png" alt=""></a><br><a id="more"></a></p>
-<h1 id="哈希表节点"><a href="#哈希表节点" class="headerlink" title="哈希表节点"></a>哈希表节点</h1><p>哈希表节点使用 dictEntry 结构表示， 每个 dictEntry 结构都保存着一个键值对：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 键</span></div><div class="line">    <span class="keyword">void</span> *key;</div><div class="line"></div><div class="line">    <span class="comment">// 值</span></div><div class="line">    <span class="keyword">union</span> &#123;</div><div class="line">        <span class="keyword">void</span> *val;</div><div class="line">        <span class="keyword">uint64_t</span> u64;</div><div class="line">        <span class="keyword">int64_t</span> s64;</div><div class="line">    &#125; v;</div><div class="line"></div><div class="line">    <span class="comment">// 指向下个哈希表节点，形成链表</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dictEntry</span> *<span class="title">next</span>;</span></div><div class="line"></div><div class="line">&#125; dictEntry;</div></pre></td></tr></table></figure></p>
-<p>key 属性保存着键值对中的键， 而 v 属性则保存着键值对中的值， 其中键值对的值可以是一个指针， 或者是一个 uint64_t 整数， 又或者是一个 int64_t 整数。<br>next 属性是指向另一个哈希表节点的指针， 这个指针可以将多个哈希值相同的键值对连接在一次， 以此来解决键冲突（collision）的问题。<br>举个例子， 图 4-2 就展示了如何通过 next 指针， 将两个索引值相同的键 k1 和 k0 连接在一起。<br><a href="http://idiotsky.me/images/redis-dict-2.png"><img src="http://idiotsky.me/images/redis-dict-2.png" alt=""></a></p>
-<h1 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dict</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 类型特定函数</span></div><div class="line">    dictType *type;</div><div class="line"></div><div class="line">    <span class="comment">// 私有数据</span></div><div class="line">    <span class="keyword">void</span> *privdata;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表</span></div><div class="line">    dictht ht[<span class="number">2</span>];</div><div class="line"></div><div class="line">    <span class="comment">// rehash 索引</span></div><div class="line">    <span class="comment">// 当 rehash 不在进行时，值为 -1</span></div><div class="line">    <span class="keyword">int</span> rehashidx; <span class="comment">/* rehashing not in progress if rehashidx == -1 */</span></div><div class="line"></div><div class="line">&#125; dict;</div></pre></td></tr></table></figure>
-<p>type 属性和 privdata 属性是针对不同类型的键值对， 为创建多态字典而设置的：</p>
-<ul>
-<li>type 属性是一个指向 dictType 结构的指针， 每个 dictType 结构保存了一簇用于操作特定类型键值对的函数， Redis 会为用途不同的字典设置不同的类型特定函数。</li>
-<li>而 privdata 属性则保存了需要传给那些类型特定函数的可选参数。</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictType</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 计算哈希值的函数</span></div><div class="line">    <span class="function"><span class="keyword">unsigned</span> <span class="title">int</span> <span class="params">(*hashFunction)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *key)</span></span>;</div><div class="line"></div><div class="line">    <span class="comment">// 复制键的函数</span></div><div class="line">    <span class="keyword">void</span> *(*keyDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key);</div><div class="line"></div><div class="line">    <span class="comment">// 复制值的函数</span></div><div class="line">    <span class="keyword">void</span> *(*valDup)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *obj);</div><div class="line"></div><div class="line">    <span class="comment">// 对比键的函数</span></div><div class="line">    <span class="keyword">int</span> (*keyCompare)(<span class="keyword">void</span> *privdata, <span class="keyword">const</span> <span class="keyword">void</span> *key1, <span class="keyword">const</span> <span class="keyword">void</span> *key2);</div><div class="line"></div><div class="line">    <span class="comment">// 销毁键的函数</span></div><div class="line">    <span class="keyword">void</span> (*keyDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *key);</div><div class="line"></div><div class="line">    <span class="comment">// 销毁值的函数</span></div><div class="line">    <span class="keyword">void</span> (*valDestructor)(<span class="keyword">void</span> *privdata, <span class="keyword">void</span> *obj);</div><div class="line"></div><div class="line">&#125; dictType;</div></pre></td></tr></table></figure>
-<p>ht 属性是一个包含两个项的数组， 数组中的每个项都是一个 dictht 哈希表， 一般情况下， 字典只使用 ht[0] 哈希表， ht[1] 哈希表只会在对 ht[0] 哈希表进行 rehash 时使用。</p>
-<p>除了 ht[1] 之外， 另一个和 rehash 有关的属性就是 rehashidx ： 它记录了 rehash 目前的进度， 如果目前没有在进行 rehash ， 那么它的值为 -1 。</p>
-<p>图 4-3 展示了一个普通状态下（没有进行 rehash）的字典：<br><a href="http://idiotsky.me/images/redis-dict-3.png"><img src="http://idiotsky.me/images/redis-dict-3.png" alt=""></a></p>
-<h1 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h1><p>当要将一个新的键值对添加到字典里面时， 程序需要先根据键值对的键计算出哈希值和索引值， 然后再根据索引值， 将包含新键值对的哈希表节点放到哈希表数组的指定索引上面。</p>
-<p>Redis 计算哈希值和索引值的方法如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//使用字典设置的哈希函数，计算键 key 的哈希值</span></div><div class="line">hash = dict-&gt;type-&gt;hashFunction(key);</div><div class="line"></div><div class="line"><span class="comment">//使用哈希表的 sizemask 属性和哈希值，计算出索引值</span></div><div class="line"><span class="comment">//根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span></div><div class="line">index = hash &amp; dict-&gt;ht[x].sizemask;</div></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images/redis-dict-4.png"><img src="http://idiotsky.me/images/redis-dict-4.png" alt=""></a><br>举个例子， 对于图 4-4 所示的字典来说， 如果我们要将一个键值对 k0 和 v0 添加到字典里面， 那么程序会先使用语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hash = dict-&gt;type-&gt;hashFunction(k0);</div></pre></td></tr></table></figure></p>
-<p>计算键 k0 的哈希值。<br>假设计算得出的哈希值为 8 ， 那么程序会继续使用语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">index = hash &amp; dict-&gt;ht[<span class="number">0</span>].sizemask = <span class="number">8</span> &amp; <span class="number">3</span> = <span class="number">0</span>;</div></pre></td></tr></table></figure></p>
-<p>计算出键 k0 的索引值 0 ， 这表示包含键值对 k0 和 v0 的节点应该被放置到哈希表数组的索引 0 位置上， 如图 4-5 所示。<br><a href="http://idiotsky.me/images/redis-dict-5.png"><img src="http://idiotsky.me/images/redis-dict-5.png" alt=""></a><br>当字典被用作数据库的底层实现， 或者哈希键的底层实现时， Redis 使用 MurmurHash2 算法来计算键的哈希值。</p>
-<p>MurmurHash 算法最初由 Austin Appleby 于 2008 年发明， 这种算法的优点在于， 即使输入的键是有规律的， 算法仍能给出一个很好的随机分布性，并且算法的计算速度也非常快。</p>
-<p>MurmurHash 算法目前的最新版本为 MurmurHash3 ， 而 Redis 使用的是 MurmurHash2 ， 关于 MurmurHash 算法的更多信息可以参考该算法的主页： <a href="http://code.google.com/p/smhasher/" target="_blank" rel="external">http://code.google.com/p/smhasher/</a> 。</p>
-<h1 id="解决键冲突"><a href="#解决键冲突" class="headerlink" title="解决键冲突"></a>解决键冲突</h1><p>当有两个或以上数量的键被分配到了哈希表数组的同一个索引上面时， 我们称这些键发生了冲突（collision）。</p>
-<p>Redis 的哈希表使用链地址法（separate chaining）来解决键冲突： 每个哈希表节点都有一个 next 指针， 多个哈希表节点可以用 next 指针构成一个单向链表， 被分配到同一个索引上的多个节点可以用这个单向链表连接起来， 这就解决了键冲突的问题。</p>
-<p>举个例子， 假设程序要将键值对 k2 和 v2 添加到图 4-6 所示的哈希表里面， 并且计算得出 k2 的索引值为 2 ， 那么键 k1 和 k2 将产生冲突， 而解决冲突的办法就是使用 next 指针将键 k2 和 k1 所在的节点连接起来， 如图 4-7 所示。<br><a href="http://idiotsky.me/images/redis-dict-6.png"><img src="http://idiotsky.me/images/redis-dict-6.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-7.png"><img src="http://idiotsky.me/images/redis-dict-7.png" alt=""></a><br>因为 dictEntry 节点组成的链表没有指向链表表尾的指针， 所以为了速度考虑， 程序总是将新节点添加到链表的表头位置（复杂度为 O(1)）， 排在其他已有节点的前面。</p>
-<h1 id="rehash"><a href="#rehash" class="headerlink" title="rehash"></a>rehash</h1><p>随着操作的不断执行， 哈希表保存的键值对会逐渐地增多或者减少， 为了让哈希表的负载因子（load factor）维持在一个合理的范围之内， 当哈希表保存的键值对数量太多或者太少时， 程序需要对哈希表的大小进行相应的扩展或者收缩。<br>扩展和收缩哈希表的工作可以通过执行 rehash （重新散列）操作来完成， Redis 对字典的哈希表执行 rehash 的步骤如下：</p>
-<ol>
-<li><p>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）：</p>
-<ul>
-<li>如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂）；</li>
-<li>如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n 。</li>
-</ul>
-</li>
-<li><p>将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引值， 然后将键值对放置到 ht[1] 哈希表的指定位置上。</p>
-</li>
-<li>当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ， 并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备。</li>
-</ol>
-<p>举个例子， 假设程序要对图 4-8 所示字典的 ht[0] 进行扩展操作， 那么程序将执行以下步骤：</p>
-<ol>
-<li>ht[0].used 当前的值为 4 ， 4 * 2 = 8 ， 而 8 （2^3）恰好是第一个大于等于 4 的 2 的 n 次方， 所以程序会将 ht[1] 哈希表的大小设置为 8 。 图 4-9 展示了 ht[1] 在分配空间之后， 字典的样子。</li>
-<li>将 ht[0] 包含的四个键值对都 rehash 到 ht[1] ， 如图 4-10 所示。</li>
-<li>释放 ht[0] ，并将 ht[1] 设置为 ht[0] ，然后为 ht[1] 分配一个空白哈希表，如图 4-11 所示。</li>
-</ol>
-<p>至此， 对哈希表的扩展操作执行完毕， 程序成功将哈希表的大小从原来的 4 改为了现在的 8 。<br><a href="http://idiotsky.me/images/redis-dict-8.png"><img src="http://idiotsky.me/images/redis-dict-8.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-9.png"><img src="http://idiotsky.me/images/redis-dict-9.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-10.png"><img src="http://idiotsky.me/images/redis-dict-10.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-11.png"><img src="http://idiotsky.me/images/redis-dict-11.png" alt=""></a></p>
-<h1 id="哈希表的扩展与收缩"><a href="#哈希表的扩展与收缩" class="headerlink" title="哈希表的扩展与收缩"></a>哈希表的扩展与收缩</h1><p>当以下条件中的任意一个被满足时， 程序会自动开始对哈希表执行扩展操作：</p>
-<ol>
-<li>服务器目前没有在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 1 ；</li>
-<li>服务器目前正在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 5 ；</li>
-</ol>
-<p>其中哈希表的负载因子可以通过公式：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 负载因子 = 哈希表已保存节点数量 / 哈希表大小</span></div><div class="line">load_factor = ht[<span class="number">0</span>].used / ht[<span class="number">0</span>].size</div></pre></td></tr></table></figure></p>
-<p>计算得出。</p>
-<p>比如说， 对于一个大小为 4 ， 包含 4 个键值对的哈希表来说， 这个哈希表的负载因子为：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">load_factor = <span class="number">4</span> / <span class="number">4</span> = <span class="number">1</span></div></pre></td></tr></table></figure></p>
-<p>又比如说， 对于一个大小为 512 ， 包含 256 个键值对的哈希表来说， 这个哈希表的负载因子为：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">load_factor = <span class="number">256</span> / <span class="number">512</span> = <span class="number">0.5</span></div></pre></td></tr></table></figure></p>
-<p>根据 BGSAVE 命令或 BGREWRITEAOF 命令是否正在执行， 服务器执行扩展操作所需的负载因子并不相同， 这是因为在执行 BGSAVE 命令或 BGREWRITEAOF 命令的过程中， Redis 需要创建当前服务器进程的子进程， 而大多数操作系统都采用写时复制（<a href="http://en.wikipedia.org/wiki/Copy-on-write" target="_blank" rel="external">copy-on-write</a>）技术来优化子进程的使用效率， 所以在子进程存在期间， 服务器会提高执行扩展操作所需的负载因子， 从而尽可能地避免在子进程存在期间进行哈希表扩展操作， 这可以避免不必要的内存写入操作， 最大限度地节约内存。</p>
-<p>另一方面， 当哈希表的负载因子小于 0.1 时， 程序自动开始对哈希表执行收缩操作。</p>
-<h1 id="渐进式-rehash"><a href="#渐进式-rehash" class="headerlink" title="渐进式 rehash"></a>渐进式 rehash</h1><p>上一节说过， 扩展或收缩哈希表需要将 ht[0] 里面的所有键值对 rehash 到 ht[1] 里面， 但是， 这个 rehash 动作并不是一次性、集中式地完成的， 而是分多次、渐进式地完成的。</p>
-<p>这样做的原因在于， 如果 ht[0] 里只保存着四个键值对， 那么服务器可以在瞬间就将这些键值对全部 rehash 到 ht[1] ； 但是， 如果哈希表里保存的键值对数量不是四个， 而是四百万、四千万甚至四亿个键值对， 那么要一次性将这些键值对全部 rehash 到 ht[1] 的话， 庞大的计算量可能会导致服务器在一段时间内停止服务。</p>
-<p>因此， 为了避免 rehash 对服务器性能造成影响， 服务器不是一次性将 ht[0] 里面的所有键值对全部 rehash 到 ht[1] ， 而是分多次、渐进式地将 ht[0] 里面的键值对慢慢地 rehash 到 ht[1] 。</p>
-<p>以下是哈希表渐进式 rehash 的详细步骤：</p>
-<ol>
-<li>为 ht[1] 分配空间， 让字典同时持有 ht[0] 和 ht[1] 两个哈希表。</li>
-<li>在字典中维持一个索引计数器变量 rehashidx ， 并将它的值设置为 0 ， 表示 rehash 工作正式开始。</li>
-<li>在 rehash 进行期间， 每次对字典执行添加、删除、查找或者更新操作时， 程序除了执行指定的操作以外， 还会顺带将 ht[0] 哈希表在 rehashidx 索引上的所有键值对 rehash 到 ht[1] ， 当 rehash 工作完成之后， 程序将 rehashidx 属性的值增一。</li>
-<li>随着字典操作的不断执行， 最终在某个时间点上， ht[0] 的所有键值对都会被 rehash 至 ht[1] ， 这时程序将 rehashidx 属性的值设为 -1 ， 表示 rehash 操作已完成。<br>渐进式 rehash 的好处在于它采取分而治之的方式， 将 rehash 键值对所需的计算工作均滩到对字典的每个添加、删除、查找和更新操作上， 从而避免了集中式 rehash 而带来的庞大计算量。</li>
-</ol>
-<p>图 4-12 至图 4-17 展示了一次完整的渐进式 rehash 过程， 注意观察在整个 rehash 过程中， 字典的 rehashidx 属性是如何变化的。<br><a href="http://idiotsky.me/images/redis-dict-12.png"><img src="http://idiotsky.me/images/redis-dict-12.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-13.png"><img src="http://idiotsky.me/images/redis-dict-13.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-14.png"><img src="http://idiotsky.me/images/redis-dict-14.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-15.png"><img src="http://idiotsky.me/images/redis-dict-15.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-16.png"><img src="http://idiotsky.me/images/redis-dict-16.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-dict-17.png"><img src="http://idiotsky.me/images/redis-dict-17.png" alt=""></a></p>
-<h1 id="渐进式-rehash-执行期间的哈希表操作"><a href="#渐进式-rehash-执行期间的哈希表操作" class="headerlink" title="渐进式 rehash 执行期间的哈希表操作"></a>渐进式 rehash 执行期间的哈希表操作</h1><p>因为在进行渐进式 rehash 的过程中， 字典会同时使用 ht[0] 和 ht[1] 两个哈希表， 所以在渐进式 rehash 进行期间， 字典的删除（delete）、查找（find）、更新（update）等操作会在两个哈希表上进行： 比如说， 要在字典里面查找一个键的话， 程序会先在 ht[0] 里面进行查找， 如果没找到的话， 就会继续到 ht[1] 里面进行查找， 诸如此类。</p>
-<p>另外， 在渐进式 rehash 执行期间， 新添加到字典的键值对一律会被保存到 ht[1] 里面， 而 ht[0] 则不再进行任何添加操作： 这一措施保证了 ht[0] 包含的键值对数量会只减不增， 并随着 rehash 操作的执行而最终变成空表。</p>
-<h1 id="重点回顾"><a href="#重点回顾" class="headerlink" title="重点回顾"></a>重点回顾</h1><ul>
-<li>字典被广泛用于实现 Redis 的各种功能， 其中包括数据库和哈希键。</li>
-<li>Redis 中的字典使用哈希表作为底层实现， 每个字典带有两个哈希表， 一个用于平时使用， 另一个仅在进行 rehash 时使用。</li>
-<li>当字典被用作数据库的底层实现， 或者哈希键的底层实现时， Redis 使用 MurmurHash2 算法来计算键的哈希值。</li>
-<li>哈希表使用链地址法来解决键冲突， 被分配到同一个索引上的多个键值对会连接成一个单向链表。</li>
-<li>在对哈希表进行扩展或者收缩操作时， 程序需要将现有哈希表包含的所有键值对 rehash 到新哈希表里面， 并且这个 rehash 过程并不是一次性地完成的， 而是渐进式地完成的。</li>
-</ul>
-<p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一&lt;br&gt;Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;哈希表&quot;&gt;&lt;a href=&quot;#哈希表&quot; class=&quot;headerlink&quot; title=&quot;哈希表&quot;&gt;&lt;/a&gt;哈希表&lt;/h1&gt;&lt;p&gt;Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;dictht&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表数组&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    dictEntry **table;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表大小&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; size;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 哈希表大小掩码，用于计算索引值&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 总是等于 size - 1&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; sizemask;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 该哈希表已有节点的数量&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; used;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125; dictht;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。&lt;br&gt;size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。&lt;br&gt;sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。&lt;br&gt;图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-dict-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-dict-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
-    
-    
-      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
-    
-      <category term="hashtable" scheme="http://idiotsky.me/tags/hashtable/"/>
     
   </entry>
   
