@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="linux,nio,epoll," />
+  <meta name="keywords" content="linux,nio,epoll,select," />
 
 
 
@@ -104,15 +104,15 @@
 
 
 <meta name="description" content="一个epoll通俗简单理解的文章，mark👿  首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。不管是文件，还是套接字，还是管道，我们都可以把他们看作流。之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从s">
-<meta name="keywords" content="linux,nio,epoll">
+<meta name="keywords" content="linux,nio,epoll,select">
 <meta property="og:type" content="article">
-<meta property="og:title" content="epoll通俗理解">
+<meta property="og:title" content="linux epoll通俗理解">
 <meta property="og:url" content="http://idiotsky.me/2018/03/12/epoll-easy-understanding/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="一个epoll通俗简单理解的文章，mark👿  首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。不管是文件，还是套接字，还是管道，我们都可以把他们看作流。之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从s">
-<meta property="og:updated_time" content="2018-03-12T14:58:25.548Z">
+<meta property="og:updated_time" content="2018-03-12T15:43:50.651Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="epoll通俗理解">
+<meta name="twitter:title" content="linux epoll通俗理解">
 <meta name="twitter:description" content="一个epoll通俗简单理解的文章，mark👿  首先我们来定义流的概念，一个流可以是文件，socket，pipe等等可以进行I/O操作的内核对象。不管是文件，还是套接字，还是管道，我们都可以把他们看作流。之后我们来讨论I/O的操作，通过read，我们可以从流中读入数据；通过write，我们可以往流写入数据。现在假定一个情形，我们需要从流中读数据，但是流中还没有数据，（典型的例子为，客户端要从s">
 
 
@@ -148,7 +148,7 @@
 
 
 
-  <title>epoll通俗理解 | IdiotSky</title>
+  <title>linux epoll通俗理解 | IdiotSky</title>
   
 
 
@@ -360,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">epoll通俗理解</h1>
+          <h1 class="post-title" itemprop="name headline">linux epoll通俗理解</h1>
         
 
         <div class="post-meta">
@@ -481,6 +481,8 @@
           
             <a href="/tags/epoll/" rel="tag"># epoll</a>
           
+            <a href="/tags/select/" rel="tag"># select</a>
+          
         </div>
       
 
@@ -501,6 +503,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/12/linux-non-blocking-io/" rel="prev" title="linux的阻塞和非阻塞socket的区别">
+                linux的阻塞和非阻塞socket的区别 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -568,7 +574,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">127</span>
+                <span class="site-state-item-count">128</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -590,7 +596,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">110</span>
+                <span class="site-state-item-count">111</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

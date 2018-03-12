@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-03-12T14:58:25.548Z</updated>
+  <updated>2018-03-12T15:57:12.054Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -16,11 +16,49 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>epoll通俗理解</title>
+    <title>linux的阻塞和非阻塞socket的区别</title>
+    <link href="http://idiotsky.me/2018/03/12/linux-non-blocking-io/"/>
+    <id>http://idiotsky.me/2018/03/12/linux-non-blocking-io/</id>
+    <published>2018-03-12T15:44:11.000Z</published>
+    <updated>2018-03-12T15:57:12.054Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>在上一篇文章有提到非阻塞socket，所以这篇文章就看看这个是什么东东👿</p>
+</blockquote>
+<h1 id="读操作"><a href="#读操作" class="headerlink" title="读操作"></a>读操作</h1><p>对于阻塞的socket,当socket的接收缓冲区中没有数据时，read调用会一直阻塞住，直到有数据到来才返<br>回。当socket缓冲区中的数据量小于期望读取的数据量时，返回实际读取的字节数。当sockt的接收缓冲<br>区中的数据大于期望读取的字节数时，读取期望读取的字节数，返回实际读取的长度。<br>对于非阻塞socket而言，socket的接收缓冲区中有没有数据，read调用都会立刻返回。接收缓冲区中有<br>数据时，与阻塞socket有数据的情况是一样的，如果接收缓冲区中没有数据，则返回错误号为<br>EWOULDBLOCK,<br>表示该操作本来应该阻塞的，但是由于本socket为非阻塞的socket，因此立刻返回，遇到这样的情况，可<br>以在下次接着去尝试读取。如果返回值是其它负值，则表明读取错误。<br>因此，非阻塞的rea调用一般这样写:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> ((nread = read(sock_fd, buffer, len)) &lt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line"> <span class="keyword">if</span> (errno == EWOULDBLOCK)</div><div class="line">  &#123;</div><div class="line">   <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">//表示没有读到数据</span></div><div class="line">  &#125;<span class="keyword">else</span> <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">//表示读取失败</span></div><div class="line">&#125;<span class="keyword">else</span> <span class="keyword">return</span> nread;读到数据长度</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h1 id="写操作"><a href="#写操作" class="headerlink" title="写操作"></a>写操作</h1><p>对于写操作write,原理是类似的，非阻塞socket在发送缓冲区没有空间时会直接返回错误号EWOULDBLOCK,<br>表示没有空间可写数据，如果错误号是别的值，则表明发送失败。如果发送缓冲区中有足够空间或者<br>是不足以拷贝所有待发送数据的空间的话，则拷贝前面N个能够容纳的数据，返回实际拷贝的字节数。<br>而对于阻塞Socket而言，如果发送缓冲区没有空间或者空间不足的话，write操作会直接阻塞住，如果有<br>足够空间，则拷贝所有数据到发送缓冲区，然后返回.<br>非阻塞的write操作一般写法是:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> write_pos = <span class="number">0</span>;</div><div class="line"><span class="keyword">int</span> nLeft = nLen;</div><div class="line"><span class="keyword">while</span> (nLeft &gt; <span class="number">0</span>)</div><div class="line">&#123;</div><div class="line"> <span class="keyword">int</span> nWrite = <span class="number">0</span>;</div><div class="line"> <span class="keyword">if</span> ((nWrite = write(sock_fd, data + write_pos, nLeft)) &lt;= <span class="number">0</span>)</div><div class="line"> &#123;</div><div class="line">  <span class="keyword">if</span> (errno == EWOULDBLOCK)</div><div class="line">                  &#123;</div><div class="line">   nWrite = <span class="number">0</span>;</div><div class="line">    &#125;<span class="keyword">else</span> <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">//表示写失败</span></div><div class="line"> &#125;</div><div class="line"> nLeft -= nWrite;</div><div class="line">        write_pos += nWrite;</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> nLen;</div></pre></td></tr></table></figure></p>
+<h1 id="建立连接"><a href="#建立连接" class="headerlink" title="建立连接"></a>建立连接</h1><p>阻塞方式下，connect首先发送SYN请求道服务器，当客户端收到服务器返回的SYN的确认时，则<br>connect<br>返回.否则的话一直阻塞.<br>非阻塞方式，connect将启用TCP协议的三次握手，但是connect函数并不等待连接建立好才返回，而是<br>立即返回。返回的错误码为EINPROGRESS,表示正在进行某种过程.</p>
+<h1 id="接收连接"><a href="#接收连接" class="headerlink" title="接收连接"></a>接收连接</h1><p>对于阻塞方式的倾听socket,accept在连接队列中没有建立好的连接时将阻塞，直到有可用的连接，才返<br>回。<br>非阻塞倾听socket,在有没有连接时都立即返回，没有连接时，返回的错误码为EWOULDBLOCK,表示本来应<br>该阻塞。</p>
+<h1 id="无阻塞的设置方法"><a href="#无阻塞的设置方法" class="headerlink" title="无阻塞的设置方法"></a>无阻塞的设置方法</h1><p>方法一:fcntl<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> flag;</div><div class="line"><span class="keyword">if</span> (flag = fcntl(fd, F_GETFL, <span class="number">0</span>) &lt;<span class="number">0</span>) perror(<span class="string">"get flag"</span>);</div><div class="line">flag |= O_NONBLOCK;</div><div class="line"><span class="keyword">if</span> (fcntl(fd, F_SETFL, flag) &lt; <span class="number">0</span>)</div><div class="line">perror(<span class="string">"set flag"</span>);</div></pre></td></tr></table></figure></p>
+<p>方法二:ioctl<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">int b_on = 1;</div><div class="line">ioctl (fd, FIONBIO, &amp;b_on);</div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>非阻塞socket可以通过不断轮询来实现类似io复用的效果，但是不建议，因为会造成cpu的空转（如果一直没数据读写的话）。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;在上一篇文章有提到非阻塞socket，所以这篇文章就看看这个是什么东东👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;读操作&quot;&gt;&lt;a href=&quot;#读操作&quot; class=&quot;headerlink&quot; title=&quot;读操作&quot;&gt;&lt;/a&gt;读操作&lt;/h1&gt;&lt;p&gt;对于阻塞的socket,当socket的接收缓冲区中没有数据时，read调用会一直阻塞住，直到有数据到来才返&lt;br&gt;回。当socket缓冲区中的数据量小于期望读取的数据量时，返回实际读取的字节数。当sockt的接收缓冲&lt;br&gt;区中的数据大于期望读取的字节数时，读取期望读取的字节数，返回实际读取的长度。&lt;br&gt;对于非阻塞socket而言，socket的接收缓冲区中有没有数据，read调用都会立刻返回。接收缓冲区中有&lt;br&gt;数据时，与阻塞socket有数据的情况是一样的，如果接收缓冲区中没有数据，则返回错误号为&lt;br&gt;EWOULDBLOCK,&lt;br&gt;表示该操作本来应该阻塞的，但是由于本socket为非阻塞的socket，因此立刻返回，遇到这样的情况，可&lt;br&gt;以在下次接着去尝试读取。如果返回值是其它负值，则表明读取错误。&lt;br&gt;因此，非阻塞的rea调用一般这样写:&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ((nread = read(sock_fd, buffer, len)) &amp;lt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (errno == EWOULDBLOCK)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;; &lt;span class=&quot;comment&quot;&gt;//表示没有读到数据&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;-1&lt;/span&gt;; &lt;span class=&quot;comment&quot;&gt;//表示读取失败&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; nread;读到数据长度&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="http://idiotsky.me/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
+    
+      <category term="nio" scheme="http://idiotsky.me/tags/nio/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux epoll通俗理解</title>
     <link href="http://idiotsky.me/2018/03/12/epoll-easy-understanding/"/>
     <id>http://idiotsky.me/2018/03/12/epoll-easy-understanding/</id>
     <published>2018-03-12T14:39:46.000Z</published>
-    <updated>2018-03-12T14:58:25.548Z</updated>
+    <updated>2018-03-12T15:43:50.651Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>一个epoll通俗简单理解的文章，mark👿</p>
@@ -71,6 +109,8 @@
       <category term="nio" scheme="http://idiotsky.me/tags/nio/"/>
     
       <category term="epoll" scheme="http://idiotsky.me/tags/epoll/"/>
+    
+      <category term="select" scheme="http://idiotsky.me/tags/select/"/>
     
   </entry>
   
@@ -2595,111 +2635,6 @@
       <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
     
       <category term="整数集合" scheme="http://idiotsky.me/tags/%E6%95%B4%E6%95%B0%E9%9B%86%E5%90%88/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>redis数据结构-跳跃表</title>
-    <link href="http://idiotsky.me/2017/09/16/redis-skiplist/"/>
-    <id>http://idiotsky.me/2017/09/16/redis-skiplist/</id>
-    <published>2017-09-16T04:07:30.000Z</published>
-    <updated>2017-09-24T06:26:26.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。</p>
-<p>跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。</p>
-<p>在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。<br>Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。</p>
-</blockquote>
-<h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。<br><a href="http://idiotsky.me/images/redis-skiplist.png"><img src="http://idiotsky.me/images/redis-skiplist.png" alt=""></a><br>图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：</p>
-<ul>
-<li>header ：指向跳跃表的表头节点。</li>
-<li>tail ：指向跳跃表的表尾节点。</li>
-<li>level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。</li>
-<li>length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。</li>
-</ul>
-<p>位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性：</p>
-<ul>
-<li>层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。</li>
-<li>后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。</li>
-<li>分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。</li>
-<li>成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。</li>
-</ul>
-<p>注意表头节点和其他节点的构造是一样的： 表头节点也有后退指针、分值和成员对象， 不过表头节点的这些属性都不会被用到， 所以图中省略了这些部分， 只显示了表头节点的各个层。</p>
-<p>本节接下来的内容将对 zskiplistNode 和 zskiplist 两个结构进行更详细的介绍。<br><a id="more"></a></p>
-<h1 id="跳跃表节点"><a href="#跳跃表节点" class="headerlink" title="跳跃表节点"></a>跳跃表节点</h1><p>跳跃表节点的实现由 redis.h/zskiplistNode 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 后退指针</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">backward</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 分值</span></div><div class="line">    <span class="keyword">double</span> score;</div><div class="line"></div><div class="line">    <span class="comment">// 成员对象</span></div><div class="line">    robj *obj;</div><div class="line"></div><div class="line">    <span class="comment">// 层</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistLevel</span> &#123;</span></div><div class="line"></div><div class="line">        <span class="comment">// 前进指针</span></div><div class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">forward</span>;</span></div><div class="line"></div><div class="line">        <span class="comment">// 跨度</span></div><div class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> span;</div><div class="line"></div><div class="line">    &#125; level[];</div><div class="line"></div><div class="line">&#125; zskiplistNode;</div></pre></td></tr></table></figure></p>
-<h2 id="层"><a href="#层" class="headerlink" title="层"></a>层</h2><p>跳跃表节点的 level 数组可以包含多个元素， 每个元素都包含一个指向其他节点的指针， 程序可以通过这些层来加快访问其他节点的速度， 一般来说， 层的数量越多， 访问其他节点的速度就越快。</p>
-<p>每次创建一个新跳跃表节点的时候， 程序都根据幂次定律 （power law，越大的数出现的概率越小） 随机生成一个介于 1 和 32 之间的值作为 level 数组的大小， 这个大小就是层的“高度”。</p>
-<p>图 5-2 分别展示了三个高度为 1 层、 3 层和 5 层的节点， 因为 C 语言的数组索引总是从 0 开始的， 所以节点的第一层是 level[0] ， 而第二层是 level[1] ， 以此类推。<br><a href="http://idiotsky.me/images/redis-skiplist-1.png"><img src="http://idiotsky.me/images/redis-skiplist-1.png" alt=""></a></p>
-<h2 id="前进指针"><a href="#前进指针" class="headerlink" title="前进指针"></a>前进指针</h2><p>每个层都有一个指向表尾方向的前进指针（level[i].forward 属性）， 用于从表头向表尾方向访问节点。</p>
-<p>图 5-3 用虚线表示出了程序从表头向表尾方向， 遍历跳跃表中所有节点的路径：</p>
-<ol>
-<li>迭代程序首先访问跳跃表的第一个节点（表头）， 然后从第四层的前进指针移动到表中的第二个节点。</li>
-<li>在第二个节点时， 程序沿着第二层的前进指针移动到表中的第三个节点。</li>
-<li>在第三个节点时， 程序同样沿着第二层的前进指针移动到表中的第四个节点。</li>
-<li>当程序再次沿着第四个节点的前进指针移动时， 它碰到一个 NULL ， 程序知道这时已经到达了跳跃表的表尾， 于是结束这次遍历。</li>
-</ol>
-<p><a href="http://idiotsky.me/images/redis-skiplist-2.png"><img src="http://idiotsky.me/images/redis-skiplist-2.png" alt=""></a></p>
-<h2 id="跨度"><a href="#跨度" class="headerlink" title="跨度"></a>跨度</h2><p>层的跨度（level[i].span 属性）用于记录两个节点之间的距离：</p>
-<ul>
-<li>两个节点之间的跨度越大， 它们相距得就越远。</li>
-<li>指向 NULL 的所有前进指针的跨度都为 0 ， 因为它们没有连向任何节点。</li>
-</ul>
-<p>初看上去， 很容易以为跨度和遍历操作有关， 但实际上并不是这样 —— 遍历操作只使用前进指针就可以完成了， 跨度实际上是用来计算排位（rank）的： 在查找某个节点的过程中， 将沿途访问过的所有层的跨度累计起来， 得到的结果就是目标节点在跳跃表中的排位。</p>
-<p>举个例子， 图 5-4 用虚线标记了在跳跃表中查找分值为 3.0 、 成员对象为 o3 的节点时， 沿途经历的层： 查找的过程只经过了一个层， 并且层的跨度为 3 ， 所以目标节点在跳跃表中的排位为 3 。<br><a href="http://idiotsky.me/images/redis-skiplist-3.png"><img src="http://idiotsky.me/images/redis-skiplist-3.png" alt=""></a><br>再举个例子， 图 5-5 用虚线标记了在跳跃表中查找分值为 2.0 、 成员对象为 o2 的节点时， 沿途经历的层： 在查找节点的过程中， 程序经过了两个跨度为 1 的节点， 因此可以计算出， 目标节点在跳跃表中的排位为 2 。<br><a href="http://idiotsky.me/images/redis-skiplist-4.png"><img src="http://idiotsky.me/images/redis-skiplist-4.png" alt=""></a></p>
-<h2 id="后退指针"><a href="#后退指针" class="headerlink" title="后退指针"></a>后退指针</h2><p>节点的后退指针（backward 属性）用于从表尾向表头方向访问节点： 跟可以一次跳过多个节点的前进指针不同， 因为每个节点只有一个后退指针， 所以每次只能后退至前一个节点。</p>
-<p>图 5-6 用虚线展示了如果从表尾向表头遍历跳跃表中的所有节点： 程序首先通过跳跃表的 tail 指针访问表尾节点， 然后通过后退指针访问倒数第二个节点， 之后再沿着后退指针访问倒数第三个节点， 再之后遇到指向 NULL 的后退指针， 于是访问结束。<br><a href="http://idiotsky.me/images/redis-skiplist-5.png"><img src="http://idiotsky.me/images/redis-skiplist-5.png" alt=""></a></p>
-<h2 id="分值和成员"><a href="#分值和成员" class="headerlink" title="分值和成员"></a>分值和成员</h2><p>节点的分值（score 属性）是一个 double 类型的浮点数， 跳跃表中的所有节点都按分值从小到大来排序。</p>
-<p>节点的成员对象（obj 属性）是一个指针， 它指向一个字符串对象， 而字符串对象则保存着一个 SDS 值。</p>
-<p>在同一个跳跃表中， 各个节点保存的成员对象必须是唯一的， 但是多个节点保存的分值却可以是相同的： 分值相同的节点将按照成员对象在字典序中的大小来进行排序， 成员对象较小的节点会排在前面（靠近表头的方向）， 而成员对象较大的节点则会排在后面（靠近表尾的方向）。</p>
-<p>举个例子， 在图 5-7 所示的跳跃表中， 三个跳跃表节点都保存了相同的分值 10086.0 ， 但保存成员对象 o1 的节点却排在保存成员对象 o2 和 o3 的节点之前， 而保存成员对象 o2 的节点又排在保存成员对象 o3 的节点之前， 由此可见， o1 、 o2 、 o3 三个成员对象在字典中的排序为 o1 &lt;= o2 &lt;= o3 。<br><a href="http://idiotsky.me/images/redis-skiplist-6.png"><img src="http://idiotsky.me/images/redis-skiplist-6.png" alt=""></a></p>
-<h1 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h1><p>虽然仅靠多个跳跃表节点就可以组成一个跳跃表， 如图 5-8 所示。<br><a href="http://idiotsky.me/images/redis-skiplist-7.png"><img src="http://idiotsky.me/images/redis-skiplist-7.png" alt=""></a><br>但通过使用一个 zskiplist 结构来持有这些节点， 程序可以更方便地对整个跳跃表进行处理， 比如快速访问跳跃表的表头节点和表尾节点， 又或者快速地获取跳跃表节点的数量（也即是跳跃表的长度）等信息， 如图 5-9 所示。<br><a href="http://idiotsky.me/images/redis-skiplist-8.png"><img src="http://idiotsky.me/images/redis-skiplist-8.png" alt=""></a><br>zskiplist 结构的定义如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zskiplist</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 表头节点和表尾节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">zskiplistNode</span> *<span class="title">header</span>, *<span class="title">tail</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 表中节点的数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> length;</div><div class="line"></div><div class="line">    <span class="comment">// 表中层数最大的节点的层数</span></div><div class="line">    <span class="keyword">int</span> level;</div><div class="line"></div><div class="line">&#125; zskiplist;</div></pre></td></tr></table></figure></p>
-<p>header 和 tail 指针分别指向跳跃表的表头和表尾节点， 通过这两个指针， 程序定位表头节点和表尾节点的复杂度为 O(1) 。</p>
-<p>通过使用 length 属性来记录节点的数量， 程序可以在 O(1) 复杂度内返回跳跃表的长度。</p>
-<p>level 属性则用于在 O(1) 复杂度内获取跳跃表中层高最大的那个节点的层数量， 注意表头节点的层高并不计算在内。</p>
-<h1 id="重点回顾"><a href="#重点回顾" class="headerlink" title="重点回顾"></a>重点回顾</h1><ul>
-<li>跳跃表是有序集合的底层实现之一， 除此之外它在 Redis 中没有其他应用。</li>
-<li>Redis 的跳跃表实现由 zskiplist 和 zskiplistNode 两个结构组成， 其中 zskiplist 用于保存跳跃表信息（比如表头节点、表尾节点、长度）， 而 zskiplistNode 则用于表示跳跃表节点。</li>
-<li>每个跳跃表节点的层高都是 1 至 32 之间的随机数。</li>
-<li>在同一个跳跃表中， 多个节点可以包含相同的分值， 但每个节点的成员对象必须是唯一的。</li>
-<li>跳跃表中的节点按照分值大小进行排序， 当分值相同时， 节点按照成员对象的大小进行排序。</li>
-</ul>
-<p>参考 <a href="http://redisbook.com" target="_blank" rel="external">http://redisbook.com</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。&lt;/p&gt;
-&lt;p&gt;跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。&lt;/p&gt;
-&lt;p&gt;在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。&lt;br&gt;Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;概括&quot;&gt;&lt;a href=&quot;#概括&quot; class=&quot;headerlink&quot; title=&quot;概括&quot;&gt;&lt;/a&gt;概括&lt;/h1&gt;&lt;p&gt;Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。&lt;br&gt;&lt;a href=&quot;http://idiotsky.me/images/redis-skiplist.png&quot;&gt;&lt;img src=&quot;http://idiotsky.me/images/redis-skiplist.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;header ：指向跳跃表的表头节点。&lt;/li&gt;
-&lt;li&gt;tail ：指向跳跃表的表尾节点。&lt;/li&gt;
-&lt;li&gt;level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。&lt;/li&gt;
-&lt;li&gt;length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。&lt;/li&gt;
-&lt;li&gt;后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。&lt;/li&gt;
-&lt;li&gt;分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。&lt;/li&gt;
-&lt;li&gt;成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;注意表头节点和其他节点的构造是一样的： 表头节点也有后退指针、分值和成员对象， 不过表头节点的这些属性都不会被用到， 所以图中省略了这些部分， 只显示了表头节点的各个层。&lt;/p&gt;
-&lt;p&gt;本节接下来的内容将对 zskiplistNode 和 zskiplist 两个结构进行更详细的介绍。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="redis" scheme="http://idiotsky.me/categories/redis/"/>
-    
-    
-      <category term="数据结构" scheme="http://idiotsky.me/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-      <category term="redis" scheme="http://idiotsky.me/tags/redis/"/>
-    
-      <category term="跳跃表" scheme="http://idiotsky.me/tags/%E8%B7%B3%E8%B7%83%E8%A1%A8/"/>
     
   </entry>
   
