@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-03-19T15:52:04.508Z</updated>
+  <updated>2018-03-20T14:12:23.548Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,10 +20,10 @@
     <link href="http://idiotsky.me/2018/03/19/unicode-utf8/"/>
     <id>http://idiotsky.me/2018/03/19/unicode-utf8/</id>
     <published>2018-03-19T15:43:59.000Z</published>
-    <updated>2018-03-19T15:52:04.508Z</updated>
+    <updated>2018-03-20T14:12:23.548Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
-<p>mark 一下 👿</p>
+<p>这个很简单的说明了unicode和UTF-8的关系 👿</p>
 </blockquote>
 <ul>
 <li>Unicode 是「字符集」</li>
@@ -42,12 +42,13 @@
 <p>根据上表中的编码规则，之前的「知」字的码位 U+77E5 属于第三行的范围：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">       7    7    E    5    </div><div class="line">    0111 0111 1110 0101    二进制的 77E5</div><div class="line">--------------------------</div><div class="line">    0111   011111   100101 二进制的 77E5</div><div class="line">1110XXXX 10XXXXXX 10XXXXXX 模版（上表第三行）</div><div class="line">11100111 10011111 10100101 代入模版</div><div class="line">   E   7    9   F    A   5</div></pre></td></tr></table></figure></p>
 <p>这就是将 U+77E5 按照 UTF-8 编码为字节序列 E79FA5 的过程。反之亦然。</p>
 <p>ref <a href="https://www.zhihu.com/question/23374078" target="_blank" rel="external">https://www.zhihu.com/question/23374078</a></p>
+<p>百度百科其实也说得不错了<br><a href="https://baike.baidu.com/item/Unicode/750500" target="_blank" rel="external">https://baike.baidu.com/item/Unicode/750500</a></p>
 ]]></content>
     
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;mark 一下 👿&lt;/p&gt;
+&lt;p&gt;这个很简单的说明了unicode和UTF-8的关系 👿&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;Unicode 是「字符集」&lt;/li&gt;
