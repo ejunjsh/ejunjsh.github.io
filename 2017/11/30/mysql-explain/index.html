@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mysql," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="👿 mark  Explain简介本文主要讲述如何通过 explain 命令获取 select 语句的执行计划，通过 explain 我们可以知道以下信息：表的读取顺序，数据读取操作的类型，哪些索引可以使用，哪些索引实际使用了，表之间的引用，每张表有多少行被优化器查询等信息。 下面是使用 explain 的例子：  在 select 语句之前增加 explain 关键字，MySQL 会在查询上">
+<meta name="keywords" content="mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql explain详解">
+<meta property="og:url" content="http://idiotsky.me/2017/11/30/mysql-explain/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="👿 mark  Explain简介本文主要讲述如何通过 explain 命令获取 select 语句的执行计划，通过 explain 我们可以知道以下信息：表的读取顺序，数据读取操作的类型，哪些索引可以使用，哪些索引实际使用了，表之间的引用，每张表有多少行被优化器查询等信息。 下面是使用 explain 的例子：  在 select 语句之前增加 explain 关键字，MySQL 会在查询上">
+<meta property="og:updated_time" content="2018-03-22T15:18:37.311Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql explain详解">
+<meta name="twitter:description" content="👿 mark  Explain简介本文主要讲述如何通过 explain 命令获取 select 语句的执行计划，通过 explain 我们可以知道以下信息：表的读取顺序，数据读取操作的类型，哪些索引可以使用，哪些索引实际使用了，表之间的引用，每张表有多少行被优化器查询等信息。 下面是使用 explain 的例子：  在 select 语句之前增加 explain 关键字，MySQL 会在查询上">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2017/11/30/mysql-explain/"/>
+
+
+
+
+
+  <title>mysql explain详解 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/30/mysql-explain/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mysql explain详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-30T23:00:28+08:00">
+                30 Nov 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>👿 mark</p>
+</blockquote>
+<h1 id="Explain简介"><a href="#Explain简介" class="headerlink" title="Explain简介"></a>Explain简介</h1><p>本文主要讲述如何通过 explain 命令获取 select 语句的执行计划，通过 explain 我们可以知道以下信息：表的读取顺序，数据读取操作的类型，哪些索引可以使用，哪些索引实际使用了，表之间的引用，每张表有多少行被优化器查询等信息。</p>
+<p>下面是使用 explain 的例子： </p>
+<p>在 select 语句之前增加 explain 关键字，MySQL 会在查询上设置一个标记，执行查询时，会返回执行计划的信息，而不是执行这条SQL（如果 from 中包含子查询，仍会执行该子查询，将结果放入临时表中）。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from actor;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div></pre></td></tr></table></figure></p>
+<p>在查询中的每个表会输出一行，如果有两个表通过 join 连接查询，那么会输出两行。表的意义相当广泛：可以是子查询、一个 union 结果等。<br><a id="more"></a></p>
+<h1 id="explain-中的列"><a href="#explain-中的列" class="headerlink" title="explain 中的列"></a>explain 中的列</h1><p>接下来我们将展示 explain 中每个列的信息。</p>
+<h2 id="id列"><a href="#id列" class="headerlink" title="id列"></a>id列</h2><p>id列的编号是 select 的序列号，有几个 select 就有几个id，并且id的顺序是按 select 出现的顺序增长的。MySQL将 select 查询分为简单查询和复杂查询。复杂查询分为三类：简单子查询、派生表（from语句中的子查询）、union 查询。</p>
+<h3 id="简单子查询"><a href="#简单子查询" class="headerlink" title="简单子查询"></a>简单子查询</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select (select 1 from actor limit 1) from film;</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">|  1 | PRIMARY     | film  | index | NULL          | idx_name | 32      | NULL |    1 | Using index |</div><div class="line">|  2 | SUBQUERY    | actor | index | NULL          | PRIMARY  | 4       | NULL |    2 | Using index |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div></pre></td></tr></table></figure>
+<h3 id="from子句中的子查询"><a href="#from子句中的子查询" class="headerlink" title="from子句中的子查询"></a>from子句中的子查询</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select id from (select id from film) as der;</div><div class="line">+----+-------------+------------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">| id | select_type | table      | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+------------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">|  1 | PRIMARY     | &lt;derived2&gt; | ALL   | NULL          | NULL     | NULL    | NULL |    2 | NULL        |</div><div class="line">|  2 | DERIVED     | film       | index | NULL          | idx_name | 32      | NULL |    1 | Using index |</div><div class="line">+----+-------------+------------+-------+---------------+----------+---------+------+------+-------------+</div></pre></td></tr></table></figure>
+<p>这个查询执行时有个临时表别名为<code>&lt;derived2&gt;</code>，外部 select 查询引用了这个临时表</p>
+<h3 id="union查询"><a href="#union查询" class="headerlink" title="union查询"></a>union查询</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select 1 union all select 1;</div><div class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">| id   | select_type  | table      | type | possible_keys | key  | key_len | ref  | rows | Extra           |</div><div class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">|  1   | PRIMARY      | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | No tables used  |</div><div class="line">|  2   | UNION        | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | No tables used  |</div><div class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL          | NULL | NULL    | NULL | NULL | Using temporary |</div><div class="line">+----+--------------+------------+------+---------------+------+---------+------+------+-------------------+</div></pre></td></tr></table></figure>
+<p>union结果总是放在一个匿名临时表中，临时表不在SQL总出现，因此它的id是NULL。</p>
+<h2 id="select-type列"><a href="#select-type列" class="headerlink" title="select_type列"></a>select_type列</h2><p>select_type 表示对应行是是简单还是复杂的查询，如果是复杂的查询，又是上述三种复杂查询中的哪一种。</p>
+<ul>
+<li><p>simple：简单查询。查询不包含子查询和union</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from film where id = 2;</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</div><div class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</div><div class="line">|  1 | SIMPLE      | film  | const | PRIMARY       | PRIMARY | 4       | const |    1 | NULL  |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</div></pre></td></tr></table></figure>
+</li>
+<li><p>primary：复杂查询中最外层的 select</p>
+</li>
+<li>subquery：包含在 select 中的子查询（不在 from 子句中）</li>
+<li><p>derived：包含在 from 子句中的子查询。MySQL会将结果存放在一个临时表中，也称为派生表（derived的英文含义）</p>
+<p>  用这个例子来了解 primary、subquery 和 derived 类型</p>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select (select 1 from actor where id = 1) from (select * from film where id = 1) der;</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</div><div class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref   | rows | Extra       |</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</div><div class="line">|  1 | PRIMARY     | &lt;derived3&gt; | system | NULL          | NULL    | NULL    | NULL  |    1 | NULL        |</div><div class="line">|  3 | DERIVED     | film       | const  | PRIMARY       | PRIMARY | 4       | const |    1 | NULL        |</div><div class="line">|  2 | SUBQUERY    | actor      | const  | PRIMARY       | PRIMARY | 4       | const |    1 | Using index |</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</div></pre></td></tr></table></figure>
+<ul>
+<li>union：在 union 中的第二个和随后的 select</li>
+<li><p>union result：从 union 临时表检索结果的 select</p>
+<p>  用这个例子来了解 union 和 union result 类型：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select 1 union all select 1;</div><div class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">| id   | select_type  | table      | type | possible_keys | key  | key_len | ref  | rows | Extra           |</div><div class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">|  1   | PRIMARY      | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | No tables used  |</div><div class="line">|  2   | UNION        | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL | No tables used  |</div><div class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL          | NULL | NULL    | NULL | NULL | Using temporary |</div><div class="line">+----+--------------+------------+------+---------------+------+---------+------+------+-------------------+</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="table列"><a href="#table列" class="headerlink" title="table列"></a>table列</h2><p>这一列表示 explain 的一行正在访问哪个表。</p>
+<p>当 from 子句中有子查询时，table列是 <code>&lt;derivenN&gt;</code> 格式，表示当前查询依赖 id=N 的查询，于是先执行 id=N 的查询。当有 union 时，UNION RESULT 的 table 列的值为 <code>&lt;union1,2&gt;</code>，1和2表示参与 union 的 select 行id。</p>
+<h2 id="type列"><a href="#type列" class="headerlink" title="type列"></a>type列</h2><p>这一列表示关联类型或访问类型，即MySQL决定如何查找表中的行。</p>
+<p>依次从最优到最差分别为：system &gt; const &gt; eq_ref &gt; ref &gt; fulltext &gt; ref_or_null &gt; index_merge &gt; unique_subquery &gt; index_subquery &gt; range &gt; index &gt; ALL</p>
+<p><strong>NULL</strong>：mysql能够在优化阶段分解查询语句，在执行阶段用不着再访问表或索引。例如：在索引列中选取最小值，可以单独查找索引来完成，不需要在执行时访问表<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select min(id) from film;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra                        |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</div><div class="line">|  1 | SIMPLE      | NULL  | NULL | NULL          | NULL | NULL    | NULL | NULL | Select tables optimized away |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</div></pre></td></tr></table></figure></p>
+<p><strong>const, system</strong>：mysql能对查询的某部分进行优化并将其转化成一个常量（可以看show warnings 的结果）。用于 primary key 或 unique key 的所有列与常数比较时，所以表最多有一个匹配行，读取1次，速度比较快。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain extended select * from (select * from film where id = 1) tmp;</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+----------+-------+</div><div class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref   | rows | filtered | Extra |</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+----------+-------+</div><div class="line">|  1 | PRIMARY     | &lt;derived2&gt; | system | NULL          | NULL    | NULL    | NULL  |    1 |   100.00 | NULL  |</div><div class="line">|  2 | DERIVED     | film       | const  | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |</div><div class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+----------+-------+</div><div class="line"></div><div class="line">mysql&gt; show warnings;</div><div class="line">+-------+------+---------------------------------------------------------------+</div><div class="line">| Level | Code | Message                                                       |</div><div class="line">+-------+------+---------------------------------------------------------------+</div><div class="line">| Note  | 1003 | /* select#1 */ select '1' AS `id`,'film1' AS `name` from dual |</div><div class="line">+-------+------+---------------------------------------------------------------+</div></pre></td></tr></table></figure></p>
+<p><strong>eq_ref</strong>：primary key 或 unique key 索引的所有部分被连接使用 ，最多只会返回一条符合条件的记录。这可能是在 const 之外最好的联接类型了，简单的 select 查询不会出现这种 type。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from film_actor left join film on film_actor.film_id = film.id;</div><div class="line">+----+-------------+------------+--------+---------------+-------------------+---------+-------------------------+------+-------------+</div><div class="line">| id | select_type | table      | type   | possible_keys | key               | key_len | ref                     | rows | Extra       |</div><div class="line">+----+-------------+------------+--------+---------------+-------------------+---------+-------------------------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film_actor | index  | NULL          | idx_film_actor_id | 8       | NULL                    |    3 | Using index |</div><div class="line">|  1 | SIMPLE      | film       | eq_ref | PRIMARY       | PRIMARY           | 4       | test.film_actor.film_id |    1 | NULL        |</div><div class="line">+----+-------------+------------+--------+---------------+-------------------+---------+-------------------------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>ref</strong>：相比 eq_ref，不使用唯一索引，而是使用普通索引或者唯一性索引的部分前缀，索引要和某个值相比较，可能会找到多个符合条件的行。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">1. 简单 select 查询，name是普通索引（非唯一索引）</div><div class="line">mysql&gt; explain select * from film where name = "film1";</div><div class="line">+----+-------------+-------+------+---------------+----------+---------+-------+------+--------------------------+</div><div class="line">| id | select_type | table | type | possible_keys | key      | key_len | ref   | rows | Extra                    |</div><div class="line">+----+-------------+-------+------+---------------+----------+---------+-------+------+--------------------------+</div><div class="line">|  1 | SIMPLE      | film  | ref  | idx_name      | idx_name | 33      | const |    1 | Using where; Using index |</div><div class="line">+----+-------------+-------+------+---------------+----------+---------+-------+------+--------------------------+</div><div class="line"></div><div class="line">2.关联表查询，idx_film_actor_id是film_id和actor_id的联合索引，这里使用到了film_actor的左边前缀film_id部分。</div><div class="line">mysql&gt; explain select * from film left join film_actor on film.id = film_actor.film_id;</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+-------------+</div><div class="line">| id | select_type | table      | type  | possible_keys     | key               | key_len | ref          | rows | Extra       |</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film       | index | NULL              | idx_name          | 33      | NULL         |    3 | Using index |</div><div class="line">|  1 | SIMPLE      | film_actor | ref   | idx_film_actor_id | idx_film_actor_id | 4       | test.film.id |    1 | Using index |</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>ref_or_null</strong>：类似ref，但是可以搜索值为NULL的行。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from film where name = "film1" or name is null;</div><div class="line">+----+-------------+-------+-------------+---------------+----------+---------+-------+------+--------------------------+</div><div class="line">| id | select_type | table | type        | possible_keys | key      | key_len | ref   | rows | Extra                    |</div><div class="line">+----+-------------+-------+-------------+---------------+----------+---------+-------+------+--------------------------+</div><div class="line">|  1 | SIMPLE      | film  | ref_or_null | idx_name      | idx_name | 33      | const |    2 | Using where; Using index |</div><div class="line">+----+-------------+-------+-------------+---------------+----------+---------+-------+------+--------------------------+</div></pre></td></tr></table></figure></p>
+<p><strong>index_merge</strong>：表示使用了索引合并的优化方法。 例如下表：id是主键，tenant_id是普通索引。or 的时候没有用 primary key，而是使用了 primary key(id) 和 tenant_id 索引</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from role where id = 11011 or tenant_id = 8888;</div><div class="line">+----+-------------+-------+-------------+-----------------------+-----------------------+---------+------+------+-------------------------------------------------+</div><div class="line">| id | select_type | table | type        | possible_keys         | key                   | key_len | ref  | rows | Extra                                           |</div><div class="line">+----+-------------+-------+-------------+-----------------------+-----------------------+---------+------+------+-------------------------------------------------+</div><div class="line">|  1 | SIMPLE      | role  | index_merge | PRIMARY,idx_tenant_id | PRIMARY,idx_tenant_id | 4,4     | NULL |  134 | Using union(PRIMARY,idx_tenant_id); Using where |</div><div class="line">+----+-------------+-------+-------------+-----------------------+-----------------------+---------+------+------+-------------------------------------------------+</div></pre></td></tr></table></figure>
+<p><strong>range</strong>：范围扫描通常出现在 in(), between ,&gt; ,&lt;, &gt;= 等操作中。使用一个索引来检索给定范围的行。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from actor where id &gt; 1;</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div><div class="line">|  1 | SIMPLE      | actor | range | PRIMARY       | PRIMARY | 4       | NULL |    2 | Using where |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>index</strong>：和ALL一样，不同就是mysql只需扫描索引树，这通常比ALL快一些。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select count(*) from film;</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film  | index | NULL          | idx_name | 33      | NULL |    3 | Using index |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>ALL</strong>：即全表扫描，意味着mysql需要从头到尾去查找所需要的行。通常情况下这需要增加索引来进行优化了<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from actor;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div></pre></td></tr></table></figure></p>
+<h2 id="possible-keys列"><a href="#possible-keys列" class="headerlink" title="possible_keys列"></a>possible_keys列</h2><p>这一列显示查询可能使用哪些索引来查找。<br>explain 时可能出现 possible_keys 有列，而 key 显示 NULL 的情况，这种情况是因为表中数据不多，mysql认为索引对此查询帮助不大，选择了全表查询。<br>如果该列是NULL，则没有相关的索引。在这种情况下，可以通过检查 where 子句看是否可以创造一个适当的索引来提高查询性能，然后用 explain 查看效果。</p>
+<h2 id="key列"><a href="#key列" class="headerlink" title="key列"></a>key列</h2><p>这一列显示mysql实际采用哪个索引来优化对该表的访问。<br>如果没有使用索引，则该列是 NULL。如果想强制mysql使用或忽视possible_keys列中的索引，在查询中使用 force index、ignore index。</p>
+<h2 id="key-len列"><a href="#key-len列" class="headerlink" title="key_len列"></a>key_len列</h2><p>这一列显示了mysql在索引里使用的字节数，通过这个值可以算出具体使用了索引中的哪些列。<br>举例来说，film_actor的联合索引 idx_film_actor_id 由 film_id 和 actor_id 两个int列组成，并且每个int是4字节。通过结果中的key_len=4可推断出查询使用了第一个列：film_id列来执行索引查找。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from film_actor where film_id = 2;</div><div class="line">+----+-------------+------------+------+-------------------+-------------------+---------+-------+------+-------------+</div><div class="line">| id | select_type | table      | type | possible_keys     | key               | key_len | ref   | rows | Extra       |</div><div class="line">+----+-------------+------------+------+-------------------+-------------------+---------+-------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film_actor | ref  | idx_film_actor_id | idx_film_actor_id | 4       | const |    1 | Using index |</div><div class="line">+----+-------------+------------+------+-------------------+-------------------+---------+-------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p>key_len计算规则如下：</p>
+<ul>
+<li>符串<ul>
+<li>char(n)：n字节长度</li>
+<li>varchar(n)：2字节存储字符串长度，如果是utf-8，则长度 3n + 2</li>
+</ul>
+</li>
+<li>数值类型<ul>
+<li>tinyint：1字节</li>
+<li>smallint：2字节</li>
+<li>int：4字节</li>
+<li>bigint：8字节　　</li>
+</ul>
+</li>
+<li>时间类型　<ul>
+<li>date：3字节</li>
+<li>timestamp：4字节</li>
+<li>datetime：8字节</li>
+</ul>
+</li>
+<li>如果字段允许为 NULL，需要1字节记录是否为 NULL</li>
+</ul>
+<p>索引最大长度是768字节，当字符串过长时，mysql会做一个类似左前缀索引的处理，将前半部分的字符提取出来做索引。</p>
+<h2 id="ref列"><a href="#ref列" class="headerlink" title="ref列"></a>ref列</h2><p>这一列显示了在key列记录的索引中，表查找值所用到的列或常量，常见的有：const（常量），func，NULL，字段名（例：film.id）</p>
+<h2 id="rows列"><a href="#rows列" class="headerlink" title="rows列"></a>rows列</h2><p>这一列是mysql估计要读取并检测的行数，注意这个不是结果集里的行数。</p>
+<h2 id="Extra列"><a href="#Extra列" class="headerlink" title="Extra列"></a>Extra列</h2><p>这一列展示的是额外信息。常见的重要值如下：<br><strong>distinct</strong>: 一旦mysql找到了与行相联合匹配的行，就不再搜索了<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select distinct name from film left join film_actor on film.id = film_actor.film_id;</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+------------------------------+</div><div class="line">| id | select_type | table      | type  | possible_keys     | key               | key_len | ref          | rows | Extra                        |</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+------------------------------+</div><div class="line">|  1 | SIMPLE      | film       | index | idx_name          | idx_name          | 33      | NULL         |    3 | Using index; Using temporary |</div><div class="line">|  1 | SIMPLE      | film_actor | ref   | idx_film_actor_id | idx_film_actor_id | 4       | test.film.id |    1 | Using index; Distinct        |</div><div class="line">+----+-------------+------------+-------+-------------------+-------------------+---------+--------------+------+------------------------------+</div></pre></td></tr></table></figure></p>
+<p><strong>Using index</strong>：这发生在对表的请求列都是同一索引的部分的时候，返回的列数据只使用了索引中的信息，而没有再去访问表中的行记录。是性能高的表现。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select id from film order by id;</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film  | index | NULL          | PRIMARY | 4       | NULL |    3 | Using index |</div><div class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>Using where</strong>：mysql服务器将在存储引擎检索行后再进行过滤。就是先读取整行数据，再按 where 条件进行检查，符合就留下，不符合就丢弃。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from film where id &gt; 1;</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+--------------------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key      | key_len | ref  | rows | Extra                    |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+--------------------------+</div><div class="line">|  1 | SIMPLE      | film  | index | PRIMARY       | idx_name | 33      | NULL |    3 | Using where; Using index |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+--------------------------+</div></pre></td></tr></table></figure></p>
+<p><strong>Using temporary</strong>：mysql需要创建一张临时表来处理查询。出现这种情况一般是要进行优化的，首先是想到用索引来优化。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">1. actor.name没有索引，此时创建了张临时表来distinct</div><div class="line">mysql&gt; explain select distinct name from actor;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra           |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-----------------+</div><div class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | Using temporary |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-----------------+</div><div class="line"></div><div class="line">2. film.name建立了idx_name索引，此时查询时extra是using index,没有用临时表</div><div class="line">mysql&gt; explain select distinct name from film;</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film  | index | idx_name      | idx_name | 33      | NULL |    3 | Using index |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div></pre></td></tr></table></figure></p>
+<p><strong>Using filesort</strong>：如果排序字段不是索引的话，就会出现这个，这种情况下一般也是要考虑使用索引来优化的。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">1. actor.name未创建索引，会浏览actor整个表，保存排序关键字name和对应的id，然后排序name并检索行记录</div><div class="line">mysql&gt; explain select * from actor order by name;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra          |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------------+</div><div class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | Using filesort |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+----------------+</div><div class="line"></div><div class="line">2. film.name建立了idx_name索引,此时查询时extra是using index</div><div class="line">mysql&gt; explain select * from film order by name;</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">| id | select_type | table | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div><div class="line">|  1 | SIMPLE      | film  | index | NULL          | idx_name | 33      | NULL |    3 | Using index |</div><div class="line">+----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+</div></pre></td></tr></table></figure></p>
+<h1 id="使用的表"><a href="#使用的表" class="headerlink" title="使用的表"></a>使用的表</h1><p>以上所有sql使用的表和数据：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`actor`</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`actor`</span> (</div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">45</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`update_time`</span> datetime <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</div><div class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</div><div class="line"></div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`actor`</span> (<span class="string">`id`</span>, <span class="string">`name`</span>, <span class="string">`update_time`</span>) <span class="keyword">VALUES</span> (<span class="number">1</span>,<span class="string">'a'</span>,<span class="string">'2017-12-22 15:27:18'</span>), (<span class="number">2</span>,<span class="string">'b'</span>,<span class="string">'2017-12-22 15:27:18'</span>), (<span class="number">3</span>,<span class="string">'c'</span>,<span class="string">'2017-12-22 15:27:18'</span>);</div><div class="line"></div><div class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`film`</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`film`</span> (</div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</div><div class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</div><div class="line">  <span class="keyword">KEY</span> <span class="string">`idx_name`</span> (<span class="string">`name`</span>)</div><div class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</div><div class="line"></div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`film`</span> (<span class="string">`id`</span>, <span class="string">`name`</span>) <span class="keyword">VALUES</span> (<span class="number">3</span>,<span class="string">'film0'</span>),(<span class="number">1</span>,<span class="string">'film1'</span>),(<span class="number">2</span>,<span class="string">'film2'</span>);</div><div class="line"></div><div class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`film_actor`</span>;</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`film_actor`</span> (</div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`film_id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line">  <span class="string">`actor_id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</div><div class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</div><div class="line">  <span class="keyword">KEY</span> <span class="string">`idx_film_actor_id`</span> (<span class="string">`film_id`</span>,<span class="string">`actor_id`</span>)</div><div class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</div><div class="line"></div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`film_actor`</span> (<span class="string">`id`</span>, <span class="string">`film_id`</span>, <span class="string">`actor_id`</span>) <span class="keyword">VALUES</span> (<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>),(<span class="number">2</span>,<span class="number">1</span>,<span class="number">2</span>),(<span class="number">3</span>,<span class="number">2</span>,<span class="number">1</span>);</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/06/java-fullgc/" rel="next" title="jvm full gc 解惑">
+                <i class="fa fa-chevron-left"></i> jvm full gc 解惑
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/03/go-nil/" rel="prev" title="go基础-nil">
+                go基础-nil <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">133</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">120</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Explain简介"><span class="nav-number">1.</span> <span class="nav-text">Explain简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#explain-中的列"><span class="nav-number">2.</span> <span class="nav-text">explain 中的列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#id列"><span class="nav-number">2.1.</span> <span class="nav-text">id列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单子查询"><span class="nav-number">2.1.1.</span> <span class="nav-text">简单子查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#from子句中的子查询"><span class="nav-number">2.1.2.</span> <span class="nav-text">from子句中的子查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#union查询"><span class="nav-number">2.1.3.</span> <span class="nav-text">union查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select-type列"><span class="nav-number">2.2.</span> <span class="nav-text">select_type列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table列"><span class="nav-number">2.3.</span> <span class="nav-text">table列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#type列"><span class="nav-number">2.4.</span> <span class="nav-text">type列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#possible-keys列"><span class="nav-number">2.5.</span> <span class="nav-text">possible_keys列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key列"><span class="nav-number">2.6.</span> <span class="nav-text">key列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-len列"><span class="nav-number">2.7.</span> <span class="nav-text">key_len列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ref列"><span class="nav-number">2.8.</span> <span class="nav-text">ref列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rows列"><span class="nav-number">2.9.</span> <span class="nav-text">rows列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Extra列"><span class="nav-number">2.10.</span> <span class="nav-text">Extra列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用的表"><span class="nav-number">3.</span> <span class="nav-text">使用的表</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
