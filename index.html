@@ -439,6 +439,12 @@
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
 </blockquote>
 <h1 id="计算机系统漫游"><a href="#计算机系统漫游" class="headerlink" title="计算机系统漫游"></a>计算机系统漫游</h1><p>这一章里面基本是对整本书的一个概括吧。</p>
+<ul>
+<li>gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接</li>
+<li>系统硬件组成：总线，I/O设备，主存，处理器</li>
+<li>存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…)</li>
+<li></li>
+</ul>
 <h1 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h1><blockquote>
 <p>to be continue….</p>
 </blockquote>
@@ -896,7 +902,7 @@
       
         
           <blockquote>
-<p>linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了👿）</p>
+<p>👿 linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了）</p>
 </blockquote>
 <h1 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h1><p>在写一个服务端程序时（Web Server或者文件服务器），文件下载是一个基本功能。这时候服务端的任务是：<strong>将服务端主机磁盘中的文件不做修改地从已连接的socket发出去</strong>，我们通常用下面的代码完成：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span>((n = read(diskfd, buf, BUF_SIZE)) &gt; <span class="number">0</span>)</div><div class="line">    write(sockfd, buf , n);</div></pre></td></tr></table></figure></p>
 <p>基本操作就是循环的从磁盘读入文件内容到缓冲区，再将缓冲区的内容发送到socket。但是由于Linux的I/O操作默认是缓冲I/O。这里面主要使用的也就是read和write两个系统调用，我们并不知道操作系统在其中做了什么。实际上在以上I/O操作中，发生了多次的数据拷贝。<br>

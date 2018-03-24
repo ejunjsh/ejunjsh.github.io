@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-03-22T15:22:06.130Z</updated>
+  <updated>2018-03-23T14:35:38.167Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,12 +20,18 @@
     <link href="http://idiotsky.me/2018/03/21/csapp-summary/"/>
     <id>http://idiotsky.me/2018/03/21/csapp-summary/</id>
     <published>2018-03-21T11:42:47.000Z</published>
-    <updated>2018-03-22T15:22:06.130Z</updated>
+    <updated>2018-03-23T14:35:38.167Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
 </blockquote>
 <h1 id="计算机系统漫游"><a href="#计算机系统漫游" class="headerlink" title="计算机系统漫游"></a>计算机系统漫游</h1><p>这一章里面基本是对整本书的一个概括吧。</p>
+<ul>
+<li>gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接</li>
+<li>系统硬件组成：总线，I/O设备，主存，处理器</li>
+<li>存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…)</li>
+<li></li>
+</ul>
 <h1 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h1><blockquote>
 <p>to be continue….</p>
 </blockquote>
@@ -37,6 +43,12 @@
 &lt;p&gt;看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h1 id=&quot;计算机系统漫游&quot;&gt;&lt;a href=&quot;#计算机系统漫游&quot; class=&quot;headerlink&quot; title=&quot;计算机系统漫游&quot;&gt;&lt;/a&gt;计算机系统漫游&lt;/h1&gt;&lt;p&gt;这一章里面基本是对整本书的一个概括吧。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接&lt;/li&gt;
+&lt;li&gt;系统硬件组成：总线，I/O设备，主存，处理器&lt;/li&gt;
+&lt;li&gt;存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…)&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h1 id=&quot;第二章&quot;&gt;&lt;a href=&quot;#第二章&quot; class=&quot;headerlink&quot; title=&quot;第二章&quot;&gt;&lt;/a&gt;第二章&lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;to be continue….&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -152,10 +164,10 @@
     <link href="http://idiotsky.me/2018/03/13/linux-zero-copy/"/>
     <id>http://idiotsky.me/2018/03/13/linux-zero-copy/</id>
     <published>2018-03-13T14:01:39.000Z</published>
-    <updated>2018-03-13T15:23:10.918Z</updated>
+    <updated>2018-03-24T03:07:11.029Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
-<p>linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了👿）</p>
+<p>👿 linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了）</p>
 </blockquote>
 <h1 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h1><p>在写一个服务端程序时（Web Server或者文件服务器），文件下载是一个基本功能。这时候服务端的任务是：<strong>将服务端主机磁盘中的文件不做修改地从已连接的socket发出去</strong>，我们通常用下面的代码完成：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span>((n = read(diskfd, buf, BUF_SIZE)) &gt; <span class="number">0</span>)</div><div class="line">    write(sockfd, buf , n);</div></pre></td></tr></table></figure></p>
 <p>基本操作就是循环的从磁盘读入文件内容到缓冲区，再将缓冲区的内容发送到socket。但是由于Linux的I/O操作默认是缓冲I/O。这里面主要使用的也就是read和write两个系统调用，我们并不知道操作系统在其中做了什么。实际上在以上I/O操作中，发生了多次的数据拷贝。<br><a id="more"></a></p>
@@ -200,7 +212,7 @@
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了👿）&lt;/p&gt;
+&lt;p&gt;👿 linux内核里面为所有文件描述符建立缓存的，而用户层也有自己的缓存，那样每次read和write等相关系统调用，不但有可能上下文切换，而且还要不断从用户态拷贝到内核态或者从内核态拷贝到用户态。如果有些数据不用经过用户层的话（例如网络代理服务），可以不用这种拷贝来浪费资源，所以Linux的系统调用就有了几个零拷贝的函数来解决这种问题。（虽说零拷贝，但其实也只是减少了用户态拷贝，把所有拷贝都在内核里面处理了）&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h1 id=&quot;引文&quot;&gt;&lt;a href=&quot;#引文&quot; class=&quot;headerlink&quot; title=&quot;引文&quot;&gt;&lt;/a&gt;引文&lt;/h1&gt;&lt;p&gt;在写一个服务端程序时（Web Server或者文件服务器），文件下载是一个基本功能。这时候服务端的任务是：&lt;strong&gt;将服务端主机磁盘中的文件不做修改地从已连接的socket发出去&lt;/strong&gt;，我们通常用下面的代码完成：&lt;br&gt;&lt;figure class=&quot;highlight c&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt;((n = read(diskfd, buf, BUF_SIZE)) &amp;gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    write(sockfd, buf , n);&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;基本操作就是循环的从磁盘读入文件内容到缓冲区，再将缓冲区的内容发送到socket。但是由于Linux的I/O操作默认是缓冲I/O。这里面主要使用的也就是read和write两个系统调用，我们并不知道操作系统在其中做了什么。实际上在以上I/O操作中，发生了多次的数据拷贝。&lt;br&gt;
