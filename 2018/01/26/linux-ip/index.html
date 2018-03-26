@@ -110,16 +110,16 @@
 <meta property="og:url" content="http://idiotsky.me/2018/01/26/linux-ip/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 本教程将会讨论 ip 命令的 1">
-<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-1.png">
-<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-2.png">
-<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-3.png">
-<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-4.png">
-<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-5.png">
-<meta property="og:updated_time" content="2018-03-26T15:44:08.486Z">
+<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-1.jpg">
+<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-2.jpg">
+<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-3.jpg">
+<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-4.jpg">
+<meta property="og:image" content="http://idiotsky.me/images3/linux-ip-5.jpg">
+<meta property="og:updated_time" content="2018-03-26T15:45:31.534Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux的12个ip命令范例">
 <meta name="twitter:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 本教程将会讨论 ip 命令的 1">
-<meta name="twitter:image" content="http://idiotsky.me/images3/linux-ip-1.png">
+<meta name="twitter:image" content="http://idiotsky.me/images3/linux-ip-1.jpg">
 
 
 
@@ -445,7 +445,7 @@
 <a id="more"></a>
 <p>这会显示系统中所有可用网卡的相关网络信息，不过如果你想查看某块网卡的信息，则命令为：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip addr show enp0s3</span></div></pre></td></tr></table></figure></p>
 <p>这里 enp0s3 是网卡的名字。</p>
-<p><a href="http://idiotsky.me/images3/linux-ip-1.png"><img src="http://idiotsky.me/images3/linux-ip-1.png" alt=""></a> </p>
+<p><a href="http://idiotsky.me/images3/linux-ip-1.jpg"><img src="http://idiotsky.me/images3/linux-ip-1.jpg" alt=""></a> </p>
 <h1 id="案例-2：启用-禁用网卡"><a href="#案例-2：启用-禁用网卡" class="headerlink" title="案例 2：启用/禁用网卡"></a>案例 2：启用/禁用网卡</h1><p>使用 ip 命令来启用一个被禁用的网卡：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip link <span class="built_in">set</span> enp0s3 up</span></div></pre></td></tr></table></figure></p>
 <p>而要禁用网卡则使用 down 触发器：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip link <span class="built_in">set</span> enp0s3 down</span></div></pre></td></tr></table></figure></p>
 <h1 id="案例-3：为网卡分配-IP-地址以及其他网络信息"><a href="#案例-3：为网卡分配-IP-地址以及其他网络信息" class="headerlink" title="案例 3：为网卡分配 IP 地址以及其他网络信息"></a>案例 3：为网卡分配 IP 地址以及其他网络信息</h1><p>要为网卡分配 IP 地址，我们使用下面命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip addr add 192.168.0.50/255.255.255.0 dev enp0s3</span></div></pre></td></tr></table></figure></p>
@@ -454,9 +454,9 @@
 <p>如上面例子所示，我们可以使用 brd 代替 broadcast 来设置广播地址。</p>
 <h1 id="案例-4：删除网卡中配置的-IP-地址"><a href="#案例-4：删除网卡中配置的-IP-地址" class="headerlink" title="案例 4：删除网卡中配置的 IP 地址"></a>案例 4：删除网卡中配置的 IP 地址</h1><p>若想从网卡中删掉某个 IP，使用如下 ip 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip addr del 192.168.0.10/24 dev enp0s3</span></div></pre></td></tr></table></figure></p>
 <h1 id="案例-5：为网卡添加别名"><a href="#案例-5：为网卡添加别名" class="headerlink" title="案例 5：为网卡添加别名"></a>案例 5：为网卡添加别名</h1><p>假设网卡名为 enp0s3,添加别名，即为网卡添加不止一个 IP，执行下面命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash">  sudo ip addr add 192.168.0.20/24 dev enp0s3 label enp0s3:1</span></div></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images3/linux-ip-2.png"><img src="http://idiotsky.me/images3/linux-ip-2.png" alt=""></a> </p>
+<p><a href="http://idiotsky.me/images3/linux-ip-2.jpg"><img src="http://idiotsky.me/images3/linux-ip-2.jpg" alt=""></a> </p>
 <h1 id="案例-6：检查路由-默认网关的信息"><a href="#案例-6：检查路由-默认网关的信息" class="headerlink" title="案例 6：检查路由/默认网关的信息"></a>案例 6：检查路由/默认网关的信息</h1><p>查看路由信息会给我们显示数据包到达目的地的路由路径。要查看网络路由信息，执行下面命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash">  ip route show</span></div></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images3/linux-ip-3.png"><img src="http://idiotsky.me/images3/linux-ip-3.png" alt=""></a> </p>
+<p><a href="http://idiotsky.me/images3/linux-ip-3.jpg"><img src="http://idiotsky.me/images3/linux-ip-3.jpg" alt=""></a> </p>
 <p>在上面输出结果中，我们能够看到所有网卡上数据包的路由信息。我们也可以获取特定 IP 的路由信息，方法是：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip route get 192.168.0.1</span></div></pre></td></tr></table></figure></p>
 <h1 id="案例-7：添加静态路由"><a href="#案例-7：添加静态路由" class="headerlink" title="案例 7：添加静态路由"></a>案例 7：添加静态路由</h1><p>我们也可以使用 IP 来修改数据包的默认路由。方法是使用 ip route 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip route add default via 192.168.0.150/24</span></div></pre></td></tr></table></figure></p>
 <p>这样所有的网络数据包通过 192.168.0.150 来转发，而不是以前的默认路由了。若要修改某个网卡的默认路由，执行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip route add 172.16.32.32 via 192.168.0.150/24 dev enp0s3</span></div></pre></td></tr></table></figure></p>
@@ -466,7 +466,7 @@
 <p>若你使用的是基于 Ubuntu 或 debian 的操作系统，则该要修改的文件为 /etc/network/interfaces，然后添加 ip route add 172.16.32.32 via 192.168.0.150/24 dev enp0s3 这行到文件末尾。</p>
 <h1 id="案例-9：检查所有的-ARP-记录"><a href="#案例-9：检查所有的-ARP-记录" class="headerlink" title="案例 9：检查所有的 ARP 记录"></a>案例 9：检查所有的 ARP 记录</h1><p>RP，是地址解析协议Address Resolution Protocol的缩写，用于将 IP 地址转换为物理地址（也就是 MAC 地址）。所有的 IP 和其对应的 MAC 明细都存储在一张表中，这张表叫做 ARP 缓存。</p>
 <p>要查看 ARP 缓存中的记录，即连接到局域网中设备的 MAC 地址，则使用如下 ip 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ip neigh</div></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images3/linux-ip-4.png"><img src="http://idiotsky.me/images3/linux-ip-4.png" alt=""></a> </p>
+<p><a href="http://idiotsky.me/images3/linux-ip-4.jpg"><img src="http://idiotsky.me/images3/linux-ip-4.jpg" alt=""></a> </p>
 <h1 id="案例-10：修改-ARP-记录"><a href="#案例-10：修改-ARP-记录" class="headerlink" title="案例 10：修改 ARP 记录"></a>案例 10：修改 ARP 记录</h1><p>删除 ARP 记录的命令为：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip neigh del 192.168.0.106 dev enp0s3</span></div></pre></td></tr></table></figure></p>
 <p>若想往 ARP 缓存中添加新记录，则命令为：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> sudo ip neigh add 192.168.0.150 lladdr 33:1g:75:37:r3:84 dev enp0s3 nud perm</span></div></pre></td></tr></table></figure></p>
 <p>这里 nud 的意思是 “neghbour state”（网络邻居状态），它的值可以是：</p>
@@ -477,7 +477,7 @@
 <li>reachable - 记录有效，但超时后就失效了</li>
 </ul>
 <h1 id="案例-11：查看网络统计信息"><a href="#案例-11：查看网络统计信息" class="headerlink" title="案例 11：查看网络统计信息"></a>案例 11：查看网络统计信息</h1><p>通过 ip 命令还能查看网络的统计信息，比如所有网卡上传输的字节数和报文数，错误或丢弃的报文数等。使用 ip -s link 命令来查看：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip -s link</span></div></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images3/linux-ip-5.png"><img src="http://idiotsky.me/images3/linux-ip-5.png" alt=""></a> </p>
+<p><a href="http://idiotsky.me/images3/linux-ip-5.jpg"><img src="http://idiotsky.me/images3/linux-ip-5.jpg" alt=""></a> </p>
 <h1 id="案例-12：获取帮助"><a href="#案例-12：获取帮助" class="headerlink" title="案例 12：获取帮助"></a>案例 12：获取帮助</h1><p>若你想查看某个上面例子中没有的选项，那么你可以查看帮助。事实上对任何命令你都可以寻求帮助。要列出 ip 命令的所有可选项，执行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip <span class="built_in">help</span></span></div></pre></td></tr></table></figure></p>
 <p>记住，ip 命令是一个对 Linux 系统管理来说特别重要的命令，学习并掌握它能够让配置网络变得容易。本教程就此结束了，若有任何建议欢迎在下面留言框中留言。</p>
 
