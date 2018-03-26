@@ -103,22 +103,22 @@
 
 
 
-<meta name="description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 本教程将会讨论 ip 命令的 1">
+<meta name="description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 案例 1：检查网卡信息检查网卡的">
 <meta name="keywords" content="linux,route,ip,arp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux的12个ip命令范例">
 <meta property="og:url" content="http://idiotsky.me/2018/01/26/linux-ip/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 本教程将会讨论 ip 命令的 1">
+<meta property="og:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 案例 1：检查网卡信息检查网卡的">
 <meta property="og:image" content="http://idiotsky.me/images3/linux-ip-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images3/linux-ip-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images3/linux-ip-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images3/linux-ip-4.jpg">
 <meta property="og:image" content="http://idiotsky.me/images3/linux-ip-5.jpg">
-<meta property="og:updated_time" content="2018-03-26T15:45:31.534Z">
+<meta property="og:updated_time" content="2018-03-26T15:47:07.936Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux的12个ip命令范例">
-<meta name="twitter:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 本教程将会讨论 ip 命令的 1">
+<meta name="twitter:description" content="一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。 ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。 案例 1：检查网卡信息检查网卡的">
 <meta name="twitter:image" content="http://idiotsky.me/images3/linux-ip-1.jpg">
 
 
@@ -440,7 +440,6 @@
       
         <p>一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。</p>
 <p>ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。</p>
-<p>本教程将会讨论 ip 命令的 12 中最常用法，让我们开始吧。</p>
 <h1 id="案例-1：检查网卡信息"><a href="#案例-1：检查网卡信息" class="headerlink" title="案例 1：检查网卡信息"></a>案例 1：检查网卡信息</h1><p>检查网卡的诸如 IP 地址，子网等网络信息，使用 ip addr show 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip addr show</span></div><div class="line">或</div><div class="line"><span class="meta">$</span><span class="bash"> ip a s</span></div></pre></td></tr></table></figure></p>
 <a id="more"></a>
 <p>这会显示系统中所有可用网卡的相关网络信息，不过如果你想查看某块网卡的信息，则命令为：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip addr show enp0s3</span></div></pre></td></tr></table></figure></p>
@@ -479,7 +478,8 @@
 <h1 id="案例-11：查看网络统计信息"><a href="#案例-11：查看网络统计信息" class="headerlink" title="案例 11：查看网络统计信息"></a>案例 11：查看网络统计信息</h1><p>通过 ip 命令还能查看网络的统计信息，比如所有网卡上传输的字节数和报文数，错误或丢弃的报文数等。使用 ip -s link 命令来查看：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip -s link</span></div></pre></td></tr></table></figure></p>
 <p><a href="http://idiotsky.me/images3/linux-ip-5.jpg"><img src="http://idiotsky.me/images3/linux-ip-5.jpg" alt=""></a> </p>
 <h1 id="案例-12：获取帮助"><a href="#案例-12：获取帮助" class="headerlink" title="案例 12：获取帮助"></a>案例 12：获取帮助</h1><p>若你想查看某个上面例子中没有的选项，那么你可以查看帮助。事实上对任何命令你都可以寻求帮助。要列出 ip 命令的所有可选项，执行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip <span class="built_in">help</span></span></div></pre></td></tr></table></figure></p>
-<p>记住，ip 命令是一个对 Linux 系统管理来说特别重要的命令，学习并掌握它能够让配置网络变得容易。本教程就此结束了，若有任何建议欢迎在下面留言框中留言。</p>
+<p>记住，ip 命令是一个对 Linux 系统管理来说特别重要的命令，学习并掌握它能够让配置网络变得容易。</p>
+<p>ref <a href="https://zhuanlan.zhihu.com/p/32945498" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/32945498</a></p>
 
       
     </div>
