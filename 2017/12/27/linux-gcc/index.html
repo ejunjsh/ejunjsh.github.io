@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="linux,gdb," />
+  <meta name="keywords" content="linux,gcc," />
 
 
 
@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="备忘，mark 👿">
-<meta name="keywords" content="linux,gdb">
+<meta name="description" content="备忘，mark 👿gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。  语法1gcc(选项)(参数) 选项12345-o：指定生成的输出文件；">
+<meta name="keywords" content="linux,gcc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux-gdb">
-<meta property="og:url" content="http://idiotsky.me/2018/01/28/linux-gdb/index.html">
+<meta property="og:title" content="linux命令-gcc">
+<meta property="og:url" content="http://idiotsky.me/2017/12/27/linux-gcc/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="备忘，mark 👿">
-<meta property="og:updated_time" content="2018-03-26T15:57:06.653Z">
+<meta property="og:description" content="备忘，mark 👿gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。  语法1gcc(选项)(参数) 选项12345-o：指定生成的输出文件；">
+<meta property="og:updated_time" content="2018-03-27T14:40:13.018Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="linux-gdb">
-<meta name="twitter:description" content="备忘，mark 👿">
+<meta name="twitter:title" content="linux命令-gcc">
+<meta name="twitter:description" content="备忘，mark 👿gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。  语法1gcc(选项)(参数) 选项12345-o：指定生成的输出文件；">
 
 
 
@@ -142,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2018/01/28/linux-gdb/"/>
+  <link rel="canonical" href="http://idiotsky.me/2017/12/27/linux-gcc/"/>
 
 
 
 
 
-  <title>linux-gdb | IdiotSky</title>
+  <title>linux命令-gcc | IdiotSky</title>
   
 
 
@@ -343,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/28/linux-gdb/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/12/27/linux-gcc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -360,7 +360,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">linux-gdb</h1>
+          <h1 class="post-title" itemprop="name headline">linux命令-gcc</h1>
         
 
         <div class="post-meta">
@@ -372,8 +372,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-28T11:31:23+08:00">
-                28 Jan 18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-27T11:31:23+08:00">
+                27 Dec 17
               </time>
             
 
@@ -433,8 +433,32 @@
 
       
         <blockquote>
-<p>备忘，mark 👿<br><a id="more"></a></p>
+<p>备忘，mark 👿<br>gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。</p>
 </blockquote>
+<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc(选项)(参数)</div></pre></td></tr></table></figure>
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-o：指定生成的输出文件；</div><div class="line">-E：仅执行编译预处理；</div><div class="line">-S：将C代码转换为汇编代码；</div><div class="line">-wall：显示警告信息；</div><div class="line">-c：仅执行编译操作，不进行连接操作。</div></pre></td></tr></table></figure>
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>C源文件：指定C语言源代码文件。<br><a id="more"></a></p>
+<h1 id="常用编译命令选项"><a href="#常用编译命令选项" class="headerlink" title="常用编译命令选项"></a>常用编译命令选项</h1><p>假设源程序文件名为test.c</p>
+<h2 id="无选项编译链接"><a href="#无选项编译链接" class="headerlink" title="无选项编译链接"></a>无选项编译链接</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.c</div></pre></td></tr></table></figure>
+<p>将test.c预处理、汇编、编译并链接形成可执行文件。这里未指定输出文件，默认输出为a.out。</p>
+<h2 id="选项-o"><a href="#选项-o" class="headerlink" title="选项 -o"></a>选项 -o</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.c -o test</div></pre></td></tr></table></figure>
+<p>将test.c预处理、汇编、编译并链接形成可执行文件test。-o选项用来指定输出文件的文件名。</p>
+<h2 id="选项-E"><a href="#选项-E" class="headerlink" title="选项 -E"></a>选项 -E</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -E test.c -o test.i</div></pre></td></tr></table></figure>
+<p>将test.c预处理输出test.i文件。</p>
+<h2 id="选项-S"><a href="#选项-S" class="headerlink" title="选项 -S"></a>选项 -S</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -S test.i</div></pre></td></tr></table></figure>
+<p>将预处理输出文件test.i汇编成test.s文件。</p>
+<h2 id="选项-c"><a href="#选项-c" class="headerlink" title="选项 -c"></a>选项 -c</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -c test.s</div></pre></td></tr></table></figure>
+<p>将汇编输出文件test.s编译输出test.o文件。</p>
+<h2 id="无选项链接"><a href="#无选项链接" class="headerlink" title="无选项链接"></a>无选项链接</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.o -o test</div></pre></td></tr></table></figure>
+<p>将编译输出文件test.o链接成最终可执行文件test。</p>
+<h2 id="选项-O"><a href="#选项-O" class="headerlink" title="选项 -O"></a>选项 -O</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -O1 test.c -o test</div></pre></td></tr></table></figure>
+<p>使用编译优化级别1编译程序。级别为1~3，级别越大优化效果越好，但编译时间越长。</p>
+<h1 id="多源文件的编译方法"><a href="#多源文件的编译方法" class="headerlink" title="多源文件的编译方法"></a>多源文件的编译方法</h1><p>如果有多个源文件，基本上有两种编译方法：</p>
+<p>假设有两个源文件为test.c和testfun.c</p>
+<h2 id="多个文件一起编译"><a href="#多个文件一起编译" class="headerlink" title="多个文件一起编译"></a>多个文件一起编译</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc testfun.c test.c -o test</div></pre></td></tr></table></figure>
+<p>将testfun.c和test.c分别编译后链接成test可执行文件。</p>
+<h2 id="分别编译各个源文件，之后对编译后输出的目标文件链接。"><a href="#分别编译各个源文件，之后对编译后输出的目标文件链接。" class="headerlink" title="分别编译各个源文件，之后对编译后输出的目标文件链接。"></a>分别编译各个源文件，之后对编译后输出的目标文件链接。</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">gcc -c testfun.c    #将testfun.c编译成testfun.o</div><div class="line">gcc -c test.c       #将test.c编译成test.o</div><div class="line">gcc -o testfun.o test.o -o test    #将testfun.o和test.o链接成test</div></pre></td></tr></table></figure>
+<p>以上两种方法相比较，第一中方法编译时需要所有文件重新编译，而第二种方法可以只重新编译修改的文件，未修改的文件不用重新编译。</p>
 
       
     </div>
@@ -454,7 +478,7 @@
           
             <a href="/tags/linux/" rel="tag"># linux</a>
           
-            <a href="/tags/gdb/" rel="tag"># gdb</a>
+            <a href="/tags/gcc/" rel="tag"># gcc</a>
           
         </div>
       
@@ -467,8 +491,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/01/27/linux-gcc/" rel="next" title="linux-gcc">
-                <i class="fa fa-chevron-left"></i> linux-gcc
+              <a href="/2017/11/30/mysql-explain/" rel="next" title="mysql explain详解">
+                <i class="fa fa-chevron-left"></i> mysql explain详解
               </a>
             
           </div>
@@ -477,8 +501,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/26/go-goroutine/" rel="prev" title="深入go之goroutine">
-                深入go之goroutine <i class="fa fa-chevron-right"></i>
+              <a href="/2017/12/28/linux-gdb/" rel="prev" title="linux命令-gdb">
+                linux命令-gdb <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -531,8 +555,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
@@ -647,6 +680,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#语法"><span class="nav-number">1.</span> <span class="nav-text">语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选项"><span class="nav-number">1.1.</span> <span class="nav-text">选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数"><span class="nav-number">1.2.</span> <span class="nav-text">参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用编译命令选项"><span class="nav-number">2.</span> <span class="nav-text">常用编译命令选项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#无选项编译链接"><span class="nav-number">2.1.</span> <span class="nav-text">无选项编译链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项-o"><span class="nav-number">2.2.</span> <span class="nav-text">选项 -o</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项-E"><span class="nav-number">2.3.</span> <span class="nav-text">选项 -E</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项-S"><span class="nav-number">2.4.</span> <span class="nav-text">选项 -S</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项-c"><span class="nav-number">2.5.</span> <span class="nav-text">选项 -c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无选项链接"><span class="nav-number">2.6.</span> <span class="nav-text">无选项链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项-O"><span class="nav-number">2.7.</span> <span class="nav-text">选项 -O</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多源文件的编译方法"><span class="nav-number">3.</span> <span class="nav-text">多源文件的编译方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多个文件一起编译"><span class="nav-number">3.1.</span> <span class="nav-text">多个文件一起编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分别编译各个源文件，之后对编译后输出的目标文件链接。"><span class="nav-number">3.2.</span> <span class="nav-text">分别编译各个源文件，之后对编译后输出的目标文件链接。</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

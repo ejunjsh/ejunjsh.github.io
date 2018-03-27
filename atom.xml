@@ -643,62 +643,6 @@
   </entry>
   
   <entry>
-    <title>linux-gdb</title>
-    <link href="http://idiotsky.me/2018/01/28/linux-gdb/"/>
-    <id>http://idiotsky.me/2018/01/28/linux-gdb/</id>
-    <published>2018-01-28T03:31:23.000Z</published>
-    <updated>2018-03-26T15:57:06.653Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>备忘，mark 👿<br><a id="more"></a></p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;备忘，mark 👿&lt;br&gt;
-    
-    </summary>
-    
-      <category term="linux命令" scheme="http://idiotsky.me/categories/linux%E5%91%BD%E4%BB%A4/"/>
-    
-    
-      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
-    
-      <category term="gdb" scheme="http://idiotsky.me/tags/gdb/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>linux-gcc</title>
-    <link href="http://idiotsky.me/2018/01/27/linux-gcc/"/>
-    <id>http://idiotsky.me/2018/01/27/linux-gcc/</id>
-    <published>2018-01-27T03:31:23.000Z</published>
-    <updated>2018-03-26T15:56:56.944Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>备忘，mark 👿<br><a id="more"></a></p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;备忘，mark 👿&lt;br&gt;
-    
-    </summary>
-    
-      <category term="linux命令" scheme="http://idiotsky.me/categories/linux%E5%91%BD%E4%BB%A4/"/>
-    
-    
-      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
-    
-      <category term="gcc" scheme="http://idiotsky.me/tags/gcc/"/>
-    
-  </entry>
-  
-  <entry>
     <title>linux的12个ip命令范例</title>
     <link href="http://idiotsky.me/2018/01/26/linux-ip/"/>
     <id>http://idiotsky.me/2018/01/26/linux-ip/</id>
@@ -1171,6 +1115,239 @@
     
     
       <category term="go" scheme="http://idiotsky.me/tags/go/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux命令-gdb</title>
+    <link href="http://idiotsky.me/2017/12/28/linux-gdb/"/>
+    <id>http://idiotsky.me/2017/12/28/linux-gdb/</id>
+    <published>2017-12-28T03:31:23.000Z</published>
+    <updated>2018-03-27T14:26:24.946Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>备忘，mark 👿</p>
+<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1></blockquote>
+<h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
+<h2 id="GDB-的进入和退出"><a href="#GDB-的进入和退出" class="headerlink" title="GDB 的进入和退出"></a>GDB 的进入和退出</h2><p>如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -o bugging bugging.c</div></pre></td></tr></table></figure></p>
+<p>输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure></p>
+<p>在 gdb 命令行界面，输入run 执行待调试程序：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>在 gdb 命令行界面，输入quit 退出 gdb：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) quit</div></pre></td></tr></table></figure></p>
+<p>上述步骤的输出<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">sky@ubuntu:~/gdbtest$ gcc -g -o bugging bugging.c</div><div class="line">sky@ubuntu:~/gdbtest$ gdb bugging</div><div class="line">GNU gdb (Ubuntu 8.0.1-0ubuntu1) 8.0.1</div><div class="line">Copyright (C) 2017 Free Software Foundation, Inc.</div><div class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</div><div class="line">This is free software: you are free to change and redistribute it.</div><div class="line">There is NO WARRANTY, to the extent permitted by law.  Type "show copying"</div><div class="line">and "show warranty" for details.</div><div class="line">This GDB was configured as "x86_64-linux-gnu".</div><div class="line">Type "show configuration" for configuration details.</div><div class="line">For bug reporting instructions, please see:</div><div class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;.</div><div class="line">Find the GDB manual and other documentation resources online at:</div><div class="line">&lt;http://www.gnu.org/software/gdb/documentation/&gt;.</div><div class="line">For help, type "help".</div><div class="line">---Type &lt;return&gt; to continue, or q &lt;return&gt; to quit---</div><div class="line">Type "apropos word" to search for commands related to "word"...</div><div class="line">Reading symbols from bugging...done.</div><div class="line">(gdb) run</div><div class="line">Starting program: /home/sky/gdbtest/bugging</div><div class="line">1+2+3+...+100= 1431657159</div><div class="line">[Inferior 1 (process 27193) exited normally]</div><div class="line">(gdb) q</div><div class="line">sky@ubuntu:~/gdbtest$</div></pre></td></tr></table></figure></p>
+<h2 id="GDB-命令行界面使用技巧"><a href="#GDB-命令行界面使用技巧" class="headerlink" title="GDB 命令行界面使用技巧"></a>GDB 命令行界面使用技巧</h2><h3 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h3><p>任何时候都可以使用<code>TAB</code>进行补全，如果只有一个待选选项则直接补全；否则会列出可选选项，继续键入命令，同时结合<code>TAB</code>即可快速输入命令。</p>
+<h3 id="部分-gdb-常用命令一览表"><a href="#部分-gdb-常用命令一览表" class="headerlink" title="部分 gdb 常用命令一览表"></a>部分 gdb 常用命令一览表</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>简写形式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list</td>
+<td>l</td>
+<td>查看源码</td>
+</tr>
+<tr>
+<td>backtrace</td>
+<td>bt、where</td>
+<td>打印函数栈信息</td>
+</tr>
+<tr>
+<td>next</td>
+<td>n</td>
+<td>执行下一行</td>
+</tr>
+<tr>
+<td>step</td>
+<td>s</td>
+<td>一次执行一行，遇到函数会进入</td>
+</tr>
+<tr>
+<td>finish</td>
+<td></td>
+<td>运行到函数结束</td>
+</tr>
+<tr>
+<td>continue</td>
+<td>c</td>
+<td>继续运行</td>
+</tr>
+<tr>
+<td>break</td>
+<td>b</td>
+<td>设置断点</td>
+</tr>
+<tr>
+<td>info breakpoints</td>
+<td></td>
+<td>显示断点信息</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>d</td>
+<td>删除断点</td>
+</tr>
+<tr>
+<td>print</td>
+<td>p</td>
+<td>打印表达式的值</td>
+</tr>
+<tr>
+<td>run</td>
+<td>r</td>
+<td>启动程序</td>
+</tr>
+<tr>
+<td>until</td>
+<td>u</td>
+<td>执行到指定行</td>
+</tr>
+<tr>
+<td>info</td>
+<td>i</td>
+<td>显示信息</td>
+</tr>
+<tr>
+<td>help</td>
+<td>h</td>
+<td>帮助信息</td>
+</tr>
+</tbody>
+</table>
+<h3 id="查询用法"><a href="#查询用法" class="headerlink" title="查询用法"></a>查询用法</h3><p>在 gdb 命令行界面，使用 <code>(gdb) help command</code> 可以查看命令的用法。</p>
+<h3 id="执行-Shell-命令"><a href="#执行-Shell-命令" class="headerlink" title="执行 Shell 命令"></a>执行 Shell 命令</h3><p>在 gdb 命令行界面可以执行外部的 Shell 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) !shell 命令</div></pre></td></tr></table></figure></p>
+<p>例如查看当前目录的文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) !ls</div><div class="line">bugging  bugging.c</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h1 id="GDB-断点"><a href="#GDB-断点" class="headerlink" title="GDB 断点"></a>GDB 断点</h1><h2 id="重新进入-debugging-调试界面"><a href="#重新进入-debugging-调试界面" class="headerlink" title="重新进入 debugging 调试界面"></a>重新进入 debugging 调试界面</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure>
+<h2 id="查看源码"><a href="#查看源码" class="headerlink" title="查看源码"></a>查看源码</h2><p>list 命令用来显示源文件中的代码。</p>
+<h3 id="通过行号查看源码"><a href="#通过行号查看源码" class="headerlink" title="通过行号查看源码"></a>通过行号查看源码</h3><p>list 行号，显示某一行附近的代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(gdb) list 2</div><div class="line">1       /* bugging.c */</div><div class="line">2</div><div class="line">3       #include &lt;stdio.h&gt;</div><div class="line">4</div><div class="line">5       int foo(int n)</div><div class="line">6       &#123;</div><div class="line">7</div><div class="line">8           int sum;</div><div class="line">9           int i;</div><div class="line">10</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>list 文件名 : 行号，显示某一个文件某一行附近的代码，用于多个源文件的情况。</p>
+<h3 id="通过函数查看源码"><a href="#通过函数查看源码" class="headerlink" title="通过函数查看源码"></a>通过函数查看源码</h3><p>list 函数名，显示某个函数附近的代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(gdb) list main</div><div class="line">15</div><div class="line">16          return sum;</div><div class="line">17      &#125;</div><div class="line">18</div><div class="line">19      int main(int argc, char** argv)</div><div class="line">20      &#123;</div><div class="line">21          int result = 0;</div><div class="line">22          int N = 100;</div><div class="line">23</div><div class="line">24          result = foo(N);</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>list 文件名 : 函数名，显示某一个文件某个函数附近的代码，用于多个源文件的情况。</p>
+<h2 id="设置断点"><a href="#设置断点" class="headerlink" title="设置断点"></a>设置断点</h2><p>break 命令用来设置断点。</p>
+<h3 id="通过行号设置断点"><a href="#通过行号设置断点" class="headerlink" title="通过行号设置断点"></a>通过行号设置断点</h3><p>break 行号，断点设置在该行开始处，<strong>注意：该行代码未被执行：</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) break 19</div><div class="line">Breakpoint 1 at 0x680: file bugging.c, line 19.</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>break 文件名 : 行号，适用于有多个源文件的情况。</p>
+<h3 id="通过函数设置断点"><a href="#通过函数设置断点" class="headerlink" title="通过函数设置断点"></a>通过函数设置断点</h3><p>break 函数名，断点设置在该函数的开始处，<strong>断点所在行未被执行：</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) break foo</div><div class="line">Breakpoint 2 at 0x651: file bugging.c, line 11.</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>break 文件名 : 函数名，适用于有多个源文件的情况。</p>
+<h2 id="查看断点信息"><a href="#查看断点信息" class="headerlink" title="查看断点信息"></a>查看断点信息</h2><p>info breakpoints 命令用于显示当前断点信息。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">2       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>其中每一项的信息：</p>
+<ul>
+<li>Num 列代表断点编号，该编号可以作为 delete/enalbe/disable 等控制断点命令的参数</li>
+<li>Type 列代表断点类型，一般为 breakpoint</li>
+<li>Disp 列代表断点被命中后，该断点保留(keep)、删除(del)还是关闭(dis)</li>
+<li>Enb 列代表该断点是 enable(y) 还是 disable(n)</li>
+<li>Address 列代表该断点处虚拟内存的地址</li>
+<li>What 列代表该断点在源文件中的信息</li>
+</ul>
+<h2 id="删除断点"><a href="#删除断点" class="headerlink" title="删除断点"></a>删除断点</h2><p>delete 命令用于删除断点。</p>
+<h3 id="删除指定断点"><a href="#删除指定断点" class="headerlink" title="删除指定断点"></a>删除指定断点</h3><p>delete Num，删除指定断点，断点编号可通过 info breakpoints 获得：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">2       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) delete 2</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h3 id="删除所有断点"><a href="#删除所有断点" class="headerlink" title="删除所有断点"></a>删除所有断点</h3><p>delete，不带任何参数，默认删除所有断点。</p>
+<h2 id="关闭和启用断点"><a href="#关闭和启用断点" class="headerlink" title="关闭和启用断点"></a>关闭和启用断点</h2><p>disable 命令用于关闭断点，有些断点可能暂时不需要但又不想删除，便可以 disable 该断点。<br>enable 命令用于启用断点。</p>
+<h3 id="关闭所有断点"><a href="#关闭所有断点" class="headerlink" title="关闭所有断点"></a>关闭所有断点</h3><p>disable，不带任何参数，默认关闭所有断点。</p>
+<h3 id="关闭指定断点"><a href="#关闭指定断点" class="headerlink" title="关闭指定断点"></a>关闭指定断点</h3><p>disable Num，关闭指定断点，断点编号可通过 info breakpoints 获得：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) disable 1</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep n   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h3 id="启用所有断点"><a href="#启用所有断点" class="headerlink" title="启用所有断点"></a>启用所有断点</h3><p>enable，不带任何参数，默认启用所有断点。</p>
+<h3 id="启用指定断点"><a href="#启用指定断点" class="headerlink" title="启用指定断点"></a>启用指定断点</h3><p>enable Num，启用指定断点，断点编号可通过 info breakpoints 获得。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) enable 1</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>disable 和 enable 命令影响的是 info breakpoints 的 Enb 列，表示该断点是启用还是关闭</p>
+<h2 id="断点启用的更多方式"><a href="#断点启用的更多方式" class="headerlink" title="断点启用的更多方式"></a>断点启用的更多方式</h2><p>enable 命令还可以用来设置断点被执行的次数，比如当断点设在循环中的时候，某断点可能多次被命中。</p>
+<h3 id="断点-hit-一次之后关闭该断点"><a href="#断点-hit-一次之后关闭该断点" class="headerlink" title="断点 hit 一次之后关闭该断点"></a>断点 hit 一次之后关闭该断点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">enable once Num</div></pre></td></tr></table></figure>
+<h3 id="断点-hit-一次之后删除该断点"><a href="#断点-hit-一次之后删除该断点" class="headerlink" title="断点 hit 一次之后删除该断点"></a>断点 hit 一次之后删除该断点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">enable delete Num</div></pre></td></tr></table></figure>
+<p>实验中我们可以如下图测试该功能：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) enable once 1</div><div class="line">(gdb) enable delete 3</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     dis  y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     del  y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>这两个命令影响的是 info breakpoints 的 Disp 列，表示该断点被命中之后的行为</p>
+<h2 id="断点小结"><a href="#断点小结" class="headerlink" title="断点小结"></a>断点小结</h2><p>断点是调试最基本的方法之一，这一节主要介绍了断点相关的知识。主要是几个断点相关的命令。</p>
+<ul>
+<li>list</li>
+<li>info breakpoints</li>
+<li>break</li>
+<li>delete</li>
+<li>disable 和 enable</li>
+<li>enable once 和 enable delete</li>
+</ul>
+<p>不熟悉命令的时候，记得在 gdb 命令行下键入 help info breakpoints 等命令，查询帮助文档。</p>
+<h1 id="单步调试"><a href="#单步调试" class="headerlink" title="单步调试"></a>单步调试</h1><p>如果已经设置断点后，执行<code>run</code>,就会运行到断点：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     dis  y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     del  y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) run</div><div class="line">Starting program: /home/sky/gdbtest/bugging</div><div class="line"></div><div class="line">Breakpoint 1, main (argc=1, argv=0x7fffffffdfd8) at bugging.c:21</div><div class="line">21          int result = 0;</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="继续单步调试"><a href="#继续单步调试" class="headerlink" title="继续单步调试"></a>继续单步调试</h2><p>上面输出会停到<code>main</code>函数这个断点，<code>next</code>或者<code>n</code>，就会单步运行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Breakpoint 1, main (argc=1, argv=0x7fffffffdfd8) at bugging.c:21</div><div class="line">21          int result = 0;</div><div class="line">(gdb) n</div><div class="line">22          int N = 100;</div><div class="line">(gdb) next</div><div class="line">24          result = foo(N);</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="显示变量"><a href="#显示变量" class="headerlink" title="显示变量"></a>显示变量</h2><p>如果想显示某个变量的值，用<code>display &lt;变量名&gt;</code> ：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Temporary breakpoint 3, foo (n=100) at bugging.c:11</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">(gdb) display sum</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>上面代码我想显示<code>sum</code>这个变量，而且单步调试的时候，这个变量会一直显示。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">(gdb) n</div><div class="line">13              sum = sum+i;</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">13              sum = sum+i;</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">1: sum = 1431652110</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="退出单步调试"><a href="#退出单步调试" class="headerlink" title="退出单步调试"></a>退出单步调试</h2><p>用<code>continue</code>或者<code>c</code>,退出单步调试<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) c</div><div class="line">Continuing.</div><div class="line">1+2+3+...+100= 1431657159</div><div class="line">[Inferior 1 (process 27595) exited normally]</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h1 id="bugging-c代码"><a href="#bugging-c代码" class="headerlink" title="bugging.c代码"></a>bugging.c代码</h1><p>这是上面调试用的代码，此代码用来输出<code>1+2+3+...+100</code>的和，很明显上面最后的结果是一个很大值，为什么呢，你可以看上面单步调试里面显示某个变量的值还有以下注释👿<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* bugging.c */</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> sum;  <span class="comment">//没有初始化为0，所以这个变量的值为不确定</span></div><div class="line">    <span class="keyword">int</span> i;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;=n; i++)</div><div class="line">    &#123;</div><div class="line">        sum = sum+i;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> sum;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> N = <span class="number">100</span>;</div><div class="line"></div><div class="line">    result = foo(N);</div><div class="line"></div><div class="line">    <span class="built_in">printf</span>(<span class="string">"1+2+3+...+%d= %d\n"</span>, N, result);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>很好用的工具用来调试c的代码，缺点当然就是没有图形界面咯。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;备忘，mark 👿&lt;/p&gt;
+&lt;h1 id=&quot;GDB-基础知识&quot;&gt;&lt;a href=&quot;#GDB-基础知识&quot; class=&quot;headerlink&quot; title=&quot;GDB 基础知识&quot;&gt;&lt;/a&gt;GDB 基础知识&lt;/h1&gt;&lt;/blockquote&gt;
+&lt;h2 id=&quot;GDB-相关概念&quot;&gt;&lt;a href=&quot;#GDB-相关概念&quot; class=&quot;headerlink&quot; title=&quot;GDB 相关概念&quot;&gt;&lt;/a&gt;GDB 相关概念&lt;/h2&gt;&lt;p&gt;GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。&lt;/p&gt;
+&lt;h2 id=&quot;GDB-的进入和退出&quot;&gt;&lt;a href=&quot;#GDB-的进入和退出&quot; class=&quot;headerlink&quot; title=&quot;GDB 的进入和退出&quot;&gt;&lt;/a&gt;GDB 的进入和退出&lt;/h2&gt;&lt;p&gt;如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gcc -g -o bugging bugging.c&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gdb bugging&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;在 gdb 命令行界面，输入run 执行待调试程序：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;(gdb) run&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="linux命令" scheme="http://idiotsky.me/categories/linux%E5%91%BD%E4%BB%A4/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
+    
+      <category term="gdb" scheme="http://idiotsky.me/tags/gdb/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>linux命令-gcc</title>
+    <link href="http://idiotsky.me/2017/12/27/linux-gcc/"/>
+    <id>http://idiotsky.me/2017/12/27/linux-gcc/</id>
+    <published>2017-12-27T03:31:23.000Z</published>
+    <updated>2018-03-27T14:40:13.018Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>备忘，mark 👿<br>gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。</p>
+</blockquote>
+<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc(选项)(参数)</div></pre></td></tr></table></figure>
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-o：指定生成的输出文件；</div><div class="line">-E：仅执行编译预处理；</div><div class="line">-S：将C代码转换为汇编代码；</div><div class="line">-wall：显示警告信息；</div><div class="line">-c：仅执行编译操作，不进行连接操作。</div></pre></td></tr></table></figure>
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>C源文件：指定C语言源代码文件。<br><a id="more"></a></p>
+<h1 id="常用编译命令选项"><a href="#常用编译命令选项" class="headerlink" title="常用编译命令选项"></a>常用编译命令选项</h1><p>假设源程序文件名为test.c</p>
+<h2 id="无选项编译链接"><a href="#无选项编译链接" class="headerlink" title="无选项编译链接"></a>无选项编译链接</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.c</div></pre></td></tr></table></figure>
+<p>将test.c预处理、汇编、编译并链接形成可执行文件。这里未指定输出文件，默认输出为a.out。</p>
+<h2 id="选项-o"><a href="#选项-o" class="headerlink" title="选项 -o"></a>选项 -o</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.c -o test</div></pre></td></tr></table></figure>
+<p>将test.c预处理、汇编、编译并链接形成可执行文件test。-o选项用来指定输出文件的文件名。</p>
+<h2 id="选项-E"><a href="#选项-E" class="headerlink" title="选项 -E"></a>选项 -E</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -E test.c -o test.i</div></pre></td></tr></table></figure>
+<p>将test.c预处理输出test.i文件。</p>
+<h2 id="选项-S"><a href="#选项-S" class="headerlink" title="选项 -S"></a>选项 -S</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -S test.i</div></pre></td></tr></table></figure>
+<p>将预处理输出文件test.i汇编成test.s文件。</p>
+<h2 id="选项-c"><a href="#选项-c" class="headerlink" title="选项 -c"></a>选项 -c</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -c test.s</div></pre></td></tr></table></figure>
+<p>将汇编输出文件test.s编译输出test.o文件。</p>
+<h2 id="无选项链接"><a href="#无选项链接" class="headerlink" title="无选项链接"></a>无选项链接</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc test.o -o test</div></pre></td></tr></table></figure>
+<p>将编译输出文件test.o链接成最终可执行文件test。</p>
+<h2 id="选项-O"><a href="#选项-O" class="headerlink" title="选项 -O"></a>选项 -O</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -O1 test.c -o test</div></pre></td></tr></table></figure>
+<p>使用编译优化级别1编译程序。级别为1~3，级别越大优化效果越好，但编译时间越长。</p>
+<h1 id="多源文件的编译方法"><a href="#多源文件的编译方法" class="headerlink" title="多源文件的编译方法"></a>多源文件的编译方法</h1><p>如果有多个源文件，基本上有两种编译方法：</p>
+<p>假设有两个源文件为test.c和testfun.c</p>
+<h2 id="多个文件一起编译"><a href="#多个文件一起编译" class="headerlink" title="多个文件一起编译"></a>多个文件一起编译</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc testfun.c test.c -o test</div></pre></td></tr></table></figure>
+<p>将testfun.c和test.c分别编译后链接成test可执行文件。</p>
+<h2 id="分别编译各个源文件，之后对编译后输出的目标文件链接。"><a href="#分别编译各个源文件，之后对编译后输出的目标文件链接。" class="headerlink" title="分别编译各个源文件，之后对编译后输出的目标文件链接。"></a>分别编译各个源文件，之后对编译后输出的目标文件链接。</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">gcc -c testfun.c    #将testfun.c编译成testfun.o</div><div class="line">gcc -c test.c       #将test.c编译成test.o</div><div class="line">gcc -o testfun.o test.o -o test    #将testfun.o和test.o链接成test</div></pre></td></tr></table></figure>
+<p>以上两种方法相比较，第一中方法编译时需要所有文件重新编译，而第二种方法可以只重新编译修改的文件，未修改的文件不用重新编译。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;备忘，mark 👿&lt;br&gt;gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;语法&quot;&gt;&lt;a href=&quot;#语法&quot; class=&quot;headerlink&quot; title=&quot;语法&quot;&gt;&lt;/a&gt;语法&lt;/h1&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gcc(选项)(参数)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;选项&quot;&gt;&lt;a href=&quot;#选项&quot; class=&quot;headerlink&quot; title=&quot;选项&quot;&gt;&lt;/a&gt;选项&lt;/h2&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-o：指定生成的输出文件；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-E：仅执行编译预处理；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-S：将C代码转换为汇编代码；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-wall：显示警告信息；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-c：仅执行编译操作，不进行连接操作。&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;参数&quot;&gt;&lt;a href=&quot;#参数&quot; class=&quot;headerlink&quot; title=&quot;参数&quot;&gt;&lt;/a&gt;参数&lt;/h2&gt;&lt;p&gt;C源文件：指定C语言源代码文件。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="linux命令" scheme="http://idiotsky.me/categories/linux%E5%91%BD%E4%BB%A4/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.me/tags/linux/"/>
+    
+      <category term="gcc" scheme="http://idiotsky.me/tags/gcc/"/>
     
   </entry>
   

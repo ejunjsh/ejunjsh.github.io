@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,gdb," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+<meta name="keywords" content="linux,gdb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux命令-gdb">
+<meta property="og:url" content="http://idiotsky.me/2017/12/28/linux-gdb/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+<meta property="og:updated_time" content="2018-03-27T14:26:24.946Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux命令-gdb">
+<meta name="twitter:description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2017/12/28/linux-gdb/"/>
+
+
+
+
+
+  <title>linux命令-gdb | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/12/28/linux-gdb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux命令-gdb</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-28T11:31:23+08:00">
+                28 Dec 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>备忘，mark 👿</p>
+<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1></blockquote>
+<h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
+<h2 id="GDB-的进入和退出"><a href="#GDB-的进入和退出" class="headerlink" title="GDB 的进入和退出"></a>GDB 的进入和退出</h2><p>如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -o bugging bugging.c</div></pre></td></tr></table></figure></p>
+<p>输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure></p>
+<p>在 gdb 命令行界面，输入run 执行待调试程序：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>在 gdb 命令行界面，输入quit 退出 gdb：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) quit</div></pre></td></tr></table></figure></p>
+<p>上述步骤的输出<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">sky@ubuntu:~/gdbtest$ gcc -g -o bugging bugging.c</div><div class="line">sky@ubuntu:~/gdbtest$ gdb bugging</div><div class="line">GNU gdb (Ubuntu 8.0.1-0ubuntu1) 8.0.1</div><div class="line">Copyright (C) 2017 Free Software Foundation, Inc.</div><div class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</div><div class="line">This is free software: you are free to change and redistribute it.</div><div class="line">There is NO WARRANTY, to the extent permitted by law.  Type "show copying"</div><div class="line">and "show warranty" for details.</div><div class="line">This GDB was configured as "x86_64-linux-gnu".</div><div class="line">Type "show configuration" for configuration details.</div><div class="line">For bug reporting instructions, please see:</div><div class="line">&lt;http://www.gnu.org/software/gdb/bugs/&gt;.</div><div class="line">Find the GDB manual and other documentation resources online at:</div><div class="line">&lt;http://www.gnu.org/software/gdb/documentation/&gt;.</div><div class="line">For help, type "help".</div><div class="line">---Type &lt;return&gt; to continue, or q &lt;return&gt; to quit---</div><div class="line">Type "apropos word" to search for commands related to "word"...</div><div class="line">Reading symbols from bugging...done.</div><div class="line">(gdb) run</div><div class="line">Starting program: /home/sky/gdbtest/bugging</div><div class="line">1+2+3+...+100= 1431657159</div><div class="line">[Inferior 1 (process 27193) exited normally]</div><div class="line">(gdb) q</div><div class="line">sky@ubuntu:~/gdbtest$</div></pre></td></tr></table></figure></p>
+<h2 id="GDB-命令行界面使用技巧"><a href="#GDB-命令行界面使用技巧" class="headerlink" title="GDB 命令行界面使用技巧"></a>GDB 命令行界面使用技巧</h2><h3 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h3><p>任何时候都可以使用<code>TAB</code>进行补全，如果只有一个待选选项则直接补全；否则会列出可选选项，继续键入命令，同时结合<code>TAB</code>即可快速输入命令。</p>
+<h3 id="部分-gdb-常用命令一览表"><a href="#部分-gdb-常用命令一览表" class="headerlink" title="部分 gdb 常用命令一览表"></a>部分 gdb 常用命令一览表</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>简写形式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>list</td>
+<td>l</td>
+<td>查看源码</td>
+</tr>
+<tr>
+<td>backtrace</td>
+<td>bt、where</td>
+<td>打印函数栈信息</td>
+</tr>
+<tr>
+<td>next</td>
+<td>n</td>
+<td>执行下一行</td>
+</tr>
+<tr>
+<td>step</td>
+<td>s</td>
+<td>一次执行一行，遇到函数会进入</td>
+</tr>
+<tr>
+<td>finish</td>
+<td></td>
+<td>运行到函数结束</td>
+</tr>
+<tr>
+<td>continue</td>
+<td>c</td>
+<td>继续运行</td>
+</tr>
+<tr>
+<td>break</td>
+<td>b</td>
+<td>设置断点</td>
+</tr>
+<tr>
+<td>info breakpoints</td>
+<td></td>
+<td>显示断点信息</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>d</td>
+<td>删除断点</td>
+</tr>
+<tr>
+<td>print</td>
+<td>p</td>
+<td>打印表达式的值</td>
+</tr>
+<tr>
+<td>run</td>
+<td>r</td>
+<td>启动程序</td>
+</tr>
+<tr>
+<td>until</td>
+<td>u</td>
+<td>执行到指定行</td>
+</tr>
+<tr>
+<td>info</td>
+<td>i</td>
+<td>显示信息</td>
+</tr>
+<tr>
+<td>help</td>
+<td>h</td>
+<td>帮助信息</td>
+</tr>
+</tbody>
+</table>
+<h3 id="查询用法"><a href="#查询用法" class="headerlink" title="查询用法"></a>查询用法</h3><p>在 gdb 命令行界面，使用 <code>(gdb) help command</code> 可以查看命令的用法。</p>
+<h3 id="执行-Shell-命令"><a href="#执行-Shell-命令" class="headerlink" title="执行 Shell 命令"></a>执行 Shell 命令</h3><p>在 gdb 命令行界面可以执行外部的 Shell 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) !shell 命令</div></pre></td></tr></table></figure></p>
+<p>例如查看当前目录的文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) !ls</div><div class="line">bugging  bugging.c</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h1 id="GDB-断点"><a href="#GDB-断点" class="headerlink" title="GDB 断点"></a>GDB 断点</h1><h2 id="重新进入-debugging-调试界面"><a href="#重新进入-debugging-调试界面" class="headerlink" title="重新进入 debugging 调试界面"></a>重新进入 debugging 调试界面</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure>
+<h2 id="查看源码"><a href="#查看源码" class="headerlink" title="查看源码"></a>查看源码</h2><p>list 命令用来显示源文件中的代码。</p>
+<h3 id="通过行号查看源码"><a href="#通过行号查看源码" class="headerlink" title="通过行号查看源码"></a>通过行号查看源码</h3><p>list 行号，显示某一行附近的代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(gdb) list 2</div><div class="line">1       /* bugging.c */</div><div class="line">2</div><div class="line">3       #include &lt;stdio.h&gt;</div><div class="line">4</div><div class="line">5       int foo(int n)</div><div class="line">6       &#123;</div><div class="line">7</div><div class="line">8           int sum;</div><div class="line">9           int i;</div><div class="line">10</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>list 文件名 : 行号，显示某一个文件某一行附近的代码，用于多个源文件的情况。</p>
+<h3 id="通过函数查看源码"><a href="#通过函数查看源码" class="headerlink" title="通过函数查看源码"></a>通过函数查看源码</h3><p>list 函数名，显示某个函数附近的代码：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">(gdb) list main</div><div class="line">15</div><div class="line">16          return sum;</div><div class="line">17      &#125;</div><div class="line">18</div><div class="line">19      int main(int argc, char** argv)</div><div class="line">20      &#123;</div><div class="line">21          int result = 0;</div><div class="line">22          int N = 100;</div><div class="line">23</div><div class="line">24          result = foo(N);</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>list 文件名 : 函数名，显示某一个文件某个函数附近的代码，用于多个源文件的情况。</p>
+<h2 id="设置断点"><a href="#设置断点" class="headerlink" title="设置断点"></a>设置断点</h2><p>break 命令用来设置断点。</p>
+<h3 id="通过行号设置断点"><a href="#通过行号设置断点" class="headerlink" title="通过行号设置断点"></a>通过行号设置断点</h3><p>break 行号，断点设置在该行开始处，<strong>注意：该行代码未被执行：</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) break 19</div><div class="line">Breakpoint 1 at 0x680: file bugging.c, line 19.</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>break 文件名 : 行号，适用于有多个源文件的情况。</p>
+<h3 id="通过函数设置断点"><a href="#通过函数设置断点" class="headerlink" title="通过函数设置断点"></a>通过函数设置断点</h3><p>break 函数名，断点设置在该函数的开始处，<strong>断点所在行未被执行：</strong><br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">(gdb) break foo</div><div class="line">Breakpoint 2 at 0x651: file bugging.c, line 11.</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>break 文件名 : 函数名，适用于有多个源文件的情况。</p>
+<h2 id="查看断点信息"><a href="#查看断点信息" class="headerlink" title="查看断点信息"></a>查看断点信息</h2><p>info breakpoints 命令用于显示当前断点信息。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">2       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>其中每一项的信息：</p>
+<ul>
+<li>Num 列代表断点编号，该编号可以作为 delete/enalbe/disable 等控制断点命令的参数</li>
+<li>Type 列代表断点类型，一般为 breakpoint</li>
+<li>Disp 列代表断点被命中后，该断点保留(keep)、删除(del)还是关闭(dis)</li>
+<li>Enb 列代表该断点是 enable(y) 还是 disable(n)</li>
+<li>Address 列代表该断点处虚拟内存的地址</li>
+<li>What 列代表该断点在源文件中的信息</li>
+</ul>
+<h2 id="删除断点"><a href="#删除断点" class="headerlink" title="删除断点"></a>删除断点</h2><p>delete 命令用于删除断点。</p>
+<h3 id="删除指定断点"><a href="#删除指定断点" class="headerlink" title="删除指定断点"></a>删除指定断点</h3><p>delete Num，删除指定断点，断点编号可通过 info breakpoints 获得：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">2       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) delete 2</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h3 id="删除所有断点"><a href="#删除所有断点" class="headerlink" title="删除所有断点"></a>删除所有断点</h3><p>delete，不带任何参数，默认删除所有断点。</p>
+<h2 id="关闭和启用断点"><a href="#关闭和启用断点" class="headerlink" title="关闭和启用断点"></a>关闭和启用断点</h2><p>disable 命令用于关闭断点，有些断点可能暂时不需要但又不想删除，便可以 disable 该断点。<br>enable 命令用于启用断点。</p>
+<h3 id="关闭所有断点"><a href="#关闭所有断点" class="headerlink" title="关闭所有断点"></a>关闭所有断点</h3><p>disable，不带任何参数，默认关闭所有断点。</p>
+<h3 id="关闭指定断点"><a href="#关闭指定断点" class="headerlink" title="关闭指定断点"></a>关闭指定断点</h3><p>disable Num，关闭指定断点，断点编号可通过 info breakpoints 获得：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) disable 1</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep n   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h3 id="启用所有断点"><a href="#启用所有断点" class="headerlink" title="启用所有断点"></a>启用所有断点</h3><p>enable，不带任何参数，默认启用所有断点。</p>
+<h3 id="启用指定断点"><a href="#启用指定断点" class="headerlink" title="启用指定断点"></a>启用指定断点</h3><p>enable Num，启用指定断点，断点编号可通过 info breakpoints 获得。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) enable 1</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>disable 和 enable 命令影响的是 info breakpoints 的 Enb 列，表示该断点是启用还是关闭</p>
+<h2 id="断点启用的更多方式"><a href="#断点启用的更多方式" class="headerlink" title="断点启用的更多方式"></a>断点启用的更多方式</h2><p>enable 命令还可以用来设置断点被执行的次数，比如当断点设在循环中的时候，某断点可能多次被命中。</p>
+<h3 id="断点-hit-一次之后关闭该断点"><a href="#断点-hit-一次之后关闭该断点" class="headerlink" title="断点 hit 一次之后关闭该断点"></a>断点 hit 一次之后关闭该断点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">enable once Num</div></pre></td></tr></table></figure>
+<h3 id="断点-hit-一次之后删除该断点"><a href="#断点-hit-一次之后删除该断点" class="headerlink" title="断点 hit 一次之后删除该断点"></a>断点 hit 一次之后删除该断点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">enable delete Num</div></pre></td></tr></table></figure>
+<p>实验中我们可以如下图测试该功能：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     keep y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     keep y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) enable once 1</div><div class="line">(gdb) enable delete 3</div><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     dis  y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     del  y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>这两个命令影响的是 info breakpoints 的 Disp 列，表示该断点被命中之后的行为</p>
+<h2 id="断点小结"><a href="#断点小结" class="headerlink" title="断点小结"></a>断点小结</h2><p>断点是调试最基本的方法之一，这一节主要介绍了断点相关的知识。主要是几个断点相关的命令。</p>
+<ul>
+<li>list</li>
+<li>info breakpoints</li>
+<li>break</li>
+<li>delete</li>
+<li>disable 和 enable</li>
+<li>enable once 和 enable delete</li>
+</ul>
+<p>不熟悉命令的时候，记得在 gdb 命令行下键入 help info breakpoints 等命令，查询帮助文档。</p>
+<h1 id="单步调试"><a href="#单步调试" class="headerlink" title="单步调试"></a>单步调试</h1><p>如果已经设置断点后，执行<code>run</code>,就会运行到断点：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">(gdb) info breakpoints</div><div class="line">Num     Type           Disp Enb Address            What</div><div class="line">1       breakpoint     dis  y   0x0000000000000680 in main at bugging.c:19</div><div class="line">3       breakpoint     del  y   0x0000000000000651 in foo at bugging.c:11</div><div class="line">(gdb) run</div><div class="line">Starting program: /home/sky/gdbtest/bugging</div><div class="line"></div><div class="line">Breakpoint 1, main (argc=1, argv=0x7fffffffdfd8) at bugging.c:21</div><div class="line">21          int result = 0;</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="继续单步调试"><a href="#继续单步调试" class="headerlink" title="继续单步调试"></a>继续单步调试</h2><p>上面输出会停到<code>main</code>函数这个断点，<code>next</code>或者<code>n</code>，就会单步运行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Breakpoint 1, main (argc=1, argv=0x7fffffffdfd8) at bugging.c:21</div><div class="line">21          int result = 0;</div><div class="line">(gdb) n</div><div class="line">22          int N = 100;</div><div class="line">(gdb) next</div><div class="line">24          result = foo(N);</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="显示变量"><a href="#显示变量" class="headerlink" title="显示变量"></a>显示变量</h2><p>如果想显示某个变量的值，用<code>display &lt;变量名&gt;</code> ：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Temporary breakpoint 3, foo (n=100) at bugging.c:11</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">(gdb) display sum</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<p>上面代码我想显示<code>sum</code>这个变量，而且单步调试的时候，这个变量会一直显示。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">(gdb) n</div><div class="line">13              sum = sum+i;</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">13              sum = sum+i;</div><div class="line">1: sum = 1431652109</div><div class="line">(gdb) n</div><div class="line">11          for (i=0; i&lt;=n; i++)</div><div class="line">1: sum = 1431652110</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h2 id="退出单步调试"><a href="#退出单步调试" class="headerlink" title="退出单步调试"></a>退出单步调试</h2><p>用<code>continue</code>或者<code>c</code>,退出单步调试<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">(gdb) c</div><div class="line">Continuing.</div><div class="line">1+2+3+...+100= 1431657159</div><div class="line">[Inferior 1 (process 27595) exited normally]</div><div class="line">(gdb)</div></pre></td></tr></table></figure></p>
+<h1 id="bugging-c代码"><a href="#bugging-c代码" class="headerlink" title="bugging.c代码"></a>bugging.c代码</h1><p>这是上面调试用的代码，此代码用来输出<code>1+2+3+...+100</code>的和，很明显上面最后的结果是一个很大值，为什么呢，你可以看上面单步调试里面显示某个变量的值还有以下注释👿<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* bugging.c */</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> n)</span></span></div><div class="line">&#123;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> sum;  <span class="comment">//没有初始化为0，所以这个变量的值为不确定</span></div><div class="line">    <span class="keyword">int</span> i;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;=n; i++)</div><div class="line">    &#123;</div><div class="line">        sum = sum+i;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> sum;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> N = <span class="number">100</span>;</div><div class="line"></div><div class="line">    result = foo(N);</div><div class="line"></div><div class="line">    <span class="built_in">printf</span>(<span class="string">"1+2+3+...+%d= %d\n"</span>, N, result);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>很好用的工具用来调试c的代码，缺点当然就是没有图形界面咯。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/gdb/" rel="tag"># gdb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/27/linux-gcc/" rel="next" title="linux命令-gcc">
+                <i class="fa fa-chevron-left"></i> linux命令-gcc
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/03/go-nil/" rel="prev" title="go基础-nil">
+                go基础-nil <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">137</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">124</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#GDB-基础知识"><span class="nav-number">1.</span> <span class="nav-text">GDB 基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GDB-相关概念"><span class="nav-number">1.1.</span> <span class="nav-text">GDB 相关概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GDB-的进入和退出"><span class="nav-number">1.2.</span> <span class="nav-text">GDB 的进入和退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GDB-命令行界面使用技巧"><span class="nav-number">1.3.</span> <span class="nav-text">GDB 命令行界面使用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令补全"><span class="nav-number">1.3.1.</span> <span class="nav-text">命令补全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部分-gdb-常用命令一览表"><span class="nav-number">1.3.2.</span> <span class="nav-text">部分 gdb 常用命令一览表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询用法"><span class="nav-number">1.3.3.</span> <span class="nav-text">查询用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行-Shell-命令"><span class="nav-number">1.3.4.</span> <span class="nav-text">执行 Shell 命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GDB-断点"><span class="nav-number">2.</span> <span class="nav-text">GDB 断点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#重新进入-debugging-调试界面"><span class="nav-number">2.1.</span> <span class="nav-text">重新进入 debugging 调试界面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看源码"><span class="nav-number">2.2.</span> <span class="nav-text">查看源码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通过行号查看源码"><span class="nav-number">2.2.1.</span> <span class="nav-text">通过行号查看源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过函数查看源码"><span class="nav-number">2.2.2.</span> <span class="nav-text">通过函数查看源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置断点"><span class="nav-number">2.3.</span> <span class="nav-text">设置断点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#通过行号设置断点"><span class="nav-number">2.3.1.</span> <span class="nav-text">通过行号设置断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过函数设置断点"><span class="nav-number">2.3.2.</span> <span class="nav-text">通过函数设置断点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看断点信息"><span class="nav-number">2.4.</span> <span class="nav-text">查看断点信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除断点"><span class="nav-number">2.5.</span> <span class="nav-text">删除断点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#删除指定断点"><span class="nav-number">2.5.1.</span> <span class="nav-text">删除指定断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除所有断点"><span class="nav-number">2.5.2.</span> <span class="nav-text">删除所有断点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关闭和启用断点"><span class="nav-number">2.6.</span> <span class="nav-text">关闭和启用断点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭所有断点"><span class="nav-number">2.6.1.</span> <span class="nav-text">关闭所有断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭指定断点"><span class="nav-number">2.6.2.</span> <span class="nav-text">关闭指定断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启用所有断点"><span class="nav-number">2.6.3.</span> <span class="nav-text">启用所有断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启用指定断点"><span class="nav-number">2.6.4.</span> <span class="nav-text">启用指定断点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#断点启用的更多方式"><span class="nav-number">2.7.</span> <span class="nav-text">断点启用的更多方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#断点-hit-一次之后关闭该断点"><span class="nav-number">2.7.1.</span> <span class="nav-text">断点 hit 一次之后关闭该断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断点-hit-一次之后删除该断点"><span class="nav-number">2.7.2.</span> <span class="nav-text">断点 hit 一次之后删除该断点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#断点小结"><span class="nav-number">2.8.</span> <span class="nav-text">断点小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#单步调试"><span class="nav-number">3.</span> <span class="nav-text">单步调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继续单步调试"><span class="nav-number">3.1.</span> <span class="nav-text">继续单步调试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示变量"><span class="nav-number">3.2.</span> <span class="nav-text">显示变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#退出单步调试"><span class="nav-number">3.3.</span> <span class="nav-text">退出单步调试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#bugging-c代码"><span class="nav-number">4.</span> <span class="nav-text">bugging.c代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

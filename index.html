@@ -1568,7 +1568,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/28/linux-gdb/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/26/linux-ip/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1587,7 +1587,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/01/28/linux-gdb/" itemprop="url">linux-gdb</a></h1>
+                <a class="post-title-link" href="/2018/01/26/linux-ip/" itemprop="url">linux的12个ip命令范例</a></h1>
         
 
         <div class="post-meta">
@@ -1599,8 +1599,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-28T11:31:23+08:00">
-                28 Jan 18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-26T21:21:23+08:00">
+                26 Jan 18
               </time>
             
 
@@ -1660,11 +1660,12 @@
 
       
         
-          <blockquote>
-<p>备忘，mark 👿<br>
+          <p>一年又一年，我们一直在使用 ifconfig 命令来执行网络相关的任务，比如检查和配置网卡信息。但是 ifconfig 已经不再被维护，并且在最近版本的 Linux 中被废除了！ ifconfig 命令已经被 ip 命令所替代了。</p>
+<p>ip 命令跟 ifconfig 命令有些类似，但要强力的多，它有许多新功能。ip 命令完成很多 ifconfig 命令无法完成的任务。</p>
+<h1 id="案例-1：检查网卡信息"><a href="#案例-1：检查网卡信息" class="headerlink" title="案例 1：检查网卡信息"></a>案例 1：检查网卡信息</h1><p>检查网卡的诸如 IP 地址，子网等网络信息，使用 ip addr show 命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ip addr show</span></div><div class="line">或</div><div class="line"><span class="meta">$</span><span class="bash"> ip a s</span></div></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/01/28/linux-gdb/#more" rel="contents">
+            <a class="btn" href="/2018/01/26/linux-ip/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1715,7 +1716,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/27/linux-gcc/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/16/c-malloc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1734,7 +1735,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/01/27/linux-gcc/" itemprop="url">linux-gcc</a></h1>
+                <a class="post-title-link" href="/2018/01/16/c-malloc/" itemprop="url">如何实现一个malloc</a></h1>
         
 
         <div class="post-meta">
@@ -1746,8 +1747,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-27T11:31:23+08:00">
-                27 Jan 18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-16T23:46:42+08:00">
+                16 Jan 18
               </time>
             
 
@@ -1769,8 +1770,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
+                  <a href="/categories/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c</span>
                   </a>
                 </span>
 
@@ -1808,10 +1809,14 @@
       
         
           <blockquote>
-<p>备忘，mark 👿<br>
+<p>这篇文章很好的总结了很多关于内存的知识，虽然它讲的只是一个c函数，mark之👿</p>
+</blockquote>
+<p>任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个普通函数，而且实现malloc的<strong>基本</strong>思想并不复杂，任何一个对C和操作系统有些许了解的程序员都可以很容易理解。</p>
+<p>这篇文章通过实现一个简单的malloc来描述malloc背后的机制。当然与现有C的标准库实现（例如glibc）相比，我们实现的malloc并不是特别高效，但是这个实现比目前真实的malloc实现要简单很多，因此易于理解。重要的是，这个实现和真实实现在基本原理上是一致的。</p>
+<p>这篇文章将首先介绍一些所需的基本知识，如操作系统对进程的内存管理以及相关的系统调用，然后逐步实现一个简单的malloc。为了简单起见，这篇文章将只考虑x86_64体系结构，操作系统为Linux。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/01/27/linux-gcc/#more" rel="contents">
+            <a class="btn" href="/2018/01/16/c-malloc/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
