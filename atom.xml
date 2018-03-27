@@ -1123,12 +1123,12 @@
     <link href="http://idiotsky.me/2017/12/28/linux-gdb/"/>
     <id>http://idiotsky.me/2017/12/28/linux-gdb/</id>
     <published>2017-12-28T03:31:23.000Z</published>
-    <updated>2018-03-27T14:26:24.946Z</updated>
+    <updated>2018-03-27T14:44:05.817Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>备忘，mark 👿</p>
-<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1></blockquote>
-<h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
+</blockquote>
+<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1><h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
 <h2 id="GDB-的进入和退出"><a href="#GDB-的进入和退出" class="headerlink" title="GDB 的进入和退出"></a>GDB 的进入和退出</h2><p>如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -o bugging bugging.c</div></pre></td></tr></table></figure></p>
 <p>输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure></p>
 <p>在 gdb 命令行界面，输入run 执行待调试程序：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div></pre></td></tr></table></figure></p>
@@ -1278,8 +1278,8 @@
     
       &lt;blockquote&gt;
 &lt;p&gt;备忘，mark 👿&lt;/p&gt;
-&lt;h1 id=&quot;GDB-基础知识&quot;&gt;&lt;a href=&quot;#GDB-基础知识&quot; class=&quot;headerlink&quot; title=&quot;GDB 基础知识&quot;&gt;&lt;/a&gt;GDB 基础知识&lt;/h1&gt;&lt;/blockquote&gt;
-&lt;h2 id=&quot;GDB-相关概念&quot;&gt;&lt;a href=&quot;#GDB-相关概念&quot; class=&quot;headerlink&quot; title=&quot;GDB 相关概念&quot;&gt;&lt;/a&gt;GDB 相关概念&lt;/h2&gt;&lt;p&gt;GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;GDB-基础知识&quot;&gt;&lt;a href=&quot;#GDB-基础知识&quot; class=&quot;headerlink&quot; title=&quot;GDB 基础知识&quot;&gt;&lt;/a&gt;GDB 基础知识&lt;/h1&gt;&lt;h2 id=&quot;GDB-相关概念&quot;&gt;&lt;a href=&quot;#GDB-相关概念&quot; class=&quot;headerlink&quot; title=&quot;GDB 相关概念&quot;&gt;&lt;/a&gt;GDB 相关概念&lt;/h2&gt;&lt;p&gt;GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。&lt;/p&gt;
 &lt;h2 id=&quot;GDB-的进入和退出&quot;&gt;&lt;a href=&quot;#GDB-的进入和退出&quot; class=&quot;headerlink&quot; title=&quot;GDB 的进入和退出&quot;&gt;&lt;/a&gt;GDB 的进入和退出&lt;/h2&gt;&lt;p&gt;如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gcc -g -o bugging bugging.c&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gdb bugging&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;在 gdb 命令行界面，输入run 执行待调试程序：&lt;br&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;(gdb) run&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
@@ -1300,11 +1300,12 @@
     <link href="http://idiotsky.me/2017/12/27/linux-gcc/"/>
     <id>http://idiotsky.me/2017/12/27/linux-gcc/</id>
     <published>2017-12-27T03:31:23.000Z</published>
-    <updated>2018-03-27T14:40:13.018Z</updated>
+    <updated>2018-03-27T14:44:01.861Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
-<p>备忘，mark 👿<br>gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。</p>
+<p>备忘，mark 👿</p>
 </blockquote>
+<p>gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。</p>
 <h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc(选项)(参数)</div></pre></td></tr></table></figure>
 <h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-o：指定生成的输出文件；</div><div class="line">-E：仅执行编译预处理；</div><div class="line">-S：将C代码转换为汇编代码；</div><div class="line">-wall：显示警告信息；</div><div class="line">-c：仅执行编译操作，不进行连接操作。</div></pre></td></tr></table></figure>
 <h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>C源文件：指定C语言源代码文件。<br><a id="more"></a></p>
@@ -1334,8 +1335,9 @@
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;备忘，mark 👿&lt;br&gt;gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。&lt;/p&gt;
+&lt;p&gt;备忘，mark 👿&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。&lt;/p&gt;
 &lt;h1 id=&quot;语法&quot;&gt;&lt;a href=&quot;#语法&quot; class=&quot;headerlink&quot; title=&quot;语法&quot;&gt;&lt;/a&gt;语法&lt;/h1&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;gcc(选项)(参数)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;h2 id=&quot;选项&quot;&gt;&lt;a href=&quot;#选项&quot; class=&quot;headerlink&quot; title=&quot;选项&quot;&gt;&lt;/a&gt;选项&lt;/h2&gt;&lt;figure class=&quot;highlight shell&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-o：指定生成的输出文件；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-E：仅执行编译预处理；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-S：将C代码转换为汇编代码；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-wall：显示警告信息；&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-c：仅执行编译操作，不进行连接操作。&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;h2 id=&quot;参数&quot;&gt;&lt;a href=&quot;#参数&quot; class=&quot;headerlink&quot; title=&quot;参数&quot;&gt;&lt;/a&gt;参数&lt;/h2&gt;&lt;p&gt;C源文件：指定C语言源代码文件。&lt;br&gt;

@@ -103,17 +103,17 @@
 
 
 
-<meta name="description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+<meta name="description" content="备忘，mark 👿  GDB 基础知识GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
 <meta name="keywords" content="linux,gdb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux命令-gdb">
 <meta property="og:url" content="http://idiotsky.me/2017/12/28/linux-gdb/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
-<meta property="og:updated_time" content="2018-03-27T14:26:24.946Z">
+<meta property="og:description" content="备忘，mark 👿  GDB 基础知识GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+<meta property="og:updated_time" content="2018-03-27T14:44:05.817Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令-gdb">
-<meta name="twitter:description" content="备忘，mark 👿 GDB 基础知识 GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
+<meta name="twitter:description" content="备忘，mark 👿  GDB 基础知识GDB 相关概念GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。 GDB 的进入和退出如果要调试程序，需要在 gcc 编译可">
 
 
 
@@ -434,8 +434,8 @@
       
         <blockquote>
 <p>备忘，mark 👿</p>
-<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1></blockquote>
-<h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
+</blockquote>
+<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1><h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
 <h2 id="GDB-的进入和退出"><a href="#GDB-的进入和退出" class="headerlink" title="GDB 的进入和退出"></a>GDB 的进入和退出</h2><p>如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -o bugging bugging.c</div></pre></td></tr></table></figure></p>
 <p>输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure></p>
 <p>在 gdb 命令行界面，输入run 执行待调试程序：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div></pre></td></tr></table></figure></p>
