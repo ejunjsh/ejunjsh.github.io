@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2018/03/21/csapp-summary/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧  计算机系统漫游这一章里面基本是对整本书的一个概括吧。  gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接 系统硬件组成：总线，I/O设备，主存，处理器 存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…) 并发运行则">
-<meta property="og:updated_time" content="2018-04-03T15:38:43.143Z">
+<meta property="og:updated_time" content="2018-04-04T15:46:40.606Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="看书总结-深入理解计算机系统">
 <meta name="twitter:description" content="看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧  计算机系统漫游这一章里面基本是对整本书的一个概括吧。  gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接 系统硬件组成：总线，I/O设备，主存，处理器 存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…) 并发运行则">
@@ -454,7 +454,9 @@
 <li>对于一个字长为w位的机器，虚拟地址范围为0～2^w-1,程序最多访问2^w个字节</li>
 <li>最低有效字节在最前面的方式，称为小端法，最高有效字节在最前面的方式，称为大端法。</li>
 <li>最常见的有符号数的计算机表示方式就是补码</li>
+<li>几乎所有的编译器/机器组合都对有符号数使用算数右移</li>
 <li>对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变</li>
+<li>两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样</li>
 </ul>
 <blockquote>
 <p>to be continue….</p>

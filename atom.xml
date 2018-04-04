@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-04-03T15:38:43.143Z</updated>
+  <updated>2018-04-04T15:46:40.606Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/03/21/csapp-summary/"/>
     <id>http://idiotsky.me/2018/03/21/csapp-summary/</id>
     <published>2018-03-21T11:42:47.000Z</published>
-    <updated>2018-04-03T15:38:43.143Z</updated>
+    <updated>2018-04-04T15:46:40.606Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
@@ -44,7 +44,9 @@
 <li>对于一个字长为w位的机器，虚拟地址范围为0～2^w-1,程序最多访问2^w个字节</li>
 <li>最低有效字节在最前面的方式，称为小端法，最高有效字节在最前面的方式，称为大端法。</li>
 <li>最常见的有符号数的计算机表示方式就是补码</li>
+<li>几乎所有的编译器/机器组合都对有符号数使用算数右移</li>
 <li>对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变</li>
+<li>两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样</li>
 </ul>
 <blockquote>
 <p>to be continue….</p>
@@ -75,7 +77,9 @@
 &lt;li&gt;对于一个字长为w位的机器，虚拟地址范围为0～2^w-1,程序最多访问2^w个字节&lt;/li&gt;
 &lt;li&gt;最低有效字节在最前面的方式，称为小端法，最高有效字节在最前面的方式，称为大端法。&lt;/li&gt;
 &lt;li&gt;最常见的有符号数的计算机表示方式就是补码&lt;/li&gt;
+&lt;li&gt;几乎所有的编译器/机器组合都对有符号数使用算数右移&lt;/li&gt;
 &lt;li&gt;对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变&lt;/li&gt;
+&lt;li&gt;两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
 &lt;p&gt;to be continue….&lt;/p&gt;
