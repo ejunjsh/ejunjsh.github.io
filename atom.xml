@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-04-04T15:46:40.606Z</updated>
+  <updated>2018-04-04T16:08:56.043Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/03/21/csapp-summary/"/>
     <id>http://idiotsky.me/2018/03/21/csapp-summary/</id>
     <published>2018-03-21T11:42:47.000Z</published>
-    <updated>2018-04-04T15:46:40.606Z</updated>
+    <updated>2018-04-04T16:08:56.043Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
@@ -47,6 +47,11 @@
 <li>几乎所有的编译器/机器组合都对有符号数使用算数右移</li>
 <li>对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变</li>
 <li>两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样</li>
+</ul>
+<h1 id="程序的机器级表示"><a href="#程序的机器级表示" class="headerlink" title="程序的机器级表示"></a>程序的机器级表示</h1><p>这篇是汇编相关，精华👿</p>
+<ul>
+<li>汇编代码是机器代码的文本表示</li>
+<li></li>
 </ul>
 <blockquote>
 <p>to be continue….</p>
@@ -80,6 +85,11 @@
 &lt;li&gt;几乎所有的编译器/机器组合都对有符号数使用算数右移&lt;/li&gt;
 &lt;li&gt;对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变&lt;/li&gt;
 &lt;li&gt;两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;程序的机器级表示&quot;&gt;&lt;a href=&quot;#程序的机器级表示&quot; class=&quot;headerlink&quot; title=&quot;程序的机器级表示&quot;&gt;&lt;/a&gt;程序的机器级表示&lt;/h1&gt;&lt;p&gt;这篇是汇编相关，精华👿&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;汇编代码是机器代码的文本表示&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
 &lt;p&gt;to be continue….&lt;/p&gt;
