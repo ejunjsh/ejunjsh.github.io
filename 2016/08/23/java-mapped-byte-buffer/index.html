@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="java,nio,buffer," />
 
 
 
@@ -104,13 +104,13 @@
 
 
 <meta name="description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
-<meta name="keywords" content="java">
+<meta name="keywords" content="java,nio,buffer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入浅出MappedByteBuffer">
 <meta property="og:url" content="http://idiotsky.me/2016/08/23/java-mapped-byte-buffer/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
-<meta property="og:updated_time" content="2017-08-22T17:09:12.000Z">
+<meta property="og:updated_time" content="2018-04-11T15:42:24.536Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入浅出MappedByteBuffer">
 <meta name="twitter:description" content="前言java io操作中通常采用BufferedReader，BufferedInputStream等带缓冲的IO类处理大文件，不过java nio中引入了一种基于MappedByteBuffer操作大文件的方式，其读写性能极高，本文会介绍其性能如此高的内部实现原理。">
@@ -520,6 +520,10 @@
           
             <a href="/tags/java/" rel="tag"># java</a>
           
+            <a href="/tags/nio/" rel="tag"># nio</a>
+          
+            <a href="/tags/buffer/" rel="tag"># buffer</a>
+          
         </div>
       
 
@@ -620,7 +624,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">137</span>
+                <span class="site-state-item-count">138</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -642,7 +646,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">124</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

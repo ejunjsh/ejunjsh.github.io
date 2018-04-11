@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,nio,channel,buffer," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
+<meta name="keywords" content="java,nio,channel,buffer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NIO之Channel、Buffer">
+<meta property="og:url" content="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
+<meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer.png">
+<meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer-1.png">
+<meta property="og:updated_time" content="2018-04-11T16:22:41.593Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NIO之Channel、Buffer">
+<meta name="twitter:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
+<meta name="twitter:image" content="http://idiotsky.me/images3/java-nio-channel-buffer.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/"/>
+
+
+
+
+
+  <title>NIO之Channel、Buffer | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">NIO之Channel、Buffer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-21T11:16:51+08:00">
+                21 Aug 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。<br>1、mark：初始值为-1，用于备份当前的position;<br>2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；<br>3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式下，limit表示最多可以读取多少数据。<br>4、capacity：缓存数组大小</p>
+<p><a href="http://idiotsky.me/images3/java-nio-channel-buffer.png"><img src="http://idiotsky.me/images3/java-nio-channel-buffer.png" alt=""></a><br><a id="more"></a></p>
+<p>mark()：把当前的position赋值给mark<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">mark</span><span class="params">()</span> </span>&#123;</div><div class="line">    mark = position;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>reset()：把mark值还原给position<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">reset</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> m = mark;</div><div class="line">    <span class="keyword">if</span> (m &lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InvalidMarkException();</div><div class="line">    position = m;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>clear()：一旦读完Buffer中的数据，需要让Buffer准备好再次被写入，clear会恢复状态值，但不会擦除数据。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">clear</span><span class="params">()</span> </span>&#123;</div><div class="line">    position = <span class="number">0</span>;</div><div class="line">    limit = capacity;</div><div class="line">    mark = -<span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>flip()：Buffer有两种模式，写模式和读模式，flip后Buffer从写模式变成读模式。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">flip</span><span class="params">()</span> </span>&#123;</div><div class="line">    limit = position;</div><div class="line">    position = <span class="number">0</span>;</div><div class="line">    mark = -<span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>rewind()：重置position为0，从头读写数据。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">rewind</span><span class="params">()</span> </span>&#123;</div><div class="line">    position = <span class="number">0</span>;</div><div class="line">    mark = -<span class="number">1</span>;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>目前Buffer的实现类有以下几种：</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>DoubleBuffer</li>
+<li>FloatBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>ShortBuffer</li>
+<li>MappedByteBuffer</li>
+</ul>
+<p><a href="http://idiotsky.me/images3/java-nio-channel-buffer-1.png"><img src="http://idiotsky.me/images3/java-nio-channel-buffer-1.png" alt=""></a></p>
+<h1 id="ByteBuffer"><a href="#ByteBuffer" class="headerlink" title="ByteBuffer"></a>ByteBuffer</h1><p>ByteBuffer的实现类包括”HeapByteBuffer”和”DirectByteBuffer”两种。</p>
+<h2 id="HeapByteBuffer"><a href="#HeapByteBuffer" class="headerlink" title="HeapByteBuffer"></a>HeapByteBuffer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title">allocate</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (capacity &lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> HeapByteBuffer(capacity, capacity);</div><div class="line">&#125;</div><div class="line">HeapByteBuffer(<span class="keyword">int</span> cap, <span class="keyword">int</span> lim) &#123;  </div><div class="line">    <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, lim, cap, <span class="keyword">new</span> <span class="keyword">byte</span>[cap], <span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>HeapByteBuffer通过初始化字节数组hd，在虚拟机堆上申请内存空间。</p>
+<h2 id="DirectByteBuffer"><a href="#DirectByteBuffer" class="headerlink" title="DirectByteBuffer"></a>DirectByteBuffer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title">allocateDirect</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DirectByteBuffer(capacity);</div><div class="line">&#125;</div><div class="line">DirectByteBuffer(<span class="keyword">int</span> cap) &#123;</div><div class="line">    <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap);</div><div class="line">    <span class="keyword">boolean</span> pa = VM.isDirectMemoryPageAligned();</div><div class="line">    <span class="keyword">int</span> ps = Bits.pageSize();</div><div class="line">    <span class="keyword">long</span> size = Math.max(<span class="number">1L</span>, (<span class="keyword">long</span>)cap + (pa ? ps : <span class="number">0</span>));</div><div class="line">    Bits.reserveMemory(size, cap);</div><div class="line"></div><div class="line">    <span class="keyword">long</span> base = <span class="number">0</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        base = unsafe.allocateMemory(size);</div><div class="line">    &#125; <span class="keyword">catch</span> (OutOfMemoryError x) &#123;</div><div class="line">        Bits.unreserveMemory(size, cap);</div><div class="line">        <span class="keyword">throw</span> x;</div><div class="line">    &#125;</div><div class="line">    unsafe.setMemory(base, size, (<span class="keyword">byte</span>) <span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (pa &amp;&amp; (base % ps != <span class="number">0</span>)) &#123;</div><div class="line">        <span class="comment">// Round up to page boundary</span></div><div class="line">        address = base + ps - (base &amp; (ps - <span class="number">1</span>));</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        address = base;</div><div class="line">    &#125;</div><div class="line">    cleaner = Cleaner.create(<span class="keyword">this</span>, <span class="keyword">new</span> Deallocator(base, size, cap));</div><div class="line">    att = <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>DirectByteBuffer通过unsafe.allocateMemory申请堆外内存，并在ByteBuffer的address变量中维护指向该内存的地址。<br>unsafe.setMemory(base, size, (byte) 0)方法把新申请的内存数据清零。</p>
+<h1 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h1><p>channel是一个带缓冲的可读可写的I/O对象，所谓带缓冲就是数据要经过一道缓冲的buffer之后，才会到用户层（也就是java代码直接访问的那一层）</p>
+<p>目前已知Channel的实现类有：</p>
+<ul>
+<li>FileChannel</li>
+<li>DatagramChannel</li>
+<li>SocketChannel</li>
+<li>ServerSocketChannel</li>
+</ul>
+<p>这里用FileChannel做代表吧</p>
+<h1 id="FileChannel"><a href="#FileChannel" class="headerlink" title="FileChannel"></a>FileChannel</h1><p>FileChannel的read、write和map通过其实现类FileChannelImpl实现。</p>
+<h2 id="read实现"><a href="#read实现" class="headerlink" title="read实现"></a>read实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(ByteBuffer dst)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">    ensureOpen();</div><div class="line">    <span class="keyword">if</span> (!readable)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NonReadableChannelException();</div><div class="line">    <span class="keyword">synchronized</span> (positionLock) &#123;</div><div class="line">        <span class="keyword">int</span> n = <span class="number">0</span>;</div><div class="line">        <span class="keyword">int</span> ti = -<span class="number">1</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            begin();</div><div class="line">            ti = threads.add();</div><div class="line">            <span class="keyword">if</span> (!isOpen())</div><div class="line">                <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">            <span class="keyword">do</span> &#123;</div><div class="line">                n = IOUtil.read(fd, dst, -<span class="number">1</span>, nd);</div><div class="line">            &#125; <span class="keyword">while</span> ((n == IOStatus.INTERRUPTED) &amp;&amp; isOpen());</div><div class="line">            <span class="keyword">return</span> IOStatus.normalize(n);</div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line">            threads.remove(ti);</div><div class="line">            end(n &gt; <span class="number">0</span>);</div><div class="line">            <span class="keyword">assert</span> IOStatus.check(n);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>FileChannelImpl的read方法通过IOUtil的read实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor fd, ByteBuffer dst, <span class="keyword">long</span> position,</span></span></div><div class="line">                NativeDispatcher nd) IOException &#123;</div><div class="line">    <span class="keyword">if</span> (dst.isReadOnly())</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</div><div class="line">    <span class="keyword">if</span> (dst <span class="keyword">instanceof</span> DirectBuffer)</div><div class="line">        <span class="keyword">return</span> readIntoNativeBuffer(fd, dst, position, nd);</div><div class="line"></div><div class="line">    <span class="comment">// Substitute a native buffer</span></div><div class="line">    ByteBuffer bb = Util.getTemporaryDirectBuffer(dst.remaining());</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">int</span> n = readIntoNativeBuffer(fd, bb, position, nd);</div><div class="line">        bb.flip();</div><div class="line">        <span class="keyword">if</span> (n &gt; <span class="number">0</span>)</div><div class="line">            dst.put(bb);</div><div class="line">        <span class="keyword">return</span> n;</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        Util.offerFirstTemporaryDirectBuffer(bb);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>通过上述实现可以看出，基于channel的文件数据读取步骤如下：</p>
+<ol>
+<li>申请一块和缓存同大小的DirectByteBuffer bb。</li>
+<li>读取数据到缓存bb，底层由NativeDispatcher的read实现。</li>
+<li>把bb的数据读取到dst（用户定义的缓存，在jvm中分配内存）。</li>
+</ol>
+<p>read方法导致数据复制了两次。内核-&gt;bb,bb-&gt;dst</p>
+<h2 id="write实现"><a href="#write实现" class="headerlink" title="write实现"></a>write实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">write</span><span class="params">(ByteBuffer src)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">    ensureOpen();</div><div class="line">    <span class="keyword">if</span> (!writable)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NonWritableChannelException();</div><div class="line">    <span class="keyword">synchronized</span> (positionLock) &#123;</div><div class="line">        <span class="keyword">int</span> n = <span class="number">0</span>;</div><div class="line">        <span class="keyword">int</span> ti = -<span class="number">1</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            begin();</div><div class="line">            ti = threads.add();</div><div class="line">            <span class="keyword">if</span> (!isOpen())</div><div class="line">                <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">            <span class="keyword">do</span> &#123;</div><div class="line">                n = IOUtil.write(fd, src, -<span class="number">1</span>, nd);</div><div class="line">            &#125; <span class="keyword">while</span> ((n == IOStatus.INTERRUPTED) &amp;&amp; isOpen());</div><div class="line">            <span class="keyword">return</span> IOStatus.normalize(n);</div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line">            threads.remove(ti);</div><div class="line">            end(n &gt; <span class="number">0</span>);</div><div class="line">            <span class="keyword">assert</span> IOStatus.check(n);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>和read实现一样，FileChannelImpl的write方法通过IOUtil的write实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">write</span><span class="params">(FileDescriptor fd, ByteBuffer src, <span class="keyword">long</span> position,</span></span></div><div class="line">                 NativeDispatcher nd) <span class="keyword">throws</span> IOException &#123;</div><div class="line">    <span class="keyword">if</span> (src <span class="keyword">instanceof</span> DirectBuffer)</div><div class="line">        <span class="keyword">return</span> writeFromNativeBuffer(fd, src, position, nd);</div><div class="line">    <span class="comment">// Substitute a native buffer</span></div><div class="line">    <span class="keyword">int</span> pos = src.position();</div><div class="line">    <span class="keyword">int</span> lim = src.limit();</div><div class="line">    <span class="keyword">assert</span> (pos &lt;= lim);</div><div class="line">    <span class="keyword">int</span> rem = (pos &lt;= lim ? lim - pos : <span class="number">0</span>);</div><div class="line">    ByteBuffer bb = Util.getTemporaryDirectBuffer(rem);</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        bb.put(src);</div><div class="line">        bb.flip();</div><div class="line">        <span class="comment">// Do not update src until we see how many bytes were written</span></div><div class="line">        src.position(pos);</div><div class="line">        <span class="keyword">int</span> n = writeFromNativeBuffer(fd, bb, position, nd);</div><div class="line">        <span class="keyword">if</span> (n &gt; <span class="number">0</span>) &#123;</div><div class="line">            <span class="comment">// now update src</span></div><div class="line">            src.position(pos + n);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> n;</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        Util.offerFirstTemporaryDirectBuffer(bb);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>通过上述实现可以看出，基于channel的文件数据写入步骤如下：</p>
+<ol>
+<li>申请一块DirectByteBuffer，bb大小为byteBuffer中的limit - position。</li>
+<li>复制byteBuffer src中的数据到bb中。</li>
+<li>把数据从bb中写入到文件，底层由NativeDispatcher的write实现.</li>
+</ol>
+<p>write方法也导致了数据复制了两次,src -&gt; bb, bb-&gt; 内核</p>
+<h1 id="Channel和Buffer示例"><a href="#Channel和Buffer示例" class="headerlink" title="Channel和Buffer示例"></a>Channel和Buffer示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">File file = <span class="keyword">new</span> RandomAccessFile(<span class="string">"data.txt"</span>, <span class="string">"rw"</span>);</div><div class="line">FileChannel channel = file.getChannel();</div><div class="line">ByteBuffer buffer = ByteBuffer.allocate(<span class="number">48</span>);</div><div class="line"></div><div class="line"><span class="keyword">int</span> bytesRead = channel.read(buffer);</div><div class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</div><div class="line">    System.out.println(<span class="string">"Read "</span> + bytesRead);</div><div class="line">    buffer.flip();</div><div class="line">    <span class="keyword">while</span>(buffer.hasRemaining())&#123;</div><div class="line">        System.out.print((<span class="keyword">char</span>) buffer.get());</div><div class="line">    &#125;</div><div class="line">    buffer.clear();</div><div class="line">    bytesRead = channel.read(buffer);</div><div class="line">&#125;</div><div class="line">file.close();</div></pre></td></tr></table></figure>
+<p>注意buffer.flip() 的调用，首先将数据写入到buffer，然后变成读模式，再从buffer中读取数据。</p>
+<p>参考 <a href="https://www.jianshu.com/p/052035037297" target="_blank" rel="external">https://www.jianshu.com/p/052035037297</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/nio/" rel="tag"># nio</a>
+          
+            <a href="/tags/channel/" rel="tag"># channel</a>
+          
+            <a href="/tags/buffer/" rel="tag"># buffer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/20/java-thread-2/" rel="next" title="Java多线程(二) 同步和锁">
+                <i class="fa fa-chevron-left"></i> Java多线程(二) 同步和锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/21/java-thread-3/" rel="prev" title="Java多线程(三) 线程池">
+                Java多线程(三) 线程池 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">126</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Buffer"><span class="nav-number">1.</span> <span class="nav-text">Buffer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ByteBuffer"><span class="nav-number">2.</span> <span class="nav-text">ByteBuffer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HeapByteBuffer"><span class="nav-number">2.1.</span> <span class="nav-text">HeapByteBuffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DirectByteBuffer"><span class="nav-number">2.2.</span> <span class="nav-text">DirectByteBuffer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel"><span class="nav-number">3.</span> <span class="nav-text">Channel</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FileChannel"><span class="nav-number">4.</span> <span class="nav-text">FileChannel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#read实现"><span class="nav-number">4.1.</span> <span class="nav-text">read实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#write实现"><span class="nav-number">4.2.</span> <span class="nav-text">write实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel和Buffer示例"><span class="nav-number">5.</span> <span class="nav-text">Channel和Buffer示例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

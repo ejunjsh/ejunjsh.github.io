@@ -110,12 +110,12 @@
 <meta property="og:url" content="http://idiotsky.me/2016/08/28/java-cas/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="概况CAS:Compare and Swap, 翻译成比较并交换。 CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。 分析现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。拿AtomicInteger来研究在没有锁的情况下是如何做">
-<meta property="og:image" content="http://dl.iteye.com/upload/attachment/0083/2576/4593b947-2217-3919-9713-6e1bb4105b55.jpg">
-<meta property="og:updated_time" content="2017-11-28T01:56:04.621Z">
+<meta property="og:image" content="http://idiotsky.me/images3/java-cas.jpg">
+<meta property="og:updated_time" content="2018-04-11T15:54:25.008Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java cas原理深度分析">
 <meta name="twitter:description" content="概况CAS:Compare and Swap, 翻译成比较并交换。 CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。 分析现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。拿AtomicInteger来研究在没有锁的情况下是如何做">
-<meta name="twitter:image" content="http://dl.iteye.com/upload/attachment/0083/2576/4593b947-2217-3919-9713-6e1bb4105b55.jpg">
+<meta name="twitter:image" content="http://idiotsky.me/images3/java-cas.jpg">
 
 
 
@@ -455,7 +455,10 @@
 <p>关于CPU的锁有如下3种：</p>
 <ol>
 <li>处理器自动保证基本内存操作的原子性<br>首先处理器会自动保证基本的内存操作的原子性。处理器保证从系统内存当中读取或者写入一个字节是原子的，意思是当一个处理器读取一个字节时，其他处理器不能访问这个字节的内存地址。奔腾6和最新的处理器能自动保证单处理器对同一个缓存行里进行16/32/64位的操作是原子的，但是复杂的内存操作处理器不能自动保证其原子性，比如跨总线宽度，跨多个缓存行，跨页表的访问。但是处理器提供总线锁定和缓存锁定两个机制来保证复杂内存操作的原子性。 </li>
-<li>使用总线锁保证原子性<br>第一个机制是通过总线锁保证原子性。如果多个处理器同时对共享变量进行读改写（i++就是经典的读改写操作）操作，那么共享变量就会被多个处理器同时进行操作，这样读改写操作就不是原子的，操作完之后共享变量的值会和期望的不一致，举个例子：如果i=1,我们进行两次i++操作，我们期望的结果是3，但是有可能结果是2。如下图<br><a href="http://dl.iteye.com/upload/attachment/0083/2576/4593b947-2217-3919-9713-6e1bb4105b55.jpg" target="_blank" rel="external"><img src="http://dl.iteye.com/upload/attachment/0083/2576/4593b947-2217-3919-9713-6e1bb4105b55.jpg" alt=""></a><br>原因是有可能多个处理器同时从各自的缓存中读取变量i，分别进行加一操作，然后分别写入系统内存当中。那么想要保证读改写共享变量的操作是原子的，就必须保证CPU1读改写共享变量的时候，CPU2不能操作缓存了该共享变量内存地址的缓存。<br>处理器使用总线锁就是来解决这个问题的。所谓总线锁就是使用处理器提供的一个LOCK＃信号，当一个处理器在总线上输出此信号时，其他处理器的请求将被阻塞住,那么该处理器可以独占使用共享内存。</li>
+<li>使用总线锁保证原子性<br>第一个机制是通过总线锁保证原子性。如果多个处理器同时对共享变量进行读改写（i++就是经典的读改写操作）操作，那么共享变量就会被多个处理器同时进行操作，这样读改写操作就不是原子的，操作完之后共享变量的值会和期望的不一致，举个例子：如果i=1,我们进行两次i++操作，我们期望的结果是3，但是有可能结果是2。如下图<br><a href="http://idiotsky.me/images3/java-cas.jpg"><img src="http://idiotsky.me/images3/java-cas.jpg" alt=""></a></li>
+</ol>
+<p>原因是有可能多个处理器同时从各自的缓存中读取变量i，分别进行加一操作，然后分别写入系统内存当中。那么想要保证读改写共享变量的操作是原子的，就必须保证CPU1读改写共享变量的时候，CPU2不能操作缓存了该共享变量内存地址的缓存。<br>处理器使用总线锁就是来解决这个问题的。所谓总线锁就是使用处理器提供的一个LOCK＃信号，当一个处理器在总线上输出此信号时，其他处理器的请求将被阻塞住,那么该处理器可以独占使用共享内存。</p>
+<ol>
 <li>使用缓存锁保证原子性<br>第二个机制是通过缓存锁定保证原子性。在同一时刻我们只需保证对某个内存地址的操作是原子性即可，但总线锁定把CPU和内存之间通信锁住了，这使得锁定期间，其他处理器不能操作其他内存地址的数据，所以总线锁定的开销比较大，最近的处理器在某些场合下使用缓存锁定代替总线锁定来进行优化。<br>频繁使用的内存会缓存在处理器的L1，L2和L3高速缓存里，那么原子操作就可以直接在处理器内部缓存中进行，并不需要声明总线锁，在奔腾6和最近的处理器中可以使用“缓存锁定”的方式来实现复杂的原子性。所谓“缓存锁定”就是如果缓存在处理器缓存行中内存区域在LOCK操作期间被锁定，当它执行锁操作回写内存时，处理器不在总线上声言LOCK＃信号，而是修改内部的内存地址，并允许它的缓存一致性机制来保证操作的原子性，因为缓存一致性机制会阻止同时修改被两个以上处理器缓存的内存区域数据，当其他处理器回写已被锁定的缓存行的数据时会起缓存行无效，在例1中，当CPU1修改缓存行中的i时使用缓存锁定，那么CPU2就不能同时缓存了i的缓存行。<br>但是有两种情况下处理器不会使用缓存锁定。第一种情况是：当操作的数据不能被缓存在处理器内部，或操作的数据跨多个缓存行（cache line），则处理器会调用总线锁定。第二种情况是：有些处理器不支持缓存锁定。对于Inter486和奔腾处理器,就算锁定的内存区域在处理器的缓存行中也会调用总线锁定。</li>
 </ol>
 <p>以上两个机制我们可以通过Inter处理器提供了很多LOCK前缀的指令来实现。比如位测试和修改指令BTS，BTR，BTC，交换指令XADD，CMPXCHG和其他一些操作数和逻辑指令，比如ADD（加），OR（或）等，被这些指令操作的内存区域就会加锁，导致其他处理器不能同时访问它。</p>
@@ -588,7 +591,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">137</span>
+                <span class="site-state-item-count">138</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -610,7 +613,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">124</span>
+                <span class="site-state-item-count">126</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
