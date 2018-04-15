@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-04-04T16:08:56.043Z</updated>
+  <updated>2018-04-15T15:30:31.407Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/03/21/csapp-summary/"/>
     <id>http://idiotsky.me/2018/03/21/csapp-summary/</id>
     <published>2018-03-21T11:42:47.000Z</published>
-    <updated>2018-04-04T16:08:56.043Z</updated>
+    <updated>2018-04-15T15:30:31.407Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
@@ -51,7 +51,11 @@
 <h1 id="程序的机器级表示"><a href="#程序的机器级表示" class="headerlink" title="程序的机器级表示"></a>程序的机器级表示</h1><p>这篇是汇编相关，精华👿</p>
 <ul>
 <li>汇编代码是机器代码的文本表示</li>
-<li></li>
+<li>目标代码是机器代码的一种形式，它包含所有指令的二进制表示，但是还没有填入全局值的地址。</li>
+<li>x86-64的虚拟地址是由64位的字来表示的，目前的实现中，高16位都必须设置为0，所以一个地址实际上能够指定的是2^48或者64TB范围内的一个字节。</li>
+<li>传送指令的两个操作数不能都指向内存位置</li>
+<li>函数通过把值存储在寄存器%rax或寄存器的某个低位部分中返回</li>
+<li>栈向下增长，栈顶元素的地址是所有栈中元素地址中最低的，栈指针%rsp保存着栈顶元素的地址。</li>
 </ul>
 <blockquote>
 <p>to be continue….</p>
@@ -89,7 +93,11 @@
 &lt;h1 id=&quot;程序的机器级表示&quot;&gt;&lt;a href=&quot;#程序的机器级表示&quot; class=&quot;headerlink&quot; title=&quot;程序的机器级表示&quot;&gt;&lt;/a&gt;程序的机器级表示&lt;/h1&gt;&lt;p&gt;这篇是汇编相关，精华👿&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;汇编代码是机器代码的文本表示&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;目标代码是机器代码的一种形式，它包含所有指令的二进制表示，但是还没有填入全局值的地址。&lt;/li&gt;
+&lt;li&gt;x86-64的虚拟地址是由64位的字来表示的，目前的实现中，高16位都必须设置为0，所以一个地址实际上能够指定的是2^48或者64TB范围内的一个字节。&lt;/li&gt;
+&lt;li&gt;传送指令的两个操作数不能都指向内存位置&lt;/li&gt;
+&lt;li&gt;函数通过把值存储在寄存器%rax或寄存器的某个低位部分中返回&lt;/li&gt;
+&lt;li&gt;栈向下增长，栈顶元素的地址是所有栈中元素地址中最低的，栈指针%rsp保存着栈顶元素的地址。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
 &lt;p&gt;to be continue….&lt;/p&gt;

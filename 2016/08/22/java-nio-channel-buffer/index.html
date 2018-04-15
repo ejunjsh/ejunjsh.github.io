@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java,nio,buffer,channel," />
+  <meta name="keywords" content="java,nio,channel,buffer," />
 
 
 
@@ -104,15 +104,15 @@
 
 
 <meta name="description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
-<meta name="keywords" content="java,nio,buffer,channel">
+<meta name="keywords" content="java,nio,channel,buffer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NIO之Channel、Buffer">
-<meta property="og:url" content="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/index.html">
+<meta property="og:url" content="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
 <meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer.png">
 <meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer-1.png">
-<meta property="og:updated_time" content="2018-04-11T16:45:24.435Z">
+<meta property="og:updated_time" content="2018-04-12T13:59:55.356Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NIO之Channel、Buffer">
 <meta name="twitter:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
@@ -145,7 +145,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/"/>
+  <link rel="canonical" href="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/"/>
 
 
 
@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -375,8 +375,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-21T11:16:51+08:00">
-                21 Aug 16
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-22T21:16:51+08:00">
+                22 Aug 16
               </time>
             
 
@@ -512,9 +512,9 @@
           
             <a href="/tags/nio/" rel="tag"># nio</a>
           
-            <a href="/tags/buffer/" rel="tag"># buffer</a>
-          
             <a href="/tags/channel/" rel="tag"># channel</a>
+          
+            <a href="/tags/buffer/" rel="tag"># buffer</a>
           
         </div>
       
@@ -527,8 +527,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/08/20/java-thread-2/" rel="next" title="Java多线程(二) 同步和锁">
-                <i class="fa fa-chevron-left"></i> Java多线程(二) 同步和锁
+              <a href="/2016/08/21/java-thread-3/" rel="next" title="Java多线程(三) 线程池">
+                <i class="fa fa-chevron-left"></i> Java多线程(三) 线程池
               </a>
             
           </div>
@@ -537,8 +537,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/08/21/java-thread-3/" rel="prev" title="Java多线程(三) 线程池">
-                Java多线程(三) 线程池 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/08/22/java-thread-4/" rel="prev" title="Java多线程(四) Callable、Future和FutureTask浅析">
+                Java多线程(四) Callable、Future和FutureTask浅析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

@@ -343,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/21/java-nio-channel-buffer/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/21/java-thread-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -362,7 +362,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/08/21/java-nio-channel-buffer/" itemprop="url">NIO之Channel、Buffer</a></h1>
+                <a class="post-title-link" href="/2016/08/21/java-thread-3/" itemprop="url">Java多线程(三) 线程池</a></h1>
         
 
         <div class="post-meta">
@@ -374,7 +374,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-21T11:16:51+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-21T22:55:34+08:00">
                 21 Aug 16
               </time>
             
@@ -435,11 +435,19 @@
 
       
         
-          <h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。<br>1、mark：初始值为-1，用于备份当前的position;<br>2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；<br>3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式下，limit表示最多可以读取多少数据。<br>4、capacity：缓存数组大小</p>
-<p><a href="http://idiotsky.me/images3/java-nio-channel-buffer.png"><img src="http://idiotsky.me/images3/java-nio-channel-buffer.png" alt=""></a><br>
+          <blockquote>
+<p>记录，汇总</p>
+</blockquote>
+<h1 id="Executor框架浅析"><a href="#Executor框架浅析" class="headerlink" title="Executor框架浅析"></a>Executor框架浅析</h1><p>首先我们得明白一个 问题，为什么需要线程池？在java中，使用线程来执行异步任务时，线程的创建和销毁需要一定的开销，如果我们为每一个任务创建一个新的线程来执行的话，那么这些线程的创建与销毁将消耗大量的计算资源。同时为每一个任务创建一个新线程来执行，这样的方式可能会使处于高负荷状态的应用最终崩溃。所以线程池的出现为解决这个问题带来曙光。我们将在线程池中创建若干条线程，当有任务需要执行时就从该线程池中获取一条线程来执行任务，如果一时间任务过多，超出线程池的线程数量，那么后面的线程任务就进入一个等待队列进行等待，直到线程池有线程处于空闲时才从等待队列获取要执行的任务进行处理，以此循环…..这样就大大减少了线程创建和销毁的开销，也会缓解我们的应用处于超负荷时的情况。</p>
+<h2 id="Executor框架的两级调度模型"><a href="#Executor框架的两级调度模型" class="headerlink" title="Executor框架的两级调度模型"></a>Executor框架的两级调度模型</h2><p>在java线程启动时会创建一个本地操作系统线程，当该java线程终止时，这个操作系统线程也会被回收。而每一个java线程都会被一对一映射为本地操作系统的线程，操作系统会调度所有的线程并将它们分别给可用的CPU。而所谓的映射方式是这样实现的，在上层，java多线程程序通过把应用分为若干个任务，然后使用用户级的调度器（Executor框架）将这些任务映射为固定数量的线程；在底层，操作系统内核将这些线程映射到硬件处理器上。这样种两级调度模型如下图所示：<br><a href="http://idiotsky.me/images/java-thread-3-1.png"><img src="http://idiotsky.me/images/java-thread-3-1.png" alt=""></a><br>从图中我们可以看出，应用程序通过Executor框架控制上层的调度，而下层的调度由操作系统内核控制，下层的调度不受应用程序的控制。</p>
+<h2 id="Executor框架的结构"><a href="#Executor框架的结构" class="headerlink" title="Executor框架的结构"></a>Executor框架的结构</h2><p>Executor框架的结构主要包括3个部分</p>
+<ol>
+<li>任务：包括被执行任务需要实现的接口：Runnable接口或Callable接口</li>
+<li>任务的执行：包括任务执行机制的核心接口Executor，以及继承自Executor的EexcutorService接口。Exrcutor有两个关键类实现了ExecutorService接口（ThreadPoolExecutor和ScheduledThreadPoolExecutor）。</li>
+<li>异步计算的结果：包括接口Future和实现Future接口的FutureTask类<br>下面我们通过一个UML图来认识一下这些类间的关系：<br><a href="http://idiotsky.me/images/java-thread-3-2.png"><img src="http://idiotsky.me/images/java-thread-3-2.png" alt=""></a>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/08/21/java-nio-channel-buffer/#more" rel="contents">
+            <a class="btn" href="/2016/08/21/java-thread-3/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
