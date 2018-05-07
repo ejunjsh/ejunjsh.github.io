@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-05-07T14:29:25.974Z</updated>
+  <updated>2018-05-07T14:31:33.474Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.me/2018/03/21/csapp-summary/"/>
     <id>http://idiotsky.me/2018/03/21/csapp-summary/</id>
     <published>2018-03-21T11:42:47.000Z</published>
-    <updated>2018-05-07T14:29:25.974Z</updated>
+    <updated>2018-05-07T14:31:33.474Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧</p>
@@ -38,6 +38,7 @@
 <li>一个进程实际上可以由多个称为线程的执行单位组成，每个线程都运行在进程的上下文中，并共享同样的代码和全局数据。</li>
 <li>超线程是一项允许一个cpu执行多个控制流的技术</li>
 </ul>
+<a id="more"></a>
 <h1 id="信息的表示和处理"><a href="#信息的表示和处理" class="headerlink" title="信息的表示和处理"></a>信息的表示和处理</h1><ul>
 <li>大多数计算机使用8位的块，或者字节（byte）,作为最小的可寻址的内存单位，而不是访问内存中单独的位。机器级程序将内存视为一个非常大的字节数组，成为虚拟内存。内存的每个字节都由一个唯一的数字来表识，称为它的地址，所有可能的地址的集合就称为虚拟内存空间</li>
 <li>c的指针包含值和类型，它的值表示某个对象的位置，它的类型表示那个位置上所存储对象的类型</li>
@@ -69,7 +70,7 @@
 <blockquote>
 <p>to be continue….</p>
 </blockquote>
-<a id="more"></a>]]></content>
+<!-- more -->]]></content>
     
     <summary type="html">
     
@@ -89,37 +90,6 @@
 &lt;li&gt;一个进程实际上可以由多个称为线程的执行单位组成，每个线程都运行在进程的上下文中，并共享同样的代码和全局数据。&lt;/li&gt;
 &lt;li&gt;超线程是一项允许一个cpu执行多个控制流的技术&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h1 id=&quot;信息的表示和处理&quot;&gt;&lt;a href=&quot;#信息的表示和处理&quot; class=&quot;headerlink&quot; title=&quot;信息的表示和处理&quot;&gt;&lt;/a&gt;信息的表示和处理&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;大多数计算机使用8位的块，或者字节（byte）,作为最小的可寻址的内存单位，而不是访问内存中单独的位。机器级程序将内存视为一个非常大的字节数组，成为虚拟内存。内存的每个字节都由一个唯一的数字来表识，称为它的地址，所有可能的地址的集合就称为虚拟内存空间&lt;/li&gt;
-&lt;li&gt;c的指针包含值和类型，它的值表示某个对象的位置，它的类型表示那个位置上所存储对象的类型&lt;/li&gt;
-&lt;li&gt;对于一个字长为w位的机器，虚拟地址范围为0～2^w-1,程序最多访问2^w个字节&lt;/li&gt;
-&lt;li&gt;最低有效字节在最前面的方式，称为小端法，最高有效字节在最前面的方式，称为大端法。&lt;/li&gt;
-&lt;li&gt;最常见的有符号数的计算机表示方式就是补码&lt;/li&gt;
-&lt;li&gt;几乎所有的编译器/机器组合都对有符号数使用算数右移&lt;/li&gt;
-&lt;li&gt;对于大多数c语言的实现，处理同样字长的有符号数和无符号数之间相互转换的一般规则是：数值可能会改变，但是位模式不变&lt;/li&gt;
-&lt;li&gt;两个数的w位补码之和与无符号之和有完全相同的位级表示，乘法也一样&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&quot;程序的机器级表示&quot;&gt;&lt;a href=&quot;#程序的机器级表示&quot; class=&quot;headerlink&quot; title=&quot;程序的机器级表示&quot;&gt;&lt;/a&gt;程序的机器级表示&lt;/h1&gt;&lt;p&gt;这篇是汇编相关，精华👿&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;汇编代码是机器代码的文本表示&lt;/li&gt;
-&lt;li&gt;目标代码是机器代码的一种形式，它包含所有指令的二进制表示，但是还没有填入全局值的地址。&lt;/li&gt;
-&lt;li&gt;x86-64的虚拟地址是由64位的字来表示的，目前的实现中，高16位都必须设置为0，所以一个地址实际上能够指定的是2^48或者64TB范围内的一个字节。&lt;/li&gt;
-&lt;li&gt;传送指令的两个操作数不能都指向内存位置&lt;/li&gt;
-&lt;li&gt;由于是从16位体系结构扩展成32位的，Intel用术语“字(word)”表示16位数据类型。因此，32位数为“双字(double words)”，64位数为“四字(quad words)”&lt;/li&gt;
-&lt;li&gt;函数通过把值存储在寄存器%rax或寄存器的某个低位部分中返回&lt;/li&gt;
-&lt;li&gt;栈向下增长，栈顶元素的地址是所有栈中元素地址中最低的，栈指针%rsp保存着栈顶元素的地址。&lt;/li&gt;
-&lt;li&gt;跳转指令有几种不同的编码，但是最常用都是PC相对的(PC-relative)&lt;/li&gt;
-&lt;li&gt;将栈指针减少一个适当的量可以为没有指定初始值的数据在栈上分配空间。类似的，可以通过增加栈指针来释放空间&lt;/li&gt;
-&lt;li&gt;当x86-64过程需要的存储空间超出寄存器能够存放的大小时，就会在栈上分配空间。这个部分成为过程的栈帧(stack frame)&lt;/li&gt;
-&lt;li&gt;可以通过寄存器最多传递6个整型（例如整数和指针）的参数，超出6个的部分就要通过栈来传递&lt;/li&gt;
-&lt;li&gt;根据惯例，寄存器%rbx,%rbp和%r12～%r15被划分为被调用者保存寄存器&lt;/li&gt;
-&lt;li&gt;所有其他的寄存器，除了栈指针%rsp,都分类为调用者保存寄存器&lt;/li&gt;
-&lt;li&gt;数组元素在内存中按照“行优先”的顺序排列&lt;/li&gt;
-&lt;li&gt;一个联合的总大小等于它最大字段的大小&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;to be continue….&lt;/p&gt;
-&lt;/blockquote&gt;
     
     </summary>
     
