@@ -110,7 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2018/03/21/csapp-summary/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧  计算机系统漫游这一章里面基本是对整本书的一个概括吧。  gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接 系统硬件组成：总线，I/O设备，主存，处理器 存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…) 并发运行则">
-<meta property="og:updated_time" content="2018-05-07T14:31:33.474Z">
+<meta property="og:updated_time" content="2018-05-13T12:41:39.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="看书总结-深入理解计算机系统">
 <meta name="twitter:description" content="看了几个月，终于看完了，感觉就是相见恨晚，如果早看，现在应该不同了吧。目前还在做习题，顺便用这篇来记录一些笔记吧  计算机系统漫游这一章里面基本是对整本书的一个概括吧。  gcc 翻译源码的的四个阶段：预处理，编译，汇编，链接 系统硬件组成：总线，I/O设备，主存，处理器 存储设备的层次结构：L0(寄存器)，L1,L2,L3(SRAM),L4(主存DRAM),L5(磁盘),L6(…) 并发运行则">
@@ -447,6 +447,7 @@
 <li>每次我们调用一个函数时，栈就会增长；从一个函数返回时，栈就会收缩</li>
 <li>一个进程实际上可以由多个称为线程的执行单位组成，每个线程都运行在进程的上下文中，并共享同样的代码和全局数据。</li>
 <li>超线程是一项允许一个cpu执行多个控制流的技术</li>
+<li>利用直接存储器存取（DMA）技术，数据可以不通过处理器而直接从磁盘到达主存。</li>
 </ul>
 <a id="more"></a>
 <h1 id="信息的表示和处理"><a href="#信息的表示和处理" class="headerlink" title="信息的表示和处理"></a>信息的表示和处理</h1><ul>
@@ -476,6 +477,9 @@
 <li>所有其他的寄存器，除了栈指针%rsp,都分类为调用者保存寄存器</li>
 <li>数组元素在内存中按照“行优先”的顺序排列</li>
 <li>一个联合的总大小等于它最大字段的大小</li>
+<li>对齐原则是任何k字节的基本对象的地址必须是k的倍数</li>
+<li>将指针从一种类型强制转换成另一种类型，只改变它的类型，而不改变它的值，指针也可以指向函数</li>
+<li>为了管理变长栈帧，x86-64代码使用寄存器%rbp作为帧指针（有时候称为基指针）</li>
 </ul>
 <blockquote>
 <p>to be continue….</p>
