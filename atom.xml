@@ -110,7 +110,7 @@
     <link href="http://idiotsky.me/2018/05/22/http-summary/"/>
     <id>http://idiotsky.me/2018/05/22/http-summary/</id>
     <published>2018-05-22T14:51:18.000Z</published>
-    <updated>2018-06-19T14:20:25.752Z</updated>
+    <updated>2018-06-19T14:30:41.197Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>👿 mark ，很长 😄</p>
@@ -826,192 +826,6 @@
 <p><a href="http://idiotsky.me/images3/http-summary-6.png"><img src="http://idiotsky.me/images3/http-summary-6.png" alt=""></a></p>
 <p>请求报文是由请求方法，请求 URI，协议版本，可选请求首部字段和内容实体构成的。</p>
 <p>响应报文基本上由协议版本，状态码（表示请求成功与失败的数字代码），用以解释状态码的原因短语，可选的响应首部字段以及实体主体构成。</p>
-<h2 id="通用首部"><a href="#通用首部" class="headerlink" title="通用首部"></a>通用首部</h2><table>
-<thead>
-<tr>
-<th style="text-align:center">首部</th>
-<th style="text-align:center">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Cache-Control</td>
-<td style="text-align:center">控制缓存的行为，用于随报文传送缓存的指示</td>
-</tr>
-<tr>
-<td style="text-align:center">Connection</td>
-<td style="text-align:center">允许客户端和服务器指定与请求/响应连接有关的选项</td>
-</tr>
-<tr>
-<td style="text-align:center">Date</td>
-<td style="text-align:center">提供日期和时间标志，说明报文是什么时间创建的</td>
-</tr>
-<tr>
-<td style="text-align:center">Pragma</td>
-<td style="text-align:center">报文指令，另一种随报文传送指示的方式，但并不专用于缓存。Pragma 是 HTTP/1.1 之前版本的历史遗留字段，仅作为与 HTTP/1.0 的向后兼容而定义。如果想要所有的服务器保持相同的行为，可以考虑发送 Pragma 指令。例如：Pragma: no-cache Cache-Control: no-cache</td>
-</tr>
-<tr>
-<td style="text-align:center">MIME-Version</td>
-<td style="text-align:center">给出了发送端使用的 MIME 版本</td>
-</tr>
-<tr>
-<td style="text-align:center">Trailer</td>
-<td style="text-align:center">如果报文采用了分块传输编码（chunked transfer encoding）方式，就可以用这个首部列出位于报文拖挂（trailer）部分的首部集合</td>
-</tr>
-<tr>
-<td style="text-align:center">Transfer- Encoding</td>
-<td style="text-align:center">告知接收端为了保证报文的可靠传输，对报文采用了什么编码方式</td>
-</tr>
-<tr>
-<td style="text-align:center">Update</td>
-<td style="text-align:center">给出了发送端可能想要 “升级” 使用的新版本或协议</td>
-</tr>
-<tr>
-<td style="text-align:center">Via</td>
-<td style="text-align:center">显示了报文经过的中间节点（代理、网关）</td>
-</tr>
-<tr>
-<td style="text-align:center">Warning</td>
-<td style="text-align:center">错误通知</td>
-</tr>
-</tbody>
-</table>
-<p>Cache-Control 首部功能很强大。服务器和客户端都可以用它来说明新鲜度，并且除了使用期或过期时间之外，还有很多指令可用。 </p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">指令</th>
-<th style="text-align:center">参数</th>
-<th style="text-align:center">报文类型</th>
-<th style="text-align:center">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">no-cache</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">在重新向服务器验证之前，不要返回文档的缓存副本</td>
-</tr>
-<tr>
-<td style="text-align:center">no-store</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">不要返回文档的缓存副本。不要保存服务器的响应</td>
-</tr>
-<tr>
-<td style="text-align:center">max-age = [秒]</td>
-<td style="text-align:center">必须</td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">缓存中的文档不能超过指定的使用期</td>
-</tr>
-<tr>
-<td style="text-align:center">max-stale ( = [秒])</td>
-<td style="text-align:center">可省略</td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">文档允许过期（根据服务器提供的过期信息计算），但不能超过指令中指定的过期值</td>
-</tr>
-<tr>
-<td style="text-align:center">min-fresh = [秒]</td>
-<td style="text-align:center">必须</td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">文档的使用期不能小于这个指定的时间与它的当前存活时间之和。换句话说，响应必须至少在指定的这段时间之内保持新鲜</td>
-</tr>
-<tr>
-<td style="text-align:center">no-transform</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">文档在发送之前不允许被转换</td>
-</tr>
-<tr>
-<td style="text-align:center">only-if-cached</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">只有当文档在缓存中才发送，不要联系原始服务器</td>
-</tr>
-<tr>
-<td style="text-align:center">cache-extension</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">请求</td>
-<td style="text-align:center">新指令标记（token）</td>
-</tr>
-<tr>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">public</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">响应可以被任何服务器缓存</td>
-</tr>
-<tr>
-<td style="text-align:center">private</td>
-<td style="text-align:center">可省略</td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">响应可以被缓存，但只能被单个客户端访问</td>
-</tr>
-<tr>
-<td style="text-align:center">no-cache</td>
-<td style="text-align:center">可省略</td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">如果该指令伴随一个首部列表的话，那么内容可以被缓存并提供给客户端，但必须先删除所列出的首部。如果没有指定首部，缓存中的副本在没有重新向服务器验证之前不能提供给客户端</td>
-</tr>
-<tr>
-<td style="text-align:center">no-store</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">响应不允许被缓存</td>
-</tr>
-<tr>
-<td style="text-align:center">no-transform</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">响应在提供给客户端之前不能做任何形式的修改</td>
-</tr>
-<tr>
-<td style="text-align:center">must-revalidate</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">响应在提供给客户端之前必须重新向服务器验证</td>
-</tr>
-<tr>
-<td style="text-align:center">proxy-revalidate</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">共享的缓存在提供给客户端之前必须重新向原始服务器验证。私有的缓存可以忽略这条指令</td>
-</tr>
-<tr>
-<td style="text-align:center">max-age = [秒]</td>
-<td style="text-align:center">必须</td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">指定文档可以被缓存的时间以及新鲜度的最长时间</td>
-</tr>
-<tr>
-<td style="text-align:center">s-max-age = [秒]</td>
-<td style="text-align:center">必须</td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">指定文档作为共享缓存时的最长使用时间（如果有 max-age 指令的话，以本指令为准）。私有的缓存可以忽略本指令</td>
-</tr>
-<tr>
-<td style="text-align:center">cache-extension</td>
-<td style="text-align:center"></td>
-<td style="text-align:center">响应</td>
-<td style="text-align:center">新指令标记（token）</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>no-cache 和 no-store 的区别：no-cache 代表不缓存过期的资源，缓存会向源服务器进行有效期确认后再处理资源。no-store 才是真正的不缓存。</p>
-</blockquote>
-<p>no-cache 并不代表完全的禁用缓存，而是代表会每次去核对服务端的 Etag，如果相同，那么就不会去服务端下载完整的资源，返回一个 304 Not Modified。（最长缓存 3 年）</p>
-<p>no-store 才是真正的禁用缓存，它表示每次服务端都会去下载最新的资源。（当然，通常似乎都用不上）。</p>
-<p>public 和 private 的差别主要在于如果是有用户认证环节的页面，设置为private 就只有终端浏览器会缓存，中间 CDN 并不会缓存，而设置为 public，则会在每一个环节缓存。默认不需要设置 public，因为 max-age 已经表明可以由各个环节缓存了（单位为秒）。此刻如果命中缓存，则不会再去请求服务器核对 Etag，而是直接返回 200(from disk)。</p>
-<p>当然，由于 public 会在每一个环节缓存，如果对修改更新预览又强需求的网页，那么最好不要使用这一缓存策略，否则还需要刷新 CDN 源，很麻烦。</p>
-<p>如果挑选缓存策略，可以见下图：</p>
-<p><a href="http://idiotsky.me/images3/http-summary-7.png"><img src="http://idiotsky.me/images3/http-summary-7.png" alt=""></a></p>
 <h1 id="HTTP-缓存控制"><a href="#HTTP-缓存控制" class="headerlink" title="HTTP 缓存控制"></a>HTTP 缓存控制</h1><h2 id="缓存规则解析"><a href="#缓存规则解析" class="headerlink" title="缓存规则解析"></a>缓存规则解析</h2><p>为方便大家理解，我们认为浏览器存在一个缓存数据库,用于存储缓存信息。</p>
 <p>在客户端第一次请求数据时，此时缓存数据库中没有对应的缓存数据，需要请求服务器，服务器返回后，将数据存储至缓存数据库中。</p>
 <p><a href="http://idiotsky.me/images3/http-summary-21.png"><img src="http://idiotsky.me/images3/http-summary-21.png" alt=""></a></p>
@@ -1082,6 +896,8 @@
 <p><a href="http://idiotsky.me/images3/http-summary-32.png"><img src="http://idiotsky.me/images3/http-summary-32.png" alt=""></a></p>
 <p>浏览器再次请求时：</p>
 <p><a href="http://idiotsky.me/images3/http-summary-9.png"><img src="http://idiotsky.me/images3/http-summary-9.png" alt=""></a></p>
+<p>还有一张图总结下：</p>
+<p><a href="http://idiotsky.me/images3/http-summary-33.jpg"><img src="http://idiotsky.me/images3/http-summary-33.jpg" alt=""></a></p>
 <h1 id="请求首部"><a href="#请求首部" class="headerlink" title="请求首部"></a>请求首部</h1><h2 id="请求信息性首部"><a href="#请求信息性首部" class="headerlink" title="请求信息性首部"></a>请求信息性首部</h2><table>
 <thead>
 <tr>
@@ -1663,6 +1479,7 @@
 <p>ref<br><a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
 <p><a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="external">http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html</a></p>
 <p><a href="https://github.com/halfrost/Halfrost-Field/blob/master/contents/Protocol/HTTP.md" target="_blank" rel="external">https://github.com/halfrost/Halfrost-Field/blob/master/contents/Protocol/HTTP.md</a></p>
+<p><a href="https://www.cnblogs.com/chenqf/p/6386163.html" target="_blank" rel="external">https://www.cnblogs.com/chenqf/p/6386163.html</a></p>
 ]]></content>
     
     <summary type="html">
