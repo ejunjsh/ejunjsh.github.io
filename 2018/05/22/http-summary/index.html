@@ -117,9 +117,20 @@
 <meta property="og:image" content="http://idiotsky.me/images3/http-summary-5.png">
 <meta property="og:image" content="http://idiotsky.me/images3/http-summary-6.png">
 <meta property="og:image" content="http://idiotsky.me/images3/http-summary-7.png">
-<meta property="og:image" content="http://idiotsky.me/images3/http-summary-8.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-21.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-22.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-23.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-24.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-25.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-26.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-27.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-28.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-29.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-30.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-31.png">
+<meta property="og:image" content="http://idiotsky.me/images3/http-summary-32.png">
 <meta property="og:image" content="http://idiotsky.me/images3/http-summary-9.png">
-<meta property="og:updated_time" content="2018-06-06T14:34:51.328Z">
+<meta property="og:updated_time" content="2018-06-19T14:20:25.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HTTP 总结">
 <meta name="twitter:description" content="👿 mark ，很长 😄  HTTP 概述Web 使用一种名为 HTTP (HyperText Transfer Protocol，超文本传输协议) 的协议作为规范的。  HTTP 更加严谨的译名应该是 超文本转移协议。  HTTP 于 1990 年问世。那时的 HTTP 并没有作为正式的标准，因为被称为 HTTP/0.9HTTP 正式作为标准被公布是 1996 年 5 月，版本命名为 HT">
@@ -1342,141 +1353,76 @@
 <p>当然，由于 public 会在每一个环节缓存，如果对修改更新预览又强需求的网页，那么最好不要使用这一缓存策略，否则还需要刷新 CDN 源，很麻烦。</p>
 <p>如果挑选缓存策略，可以见下图：</p>
 <p><a href="http://idiotsky.me/images3/http-summary-7.png"><img src="http://idiotsky.me/images3/http-summary-7.png" alt=""></a></p>
-<h1 id="HTTP-缓存控制"><a href="#HTTP-缓存控制" class="headerlink" title="HTTP 缓存控制"></a>HTTP 缓存控制</h1><p><a href="http://idiotsky.me/images3/http-summary-8.png"><img src="http://idiotsky.me/images3/http-summary-8.png" alt=""></a></p>
-<p>针对“Expires 时间是相对服务器而言，无法保证和客户端时间统一”的问题，http1.1 新增了 Cache-Control 来定义缓存过期时间。注意：若报文中同时出现了 Expires 和 Cache-Control，则以 Cache-Control 为准。</p>
-<p>也就是说优先级从高到低分别是 <strong>Pragma -&gt; Cache-Control -&gt; Expires</strong>。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">头部</th>
-<th style="text-align:center">优势和特点</th>
-<th style="text-align:center">劣势和问题</th>
-<th style="text-align:center">额外说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">Expires</td>
-<td style="text-align:center">1、HTTP 1.0 产物，可以在HTTP 1.0和1.1中使用，简单易用。<br>2、以时刻标识失效时间。</td>
-<td style="text-align:center">1、时间是由服务器发送的(UTC)，如果服务器时间和客户端时间存在不一致，可能会出现问题。<br>2、存在版本问题，到期之前的修改客户端是不可知的。</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">Cache-Control</td>
-<td style="text-align:center">1、HTTP 1.1 产物，以时间间隔标识失效时间，解决了Expires服务器和客户端相对时间的问题。<br>2、比Expires多了很多选项设置。</td>
-<td style="text-align:center">1、HTTP 1.1 才有的内容，不适用于HTTP 1.0 。<br>2、存在版本问题，到期之前的修改客户端是不可知的。</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">Last-Modified</td>
-<td style="text-align:center">1、不存在版本问题，每次请求都会去服务器进行校验。服务器对比最后修改时间如果相同则返回304，不同返回200以及资源内容。</td>
-<td style="text-align:center">1、只要资源修改，无论内容是否发生实质性的变化，都会将该资源返回客户端。例如周期性重写，这种情况下该资源包含的数据实际上一样的。<br>2、以时刻作为标识，无法识别一秒内进行多次修改的情况。<br>3、某些服务器不能精确的得到文件的最后修改时间。</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">ETag</td>
-<td style="text-align:center">1、可以更加精确的判断资源是否被修改，可以识别一秒内多次修改的情况。<br>2、不存在版本问题，每次请求都回去服务器进行校验。</td>
-<td style="text-align:center">1、计算ETag值需要性能损耗。<br>2、分布式服务器存储的情况下，计算ETag的算法如果不一样，会导致浏览器从一台服务器上获得页面内容后到另外一台服务器上进行验证时发现ETag不匹配的情况。</td>
-</tr>
-</tbody>
-</table>
-<p>1、Expires / Cache-Control<br>Expires用时刻来标识失效时间，不免收到时间同步的影响，而Cache-Control使用时间间隔很好的解决了这个问题。 但是 Cache-Control 是 HTTP1.1 才有的，不适用于 HTTP1.0，而 Expires 既适用于 HTTP1.0，也适用于 HTTP1.1，所以说在大多数情况下同时发送这两个头会是一个更好的选择，当客户端两种头都能解析的时候，<strong>会优先使用 Cache-Control</strong>。</p>
-<p>2、Last-Modified / ETag<br>二者都是通过某个标识值来请求资源， 如果服务器端的资源没有变化，则自动返回 HTTP 304 （Not Changed）状态码，内容为空，这样就节省了传输数据量。而当资源发生比那话后，返回和第一次请求时类似。从而保证不向客户端重复发出资源，也保证当服务器有变化时，客户端能够得到最新的资源。<br>其中 Last-Modified 使用文件最后修改作为文件标识值，它无法处理文件一秒内多次修改的情况，而且只要文件修改了哪怕文件实质内容没有修改，也会重新返回资源内容；ETag 作为“被请求变量的实体值”，其完全可以解决 Last-Modified 头部的问题，但是其计算过程需要耗费服务器资源。</p>
-<p>3、from-cache / 304<br>Expires 和 Cache-Control 都有一个问题就是服务端作为的修改，如果还在缓存时效里，那么客户端是不会去请求服务端资源的（非刷新），这就存在一个资源版本不符的问题，而强制刷新一定会发起 HTTP 请求并返回资源内容，无论该内容在这段时间内是否修改过；<strong>而 Last-Modified 和 Etag 每次请求资源都会发起请求，哪怕是很久都不会有修改的资源，都至少有一次请求响应的消耗</strong>。</p>
-<p>对于所有可缓存资源，指定一个 Expires 或 Cache-Control max-age 以及一个 Last-Modified 或 ETag 至关重要。同时使用前者和后者可以很好的相互适应。<br><strong>前者不需要每次都发起一次请求来校验资源时效性，后者保证当资源未出现修改的时候不需要重新发送该资源</strong>。而在用户的不同刷新页面行为中，二者的结合也能很好的利用 HTTP 缓存控制特性，无论是在地址栏输入 URI 然后输入回车进行访问，还是点击刷新按钮，浏览器都能充分利用缓存内容，避免进行不必要的请求与数据传输。</p>
-<p>4、避免 304</p>
-<p>做法实际上很简单，<strong>它把服务侧 ETag 的那一套理论搬到了前端来使用</strong>。 页面的静态资源以版本形式发布，常用的方法是在文件名或参数带上一串md5或时间标记符：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">https://hm.baidu.com/hm.js?e23800c454aa573c0ccb16b52665ac26</div><div class="line">http://tb1.bdstatic.com/tb/_/tbean_safe_ajax_94e7ca2.js</div><div class="line">http://img1.gtimg.com/ninja/2/2016/04/ninja145972803357449.jpg</div></pre></td></tr></table></figure>
-<p>可以看到上面的例子中有不同的做法，有的在URI后面加上了md5参数，有的将md5值作为文件名的一部分，有的将资源放在特性版本的目录中。</p>
-<p>那么在文件没有变动的时候，浏览器不用发起请求直接可以使用缓存文件；而在文件有变化的时候，由于文件版本号的变更，导致文件名变化，请求的 url 变了，自然文件就更新了。这样能确保客户端能及时从服务器收取到新修改的文件。通过这样的处理，增长了静态资源，特别是图片资源的缓存时间，避免该资源很快过期，客户端频繁向服务端发起资源请求，服务器再返回 304 响应的情况（有 Last-Modified/Etag）。</p>
-<p><a href="http://idiotsky.me/images3/http-summary-9.png"><img src="http://idiotsky.me/images3/http-summary-9.png" alt=""></a></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">用户操作</th>
-<th style="text-align:center">HTTP 状态码</th>
-<th style="text-align:center">原因</th>
-<th style="text-align:center">额外说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">在URI输入栏中输入然后回车</td>
-<td style="text-align:center">200(from cache)</td>
-<td style="text-align:center">由 Expires / Cache-Control 控制，Expires 是绝对时间，Cache-Control 是相对时间，两者都存在的时候，Cache-Control 覆盖 Expires ，只要没有失效，浏览器都只访问自己的缓存</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">F5/点击工具栏中的刷新按钮/右键菜单重新加载</td>
-<td style="text-align:center">304</td>
-<td style="text-align:center">由 Last-Modified/Etag 控制，当用户本地缓存失效，刷新的时候，浏览器会发送请求给服务器，如果服务端没有变化，则返回 304 给浏览器</td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">Ctl+F5</td>
-<td style="text-align:center">200</td>
-<td style="text-align:center">当本地浏览器没有缓存或者 304 返回的资源也失效的时候，或者用户强制 Ctl+F5 刷新的时候，浏览器最终才会去下载最新的数据</td>
-</tr>
-</tbody>
-</table>
-<p>总结：</p>
+<h1 id="HTTP-缓存控制"><a href="#HTTP-缓存控制" class="headerlink" title="HTTP 缓存控制"></a>HTTP 缓存控制</h1><h2 id="缓存规则解析"><a href="#缓存规则解析" class="headerlink" title="缓存规则解析"></a>缓存规则解析</h2><p>为方便大家理解，我们认为浏览器存在一个缓存数据库,用于存储缓存信息。</p>
+<p>在客户端第一次请求数据时，此时缓存数据库中没有对应的缓存数据，需要请求服务器，服务器返回后，将数据存储至缓存数据库中。</p>
+<p><a href="http://idiotsky.me/images3/http-summary-21.png"><img src="http://idiotsky.me/images3/http-summary-21.png" alt=""></a></p>
+<p>HTTP缓存有多种规则，根据是否需要重新向服务器发起请求来分类，我将其分为两大类(<strong>强制缓存，对比缓存</strong>)</p>
+<p>在详细介绍这两种规则之前，先通过时序图的方式，让大家对这两种规则有个简单了解。</p>
+<p>已存在缓存数据时，仅基于强制缓存，请求数据的流程如下</p>
+<p><a href="http://idiotsky.me/images3/http-summary-22.png"><img src="http://idiotsky.me/images3/http-summary-22.png" alt=""></a></p>
+<p>已存在缓存数据时，仅基于对比缓存，请求数据的流程如下</p>
+<p><a href="http://idiotsky.me/images3/http-summary-23.png"><img src="http://idiotsky.me/images3/http-summary-23.png" alt=""></a></p>
+<p>对缓存机制不太了解的同学可能会问，基于对比缓存的流程下，不管是否使用缓存，都需要向服务器发送请求，那么还用缓存干什么？</p>
+<p>这个问题，我们暂且放下，后文在详细介绍每种缓存规则的时候，会带给大家答案。</p>
+<p>我们可以看到两类缓存规则的不同，强制缓存如果生效，不需要再和服务器发生交互，而对比缓存不管是否生效，都需要与服务端发生交互。</p>
+<p>两类缓存规则可以同时存在，强制缓存优先级高于对比缓存，也就是说，当执行强制缓存的规则时，如果缓存生效，直接使用缓存，不再执行对比缓存规则。</p>
+<h2 id="强制缓存"><a href="#强制缓存" class="headerlink" title="强制缓存"></a>强制缓存</h2><p>从上文我们得知，强制缓存，在缓存数据未失效的情况下，可以直接使用缓存数据，那么浏览器是如何判断缓存数据是否失效呢？</p>
+<p>我们知道，在没有缓存数据的时候，浏览器向服务器请求数据时，服务器会将数据和缓存规则一并返回，缓存规则信息包含在响应header中。</p>
+<p>对于强制缓存来说，响应header中会有两个字段来标明失效规则（Expires/Cache-Control）</p>
+<p>使用chrome的开发者工具，可以很明显的看到对于强制缓存生效时，网络请求的情况</p>
+<p><a href="http://idiotsky.me/images3/http-summary-24.png"><img src="http://idiotsky.me/images3/http-summary-24.png" alt=""></a></p>
+<h3 id="Expires"><a href="#Expires" class="headerlink" title="Expires"></a>Expires</h3><p>Expires的值为服务端返回的到期时间，即下一次请求时，请求时间小于服务端返回的到期时间，直接使用缓存数据。</p>
+<p>不过Expires 是HTTP 1.0的东西，现在默认浏览器均默认使用HTTP 1.1，所以它的作用基本忽略。</p>
+<p>另一个问题是，到期时间是由服务端生成的，但是客户端时间可能跟服务端时间有误差，这就会导致缓存命中的误差。</p>
+<p>所以HTTP 1.1 的版本，使用Cache-Control替代。</p>
+<h3 id="Cache-Control"><a href="#Cache-Control" class="headerlink" title="Cache-Control"></a>Cache-Control</h3><p>Cache-Control 是最重要的规则。常见的取值有private、public、no-cache、max-age，no-store，默认为private。</p>
 <ul>
-<li>需要兼容 HTTP1.0 的时候需要使用 Expires，不然可以考虑直接使用 Cache-Control。</li>
-<li>需要处理一秒内多次修改的情况，或者其他 Last-Modified 处理不了的情况，才使用 ETag，否则使用 Last-Modified。</li>
-<li>对于所有可缓存资源，需要指定一个 Expires 或 Cache-Control，同时指定 Last-Modified 或者 Etag。</li>
-<li>可以通过标识文件版本名、加长缓存时间的方式来减少 304 响应。</li>
+<li>private:客户端可以缓存</li>
+<li>public:客户端和代理服务器都可缓存（前端的同学，可以认为public和private是一样的）</li>
+<li>max-age=xxx:缓存的内容将在 xxx 秒后失效</li>
+<li>no-cache:需要使用对比缓存来验证缓存数据（后面介绍）</li>
+<li>no-store:所有内容都不会缓存，强制缓存，对比缓存都不会触发（对于前端开发来说，缓存越多越好，so…基本上和它说886）</li>
 </ul>
-<hr>
-<p>Warning 首部是从 HTTP/1.0 的响应首部（Retry-After）演变过来的。该首部通常会告知用户一些与缓存相关的问题的警告。</p>
-<p>Warning 首部的格式如下：</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">Warning</span>: [警告码][警告的主机：端口号]"[警告内容]"([日期内容])</div></pre></td></tr></table></figure>
-<p>HTTP/1.1 中定义了 7 种警告，警告码具备扩展性，今后可以能追加新的警告码。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">警告码</th>
-<th style="text-align:center">警告内容</th>
-<th style="text-align:center">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">110</td>
-<td style="text-align:center">Response is stale（响应已过期）</td>
-<td style="text-align:center">代理返回已过期的资源</td>
-</tr>
-<tr>
-<td style="text-align:center">111</td>
-<td style="text-align:center">Revalidation failed（再验证失败）</td>
-<td style="text-align:center">代理再验证资源有效性时失败（服务器无法到达等原因）</td>
-</tr>
-<tr>
-<td style="text-align:center">112</td>
-<td style="text-align:center">Disconnection operation（断开连接操作）</td>
-<td style="text-align:center">代理与互联网连接被故意切断</td>
-</tr>
-<tr>
-<td style="text-align:center">113</td>
-<td style="text-align:center">Heuristic expiration（试探性过期）</td>
-<td style="text-align:center">响应的使用期超过 24 小时（有效缓存的设定时间大于 24 小时的情况下）</td>
-</tr>
-<tr>
-<td style="text-align:center">199</td>
-<td style="text-align:center">Miscellaneous warning（杂项警告）</td>
-<td style="text-align:center">任意的警告内容</td>
-</tr>
-<tr>
-<td style="text-align:center">214</td>
-<td style="text-align:center">Transformation applied（使用了转换）</td>
-<td style="text-align:center">代理对内容编码或媒体类型等执行了某些处理时</td>
-</tr>
-<tr>
-<td style="text-align:center">299</td>
-<td style="text-align:center">Miscellaneous persistent warning（持久杂项警告）</td>
-<td style="text-align:center">任意的警告内容</td>
-</tr>
-</tbody>
-</table>
+<p>举个板栗</p>
+<p><a href="http://idiotsky.me/images3/http-summary-25.png"><img src="http://idiotsky.me/images3/http-summary-25.png" alt=""></a></p>
+<p>图中Cache-Control仅指定了max-age，所以默认为private，缓存时间为31536000秒（365天）</p>
+<p>也就是说，在365天内再次请求这条数据，都会直接获取缓存数据库中的数据，直接使用。</p>
+<h2 id="对比缓存"><a href="#对比缓存" class="headerlink" title="对比缓存"></a>对比缓存</h2><p>对比缓存，顾名思义，需要进行比较判断是否可以使用缓存。</p>
+<p>浏览器第一次请求数据时，服务器会将缓存标识与数据一起返回给客户端，客户端将二者备份至缓存数据库中。</p>
+<p>再次请求数据时，客户端将备份的缓存标识发送给服务器，服务器根据缓存标识进行判断，判断成功后，返回304状态码，通知客户端比较成功，可以使用缓存数据。</p>
+<p>第一次访问：</p>
+<p><a href="http://idiotsky.me/images3/http-summary-26.png"><img src="http://idiotsky.me/images3/http-summary-26.png" alt=""></a></p>
+<p>再次访问：</p>
+<p><a href="http://idiotsky.me/images3/http-summary-27.png"><img src="http://idiotsky.me/images3/http-summary-27.png" alt=""></a></p>
+<p>通过两图的对比，我们可以很清楚的发现，在对比缓存生效时，状态码为304，并且报文大小和请求时间大大减少。</p>
+<p>原因是，服务端在进行标识比较后，只返回header部分，通过状态码通知客户端使用缓存，不再需要将报文主体部分返回给客户端。</p>
+<p>对于对比缓存来说，缓存标识的传递是我们着重需要理解的，它在请求header和响应header间进行传递，</p>
+<p>一共分为两种标识传递，接下来，我们分开介绍。</p>
+<h3 id="Last-Modified-If-Modified-Since"><a href="#Last-Modified-If-Modified-Since" class="headerlink" title="Last-Modified  /  If-Modified-Since"></a>Last-Modified  /  If-Modified-Since</h3><p>Last-Modified：</p>
+<p>服务器在响应请求时，告诉浏览器资源的最后修改时间。</p>
+<p><a href="http://idiotsky.me/images3/http-summary-28.png"><img src="http://idiotsky.me/images3/http-summary-28.png" alt=""></a></p>
+<p>If-Modified-Since：</p>
+<p>再次请求服务器时，通过此字段通知服务器上次请求时，服务器返回的资源最后修改时间。</p>
+<p>服务器收到请求后发现有头If-Modified-Since 则与被请求资源的最后修改时间进行比对。</p>
+<p>若资源的最后修改时间大于If-Modified-Since，说明资源又被改动过，则响应整片资源内容，返回状态码200；</p>
+<p>若资源的最后修改时间小于或等于If-Modified-Since，说明资源无新修改，则响应HTTP 304，告知浏览器继续使用所保存的cache。</p>
+<p><a href="http://idiotsky.me/images3/http-summary-29.png"><img src="http://idiotsky.me/images3/http-summary-29.png" alt=""></a></p>
+<h3 id="Etag-If-None-Match"><a href="#Etag-If-None-Match" class="headerlink" title="Etag  /  If-None-Match"></a>Etag  /  If-None-Match</h3><p>（优先级高于Last-Modified  /  If-Modified-Since）</p>
+<p>Etag：</p>
+<p>服务器响应请求时，告诉浏览器当前资源在服务器的唯一标识（生成规则由服务器决定）。</p>
+<p><a href="http://idiotsky.me/images3/http-summary-30.png"><img src="http://idiotsky.me/images3/http-summary-30.png" alt=""></a></p>
+<p>If-None-Match：</p>
+<p>再次请求服务器时，通过此字段通知服务器客户段缓存数据的唯一标识。</p>
+<p>服务器收到请求后发现有头If-None-Match 则与被请求资源的唯一标识进行比对，</p>
+<p>不同，说明资源又被改动过，则响应整片资源内容，返回状态码200；</p>
+<p>相同，说明资源无新修改，则响应HTTP 304，告知浏览器继续使用所保存的cache。</p>
+<p><a href="http://idiotsky.me/images3/http-summary-31.png"><img src="http://idiotsky.me/images3/http-summary-31.png" alt=""></a></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>对于强制缓存，服务器通知浏览器一个缓存时间，在缓存时间内，下次请求，直接用缓存，不在时间内，执行比较缓存策略。</p>
+<p>对于比较缓存，将缓存信息中的Etag和Last-Modified通过请求发送给服务器，由服务器校验，返回304状态码时，浏览器直接使用缓存。</p>
+<p>浏览器第一次请求：</p>
+<p><a href="http://idiotsky.me/images3/http-summary-32.png"><img src="http://idiotsky.me/images3/http-summary-32.png" alt=""></a></p>
+<p>浏览器再次请求时：</p>
+<p><a href="http://idiotsky.me/images3/http-summary-9.png"><img src="http://idiotsky.me/images3/http-summary-9.png" alt=""></a></p>
 <h1 id="请求首部"><a href="#请求首部" class="headerlink" title="请求首部"></a>请求首部</h1><h2 id="请求信息性首部"><a href="#请求信息性首部" class="headerlink" title="请求信息性首部"></a>请求信息性首部</h2><table>
 <thead>
 <tr>
@@ -2289,7 +2235,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-概述"><span class="nav-number">1.</span> <span class="nav-text">HTTP 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-支持的方法"><span class="nav-number">2.</span> <span class="nav-text">HTTP 支持的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-状态码"><span class="nav-number">3.</span> <span class="nav-text">HTTP 状态码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1XX-信息"><span class="nav-number">3.1.</span> <span class="nav-text">1XX 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2XX-成功"><span class="nav-number">3.2.</span> <span class="nav-text">2XX 成功</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3XX-重定向"><span class="nav-number">3.3.</span> <span class="nav-text">3XX 重定向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4XX-客户端错误"><span class="nav-number">3.4.</span> <span class="nav-text">4XX 客户端错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5XX-服务器错误"><span class="nav-number">3.5.</span> <span class="nav-text">5XX 服务器错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFC-2616-状态码"><span class="nav-number">3.6.</span> <span class="nav-text">RFC 2616 状态码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MIME-媒体内容"><span class="nav-number">4.</span> <span class="nav-text">MIME 媒体内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-报文结构"><span class="nav-number">5.</span> <span class="nav-text">HTTP 报文结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通用首部"><span class="nav-number">5.1.</span> <span class="nav-text">通用首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-缓存控制"><span class="nav-number">6.</span> <span class="nav-text">HTTP 缓存控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#请求首部"><span class="nav-number">7.</span> <span class="nav-text">请求首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求信息性首部"><span class="nav-number">7.1.</span> <span class="nav-text">请求信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Accept-首部"><span class="nav-number">7.2.</span> <span class="nav-text">Accept 首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件请求首部"><span class="nav-number">7.3.</span> <span class="nav-text">条件请求首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全请求首部"><span class="nav-number">7.4.</span> <span class="nav-text">安全请求首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代理请求首部"><span class="nav-number">7.5.</span> <span class="nav-text">代理请求首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应首部"><span class="nav-number">8.</span> <span class="nav-text">响应首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应信息性首部"><span class="nav-number">8.1.</span> <span class="nav-text">响应信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协商首部"><span class="nav-number">8.2.</span> <span class="nav-text">协商首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全响应首部"><span class="nav-number">8.3.</span> <span class="nav-text">安全响应首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实体首部"><span class="nav-number">9.</span> <span class="nav-text">实体首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实体信息性首部"><span class="nav-number">9.1.</span> <span class="nav-text">实体信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内容首部"><span class="nav-number">9.2.</span> <span class="nav-text">内容首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实体缓存首部"><span class="nav-number">9.3.</span> <span class="nav-text">实体缓存首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展首部"><span class="nav-number">10.</span> <span class="nav-text">扩展首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#X-Frame-Options"><span class="nav-number">10.1.</span> <span class="nav-text">X-Frame-Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#X-XSS-Protection"><span class="nav-number">10.2.</span> <span class="nav-text">X-XSS-Protection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNT"><span class="nav-number">10.3.</span> <span class="nav-text">DNT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P3P"><span class="nav-number">10.4.</span> <span class="nav-text">P3P</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#提高-HTTP-性能"><span class="nav-number">11.</span> <span class="nav-text">提高 HTTP 性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#并行连接"><span class="nav-number">11.1.</span> <span class="nav-text">并行连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久连接"><span class="nav-number">11.2.</span> <span class="nav-text">持久连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管道化连接"><span class="nav-number">11.3.</span> <span class="nav-text">管道化连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复用的连接"><span class="nav-number">11.4.</span> <span class="nav-text">复用的连接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GET-和-POST-的区别"><span class="nav-number">12.</span> <span class="nav-text">GET 和 POST 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数"><span class="nav-number">12.1.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全"><span class="nav-number">12.2.</span> <span class="nav-text">安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#幂等性"><span class="nav-number">12.3.</span> <span class="nav-text">幂等性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可缓存"><span class="nav-number">12.4.</span> <span class="nav-text">可缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XMLHttpRequest"><span class="nav-number">12.5.</span> <span class="nav-text">XMLHttpRequest</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-各版本比较"><span class="nav-number">13.</span> <span class="nav-text">HTTP 各版本比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-0-与-HTTP-1-1-的区别"><span class="nav-number">13.1.</span> <span class="nav-text">HTTP/1.0 与 HTTP/1.1 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-1-与-HTTP-2-0-的区别"><span class="nav-number">13.2.</span> <span class="nav-text">HTTP/1.1 与 HTTP/2.0 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用"><span class="nav-number">13.2.1.</span> <span class="nav-text">多路复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#首部压缩"><span class="nav-number">13.2.2.</span> <span class="nav-text">首部压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端推送"><span class="nav-number">13.2.3.</span> <span class="nav-text">服务端推送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二进制格式"><span class="nav-number">13.2.4.</span> <span class="nav-text">二进制格式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#浏览器同源政策及其规避方法"><span class="nav-number">14.</span> <span class="nav-text">浏览器同源政策及其规避方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie"><span class="nav-number">14.1.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iframe"><span class="nav-number">14.2.</span> <span class="nav-text">iframe</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#片段识别符"><span class="nav-number">14.2.1.</span> <span class="nav-text">片段识别符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#window-name"><span class="nav-number">14.2.2.</span> <span class="nav-text">window.name</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#window-postMessage"><span class="nav-number">14.2.3.</span> <span class="nav-text">window.postMessage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LocalStorage"><span class="nav-number">14.2.4.</span> <span class="nav-text">LocalStorage</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AJAX"><span class="nav-number">14.3.</span> <span class="nav-text">AJAX</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">14.3.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebSocket"><span class="nav-number">14.3.2.</span> <span class="nav-text">WebSocket</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CORS"><span class="nav-number">14.4.</span> <span class="nav-text">CORS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">14.4.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两种请求"><span class="nav-number">14.4.2.</span> <span class="nav-text">两种请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单请求"><span class="nav-number">14.4.3.</span> <span class="nav-text">简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本流程"><span class="nav-number">14.4.3.1.</span> <span class="nav-text">基本流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#withCredentials-属性"><span class="nav-number">14.4.3.2.</span> <span class="nav-text">withCredentials 属性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非简单请求"><span class="nav-number">14.4.4.</span> <span class="nav-text">非简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#预检请求"><span class="nav-number">14.4.4.1.</span> <span class="nav-text">预检请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预检请求的回应"><span class="nav-number">14.4.4.2.</span> <span class="nav-text">预检请求的回应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览器的正常请求和回应"><span class="nav-number">14.4.4.3.</span> <span class="nav-text">浏览器的正常请求和回应</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与JSONP的比较"><span class="nav-number">14.4.5.</span> <span class="nav-text">与JSONP的比较</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-概述"><span class="nav-number">1.</span> <span class="nav-text">HTTP 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-支持的方法"><span class="nav-number">2.</span> <span class="nav-text">HTTP 支持的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-状态码"><span class="nav-number">3.</span> <span class="nav-text">HTTP 状态码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1XX-信息"><span class="nav-number">3.1.</span> <span class="nav-text">1XX 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2XX-成功"><span class="nav-number">3.2.</span> <span class="nav-text">2XX 成功</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3XX-重定向"><span class="nav-number">3.3.</span> <span class="nav-text">3XX 重定向</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4XX-客户端错误"><span class="nav-number">3.4.</span> <span class="nav-text">4XX 客户端错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5XX-服务器错误"><span class="nav-number">3.5.</span> <span class="nav-text">5XX 服务器错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFC-2616-状态码"><span class="nav-number">3.6.</span> <span class="nav-text">RFC 2616 状态码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MIME-媒体内容"><span class="nav-number">4.</span> <span class="nav-text">MIME 媒体内容</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-报文结构"><span class="nav-number">5.</span> <span class="nav-text">HTTP 报文结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通用首部"><span class="nav-number">5.1.</span> <span class="nav-text">通用首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-缓存控制"><span class="nav-number">6.</span> <span class="nav-text">HTTP 缓存控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存规则解析"><span class="nav-number">6.1.</span> <span class="nav-text">缓存规则解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强制缓存"><span class="nav-number">6.2.</span> <span class="nav-text">强制缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Expires"><span class="nav-number">6.2.1.</span> <span class="nav-text">Expires</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Control"><span class="nav-number">6.2.2.</span> <span class="nav-text">Cache-Control</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对比缓存"><span class="nav-number">6.3.</span> <span class="nav-text">对比缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Last-Modified-If-Modified-Since"><span class="nav-number">6.3.1.</span> <span class="nav-text">Last-Modified  /  If-Modified-Since</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Etag-If-None-Match"><span class="nav-number">6.3.2.</span> <span class="nav-text">Etag  /  If-None-Match</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.4.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#请求首部"><span class="nav-number">7.</span> <span class="nav-text">请求首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求信息性首部"><span class="nav-number">7.1.</span> <span class="nav-text">请求信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Accept-首部"><span class="nav-number">7.2.</span> <span class="nav-text">Accept 首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件请求首部"><span class="nav-number">7.3.</span> <span class="nav-text">条件请求首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全请求首部"><span class="nav-number">7.4.</span> <span class="nav-text">安全请求首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代理请求首部"><span class="nav-number">7.5.</span> <span class="nav-text">代理请求首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应首部"><span class="nav-number">8.</span> <span class="nav-text">响应首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#响应信息性首部"><span class="nav-number">8.1.</span> <span class="nav-text">响应信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协商首部"><span class="nav-number">8.2.</span> <span class="nav-text">协商首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全响应首部"><span class="nav-number">8.3.</span> <span class="nav-text">安全响应首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实体首部"><span class="nav-number">9.</span> <span class="nav-text">实体首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实体信息性首部"><span class="nav-number">9.1.</span> <span class="nav-text">实体信息性首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内容首部"><span class="nav-number">9.2.</span> <span class="nav-text">内容首部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实体缓存首部"><span class="nav-number">9.3.</span> <span class="nav-text">实体缓存首部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#扩展首部"><span class="nav-number">10.</span> <span class="nav-text">扩展首部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#X-Frame-Options"><span class="nav-number">10.1.</span> <span class="nav-text">X-Frame-Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#X-XSS-Protection"><span class="nav-number">10.2.</span> <span class="nav-text">X-XSS-Protection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNT"><span class="nav-number">10.3.</span> <span class="nav-text">DNT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P3P"><span class="nav-number">10.4.</span> <span class="nav-text">P3P</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#提高-HTTP-性能"><span class="nav-number">11.</span> <span class="nav-text">提高 HTTP 性能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#并行连接"><span class="nav-number">11.1.</span> <span class="nav-text">并行连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久连接"><span class="nav-number">11.2.</span> <span class="nav-text">持久连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#管道化连接"><span class="nav-number">11.3.</span> <span class="nav-text">管道化连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复用的连接"><span class="nav-number">11.4.</span> <span class="nav-text">复用的连接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GET-和-POST-的区别"><span class="nav-number">12.</span> <span class="nav-text">GET 和 POST 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数"><span class="nav-number">12.1.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全"><span class="nav-number">12.2.</span> <span class="nav-text">安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#幂等性"><span class="nav-number">12.3.</span> <span class="nav-text">幂等性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可缓存"><span class="nav-number">12.4.</span> <span class="nav-text">可缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XMLHttpRequest"><span class="nav-number">12.5.</span> <span class="nav-text">XMLHttpRequest</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-各版本比较"><span class="nav-number">13.</span> <span class="nav-text">HTTP 各版本比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-0-与-HTTP-1-1-的区别"><span class="nav-number">13.1.</span> <span class="nav-text">HTTP/1.0 与 HTTP/1.1 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-1-与-HTTP-2-0-的区别"><span class="nav-number">13.2.</span> <span class="nav-text">HTTP/1.1 与 HTTP/2.0 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#多路复用"><span class="nav-number">13.2.1.</span> <span class="nav-text">多路复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#首部压缩"><span class="nav-number">13.2.2.</span> <span class="nav-text">首部压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端推送"><span class="nav-number">13.2.3.</span> <span class="nav-text">服务端推送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二进制格式"><span class="nav-number">13.2.4.</span> <span class="nav-text">二进制格式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#浏览器同源政策及其规避方法"><span class="nav-number">14.</span> <span class="nav-text">浏览器同源政策及其规避方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie"><span class="nav-number">14.1.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iframe"><span class="nav-number">14.2.</span> <span class="nav-text">iframe</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#片段识别符"><span class="nav-number">14.2.1.</span> <span class="nav-text">片段识别符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#window-name"><span class="nav-number">14.2.2.</span> <span class="nav-text">window.name</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#window-postMessage"><span class="nav-number">14.2.3.</span> <span class="nav-text">window.postMessage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LocalStorage"><span class="nav-number">14.2.4.</span> <span class="nav-text">LocalStorage</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AJAX"><span class="nav-number">14.3.</span> <span class="nav-text">AJAX</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">14.3.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WebSocket"><span class="nav-number">14.3.2.</span> <span class="nav-text">WebSocket</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CORS"><span class="nav-number">14.4.</span> <span class="nav-text">CORS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简介"><span class="nav-number">14.4.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两种请求"><span class="nav-number">14.4.2.</span> <span class="nav-text">两种请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单请求"><span class="nav-number">14.4.3.</span> <span class="nav-text">简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本流程"><span class="nav-number">14.4.3.1.</span> <span class="nav-text">基本流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#withCredentials-属性"><span class="nav-number">14.4.3.2.</span> <span class="nav-text">withCredentials 属性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非简单请求"><span class="nav-number">14.4.4.</span> <span class="nav-text">非简单请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#预检请求"><span class="nav-number">14.4.4.1.</span> <span class="nav-text">预检请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预检请求的回应"><span class="nav-number">14.4.4.2.</span> <span class="nav-text">预检请求的回应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览器的正常请求和回应"><span class="nav-number">14.4.4.3.</span> <span class="nav-text">浏览器的正常请求和回应</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与JSONP的比较"><span class="nav-number">14.4.5.</span> <span class="nav-text">与JSONP的比较</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
