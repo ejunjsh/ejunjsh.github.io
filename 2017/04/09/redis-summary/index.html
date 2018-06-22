@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/04/09/redis-summary/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="本文将从Redis的基本特性入手，通过讲述Redis的数据结构和主要命令对Redis的基本能力进行直观介绍。之后概览Redis提供的高级能力，并在部署、维护、性能调优等多个方面进行更深入的介绍和指导。本文适合使用Redis的普通开发人员，以及对Redis进行选型、架构设计和性能调优的架构设计人员。  概述Redis是一个开源的，基于内存的结构化数据存储媒介，可以作为数据库、缓存服务或消息服务使用">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-09-10T17:25:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis基础、高级特性与性能调优">
@@ -443,7 +444,7 @@
 <li>使用高耗时的Redis命令是很危险的，会占用唯一的一个线程的大量处理时间，导致所有的请求都被拖慢。（例如时间复杂度为O(N)的KEYS命令，严格禁止在生产环境中使用）</li>
 </ul>
 <a id="more"></a>
-<h1 id="Redis的数据结构和相关常用命令"><a href="#Redis的数据结构和相关常用命令" class="headerlink" title="Redis的数据结构和相关常用命令"></a>Redis的数据结构和相关常用命令</h1><p>本节中将介绍Redis支持的主要数据结构，以及相关的常用Redis命令。本节只对Redis命令进行扼要的介绍，且只列出了较常用的命令。如果想要了解完整的Redis命令集，或了解某个命令的详细使用方法，请参考官方文档：<a href="https://redis.io/commands" target="_blank" rel="external">https://redis.io/commands</a></p>
+<h1 id="Redis的数据结构和相关常用命令"><a href="#Redis的数据结构和相关常用命令" class="headerlink" title="Redis的数据结构和相关常用命令"></a>Redis的数据结构和相关常用命令</h1><p>本节中将介绍Redis支持的主要数据结构，以及相关的常用Redis命令。本节只对Redis命令进行扼要的介绍，且只列出了较常用的命令。如果想要了解完整的Redis命令集，或了解某个命令的详细使用方法，请参考官方文档：<a href="https://redis.io/commands" target="_blank" rel="noopener">https://redis.io/commands</a></p>
 <h2 id="Key"><a href="#Key" class="headerlink" title="Key"></a>Key</h2><p>Redis采用Key-Value型的基本数据结构，任何二进制序列都可以作为Redis的Key使用（例如普通的字符串或一张JPEG图片）<br>关于Key的一些注意事项：</p>
 <ul>
 <li>不要使用过长的Key。例如使用一个1024字节的key就不是一个好主意，不仅会消耗更多的内存，还会导致查找的效率降低</li>
@@ -467,13 +468,13 @@
 <li>DECR/DECRBY：同INCR/INCRBY，自增改为自减。<br>INCR/DECR系列命令要求操作的value类型为String，并可以转换为64位带符号的整型数字，否则会返回错误。</li>
 </ul>
 <p>也就是说，进行INCR/DECR系列命令的value，必须在[-2^63 ~ 2^63 - 1]范围内。<br>提到过，Redis采用单线程模型，天然是线程安全的，这使得INCR/DECR命令可以非常便利的实现高并发场景下的精确控制。</p>
-<h3 id="例1：库存控制"><a href="#例1：库存控制" class="headerlink" title="例1：库存控制"></a>例1：库存控制</h3><p>在高并发场景下实现库存余量的精准校验，确保不出现超卖的情况。<br>设置库存总量：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET inv:remain <span class="string">"100"</span></div></pre></td></tr></table></figure></p>
-<p>库存扣减+余量校验：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DECR inv:remain</div></pre></td></tr></table></figure></p>
+<h3 id="例1：库存控制"><a href="#例1：库存控制" class="headerlink" title="例1：库存控制"></a>例1：库存控制</h3><p>在高并发场景下实现库存余量的精准校验，确保不出现超卖的情况。<br>设置库存总量：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET inv:remain <span class="string">"100"</span></span><br></pre></td></tr></table></figure></p>
+<p>库存扣减+余量校验：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DECR inv:remain</span><br></pre></td></tr></table></figure></p>
 <p>当DECR命令返回值大于等于0时，说明库存余量校验通过，如果返回小于0的值，则说明库存已耗尽。<br>假设同时有300个并发请求进行库存扣减，Redis能够确保这300个请求分别得到99到-200的返回值，每个请求得到的返回值都是唯一的，绝对不会找出现两个请求得到一样的返回值的情况。</p>
-<h3 id="例2：自增序列生成"><a href="#例2：自增序列生成" class="headerlink" title="例2：自增序列生成"></a>例2：自增序列生成</h3><p>实现类似于RDBMS的Sequence功能，生成一系列唯一的序列号<br>设置序列起始值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET sequence <span class="string">"10000"</span></div></pre></td></tr></table></figure></p>
-<p>获取一个序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">INCR sequence</div></pre></td></tr></table></figure></p>
+<h3 id="例2：自增序列生成"><a href="#例2：自增序列生成" class="headerlink" title="例2：自增序列生成"></a>例2：自增序列生成</h3><p>实现类似于RDBMS的Sequence功能，生成一系列唯一的序列号<br>设置序列起始值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET sequence <span class="string">"10000"</span></span><br></pre></td></tr></table></figure></p>
+<p>获取一个序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INCR sequence</span><br></pre></td></tr></table></figure></p>
 <p>直接将返回值作为序列使用即可。</p>
-<p>获取一批（如100个）序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">INCRBY sequence 100</div></pre></td></tr></table></figure></p>
+<p>获取一批（如100个）序列值：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INCRBY sequence 100</span><br></pre></td></tr></table></figure></p>
 <p>假设返回值为N，那么[N - 99 ~ N]的数值都是可用的序列值。<br>当多个客户端同时向Redis申请自增序列时，Redis能够确保每个客户端得到的序列值或序列范围都是全局唯一的，绝对不会出现不同客户端得到了重复的序列值的情况。</p>
 <h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><p>Redis的List是链表型的数据结构，可以使用LPUSH/RPUSH/LPOP/RPOP等命令在List的两端执行插入元素和弹出元素的操作。虽然List也支持在特定index上插入和读取元素的功能，但其时间复杂度较高（O(N)），应小心使用。<br>与List相关的常用命令：</p>
 <ul>
@@ -493,7 +494,7 @@
 </ul>
 <p>由于Redis的List是链表结构的，上述的三个命令的算法效率较低，需要对List进行遍历，命令的耗时无法预估，在List长度大的情况下耗时会明显增加，应谨慎使用。</p>
 <p>换句话说，Redis的List实际是设计来用于实现队列，而不是用于实现类似ArrayList这样的列表的。如果你不是想要实现一个双端出入的队列，那么请尽量不要使用Redis的List数据结构。</p>
-<p>为了更好支持队列的特性，Redis还提供了一系列阻塞式的操作命令，如BLPOP/BRPOP等，能够实现类似于BlockingQueue的能力，即在List为空时，阻塞该连接，直到List中有对象可以出队时再返回。针对阻塞类的命令，此处不做详细探讨，请参考官方文档（<a href="https://redis.io/topics/data-types-intro）" target="_blank" rel="external">https://redis.io/topics/data-types-intro）</a> 中”Blocking operations on lists”一节。</p>
+<p>为了更好支持队列的特性，Redis还提供了一系列阻塞式的操作命令，如BLPOP/BRPOP等，能够实现类似于BlockingQueue的能力，即在List为空时，阻塞该连接，直到List中有对象可以出队时再返回。针对阻塞类的命令，此处不做详细探讨，请参考官方文档（<a href="https://redis.io/topics/data-types-intro）" target="_blank" rel="noopener">https://redis.io/topics/data-types-intro）</a> 中”Blocking operations on lists”一节。</p>
 <h2 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h2><p>Hash即哈希表，Redis的Hash和传统的哈希表一样，是一种field-value型的数据结构，可以理解成将HashMap搬入Redis。<br>Hash非常适合用于表现对象类型的数据，用Hash中的field对应对象的field即可。<br>Hash的优点包括：</p>
 <ul>
 <li>可以实现二元查找，如”查找ID为1000的用户的年龄”</li>
@@ -515,7 +516,7 @@
 <li>HGETALL：返回指定Hash中所有的field-value对。返回结果为数组，数组中field和value交替出现。时间复杂度O(N)</li>
 <li>HKEYS/HVALS：返回指定Hash中所有的field/value，时间复杂度O(N)</li>
 </ul>
-<p>上述三个命令都会对Hash进行完整遍历，Hash中的field数量与命令的耗时线性相关，对于尺寸不可预知的Hash，应严格避免使用上面三个命令，而改为使用HSCAN命令进行游标式的遍历，具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a></p>
+<p>上述三个命令都会对Hash进行完整遍历，Hash中的field数量与命令的耗时线性相关，对于尺寸不可预知的Hash，应严格避免使用上面三个命令，而改为使用HSCAN命令进行游标式的遍历，具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="noopener">https://redis.io/commands/scan</a></p>
 <h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>Redis Set是无序的，不可重复的String集合。<br>与Set相关的常用命令：</p>
 <ul>
 <li>SADD：向指定Set中添加1个或多个member，如果指定Set不存在，会自动创建一个。时间复杂度O(N)，N为添加的member个数</li>
@@ -533,7 +534,7 @@
 <li>SINTER/SINTERSTORE：计算多个Set的交集并返回/存储至另一个Set中，时间复杂度O(N)，N为参与计算的所有集合的总member数</li>
 <li>SDIFF/SDIFFSTORE：计算1个Set与1或多个Set的差集并返回/存储至另一个Set中，时间复杂度O(N)，N为参与计算的所有集合的总member数</li>
 </ul>
-<p>上述几个命令涉及的计算量大，应谨慎使用，特别是在参与计算的Set尺寸不可知的情况下，应严格避免使用。可以考虑通过SSCAN命令遍历获取相关Set的全部member（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a> ），如果需要做并集/交集/差集计算，可以在客户端进行，或在不服务实时查询请求的Slave上进行。</p>
+<p>上述几个命令涉及的计算量大，应谨慎使用，特别是在参与计算的Set尺寸不可知的情况下，应严格避免使用。可以考虑通过SSCAN命令遍历获取相关Set的全部member（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="noopener">https://redis.io/commands/scan</a> ），如果需要做并集/交集/差集计算，可以在客户端进行，或在不服务实时查询请求的Slave上进行。</p>
 <h2 id="Sorted-Set"><a href="#Sorted-Set" class="headerlink" title="Sorted Set"></a>Sorted Set</h2><p>Redis Sorted Set是有序的、不可重复的String集合。Sorted Set中的每个元素都需要指派一个分数(score)，Sorted Set会根据score对元素进行升序排序。如果多个member拥有相同的score，则以字典序进行升序排序。</p>
 <p>Sorted Set非常适合用于实现排名。</p>
 <p>Sorted Set的主要命令：</p>
@@ -552,8 +553,8 @@
 <li>ZRANGEBYSCORE/ZREVRANGEBYSCORE：返回指定Sorted Set中指定score范围内的所有member，返回结果以升序/降序排序，min和max可以指定为-inf和+inf，代表返回所有的member。时间复杂度O(log(N)+M)</li>
 <li>ZREMRANGEBYRANK/ZREMRANGEBYSCORE：移除Sorted Set中指定排名范围/指定score范围内的所有member。时间复杂度O(log(N)+M)</li>
 </ul>
-<p>上述几个命令，应尽量避免传递[0 -1]或[-inf +inf]这样的参数，来对Sorted Set做一次性的完整遍历，特别是在Sorted Set的尺寸不可预知的情况下。可以通过ZSCAN命令来进行游标式的遍历（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a> ），或通过LIMIT参数来限制返回member的数量（适用于ZRANGEBYSCORE和ZREVRANGEBYSCORE命令），以实现游标式的遍历。</p>
-<h2 id="Bitmap和HyperLogLog"><a href="#Bitmap和HyperLogLog" class="headerlink" title="Bitmap和HyperLogLog"></a>Bitmap和HyperLogLog</h2><p>Redis的这两种数据结构相较之前的并不常用，在本文中只做简要介绍，如想要详细了解这两种数据结构与其相关的命令，请参考官方文档<a href="https://redis.io/topics/data-types-intro" target="_blank" rel="external">https://redis.io/topics/data-types-intro</a> 中的相关章节</p>
+<p>上述几个命令，应尽量避免传递[0 -1]或[-inf +inf]这样的参数，来对Sorted Set做一次性的完整遍历，特别是在Sorted Set的尺寸不可预知的情况下。可以通过ZSCAN命令来进行游标式的遍历（具体请见 <a href="https://redis.io/commands/scan" target="_blank" rel="noopener">https://redis.io/commands/scan</a> ），或通过LIMIT参数来限制返回member的数量（适用于ZRANGEBYSCORE和ZREVRANGEBYSCORE命令），以实现游标式的遍历。</p>
+<h2 id="Bitmap和HyperLogLog"><a href="#Bitmap和HyperLogLog" class="headerlink" title="Bitmap和HyperLogLog"></a>Bitmap和HyperLogLog</h2><p>Redis的这两种数据结构相较之前的并不常用，在本文中只做简要介绍，如想要详细了解这两种数据结构与其相关的命令，请参考官方文档<a href="https://redis.io/topics/data-types-intro" target="_blank" rel="noopener">https://redis.io/topics/data-types-intro</a> 中的相关章节</p>
 <p>Bitmap在Redis中不是一种实际的数据类型，而是一种将String作为Bitmap使用的方法。可以理解为将String转换为bit数组。使用Bitmap来存储true/false类型的简单数据极为节省空间。</p>
 <p>HyperLogLogs是一种主要用于数量统计的数据结构，它和Set类似，维护一个不可重复的String集合，但是HyperLogLogs并不维护具体的member内容，只维护member的个数。也就是说，HyperLogLogs只能用于计算一个集合中不重复的元素数量，所以它比Set要节省很多内存空间。</p>
 <h2 id="其他常用命令"><a href="#其他常用命令" class="headerlink" title="其他常用命令"></a>其他常用命令</h2><ul>
@@ -574,9 +575,9 @@
 <li>Redis无论因为什么原因crash掉之后，重启时能够自动恢复到上一次RDB快照中记录的数据。这省去了手工从其他数据源（如DB）同步数据的过程，而且要比其他任何的数据恢复方式都要快</li>
 <li>现在硬盘那么大，真的不缺那一点地方</li>
 </ul>
-<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>采用RDB持久方式，Redis会定期保存数据快照至一个rbd文件中，并在启动时自动加载rdb文件，恢复之前保存的数据。可以在配置文件中配置Redis进行快照保存的时机：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">save [seconds] [changes]</div></pre></td></tr></table></figure></p>
-<p>意为在[seconds]秒内如果发生了[changes]次数据修改，则进行一次RDB快照保存，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">save 60 100</div></pre></td></tr></table></figure></p>
-<p>会让Redis每60秒检查一次数据变更情况，如果发生了100次或以上的数据变更，则进行RDB快照保存。<br>可以配置多条save指令，让Redis执行多级的快照保存策略。<br>Redis默认开启RDB快照，默认的RDB策略如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">save 900 1</div><div class="line">save 300 10</div><div class="line">save 60 10000</div></pre></td></tr></table></figure></p>
+<h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><p>采用RDB持久方式，Redis会定期保存数据快照至一个rbd文件中，并在启动时自动加载rdb文件，恢复之前保存的数据。可以在配置文件中配置Redis进行快照保存的时机：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">save [seconds] [changes]</span><br></pre></td></tr></table></figure></p>
+<p>意为在[seconds]秒内如果发生了[changes]次数据修改，则进行一次RDB快照保存，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">save 60 100</span><br></pre></td></tr></table></figure></p>
+<p>会让Redis每60秒检查一次数据变更情况，如果发生了100次或以上的数据变更，则进行RDB快照保存。<br>可以配置多条save指令，让Redis执行多级的快照保存策略。<br>Redis默认开启RDB快照，默认的RDB策略如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure></p>
 <p>也可以通过BGSAVE命令手工触发RDB快照保存。</p>
 <p>RDB的优点：</p>
 <ul>
@@ -590,14 +591,14 @@
 <li>如果数据集非常大且CPU不够强（比如单核CPU），Redis在fork子进程时可能会消耗相对较长的时间（长至1秒），影响这期间的客户端请求。</li>
 </ul>
 <h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><p>采用AOF持久方式时，Redis会把每一个写请求都记录在一个日志文件里。在Redis重启时，会把AOF文件中记录的所有写操作顺序执行一遍，确保数据恢复到最新。</p>
-<p>AOF默认是关闭的，如要开启，进行如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">appendonly yes</div></pre></td></tr></table></figure></p>
+<p>AOF默认是关闭的，如要开启，进行如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendonly yes</span><br></pre></td></tr></table></figure></p>
 <p>AOF提供了三种fsync配置，always/everysec/no，通过配置项[appendfsync]指定：</p>
 <ul>
 <li>appendfsync no：不进行fsync，将flush文件的时机交给OS决定，速度最快</li>
 <li>appendfsync always：每写入一条日志就进行一次fsync操作，数据安全性最高，但速度最慢</li>
 <li>appendfsync everysec：折中的做法，交由后台线程每秒fsync一次</li>
 </ul>
-<p>随着AOF不断地记录写操作日志，必定会出现一些无用的日志，例如某个时间点执行了命令<strong>SET key1 “abc”</strong>，在之后某个时间点又执行了<strong>SET key1 “bcd”</strong>，那么第一条命令很显然是没有用的。大量的无用日志会让AOF文件过大，也会让数据恢复的时间过长。<br>所以Redis提供了AOF rewrite功能，可以重写AOF文件，只保留能够把数据恢复到最新状态的最小写操作集。<br>AOF rewrite可以通过BGREWRITEAOF命令触发，也可以配置Redis定期自动进行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">auto-aof-rewrite-percentage 100</div><div class="line">auto-aof-rewrite-min-size 64mb</div></pre></td></tr></table></figure></p>
+<p>随着AOF不断地记录写操作日志，必定会出现一些无用的日志，例如某个时间点执行了命令<strong>SET key1 “abc”</strong>，在之后某个时间点又执行了<strong>SET key1 “bcd”</strong>，那么第一条命令很显然是没有用的。大量的无用日志会让AOF文件过大，也会让数据恢复的时间过长。<br>所以Redis提供了AOF rewrite功能，可以重写AOF文件，只保留能够把数据恢复到最新状态的最小写操作集。<br>AOF rewrite可以通过BGREWRITEAOF命令触发，也可以配置Redis定期自动进行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure></p>
 <p>上面两行配置的含义是，Redis在每次AOF rewrite时，会记录完成rewrite后的AOF日志大小，当AOF日志大小在该基础上增长了100%后，自动进行AOF rewrite。同时如果增长的大小没有达到64mb，则不会进行rewrite。</p>
 <p>AOF的优点：</p>
 <ul>
@@ -613,7 +614,7 @@
 </ul>
 <h1 id="内存管理与数据淘汰机制"><a href="#内存管理与数据淘汰机制" class="headerlink" title="内存管理与数据淘汰机制"></a>内存管理与数据淘汰机制</h1><h2 id="最大内存设置"><a href="#最大内存设置" class="headerlink" title="最大内存设置"></a>最大内存设置</h2><p>默认情况下，在32位OS中，Redis最大使用3GB的内存，在64位OS中则没有限制。</p>
 <p>在使用Redis时，应该对数据占用的最大空间有一个基本准确的预估，并为Redis设定最大使用的内存。否则在64位OS中Redis会无限制地占用内存（当物理内存被占满后会使用swap空间），容易引发各种各样的问题。</p>
-<p>通过如下配置控制Redis使用的最大内存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">maxmemory 100mb</div></pre></td></tr></table></figure></p>
+<p>通过如下配置控制Redis使用的最大内存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxmemory 100mb</span><br></pre></td></tr></table></figure></p>
 <p>在内存占用达到了maxmemory后，再向Redis写入数据时，Redis会：</p>
 <ul>
 <li>根据配置的数据淘汰策略尝试淘汰数据，释放空间</li>
@@ -633,36 +634,36 @@
 </ul>
 <p>最好为Redis指定一种有效的数据淘汰策略以配合maxmemory设置，避免在内存使用满后发生写入失败的情况。</p>
 <p>一般来说，推荐使用的策略是volatile-lru，并辨识Redis中保存的数据的重要性。对于那些重要的，绝对不能丢弃的数据（如配置类数据等），应不设置有效期，这样Redis就永远不会淘汰这些数据。对于那些相对不是那么重要的，并且能够热加载的数据（比如缓存最近登录的用户信息，当在Redis中找不到时，程序会去DB中读取），可以设置上有效期，这样在内存不够时Redis就会淘汰这部分数据。</p>
-<p>配置方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">maxmemory-policy volatile-lru   #默认是noeviction，即不进行数据淘汰</div></pre></td></tr></table></figure></p>
+<p>配置方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxmemory-policy volatile-lru   #默认是noeviction，即不进行数据淘汰</span><br></pre></td></tr></table></figure></p>
 <h1 id="Pipelining"><a href="#Pipelining" class="headerlink" title="Pipelining"></a>Pipelining</h1><p>Redis提供许多批量操作的命令，如MSET/MGET/HMSET/HMGET等等，这些命令存在的意义是减少维护网络连接和传输数据所消耗的资源和时间。<br>例如连续使用5次SET命令设置5个不同的key，比起使用一次MSET命令设置5个不同的key，效果是一样的，但前者会消耗更多的RTT(Round Trip Time)时长，永远应优先使用后者。</p>
-<p>然而，如果客户端要连续执行的多次操作无法通过Redis命令组合在一起，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SET a &quot;abc&quot;</div><div class="line">INCR b</div><div class="line">HSET c name &quot;hi&quot;</div></pre></td></tr></table></figure></p>
-<p>此时便可以使用Redis提供的pipelining功能来实现在一次交互中执行多条命令。<br>使用pipelining时，只需要从客户端一次向Redis发送多条命令（以\r\n）分隔，Redis就会依次执行这些命令，并且把每个命令的返回按顺序组装在一起一次返回，比如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ (<span class="built_in">printf</span> <span class="string">"PING\r\nPING\r\nPING\r\n"</span>; sleep 1) | nc localhost 6379</div><div class="line">+PONG</div><div class="line">+PONG</div><div class="line">+PONG</div></pre></td></tr></table></figure></p>
+<p>然而，如果客户端要连续执行的多次操作无法通过Redis命令组合在一起，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SET a &quot;abc&quot;</span><br><span class="line">INCR b</span><br><span class="line">HSET c name &quot;hi&quot;</span><br></pre></td></tr></table></figure></p>
+<p>此时便可以使用Redis提供的pipelining功能来实现在一次交互中执行多条命令。<br>使用pipelining时，只需要从客户端一次向Redis发送多条命令（以\r\n）分隔，Redis就会依次执行这些命令，并且把每个命令的返回按顺序组装在一起一次返回，比如：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ (<span class="built_in">printf</span> <span class="string">"PING\r\nPING\r\nPING\r\n"</span>; sleep 1) | nc localhost 6379</span><br><span class="line">+PONG</span><br><span class="line">+PONG</span><br><span class="line">+PONG</span><br></pre></td></tr></table></figure></p>
 <p>大部分的Redis客户端都对Pipelining提供支持，所以开发者通常并不需要自己手工拼装命令列表。</p>
 <h2 id="Pipelining的局限性"><a href="#Pipelining的局限性" class="headerlink" title="Pipelining的局限性"></a>Pipelining的局限性</h2><p>Pipelining只能用于执行<strong>连续且无相关性</strong>的命令，当某个命令的生成需要依赖于前一个命令的返回时，就无法使用Pipelining了。</p>
 <p>通过Scripting功能，可以规避这一局限性</p>
 <h1 id="事务与Scripting"><a href="#事务与Scripting" class="headerlink" title="事务与Scripting"></a>事务与Scripting</h1><p>Pipelining能够让Redis在一次交互中处理多条命令，然而在一些场景下，我们可能需要在此基础上确保这一组命令是连续执行的。</p>
-<p>比如获取当前累计的PV数并将其清0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; GET vCount</div><div class="line">12384</div><div class="line">&gt; SET vCount 0</div><div class="line">OK</div></pre></td></tr></table></figure></p>
+<p>比如获取当前累计的PV数并将其清0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; GET vCount</span><br><span class="line">12384</span><br><span class="line">&gt; SET vCount 0</span><br><span class="line">OK</span><br></pre></td></tr></table></figure></p>
 <p>如果在GET和SET命令之间插进来一个INCR vCount，就会使客户端拿到的vCount不准确。</p>
 <p>Redis的事务可以确保复数命令执行时的原子性。也就是说Redis能够保证：一个事务中的一组命令是绝对连续执行的，在这些命令执行完成之前，绝对不会有来自于其他连接的其他命令插进去执行。</p>
-<p>通过MULTI和EXEC命令来把这两个命令加入一个事务中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; MULTI</div><div class="line">OK</div><div class="line">&gt; GET vCount</div><div class="line">QUEUED</div><div class="line">&gt; SET vCount 0</div><div class="line">QUEUED</div><div class="line">&gt; EXEC</div><div class="line">1) 12384</div><div class="line">2) OK</div></pre></td></tr></table></figure></p>
+<p>通过MULTI和EXEC命令来把这两个命令加入一个事务中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt; MULTI</span><br><span class="line">OK</span><br><span class="line">&gt; GET vCount</span><br><span class="line">QUEUED</span><br><span class="line">&gt; SET vCount 0</span><br><span class="line">QUEUED</span><br><span class="line">&gt; EXEC</span><br><span class="line">1) 12384</span><br><span class="line">2) OK</span><br></pre></td></tr></table></figure></p>
 <p>Redis在接收到MULTI命令后便会开启一个事务，这之后的所有读写命令都会保存在队列中但并不执行，直到接收到EXEC命令后，Redis会把队列中的所有命令连续顺序执行，并以数组形式返回每个命令的返回结果。</p>
 <p>可以使用DISCARD命令放弃当前的事务，将保存的命令队列清空。</p>
 <p>需要注意的是，<strong>Redis事务不支持回滚</strong>：<br>如果一个事务中的命令出现了语法错误，大部分客户端驱动会返回错误，2.6.5版本以上的Redis也会在执行EXEC时检查队列中的命令是否存在语法错误，如果存在，则会自动放弃事务并返回错误。<br>但如果一个事务中的命令有非语法类的错误（比如对String执行HSET操作），无论客户端驱动还是Redis都无法在真正执行这条命令之前发现，所以事务中的所有命令仍然会被依次执行。在这种情况下，会出现一个事务中部分命令成功部分命令失败的情况，然而与RDBMS不同，Redis不提供事务回滚的功能，所以只能通过其他方法进行数据的回滚。</p>
 <h2 id="通过事务实现CAS"><a href="#通过事务实现CAS" class="headerlink" title="通过事务实现CAS"></a>通过事务实现CAS</h2><p>Redis提供了WATCH命令与事务搭配使用，实现CAS乐观锁的机制。</p>
-<p>假设要实现将某个商品的状态改为已售：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;)</div><div class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</div></pre></td></tr></table></figure></p>
+<p>假设要实现将某个商品的状态改为已售：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;)</span><br><span class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</span><br></pre></td></tr></table></figure></p>
 <p>这一伪代码执行时，无法确保并发安全性，有可能多个客户端都获取到了”in stock”的状态，导致一个库存被售卖多次。</p>
-<p>使用WATCH命令和事务可以解决这一问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">exec(WATCH stock:1001);</div><div class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;) &#123;</div><div class="line">    exec(MULTI);</div><div class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</div><div class="line">    exec(EXEC);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用WATCH命令和事务可以解决这一问题：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">exec(WATCH stock:1001);</span><br><span class="line">if(exec(HGET stock:1001 state) == &quot;in stock&quot;) &#123;</span><br><span class="line">    exec(MULTI);</span><br><span class="line">    exec(HSET stock:1001 state &quot;sold&quot;);</span><br><span class="line">    exec(EXEC);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>WATCH的机制是：在事务EXEC命令执行时，Redis会检查被WATCH的key，只有被WATCH的key从WATCH起始时至今没有发生过变更，EXEC才会被执行。如果WATCH的key在WATCH命令到EXEC命令之间发生过变化，则EXEC命令会返回失败。</p>
 <h2 id="Scripting"><a href="#Scripting" class="headerlink" title="Scripting"></a>Scripting</h2><p>通过EVAL与EVALSHA命令，可以让Redis执行LUA脚本。这就类似于RDBMS的存储过程一样，可以把客户端与Redis之间密集的读/写交互放在服务端进行，避免过多的数据交互，提升性能。</p>
 <p>Scripting功能是作为事务功能的替代者诞生的，事务提供的所有能力Scripting都可以做到。Redis官方推荐使用LUA Script来代替事务，前者的效率和便利性都超过了事务。</p>
-<p>关于Scripting的具体使用，本文不做详细介绍，请参考官方文档 <a href="https://redis.io/commands/eval" target="_blank" rel="external">https://redis.io/commands/eval</a></p>
+<p>关于Scripting的具体使用，本文不做详细介绍，请参考官方文档 <a href="https://redis.io/commands/eval" target="_blank" rel="noopener">https://redis.io/commands/eval</a></p>
 <h1 id="Redis性能调优"><a href="#Redis性能调优" class="headerlink" title="Redis性能调优"></a>Redis性能调优</h1><p>尽管Redis是一个非常快速的内存数据存储媒介，也并不代表Redis不会产生性能问题。<br>前文中提到过，Redis采用单线程模型，所有的命令都是由一个线程串行执行的，所以当某个命令执行耗时较长时，会拖慢其后的所有命令，这使得Redis对每个任务的执行效率更加敏感。</p>
 <p>针对Redis的性能优化，主要从下面几个层面入手：</p>
 <ul>
 <li>最初的也是最重要的，确保没有让Redis执行耗时长的命令</li>
 <li>使用pipelining将连续执行的命令组合执行</li>
 <li><p>操作系统的Transparent huge pages功能必须关闭：</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</div></pre></td></tr></table></figure>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>如果在虚拟机中运行Redis，可能天然就有虚拟机环境带来的固有延迟。可以通过./redis-cli –intrinsic-latency 100命令查看固有延迟。同时如果对Redis的性能有较高要求的话，应尽可能在物理机上直接部署Redis。</p>
 </li>
@@ -679,8 +680,8 @@
 <li>绝对禁止使用KEYS命令</li>
 <li>避免一次性遍历集合类型的所有成员，而应使用SCAN类的命令进行分批的，游标式的遍历</li>
 </ul>
-<p>Redis提供了SCAN命令，可以对Redis中存储的所有key进行游标式的遍历，避免使用KEYS命令带来的性能问题。同时还有SSCAN/HSCAN/ZSCAN等命令，分别用于对Set/Hash/Sorted Set中的元素进行游标式遍历。SCAN类命令的使用请参考官方文档：<a href="https://redis.io/commands/scan" target="_blank" rel="external">https://redis.io/commands/scan</a></p>
-<p>Redis提供了Slow Log功能，可以自动记录耗时较长的命令。相关的配置参数有两个：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">slowlog-log-slower-than xxxms  <span class="comment">#执行时间慢于xxx毫秒的命令计入Slow Log</span></div><div class="line">slowlog-max-len xxx  <span class="comment">#Slow Log的长度，即最大纪录多少条Slow Log</span></div></pre></td></tr></table></figure></p>
+<p>Redis提供了SCAN命令，可以对Redis中存储的所有key进行游标式的遍历，避免使用KEYS命令带来的性能问题。同时还有SSCAN/HSCAN/ZSCAN等命令，分别用于对Set/Hash/Sorted Set中的元素进行游标式遍历。SCAN类命令的使用请参考官方文档：<a href="https://redis.io/commands/scan" target="_blank" rel="noopener">https://redis.io/commands/scan</a></p>
+<p>Redis提供了Slow Log功能，可以自动记录耗时较长的命令。相关的配置参数有两个：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">slowlog-log-slower-than xxxms  <span class="comment">#执行时间慢于xxx毫秒的命令计入Slow Log</span></span><br><span class="line">slowlog-max-len xxx  <span class="comment">#Slow Log的长度，即最大纪录多少条Slow Log</span></span><br></pre></td></tr></table></figure></p>
 <p>使用<strong>SLOWLOG GET [number]</strong>命令，可以输出最近进入Slow Log的number条命令。<br>使用<strong>SLOWLOG RESET</strong>命令，可以重置Slow Log</p>
 <h2 id="网络引发的延迟"><a href="#网络引发的延迟" class="headerlink" title="网络引发的延迟"></a>网络引发的延迟</h2><ul>
 <li>尽可能使用长连接或连接池，避免频繁创建销毁连接</li>
@@ -707,12 +708,12 @@
 <li>实时性要求不是特别高的读请求，可以在Slave上完成，提升效率。特别是一些周期性执行的统计任务，这些任务可能需要执行一些长耗时的Redis命令，可以专门规划出1个或几个Slave用于服务这些统计任务</li>
 <li>借助Redis Sentinel可以实现高可用，当Master crash后，Redis Sentinel能够自动将一个Slave晋升为Master，继续提供服务</li>
 </ul>
-<p>启用主从复制非常简单，只需要配置多个Redis实例，在作为Slave的Redis实例中配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">slaveof 192.168.1.1 6379  <span class="comment">#指定Master的IP和端口</span></div></pre></td></tr></table></figure></p>
+<p>启用主从复制非常简单，只需要配置多个Redis实例，在作为Slave的Redis实例中配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slaveof 192.168.1.1 6379  <span class="comment">#指定Master的IP和端口</span></span><br></pre></td></tr></table></figure></p>
 <p>当Slave启动后，会从Master进行一次冷启动数据同步，由Master触发BGSAVE生成RDB文件推送给Slave进行导入，导入完成后Master再将增量数据通过Redis Protocol同步给Slave。之后主从之间的数据便一直以Redis Protocol进行同步</p>
 <h2 id="使用Sentinel做自动failover"><a href="#使用Sentinel做自动failover" class="headerlink" title="使用Sentinel做自动failover"></a>使用Sentinel做自动failover</h2><p>Redis的主从复制功能本身只是做数据同步，并不提供监控和自动failover能力，要通过主从复制功能来实现Redis的高可用，还需要引入一个组件：Redis Sentinel</p>
 <p>Redis Sentinel是Redis官方开发的监控组件，可以监控Redis实例的状态，通过Master节点自动发现Slave节点，并在监测到Master节点失效时选举出一个新的Master，并向所有Redis实例推送新的主从配置。</p>
 <p>Redis Sentinel需要至少部署3个实例才能形成选举关系。</p>
-<p>关键配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">sentinel monitor mymaster 127.0.0.1 6379 2  <span class="comment">#Master实例的IP、端口，以及选举需要的赞成票数</span></div><div class="line">sentinel down-after-milliseconds mymaster 60000  <span class="comment">#多长时间没有响应视为Master失效</span></div><div class="line">sentinel failover-timeout mymaster 180000  <span class="comment">#两次failover尝试间的间隔时长</span></div><div class="line">sentinel parallel-syncs mymaster 1  <span class="comment">#如果有多个Slave，可以通过此配置指定同时从新Master进行数据同步的Slave数，避免所有Slave同时进行数据同步导致查询服务也不可用</span></div></pre></td></tr></table></figure></p>
+<p>关键配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2  <span class="comment">#Master实例的IP、端口，以及选举需要的赞成票数</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 60000  <span class="comment">#多长时间没有响应视为Master失效</span></span><br><span class="line">sentinel failover-timeout mymaster 180000  <span class="comment">#两次failover尝试间的间隔时长</span></span><br><span class="line">sentinel parallel-syncs mymaster 1  <span class="comment">#如果有多个Slave，可以通过此配置指定同时从新Master进行数据同步的Slave数，避免所有Slave同时进行数据同步导致查询服务也不可用</span></span><br></pre></td></tr></table></figure></p>
 <p>另外需要注意的是，Redis Sentinel实现的自动failover不是在同一个IP和端口上完成的，也就是说自动failover产生的新Master提供服务的IP和端口与之前的Master是不一样的，所以要实现HA，还要求客户端必须支持Sentinel，能够与Sentinel交互获得新Master的信息才行。</p>
 <h2 id="集群分片"><a href="#集群分片" class="headerlink" title="集群分片"></a>集群分片</h2><p>为何要做集群分片：</p>
 <ul>
@@ -753,7 +754,7 @@
 <ol>
 <li>需要在Redis中存储的数据有多大？未来2年内可能发展为多大？这些数据是否都需要长期保存？是否可以使用LRU算法进行非热点数据的淘汰？综合考虑前面几个因素，评估出Redis需要使用的物理内存。</li>
 <li>用于部署Redis的主机物理内存有多大？有多少可以分配给Redis使用？对比(1)中的内存需求评估，是否足够用？</li>
-<li>Redis面临的并发写压力会有多大？在不使用pipelining时，Redis的写性能可以超过10万次/秒（更多的benchmark可以参考 <a href="https://redis.io/topics/benchmarks" target="_blank" rel="external">https://redis.io/topics/benchmarks</a> ）</li>
+<li>Redis面临的并发写压力会有多大？在不使用pipelining时，Redis的写性能可以超过10万次/秒（更多的benchmark可以参考 <a href="https://redis.io/topics/benchmarks" target="_blank" rel="noopener">https://redis.io/topics/benchmarks</a> ）</li>
 <li>在使用Redis时，是否会使用到pipelining和事务功能？使用的场景多不多？</li>
 </ol>
 <p>综合上面几点考虑，如果单台主机的可用物理内存完全足以支撑对Redis的容量需求，且Redis面临的并发写压力距离Benchmark值还尚有距离，建议采用主从复制的架构，可以省去很多不必要的麻烦。同时，如果应用中大量使用pipelining和事务，也建议尽可能选择主从复制架构，可以减少设计和开发时的复杂度。</p>
@@ -781,9 +782,9 @@
 <li>文档较丰富，有中文文档</li>
 </ul>
 <p>对于Jedis和Redisson的选择，同样应遵循前述的原理，尽管Jedis比起Redisson有各种各样的不足，但也应该在需要使用Redisson的高级特性时再选用Redisson，避免造成不必要的程序复杂度提升。</p>
-<p>Jedis：<br>github：<a href="https://github.com/xetorthio/jedis" target="_blank" rel="external">https://github.com/xetorthio/jedis</a><br>文档：<a href="https://github.com/xetorthio/jedis/wiki" target="_blank" rel="external">https://github.com/xetorthio/jedis/wiki</a></p>
-<p>Redisson：<br>github：<a href="https://github.com/redisson/redisson" target="_blank" rel="external">https://github.com/redisson/redisson</a><br>文档：<a href="https://github.com/redisson/redisson/wiki" target="_blank" rel="external">https://github.com/redisson/redisson/wiki</a></p>
-<p>from <a href="http://www.jianshu.com/p/2f14bc570563" target="_blank" rel="external">http://www.jianshu.com/p/2f14bc570563</a></p>
+<p>Jedis：<br>github：<a href="https://github.com/xetorthio/jedis" target="_blank" rel="noopener">https://github.com/xetorthio/jedis</a><br>文档：<a href="https://github.com/xetorthio/jedis/wiki" target="_blank" rel="noopener">https://github.com/xetorthio/jedis/wiki</a></p>
+<p>Redisson：<br>github：<a href="https://github.com/redisson/redisson" target="_blank" rel="noopener">https://github.com/redisson/redisson</a><br>文档：<a href="https://github.com/redisson/redisson/wiki" target="_blank" rel="noopener">https://github.com/redisson/redisson/wiki</a></p>
+<p>from <a href="http://www.jianshu.com/p/2f14bc570563" target="_blank" rel="noopener">http://www.jianshu.com/p/2f14bc570563</a></p>
 
       
     </div>
@@ -905,7 +906,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -927,7 +928,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

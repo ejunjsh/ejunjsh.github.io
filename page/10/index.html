@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/10/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -329,6 +330,152 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/07/23/bytecode-hello-world/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/07/23/bytecode-hello-world/" itemprop="url">从字节码层面看“HelloWorld”</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-07-23T20:28:09+08:00">
+                23 Jul 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="HelloWorld-字节码生成"><a href="#HelloWorld-字节码生成" class="headerlink" title="HelloWorld 字节码生成"></a>HelloWorld 字节码生成</h1><p>众所周知，Java 程序是在 JVM 上运行的，不过 JVM 运行的其实不是 Java 语言本身，而是 Java 程序编译成的字节码文件。可能一开始 JVM 是为 Java 语言服务的，不过随着编译技术和 JVM 自身的不断发展和成熟，JVM 已经不仅仅只运行 Java 程序。任何能编译成为符合 JVM 字节码规范的语言都可以在 JVM 上运行，比较常见的 Scala、Groove、JRuby等。今天，我就从大家最熟悉的程序“HelloWorld”程序入手，分析整个 Class 文件的结构。虽然这个程序比较简单，但是基本上包含了字节码规范中的所有内容，因此即使以后要分析更复杂的程序，那也只是“量”上的变化，本质上没有区别。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/07/23/bytecode-hello-world/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -753,8 +900,8 @@
 
       
         
-          <p>这是系列的第六篇，接下来要讲一下AT&amp;T汇编语法。之前一直都是用nasm汇编，但是还有其他不同语法的汇编，如fasm，yasm等等。正如我上面写的，我们要看一下gas（GNU汇编）和讲一下与nasm的不同。GCC用的是GNU汇编，所以你会看到一个简单的hello world的汇编输出：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</div><div class="line">	write(<span class="number">1</span>, <span class="string">"Hello World\n"</span>, <span class="number">15</span>);</div><div class="line">	<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>汇编输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">	.file	&quot;test.c&quot;</div><div class="line">	.section	.rodata</div><div class="line">.LC0:</div><div class="line">	.string	&quot;Hello World\n&quot;</div><div class="line">	.text</div><div class="line">	.globl	main</div><div class="line">	.type	main, @function</div><div class="line">main:</div><div class="line">.LFB0:</div><div class="line">	.cfi_startproc</div><div class="line">	pushq	%rbp</div><div class="line">	.cfi_def_cfa_offset 16</div><div class="line">	.cfi_offset 6, -16</div><div class="line">	movq	%rsp, %rbp</div><div class="line">	.cfi_def_cfa_register 6</div><div class="line">	movl	$15, %edx</div><div class="line">	movl	$.LC0, %esi</div><div class="line">	movl	$1, %edi</div><div class="line">	call	write</div><div class="line">	movl	$0, %eax</div><div class="line">	popq	%rbp</div><div class="line">	.cfi_def_cfa 7, 8</div><div class="line">	ret</div><div class="line">	.cfi_endproc</div><div class="line">.LFE0:</div><div class="line">	.size	main, .-main</div><div class="line">	.ident	&quot;GCC: (Ubuntu 4.9.1-16ubuntu6) 4.9.1&quot;</div><div class="line">	.section	.note.GNU-stack,&quot;&quot;,@progbits</div></pre></td></tr></table></figure></p>
+          <p>这是系列的第六篇，接下来要讲一下AT&amp;T汇编语法。之前一直都是用nasm汇编，但是还有其他不同语法的汇编，如fasm，yasm等等。正如我上面写的，我们要看一下gas（GNU汇编）和讲一下与nasm的不同。GCC用的是GNU汇编，所以你会看到一个简单的hello world的汇编输出：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">	write(<span class="number">1</span>, <span class="string">"Hello World\n"</span>, <span class="number">15</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>汇编输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">	.file	&quot;test.c&quot;</span><br><span class="line">	.section	.rodata</span><br><span class="line">.LC0:</span><br><span class="line">	.string	&quot;Hello World\n&quot;</span><br><span class="line">	.text</span><br><span class="line">	.globl	main</span><br><span class="line">	.type	main, @function</span><br><span class="line">main:</span><br><span class="line">.LFB0:</span><br><span class="line">	.cfi_startproc</span><br><span class="line">	pushq	%rbp</span><br><span class="line">	.cfi_def_cfa_offset 16</span><br><span class="line">	.cfi_offset 6, -16</span><br><span class="line">	movq	%rsp, %rbp</span><br><span class="line">	.cfi_def_cfa_register 6</span><br><span class="line">	movl	$15, %edx</span><br><span class="line">	movl	$.LC0, %esi</span><br><span class="line">	movl	$1, %edi</span><br><span class="line">	call	write</span><br><span class="line">	movl	$0, %eax</span><br><span class="line">	popq	%rbp</span><br><span class="line">	.cfi_def_cfa 7, 8</span><br><span class="line">	ret</span><br><span class="line">	.cfi_endproc</span><br><span class="line">.LFE0:</span><br><span class="line">	.size	main, .-main</span><br><span class="line">	.ident	&quot;GCC: (Ubuntu 4.9.1-16ubuntu6) 4.9.1&quot;</span><br><span class="line">	.section	.note.GNU-stack,&quot;&quot;,@progbits</span><br></pre></td></tr></table></figure></p>
 <p>看上去跟nasm汇编不同吧，让我们看看他们的不同吧。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -907,8 +1054,8 @@
 <li>单行</li>
 <li>多行</li>
 </ul>
-<p>所有单行宏必须从％define指令开始。格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">%define macro_name(parameter) value</div></pre></td></tr></table></figure></p>
-<p>Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">%define argc rsp + 8</div><div class="line">%define cliArg1 rsp + 24</div></pre></td></tr></table></figure></p>
+<p>所有单行宏必须从％define指令开始。格式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%define macro_name(parameter) value</span><br></pre></td></tr></table></figure></p>
+<p>Nasm宏的行为和外观与C类似。例如，我们可以创建以下单行宏：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">%define argc rsp + 8</span><br><span class="line">%define cliArg1 rsp + 24</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/05/16/asm-learning-road-5/#more" rel="contents">
@@ -1057,7 +1204,7 @@
           <p>前段时间，我开始为x86_64编写有关汇编编程的一系列博文。你可以通过asm标签找到它。不幸的是，我上次很忙，没有新帖，所以今天我继续写关于汇编的帖子，并且每周都会尝试这样做。</p>
 <p>今天我们将看一下字符串和一些字符串操作。我们还是使用nasm汇编器和linux x86_64。</p>
 <h1 id="反转字符串"><a href="#反转字符串" class="headerlink" title="反转字符串"></a>反转字符串</h1><p>当然，当我们谈论汇编编程语言时，我们不能谈论字符串数据类型，实际上我们正在处理字节数组。我们尝试写简单的例子，我们将定义字符串数据，并尝试反转并将结果写入stdout。当我们开始学习新的编程语言时，这个任务似乎很简单和受欢迎。我们来看看实现。</p>
-<p>首先，我定义初始化的数据。它将被放置在数据部分（您可以部分阅读有关章节）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">		SYS_WRITE equ 1</div><div class="line">		STD_OUT   equ 1</div><div class="line">		SYS_EXIT  equ 60</div><div class="line">		EXIT_CODE equ 0</div><div class="line"></div><div class="line">		NEW_LINE db 0xa</div><div class="line">		INPUT db &quot;Hello world!&quot;</div></pre></td></tr></table></figure></p>
+<p>首先，我定义初始化的数据。它将被放置在数据部分（您可以部分阅读有关章节）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">section .data</span><br><span class="line">		SYS_WRITE equ 1</span><br><span class="line">		STD_OUT   equ 1</span><br><span class="line">		SYS_EXIT  equ 60</span><br><span class="line">		EXIT_CODE equ 0</span><br><span class="line"></span><br><span class="line">		NEW_LINE db 0xa</span><br><span class="line">		INPUT db &quot;Hello world!&quot;</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/05/15/asm-learning-road-4/#more" rel="contents">
@@ -1204,7 +1351,7 @@
       
         
           <p>栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出）</p>
-<p>我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），应用程序就可以从函数调用的下个位置继续执行。<br>举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">global _start</div><div class="line"></div><div class="line">section .text</div><div class="line"></div><div class="line">_start:</div><div class="line">		mov rax, 1</div><div class="line">		call incRax</div><div class="line">		cmp rax, 2</div><div class="line">		jne exit</div><div class="line">		;;</div><div class="line">		;; Do something</div><div class="line">		;;</div><div class="line"></div><div class="line">incRax:</div><div class="line">		inc rax</div><div class="line">		ret</div></pre></td></tr></table></figure></p>
+<p>我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），应用程序就可以从函数调用的下个位置继续执行。<br>举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">global _start</span><br><span class="line"></span><br><span class="line">section .text</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">		mov rax, 1</span><br><span class="line">		call incRax</span><br><span class="line">		cmp rax, 2</span><br><span class="line">		jne exit</span><br><span class="line">		;;</span><br><span class="line">		;; Do something</span><br><span class="line">		;;</span><br><span class="line"></span><br><span class="line">incRax:</span><br><span class="line">		inc rax</span><br><span class="line">		ret</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/05/14/asm-learning-road-3/#more" rel="contents">
@@ -1353,10 +1500,10 @@
           <p>对于不折不扣的汇编新手来说，<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一部分</a>中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。</p>
 <h1 id="术语和概念"><a href="#术语和概念" class="headerlink" title="术语和概念"></a>术语和概念</h1><p>当我写了<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一篇</a>之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。</p>
 <p>寄存器（Register）：寄存器是处理器内小容量的存储结构，处理器的主要功能是数据处理，处理器可以从内存中获得数据，但这是一种低速的操作，这就是为什么处理器为什么要有自己数据存储结构，称为“寄存器”。</p>
-<p>L小端（Little-endian）：我们可以假设内存是一个大的数组，它包含一个字节一个字节的数。每个地址存储了内存“数组”中的一个元素，每个元素一个字节。举例来说，我们有 4 字节数：AA 56 AB FF，在小端模式下最低位存放在低地址上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0 FF</div><div class="line">1 AB</div><div class="line">2 56</div><div class="line">3 AA</div></pre></td></tr></table></figure></p>
+<p>L小端（Little-endian）：我们可以假设内存是一个大的数组，它包含一个字节一个字节的数。每个地址存储了内存“数组”中的一个元素，每个元素一个字节。举例来说，我们有 4 字节数：AA 56 AB FF，在小端模式下最低位存放在低地址上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0 FF</span><br><span class="line">1 AB</span><br><span class="line">2 56</span><br><span class="line">3 AA</span><br></pre></td></tr></table></figure></p>
 <p>这里，0、1、2、3 是内存地址。</p>
-<p>大端（Big-endian）：大端存储数据与小端相反。所有上面的字节序在大端模式下是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0 AA</div><div class="line">1 56</div><div class="line">2 AB</div><div class="line">3 FF</div></pre></td></tr></table></figure></p>
-<p>系统调用（Syscall）：系统调用是用户程序要求操作系统为其完成某些工作的一种方式。你可以在<a href="http://blog.rchapman.org/post/36801038863/linux-system-call-table-for-x86-64" target="_blank" rel="external">这里</a>找到系统调用表。</p>
+<p>大端（Big-endian）：大端存储数据与小端相反。所有上面的字节序在大端模式下是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0 AA</span><br><span class="line">1 56</span><br><span class="line">2 AB</span><br><span class="line">3 FF</span><br></pre></td></tr></table></figure></p>
+<p>系统调用（Syscall）：系统调用是用户程序要求操作系统为其完成某些工作的一种方式。你可以在<a href="http://blog.rchapman.org/post/36801038863/linux-system-call-table-for-x86-64" target="_blank" rel="noopener">这里</a>找到系统调用表。</p>
 <p>栈（Stack）：处理器中寄存器的个数非常有限。所以栈是一块连续的内存空间，可以通过特殊寄存器如 RSP、SS、RIP 等来寻址。在接下来的文章我会专门深入介绍栈。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1503,7 +1650,7 @@
 
       
         
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">int</span> x = <span class="number">10</span>;</div><div class="line">  <span class="keyword">int</span> y = <span class="number">100</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"x + y = %d"</span>, x + y);</div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> x = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> y = <span class="number">100</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"x + y = %d"</span>, x + y);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>大家都能理解上面这段 C 语言代码完成的功能，但是…这段代码底层是如何工作的呢？我想我们中间不是所有人都能回答这个问题，我也不能。我认为我可以用高级编程语言写代码，例如 Haskell、Erlang、Go 等等，但是我完全不知道在编译之后它在底层是如何工作的。所以，我决定往下再深入一步，到汇编这个层次，并且记录下我的学习汇编之路。希望这是有趣的过程，而不是仅仅对我一个人。大约五、六年前我已经使用过汇编来写简单的程序，那时我还在上大学，用的是 Turbo 汇编和 DOS 操作系统。现在我使用 Linux-x86_64 操作系统，是的，64 位 Linux 和 16 位 DOS 肯定有很大的不同。那我们就开始吧。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1653,159 +1800,11 @@
           <blockquote>
 <p>mark一下，当笔记，以后忘了查看</p>
 </blockquote>
-<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>命令：curl<br>在Linux中curl是一个利用URL规则在命令行下工作的文件传输工具，可以说是一款很强大的http命令行工具。它支持文件的上传和下载，是综合传输工具，但按传统，习惯称url为下载工具。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">语法：# curl [option] [url]</div></pre></td></tr></table></figure></p>
-<p>常见参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">-A/--user-agent &lt;string&gt;              设置用户代理发送给服务器</div><div class="line">-b/--cookie &lt;name=string/file&gt;    cookie字符串或文件读取位置</div><div class="line">-c/--cookie-jar &lt;file&gt;                    操作结束后把cookie写入到这个文件中</div><div class="line">-C/--continue-at &lt;offset&gt;            断点续转</div><div class="line">-D/--dump-header &lt;file&gt;              把header信息写入到该文件中</div><div class="line">-e/--referer                                  来源网址</div><div class="line">-f/--fail                                          连接失败时不显示http错误</div><div class="line">-o/--output                                  把输出写到该文件中</div><div class="line">-O/--remote-name                      把输出写到该文件中，保留远程文件的文件名</div><div class="line">-r/--range &lt;range&gt;                      检索来自HTTP/1.1或FTP服务器字节范围</div><div class="line">-s/--silent                                    静音模式。不输出任何东西</div><div class="line">-T/--upload-file &lt;file&gt;                  上传文件</div><div class="line">-u/--user &lt;user[:password]&gt;      设置服务器的用户和密码</div><div class="line">-w/--write-out [format]                什么输出完成后</div><div class="line">-x/--proxy &lt;host[:port]&gt;              在给定的端口上使用HTTP代理</div><div class="line">-#/--progress-bar                        进度条显示当前的传送状态</div></pre></td></tr></table></figure></p>
+<h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>命令：curl<br>在Linux中curl是一个利用URL规则在命令行下工作的文件传输工具，可以说是一款很强大的http命令行工具。它支持文件的上传和下载，是综合传输工具，但按传统，习惯称url为下载工具。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">语法：# curl [option] [url]</span><br></pre></td></tr></table></figure></p>
+<p>常见参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-A/--user-agent &lt;string&gt;              设置用户代理发送给服务器</span><br><span class="line">-b/--cookie &lt;name=string/file&gt;    cookie字符串或文件读取位置</span><br><span class="line">-c/--cookie-jar &lt;file&gt;                    操作结束后把cookie写入到这个文件中</span><br><span class="line">-C/--continue-at &lt;offset&gt;            断点续转</span><br><span class="line">-D/--dump-header &lt;file&gt;              把header信息写入到该文件中</span><br><span class="line">-e/--referer                                  来源网址</span><br><span class="line">-f/--fail                                          连接失败时不显示http错误</span><br><span class="line">-o/--output                                  把输出写到该文件中</span><br><span class="line">-O/--remote-name                      把输出写到该文件中，保留远程文件的文件名</span><br><span class="line">-r/--range &lt;range&gt;                      检索来自HTTP/1.1或FTP服务器字节范围</span><br><span class="line">-s/--silent                                    静音模式。不输出任何东西</span><br><span class="line">-T/--upload-file &lt;file&gt;                  上传文件</span><br><span class="line">-u/--user &lt;user[:password]&gt;      设置服务器的用户和密码</span><br><span class="line">-w/--write-out [format]                什么输出完成后</span><br><span class="line">-x/--proxy &lt;host[:port]&gt;              在给定的端口上使用HTTP代理</span><br><span class="line">-#/--progress-bar                        进度条显示当前的传送状态</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/04/24/linux-curl/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/04/22/redis-trib/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/04/22/redis-trib/" itemprop="url">redis cluster管理工具redis-trib.rb详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-22T23:40:47+08:00">
-                22 Apr 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>redis-trib.rb是redis官方推出的管理redis集群的工具，集成在redis的源码src目录下，是基于redis提供的集群命令封装成简单、便捷、实用的操作工具。redis-trib.rb是redis作者用ruby完成的。为了看懂redis-trib.rb，我特意花了一个星期学习了ruby，也被ruby的简洁、明了所吸引。ruby是门非常灵活的语言，redis-trib.rb只用了1600行左右的代码，就实现了强大的集群操作。本文对redis-trib.rb的介绍是基于redis 3.0.6版本的源码。阅读本文需要对redis集群功能有一定的了解。关于redis集群功能的介绍，可以参考本人的另一篇文章《redis3.0 cluster功能介绍》。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/04/22/redis-trib/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1893,7 +1892,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1915,7 +1914,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

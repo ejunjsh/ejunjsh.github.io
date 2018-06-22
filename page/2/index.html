@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/2/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -586,7 +587,7 @@
 
       
         
-          <h1 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h1><p>接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> human <span class="keyword">interface</span>&#123;</div><div class="line">	walk()</div><div class="line">	run()</div><div class="line">	eat()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+          <h1 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h1><p>接口就是一个抽象类型，与之对应的就是具体类型，同时接口也是抽象方法接口。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> human <span class="keyword">interface</span>&#123;</span><br><span class="line">	walk()</span><br><span class="line">	run()</span><br><span class="line">	eat()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>上面的代码定义了接口，接口里定义了几个抽象方法，一般其他语言例如Java，都会定义一个具体的类型来实现这个接口，像这样<code>class man implements human</code> 声明<code>man</code>实现了<code>human</code>。但是go上使用了一种<code>duck typing</code>来定义具体类型。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -737,7 +738,7 @@
 <p>之前面试被问到深分页的问题，现在mark一下吧</p>
 </blockquote>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用分页的方式、Elasticsearch 搜索执行过程以及为什么深度分页应该被禁止，最后再介绍使用 scroll 的方式遍历数据。</p>
-<h1 id="Elasticsearch-搜索内部执行原理"><a href="#Elasticsearch-搜索内部执行原理" class="headerlink" title="Elasticsearch 搜索内部执行原理"></a>Elasticsearch 搜索内部执行原理</h1><p>一个最基本的 Elasticsearch 查询语句是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">POST /my_index/my_type/_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;,</div><div class="line">    &quot;from&quot;: 100,</div><div class="line">    &quot;size&quot;:  10</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Elasticsearch-搜索内部执行原理"><a href="#Elasticsearch-搜索内部执行原理" class="headerlink" title="Elasticsearch 搜索内部执行原理"></a>Elasticsearch 搜索内部执行原理</h1><p>一个最基本的 Elasticsearch 查询语句是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /my_index/my_type/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;,</span><br><span class="line">    &quot;from&quot;: 100,</span><br><span class="line">    &quot;size&quot;:  10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>上面的查询表示从搜索结果中取第100条开始的10条数据。下面讲解搜索过程时也以这个请求为例。</p>
 <p>那么，这个查询语句在 Elasticsearch 集群内部是怎么执行的呢？为了方便描述，我们假设该 index 只有primary shards，没有 replica shards。</p>
 <p>在 Elasticsearch 中，搜索一般包括两个阶段，query 和 fetch 阶段，可以简单的理解，query 阶段确定要取哪些doc，fetch 阶段取出具体的 doc。<br>
@@ -890,7 +891,7 @@
 <p>举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。<br>这种单向请求的特点，注定了如果服务器有连续的状态变化，客户端要获知就非常麻烦。我们只能使用”轮询”：每隔一段时候，就发出一个询问，了解服务器有没有新的信息。最典型的场景就是聊天室。</p>
 <p>轮询的效率低，非常浪费资源（因为必须不停连接，或者 HTTP 连接始终打开）。因此，工程师们一直在思考，有没有更好的方法。WebSocket 就是这样发明的。</p>
 <p>WebSocket 协议在2008年诞生，2011年成为国际标准。所有浏览器都已经支持了。</p>
-<p>它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于<a href="https://en.wikipedia.org/wiki/Push_technology" target="_blank" rel="external">服务器推送</a>技术的一种。<br><a href="http://idiotsky.me/images2/go-websocket-1.png"><img src="http://idiotsky.me/images2/go-websocket-1.png" alt=""></a></p>
+<p>它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于<a href="https://en.wikipedia.org/wiki/Push_technology" target="_blank" rel="noopener">服务器推送</a>技术的一种。<br><a href="http://idiotsky.me/images2/go-websocket-1.png"><img src="http://idiotsky.me/images2/go-websocket-1.png" alt=""></a></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/01/10/go-websocket/#more" rel="contents">
@@ -1039,314 +1040,10 @@
           <h1 id="nil是什么"><a href="#nil是什么" class="headerlink" title="nil是什么"></a>nil是什么</h1><blockquote>
 <p>The “nil” identifier can be used as the “zero value” for interfaces, functions, pointers, maps, slices, and channels</p>
 </blockquote>
-<p>这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个变量但是没有对它进行赋值操作，那么这个变量就会有一个类型的默认零值。这是每种类型对应的零值：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">bool</span>      -&gt; <span class="literal">false</span>                              </div><div class="line">numbers -&gt; <span class="number">0</span>                                 </div><div class="line"><span class="keyword">string</span>    -&gt; <span class="string">""</span>      </div><div class="line"></div><div class="line">pointers -&gt; <span class="literal">nil</span></div><div class="line">slices -&gt; <span class="literal">nil</span></div><div class="line">maps -&gt; <span class="literal">nil</span></div><div class="line">channels -&gt; <span class="literal">nil</span></div><div class="line">functions -&gt; <span class="literal">nil</span></div><div class="line">interfaces -&gt; <span class="literal">nil</span></div></pre></td></tr></table></figure></p>
+<p>这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个变量但是没有对它进行赋值操作，那么这个变量就会有一个类型的默认零值。这是每种类型对应的零值：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span>      -&gt; <span class="literal">false</span>                              </span><br><span class="line">numbers -&gt; <span class="number">0</span>                                 </span><br><span class="line"><span class="keyword">string</span>    -&gt; <span class="string">""</span>      </span><br><span class="line"></span><br><span class="line">pointers -&gt; <span class="literal">nil</span></span><br><span class="line">slices -&gt; <span class="literal">nil</span></span><br><span class="line">maps -&gt; <span class="literal">nil</span></span><br><span class="line">channels -&gt; <span class="literal">nil</span></span><br><span class="line">functions -&gt; <span class="literal">nil</span></span><br><span class="line">interfaces -&gt; <span class="literal">nil</span></span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/01/03/go-nil/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/12/28/linux-gdb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/28/linux-gdb/" itemprop="url">linux命令-gdb</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-28T11:31:23+08:00">
-                28 Dec 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>备忘，mark 👿</p>
-</blockquote>
-<h1 id="GDB-基础知识"><a href="#GDB-基础知识" class="headerlink" title="GDB 基础知识"></a>GDB 基础知识</h1><h2 id="GDB-相关概念"><a href="#GDB-相关概念" class="headerlink" title="GDB 相关概念"></a>GDB 相关概念</h2><p>GDB, 是 The GNU Project Debugger 的缩写, 是 Linux 下功能全面的调试工具。GDB 支持断点、单步执行、打印变量、观察变量、查看寄存器、查看堆栈等调试手段。在 Linux 环境软件开发中，GDB 是主要的调试工具，用来调试 C 和 C++ 程序。</p>
-<h2 id="GDB-的进入和退出"><a href="#GDB-的进入和退出" class="headerlink" title="GDB 的进入和退出"></a>GDB 的进入和退出</h2><p>如果要调试程序，需要在 gcc 编译可执行程序时加上 -g 参数，首先我们编译 bugging.c 程序，生成可执行文件：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -g -o bugging bugging.c</div></pre></td></tr></table></figure></p>
-<p>输入 gdb bugging 进入 gdb 调试 bugging 程序的界面：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gdb bugging</div></pre></td></tr></table></figure></p>
-<p>在 gdb 命令行界面，输入run 执行待调试程序：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(gdb) run</div></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/12/28/linux-gdb/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/12/27/linux-gcc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/27/linux-gcc/" itemprop="url">linux命令-gcc</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-27T11:31:23+08:00">
-                27 Dec 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>备忘，mark 👿</p>
-</blockquote>
-<p>gcc命令使用GNU推出的基于C/C++的编译器，是开放源代码领域应用最广泛的编译器，具有功能强大，编译代码支持性能优化等特点。现在很多程序员都应用GCC，怎样才能更好的应用GCC。目前，GCC可以用来编译C/C++、FORTRAN、JAVA、OBJC、ADA等语言的程序，可根据需要选择安装支持的语言。</p>
-<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc(选项)(参数)</div></pre></td></tr></table></figure>
-<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">-o：指定生成的输出文件；</div><div class="line">-E：仅执行编译预处理；</div><div class="line">-S：将C代码转换为汇编代码；</div><div class="line">-wall：显示警告信息；</div><div class="line">-c：仅执行编译操作，不进行连接操作。</div></pre></td></tr></table></figure>
-<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>C源文件：指定C语言源代码文件。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/12/27/linux-gcc/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1494,7 +1191,7 @@
 </blockquote>
 <h1 id="Explain简介"><a href="#Explain简介" class="headerlink" title="Explain简介"></a>Explain简介</h1><p>本文主要讲述如何通过 explain 命令获取 select 语句的执行计划，通过 explain 我们可以知道以下信息：表的读取顺序，数据读取操作的类型，哪些索引可以使用，哪些索引实际使用了，表之间的引用，每张表有多少行被优化器查询等信息。</p>
 <p>下面是使用 explain 的例子： </p>
-<p>在 select 语句之前增加 explain 关键字，MySQL 会在查询上设置一个标记，执行查询时，会返回执行计划的信息，而不是执行这条SQL（如果 from 中包含子查询，仍会执行该子查询，将结果放入临时表中）。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mysql&gt; explain select * from actor;</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div><div class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | NULL  |</div><div class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------+</div></pre></td></tr></table></figure></p>
+<p>在 select 语句之前增加 explain 关键字，MySQL 会在查询上设置一个标记，执行查询时，会返回执行计划的信息，而不是执行这条SQL（如果 from 中包含子查询，仍会执行该子查询，将结果放入临时表中）。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from actor;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------+</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------+</span></span><br><span class="line">|  1 | SIMPLE      | actor | ALL  | NULL          | NULL | NULL    | NULL |    2 | NULL  |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------+</span></span><br></pre></td></tr></table></figure></p>
 <p>在查询中的每个表会输出一行，如果有两个表通过 join 连接查询，那么会输出两行。表的意义相当广泛：可以是子查询、一个 union 结果等。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1852,6 +1549,317 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/01/tcp-something/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/01/tcp-something/" itemprop="url">TCP 的那些事儿</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-01T22:56:41+08:00">
+                01 Nov 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/tcp/" itemprop="url" rel="index">
+                    <span itemprop="name">tcp</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>tcp看了很多的文章，这篇总结的很好。此文有点长👿</p>
+</blockquote>
+<p>tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。</p>
+<p>首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后TCP的Segment会打到IP的Packet中，然后再打到以太网Ethernet的Frame中，传到对端后，各个层解析自己的协议，然后把数据交给更高层的协议处理。</p>
+<h1 id="TCP头格式"><a href="#TCP头格式" class="headerlink" title="TCP头格式"></a>TCP头格式</h1><p>接下来，我们来看一下TCP头的格式<br><a href="http://idiotsky.me/images1/tcp-something-1.jpg"><img src="http://idiotsky.me/images1/tcp-something-1.jpg" alt=""></a><br>你需要注意这么几点：</p>
+<ul>
+<li>TCP的包是没有IP地址的，那是IP层上的事。但是有源端口和目标端口。</li>
+<li>一个TCP连接需要四个元组来表示是同一个连接（src_ip, src_port, dst_ip, dst_port）准确说是五元组，还有一个是协议。但因为这里只是说TCP协议，所以，这里我只说四元组。</li>
+<li>注意上图中的四个非常重要的东西：<ul>
+<li>Sequence Number是包的序号，用来解决网络包乱序（reordering）问题。</li>
+<li>Acknowledgement Number就是ACK——用于确认收到，用来解决不丢包的问题。</li>
+<li>Window又叫Advertised-Window，也就是著名的滑动窗口（Sliding Window），用于解决流控的。</li>
+<li>TCP Flag ，也就是包的类型，主要是用于操控TCP的状态机的。</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/11/01/tcp-something/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/10/19/proxy-reverse-proxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/19/proxy-reverse-proxy/" itemprop="url">正向代理和反向代理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-19T00:29:53+08:00">
+                19 Oct 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/proxy/" itemprop="url" rel="index">
+                    <span itemprop="name">proxy</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>一直用反向代理，可不知道为什么叫反向，还有何为正向代理</p>
+</blockquote>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>我们常说的代理也就是只正向代理，正向代理的过程，它隐藏了真实的请求客户端，服务端不知道真实的客户端是谁，客户端请求的服务都被代理服务器代替来请求，某些科学上网工具扮演的就是典型的正向代理角色。用浏览器访问 <a href="http://www.google.com" target="_blank" rel="noopener">http://www.google.com</a> 时，被残忍的block，于是你可以在国外搭建一台代理服务器，让代理帮我去请求google.com，代理把请求返回的相应结果再返回给我。所以说，很多翻墙工具用到的服务器基本都是正向代理服务器<br><a href="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg"><img src="http://idiotsky.me/images1/proxy-reverse-proxy-1.jpg" alt=""></a><br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/19/proxy-reverse-proxy/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1902,7 +1910,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1924,7 +1932,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2016/05/12/asm-learning-road-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="引言我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：12345678#include &amp;lt;stdio.h&amp;gt;int main() &amp;#123;  int x = 10;  int y = 100;  printf(&quot;x + y = %d&quot;, x + y);  return 0;&amp;#125; 大家都能理解上面这段 C 语言代码完成的功能，但是…这段">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images1/asm-learning-road-1-1.png">
 <meta property="og:updated_time" content="2017-10-17T14:04:11.689Z">
 <meta name="twitter:card" content="summary">
@@ -434,20 +435,20 @@
       
 
       
-        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">int</span> x = <span class="number">10</span>;</div><div class="line">  <span class="keyword">int</span> y = <span class="number">100</span>;</div><div class="line">  <span class="built_in">printf</span>(<span class="string">"x + y = %d"</span>, x + y);</div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>我们很多人是开发者，每天写大量的代码，有时也不是糟糕的代码。每个人都能很轻松写下这样的代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> x = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> y = <span class="number">100</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"x + y = %d"</span>, x + y);</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>大家都能理解上面这段 C 语言代码完成的功能，但是…这段代码底层是如何工作的呢？我想我们中间不是所有人都能回答这个问题，我也不能。我认为我可以用高级编程语言写代码，例如 Haskell、Erlang、Go 等等，但是我完全不知道在编译之后它在底层是如何工作的。所以，我决定往下再深入一步，到汇编这个层次，并且记录下我的学习汇编之路。希望这是有趣的过程，而不是仅仅对我一个人。大约五、六年前我已经使用过汇编来写简单的程序，那时我还在上大学，用的是 Turbo 汇编和 DOS 操作系统。现在我使用 Linux-x86_64 操作系统，是的，64 位 Linux 和 16 位 DOS 肯定有很大的不同。那我们就开始吧。<br><a id="more"></a></p>
-<h1 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h1><p>在开始之前，我们需要准备一些我接下来要提到的东西。我使用的是 Ubuntu(Ubuntu 14.04.1 LTS 64 位) 系统，因此我的文章都是基于该操作系统和体系结构的。不同的 CPU 支持不同的指令集，我使用的是 Intel Core i7 870 处理器，所有代码都在这上面运行。另外我将用 nasm 汇编，你可以用下面命令来安装：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install nasm</div></pre></td></tr></table></figure></p>
+<h1 id="准备阶段"><a href="#准备阶段" class="headerlink" title="准备阶段"></a>准备阶段</h1><p>在开始之前，我们需要准备一些我接下来要提到的东西。我使用的是 Ubuntu(Ubuntu 14.04.1 LTS 64 位) 系统，因此我的文章都是基于该操作系统和体系结构的。不同的 CPU 支持不同的指令集，我使用的是 Intel Core i7 870 处理器，所有代码都在这上面运行。另外我将用 nasm 汇编，你可以用下面命令来安装：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nasm</span><br></pre></td></tr></table></figure></p>
 <p>这就是目前我们需要准备的所有东西，其它工作在接下来的文章中会提到。</p>
 <h1 id="x64-语法"><a href="#x64-语法" class="headerlink" title="x64 语法"></a>x64 语法</h1><p>这里我就不全面介绍汇编的语法了，我们仅提一下这篇文章中用到的语法。通常 NASM 程序会被划分为不同的段（section），这篇文章中我们会涉及到两个段：</p>
 <ul>
 <li>数据段（data section）</li>
 <li>代码段（text section）</li>
 </ul>
-<p>数据段用来定义常量（constant），常量是在运行时不会改变的数据。你可以定义数字或其他常量等等，声明一个数据段的语法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">section .data</div></pre></td></tr></table></figure></p>
-<p>代码段是存放代码（code）的，该段必须以 global _start 开始，告诉内核这里是程序开始执行的地方。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">section .text</div><div class="line">global _start</div><div class="line">_start:</div></pre></td></tr></table></figure></p>
-<p>注释是以 ; 开始。每个 NASM 代码行包含下面四个字段的组合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[label:] instruction [operands] [; comment]</div></pre></td></tr></table></figure></p>
-<p>中括号括起来的字段表示是可选的。基本 NASM 指令由两部分组成，第一部分是需要执行指令的名字，第二部分是该指令的操作数。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MOV COUNT, 48  ;将数值 48 存放到 COUNT 变量中</div></pre></td></tr></table></figure></p>
-<h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>让我们用 NASM 汇编来写第一个程序吧，当然是传统的打印 “Hello world” 的程序。这是代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">section .data</div><div class="line">    msg db      &quot;hello, world!&quot;</div><div class="line"> </div><div class="line">section .text</div><div class="line">    global _start</div><div class="line">_start:</div><div class="line">    mov     rax, 1</div><div class="line">    mov     rdi, 1</div><div class="line">    mov     rsi, msg</div><div class="line">    mov     rdx, 13</div><div class="line">    syscall</div><div class="line">    mov    rax, 60</div><div class="line">    mov    rdi, 0</div><div class="line">    syscall</div></pre></td></tr></table></figure></p>
+<p>数据段用来定义常量（constant），常量是在运行时不会改变的数据。你可以定义数字或其他常量等等，声明一个数据段的语法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">section .data</span><br></pre></td></tr></table></figure></p>
+<p>代码段是存放代码（code）的，该段必须以 global _start 开始，告诉内核这里是程序开始执行的地方。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">section .text</span><br><span class="line">global _start</span><br><span class="line">_start:</span><br></pre></td></tr></table></figure></p>
+<p>注释是以 ; 开始。每个 NASM 代码行包含下面四个字段的组合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[label:] instruction [operands] [; comment]</span><br></pre></td></tr></table></figure></p>
+<p>中括号括起来的字段表示是可选的。基本 NASM 指令由两部分组成，第一部分是需要执行指令的名字，第二部分是该指令的操作数。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MOV COUNT, 48  ;将数值 48 存放到 COUNT 变量中</span><br></pre></td></tr></table></figure></p>
+<h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>让我们用 NASM 汇编来写第一个程序吧，当然是传统的打印 “Hello world” 的程序。这是代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">section .data</span><br><span class="line">    msg db      &quot;hello, world!&quot;</span><br><span class="line"> </span><br><span class="line">section .text</span><br><span class="line">    global _start</span><br><span class="line">_start:</span><br><span class="line">    mov     rax, 1</span><br><span class="line">    mov     rdi, 1</span><br><span class="line">    mov     rsi, msg</span><br><span class="line">    mov     rdx, 13</span><br><span class="line">    syscall</span><br><span class="line">    mov    rax, 60</span><br><span class="line">    mov    rdi, 0</span><br><span class="line">    syscall</span><br></pre></td></tr></table></figure></p>
 <p>是的，看起来不像 printf(“Hello world”)，我们试着去理解它是什么、怎么工作的。先看 1-2 行，我们定义了一个数据段，并且有一个 msg 常量，值为 Hello world，那么我们就可以在代码中使用这个常量了。下一步是定义了一个代码段，以及程序的入口，代码从第 7 行开始执行。现在到了程序最有意思的部分了。我们已经了解了 mov 指令的功能，它带有两个操作数，将第二个操作数的值放到第一个操作数中。但是，rax、rdi 等等这些是什么呢？我们找到维基百科的解释：</p>
 <blockquote>
 <p>中央处理单元（CPU）是计算机中的硬件，它读取计算机程序中的指令，完成系统中基本的算术、逻辑、输入/输出操作。</p>
@@ -459,17 +460,17 @@
 <li>rdi —— 用来向函数传递第一个参数</li>
 <li>rsi —— 用来向函数传递第二个参数的指针</li>
 </ul>
-<p>换句话说，我们就是调用了 sys_write 系统调用，该函数原型是：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">ssize_t</span> sys_write(<span class="keyword">unsigned</span> <span class="keyword">int</span> fd, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> count)</div></pre></td></tr></table></figure></p>
+<p>换句话说，我们就是调用了 sys_write 系统调用，该函数原型是：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ssize_t</span> sys_write(<span class="keyword">unsigned</span> <span class="keyword">int</span> fd, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> count)</span><br></pre></td></tr></table></figure></p>
 <p>它有三个参数：</p>
 <ul>
 <li>fd —— 文件描述符，0、1、2 分别代表标准输入、标准输出和标准错误</li>
 <li>buf —— 字符数组的指针，用来保存从 fd 指向的文件中获取的内容</li>
 <li>count —— 表示要从文件中读入到字符数组的字节数</li>
 </ul>
-<p>我们知道 sys_write 系统调用带有三个参数，它在系统调用表中有一个系统调用号。我们再看看程序的实现，将 1 放到 rax 寄存器中，它意思是我们使用 sys_write 系统调用；下一行将 1 存到 rdi 寄存器，它是 sys_write 的第一个参数，1 代表标准输出；然后我们将 msg 的指针存到 rsi 寄存器中，这是 sys_write 的第二个参数 buf；接着我们传递 sys_write 最后一个参数（字符串的长度）到 rdx 寄存器中。现在，我们有了 sys_write 的所有参数，就可以在 11 行使用 syscall 来调用它了。好了，我们打印出 “Hello world” 字符串，现在需要从程序中正确退出。我们传递 60 到 rax 寄存器，60 是 exit 的系统调用号；以及将 0 传递给 rdi 寄存器，这是错误码，0 表示我们的程序正确地退出。这就是 “Hello world” 的所有分析，相当简单吧:)现在我们编译程序，假设我们的程序放在 hello.asm 文件中，那么我们需要运行下面的命令来执行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">nasm -f elf64 -o hello.o hello.asm</div><div class="line">ld -o hello hello.o</div></pre></td></tr></table></figure></p>
+<p>我们知道 sys_write 系统调用带有三个参数，它在系统调用表中有一个系统调用号。我们再看看程序的实现，将 1 放到 rax 寄存器中，它意思是我们使用 sys_write 系统调用；下一行将 1 存到 rdi 寄存器，它是 sys_write 的第一个参数，1 代表标准输出；然后我们将 msg 的指针存到 rsi 寄存器中，这是 sys_write 的第二个参数 buf；接着我们传递 sys_write 最后一个参数（字符串的长度）到 rdx 寄存器中。现在，我们有了 sys_write 的所有参数，就可以在 11 行使用 syscall 来调用它了。好了，我们打印出 “Hello world” 字符串，现在需要从程序中正确退出。我们传递 60 到 rax 寄存器，60 是 exit 的系统调用号；以及将 0 传递给 rdi 寄存器，这是错误码，0 表示我们的程序正确地退出。这就是 “Hello world” 的所有分析，相当简单吧:)现在我们编译程序，假设我们的程序放在 hello.asm 文件中，那么我们需要运行下面的命令来执行：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nasm -f elf64 -o hello.o hello.asm</span><br><span class="line">ld -o hello hello.o</span><br></pre></td></tr></table></figure></p>
 <p>编译链接完成之后，我们得到可执行文件 hello，可以使用 ./hello 来运行，可以在终端看到输出 “Hello world”。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文用一个简单不能再简单的程序开始第一部分，接下来我们会看到一些算术运算。如果你有任何问题或者建议可以给我评论。</p>
-<p>参考 <a href="http://blog.jobbole.com/84776/" target="_blank" rel="external">http://blog.jobbole.com/84776/</a> 此链接翻译了 <a href="https://github.com/0xAX/asm" target="_blank" rel="external">https://github.com/0xAX/asm</a> 的第一章<br>原作者源码 <a href="https://github.com/0xAX/asm" target="_blank" rel="external">https://github.com/0xAX/asm</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="external">https://github.com/ejunjsh/asm-code</a></p>
+<p>参考 <a href="http://blog.jobbole.com/84776/" target="_blank" rel="noopener">http://blog.jobbole.com/84776/</a> 此链接翻译了 <a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">https://github.com/0xAX/asm</a> 的第一章<br>原作者源码 <a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">https://github.com/0xAX/asm</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="noopener">https://github.com/ejunjsh/asm-code</a></p>
 
       
     </div>
@@ -591,7 +592,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -613,7 +614,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

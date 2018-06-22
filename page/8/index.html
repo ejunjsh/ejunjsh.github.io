@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/8/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -343,6 +344,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/21/mysql-partition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/09/21/mysql-partition/" itemprop="url">MySQL分区和分表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-21T23:29:55+08:00">
+                21 Sep 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><ol>
+<li>为什么要分表和分区？<br>日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。</li>
+<li>什么是分表？<br>分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称为子表，每个表都对应三个文件，MYD数据文件，.MYI索引文件，.frm表结构文件。这些子表可以分布在同一块磁盘上，也可以在不同的机器上。app读写的时候根据事先定义好的规则得到对应的子表名，然后去操作它。</li>
+<li>什么是分区？<br>分区和分表相似，都是按照规则分解表。不同在于分表将大表分解为若干个独立的实体表，而分区是将数据分段划分在多个位置存放，可以是同一块磁盘也可以在不同的机器。分区后，表面上还是一张表，但数据散列到多个位置了。app读写的时候操作的还是大表名字，db自动去组织分区的数据。</li>
+<li>mysql分表和分区有什么联系呢？<br>（1）都能提高mysql的性高，在高并发状态下都有一个良好的表现。<br>（2）分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表和分区结合的方式（如果merge这种分表方式，不能和分区配合的话，可以用其他的分表试），访问量不大，但是表数据很多的表，我们可以采取分区的方式等。<br>（3）分表技术是比较麻烦的，需要手动去创建子表，app服务端读写时候需要计算子表名。采用merge好一些，但也要创建子表和配置子表间的union关系。<br>（4）表分区相对于分表，操作方便，不需要创建子表。
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/09/21/mysql-partition/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/20/mysql-index-type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -443,7 +594,7 @@
 <li>组合索引</li>
 <li>全文索引</li>
 </ol>
-<h1 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name[col_name <span class="keyword">data</span> <span class="keyword">type</span>]</div><div class="line">[<span class="keyword">unique</span>|fulltext][<span class="keyword">index</span>|<span class="keyword">key</span>][index_name](col_name[<span class="keyword">length</span>])[<span class="keyword">asc</span>|<span class="keyword">desc</span>]</div></pre></td></tr></table></figure>
+<h1 id="语句"><a href="#语句" class="headerlink" title="语句"></a>语句</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> table_name[col_name <span class="keyword">data</span> <span class="keyword">type</span>]</span><br><span class="line">[<span class="keyword">unique</span>|fulltext][<span class="keyword">index</span>|<span class="keyword">key</span>][index_name](col_name[<span class="keyword">length</span>])[<span class="keyword">asc</span>|<span class="keyword">desc</span>]</span><br></pre></td></tr></table></figure>
 <ol>
 <li>unique|fulltext为可选参数，分别表示唯一索引、全文索引</li>
 <li>index和key为同义词，两者作用相同，用来指定创建索引</li>
@@ -891,7 +1042,7 @@
 
       
         
-          <p>MySQL中的数据用各种不同的技术存储在文件（或者内存）中。这些技术中的每一种技术都使用不同的存储机制、索引技巧、锁定水平并且最终提供广泛的不同的功能和能力。通过选择不同的技术，你能够获得额外的速度或者功能，从而改善你的应用的整体功能。这些不同的技术以及配套的相关功能在MySQL中被称作存储引擎(也称作表类型)。MySQL默认配置了许多不同的存储引擎，可以预先设置或者在MySQL服务器中启用。你可以选择适用于服务器、数据库和表格的存储引擎，以便在选择如何存储你的信息、如何检索这些信息以及你需要你的数据结合什么性能和功能的时候为你提供最大的灵活性。<br>使用以下命令可以查看MySQL支持的引擎：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show engines;</div></pre></td></tr></table></figure></p>
+          <p>MySQL中的数据用各种不同的技术存储在文件（或者内存）中。这些技术中的每一种技术都使用不同的存储机制、索引技巧、锁定水平并且最终提供广泛的不同的功能和能力。通过选择不同的技术，你能够获得额外的速度或者功能，从而改善你的应用的整体功能。这些不同的技术以及配套的相关功能在MySQL中被称作存储引擎(也称作表类型)。MySQL默认配置了许多不同的存储引擎，可以预先设置或者在MySQL服务器中启用。你可以选择适用于服务器、数据库和表格的存储引擎，以便在选择如何存储你的信息、如何检索这些信息以及你需要你的数据结合什么性能和功能的时候为你提供最大的灵活性。<br>使用以下命令可以查看MySQL支持的引擎：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show engines;</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/09/20/mysql-storage-engine/#more" rel="contents">
@@ -1040,8 +1191,8 @@
           <blockquote>
 <p>Java中一共有4种类型的引用:StrongReference、SoftReference、WeakReference以及PhantomReference (幽灵引用), 这 4 种类型的引用与Java GC有着密切的关系, 让我们逐一来看它们的定义和使用场景。</p>
 </blockquote>
-<h1 id="Strong-Reference"><a href="#Strong-Reference" class="headerlink" title="Strong Reference"></a>Strong Reference</h1><p>StrongReference 是 Java 的默认引用实现,它会尽可能长时间的存活于 JVM 内， 当没有任何对象指向它时Java GC 执行后将会被回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">strongReference</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 通过赋值创建 StrongReference   </div><div class="line"> */  </div><div class="line">Object strongReference = referent;   </div><div class="line">   </div><div class="line">assertSame(referent, strongReference);   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * StrongReference 在 GC 后不会被回收  </div><div class="line"> */  </div><div class="line">assertNotNull(strongReference);   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h1 id="WeakReference-amp-WeakHashMap"><a href="#WeakReference-amp-WeakHashMap" class="headerlink" title="WeakReference &amp; WeakHashMap"></a>WeakReference &amp; WeakHashMap</h1><p>WeakReference， 顾名思义,是一个弱引用,当所引用的对象在 JVM 内不再有强引用时, Java GC 后 weak reference 将会被自动回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Test</span>  </div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">weakReference</span><span class="params">()</span> </span>&#123;   </div><div class="line">Object referent = <span class="keyword">new</span> Object();   </div><div class="line">WeakReference&lt;Object&gt; weakRerference = <span class="keyword">new</span> WeakReference&lt;Object&gt;(referent);   </div><div class="line"> </div><div class="line">assertSame(referent, weakRerference.get());   </div><div class="line">   </div><div class="line">referent = <span class="keyword">null</span>;   </div><div class="line">System.gc();   </div><div class="line">   </div><div class="line"><span class="comment">/**  </span></div><div class="line"> * 一旦没有指向 referent 的强引用, weak reference 在 GC 后会被自动回收  </div><div class="line"> */  </div><div class="line">assertNull(weakRerference.get());   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Strong-Reference"><a href="#Strong-Reference" class="headerlink" title="Strong Reference"></a>Strong Reference</h1><p>StrongReference 是 Java 的默认引用实现,它会尽可能长时间的存活于 JVM 内， 当没有任何对象指向它时Java GC 执行后将会被回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">strongReference</span><span class="params">()</span> </span>&#123;   </span><br><span class="line">Object referent = <span class="keyword">new</span> Object();   </span><br><span class="line">   </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 通过赋值创建 StrongReference   </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line">Object strongReference = referent;   </span><br><span class="line">   </span><br><span class="line">assertSame(referent, strongReference);   </span><br><span class="line">   </span><br><span class="line">referent = <span class="keyword">null</span>;   </span><br><span class="line">System.gc();   </span><br><span class="line">   </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * StrongReference 在 GC 后不会被回收  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line">assertNotNull(strongReference);   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="WeakReference-amp-WeakHashMap"><a href="#WeakReference-amp-WeakHashMap" class="headerlink" title="WeakReference &amp; WeakHashMap"></a>WeakReference &amp; WeakHashMap</h1><p>WeakReference， 顾名思义,是一个弱引用,当所引用的对象在 JVM 内不再有强引用时, Java GC 后 weak reference 将会被自动回收<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">weakReference</span><span class="params">()</span> </span>&#123;   </span><br><span class="line">Object referent = <span class="keyword">new</span> Object();   </span><br><span class="line">WeakReference&lt;Object&gt; weakRerference = <span class="keyword">new</span> WeakReference&lt;Object&gt;(referent);   </span><br><span class="line"> </span><br><span class="line">assertSame(referent, weakRerference.get());   </span><br><span class="line">   </span><br><span class="line">referent = <span class="keyword">null</span>;   </span><br><span class="line">System.gc();   </span><br><span class="line">   </span><br><span class="line"><span class="comment">/**  </span></span><br><span class="line"><span class="comment"> * 一旦没有指向 referent 的强引用, weak reference 在 GC 后会被自动回收  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line">assertNull(weakRerference.get());   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/09/11/java-gc-reference/#more" rel="contents">
@@ -1495,16 +1646,16 @@
         
           
             <h1 id="概况"><a href="#概况" class="headerlink" title="概况"></a>概况</h1><p>CAS:Compare and Swap, 翻译成比较并交换。 CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做。</p>
-<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。<br>拿AtomicInteger来研究在没有锁的情况下是如何做到数据正确性的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> value;</div></pre></td></tr></table></figure></p>
-<p>首先毫无以为，在没有锁的机制下可能需要借助volatile原语，保证线程间的数据是可见的（共享的）。<br>这样才获取变量的值的时候才能直接读取。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>然后来看看++i是怎么做到的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="keyword">int</span> current = get();</div><div class="line">        <span class="keyword">int</span> next = current + <span class="number">1</span>;</div><div class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</div><div class="line">            <span class="keyword">return</span> next;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在这里采用了CAS操作，每次从内存中读取数据然后将此数据和+1后的结果进行CAS操作，如果成功就返回结果，否则重试直到成功为止。<br>而compareAndSet利用JNI来完成CPU指令的操作。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;   </div><div class="line">    <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>整体的过程就是这样子的，利用CPU的CAS指令，同时借助JNI来完成Java的非阻塞算法。其它原子操作都是利用类似的特性完成的。<br>其中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</div></pre></td></tr></table></figure></p>
-<p>类似：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">this</span> == expect) &#123;</div><div class="line"></div><div class="line">  <span class="keyword">this</span> = update</div><div class="line"></div><div class="line"> <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line"></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><p>现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定。<br>拿AtomicInteger来研究在没有锁的情况下是如何做到数据正确性的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> value;</span><br></pre></td></tr></table></figure></p>
+<p>首先毫无以为，在没有锁的机制下可能需要借助volatile原语，保证线程间的数据是可见的（共享的）。<br>这样才获取变量的值的时候才能直接读取。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后来看看++i是怎么做到的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="keyword">int</span> current = get();</span><br><span class="line">        <span class="keyword">int</span> next = current + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这里采用了CAS操作，每次从内存中读取数据然后将此数据和+1后的结果进行CAS操作，如果成功就返回结果，否则重试直到成功为止。<br>而compareAndSet利用JNI来完成CPU指令的操作。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;   </span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>整体的过程就是这样子的，利用CPU的CAS指令，同时借助JNI来完成Java的非阻塞算法。其它原子操作都是利用类似的特性完成的。<br>其中<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unsafe.compareAndSwapInt(<span class="keyword">this</span>, valueOffset, expect, update);</span><br></pre></td></tr></table></figure></p>
+<p>类似：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">this</span> == expect) &#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">this</span> = update</span><br><span class="line"></span><br><span class="line"> <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>那么问题就来了，成功过程中需要2个步骤：比较this == expect，替换this = update，compareAndSwapInt如何这两个步骤的原子性呢？ 下面看看原理</p>
 <h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>CAS通过调用JNI的代码实现的。JNI:Java Native Interface为JAVA本地调用，允许java调用其他语言。而compareAndSwapInt就是借助C来调用CPU底层指令实现的。</p>
-<p>下面从分析比较常用的CPU（intel x86）来解释CAS的实现原理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">compareAndSwapInt</span><span class="params">(Object o, <span class="keyword">long</span> offset,</span></span></div><div class="line">                                              <span class="keyword">int</span> expected,</div><div class="line">                                              <span class="keyword">int</span> x);</div></pre></td></tr></table></figure></p>
-<p>上面是sun.misc.Unsafe类的compareAndSwapInt()方法的源代码，可以看到这是个本地方法调用。这个本地方法在openjdk中依次调用的c++代码为：unsafe.cpp，atomic.cpp和atomicwindowsx86.inline.hpp。这个本地方法的最终实现在openjdk的如下位置：openjdk-7-fcs-src-b147-27jun2011\openjdk\hotspot\src\oscpu\windowsx86\vm\ atomicwindowsx86.inline.hpp（对应于windows操作系统，X86处理器）。下面是对应于intel x86处理器的源代码的片段：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">// Adding a lock prefix to an instruction on MP machine</div><div class="line">// VC++ doesn't like the lock prefix to be on a single line</div><div class="line">// so we can't insert a label after the lock prefix.</div><div class="line">// By emitting a lock prefix, we can define a label after it.</div><div class="line">#define LOCK_IF_MP(mp) __asm cmp mp, 0  \</div><div class="line">                       __asm je L0      \</div><div class="line">                       __asm _emit 0xF0 \</div><div class="line">                       __asm L0:</div><div class="line"></div><div class="line">inline jint     Atomic::cmpxchg    (jint     exchange_value, volatile jint*     dest, jint     compare_value) &#123;</div><div class="line">  // alternative for InterlockedCompareExchange</div><div class="line">  int mp = os::is_MP();</div><div class="line">  __asm &#123;</div><div class="line">    mov edx, dest</div><div class="line">    mov ecx, exchange_value</div><div class="line">    mov eax, compare_value</div><div class="line">    LOCK_IF_MP(mp)</div><div class="line">    cmpxchg dword ptr [edx], ecx</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面从分析比较常用的CPU（intel x86）来解释CAS的实现原理。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">compareAndSwapInt</span><span class="params">(Object o, <span class="keyword">long</span> offset,</span></span></span><br><span class="line"><span class="function"><span class="params">                                              <span class="keyword">int</span> expected,</span></span></span><br><span class="line"><span class="function"><span class="params">                                              <span class="keyword">int</span> x)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>上面是sun.misc.Unsafe类的compareAndSwapInt()方法的源代码，可以看到这是个本地方法调用。这个本地方法在openjdk中依次调用的c++代码为：unsafe.cpp，atomic.cpp和atomicwindowsx86.inline.hpp。这个本地方法的最终实现在openjdk的如下位置：openjdk-7-fcs-src-b147-27jun2011\openjdk\hotspot\src\oscpu\windowsx86\vm\ atomicwindowsx86.inline.hpp（对应于windows操作系统，X86处理器）。下面是对应于intel x86处理器的源代码的片段：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Adding a lock prefix to an instruction on MP machine</span></span><br><span class="line"><span class="comment">// VC++ doesn't like the lock prefix to be on a single line</span></span><br><span class="line"><span class="comment">// so we can't insert a label after the lock prefix.</span></span><br><span class="line"><span class="comment">// By emitting a lock prefix, we can define a label after it.</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOCK_IF_MP(mp) __asm cmp mp, 0  \</span></span><br><span class="line">                       __asm je L0      \</span><br><span class="line">                       __asm _emit <span class="number">0xF0</span> \</span><br><span class="line">                       __asm L0:</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> jint     Atomic::cmpxchg    (jint     exchange_value, <span class="keyword">volatile</span> jint*     dest, jint     compare_value) &#123;</span><br><span class="line">  <span class="comment">// alternative for InterlockedCompareExchange</span></span><br><span class="line">  <span class="keyword">int</span> mp = os::is_MP();</span><br><span class="line">  __asm &#123;</span><br><span class="line">    mov edx, dest</span><br><span class="line">    mov ecx, exchange_value</span><br><span class="line">    mov eax, compare_value</span><br><span class="line">    LOCK_IF_MP(mp)</span><br><span class="line">    cmpxchg dword ptr [edx], ecx</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>如上面源代码所示，程序会根据当前处理器的类型来决定是否为cmpxchg指令添加lock前缀。如果程序是在多处理器上运行，就为cmpxchg指令加上lock前缀（lock cmpxchg）。反之，如果程序是在单处理器上运行，就省略lock前缀（单处理器自身会维护单处理器内的顺序一致性，不需要lock前缀提供的内存屏障效果）。</p>
 <p>intel的手册对lock前缀的说明如下：</p>
 <ol>
@@ -1524,7 +1675,7 @@
 <p>以上两个机制我们可以通过Inter处理器提供了很多LOCK前缀的指令来实现。比如位测试和修改指令BTS，BTR，BTC，交换指令XADD，CMPXCHG和其他一些操作数和逻辑指令，比如ADD（加），OR（或）等，被这些指令操作的内存区域就会加锁，导致其他处理器不能同时访问它。</p>
 <h1 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h1><p>CAS虽然很高效的解决原子操作，但是CAS仍然存在三大问题。ABA问题，循环时间长开销大和只能保证一个共享变量的原子操作</p>
 <ol>
-<li>ABA问题。因为CAS需要在操作值的时候检查下值有没有发生变化，如果没有发生变化则更新，但是如果一个值原来是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它的值没有发生变化，但是实际上却变化了。ABA问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加一，那么A－B－A 就会变成1A-2B－3A。<br>从Java1.5开始JDK的atomic包里提供了一个类AtomicStampedReference来解决ABA问题。这个类的compareAndSet方法作用是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。<br>关于ABA问题参考文档: <a href="http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html" target="_blank" rel="external">http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html</a></li>
+<li>ABA问题。因为CAS需要在操作值的时候检查下值有没有发生变化，如果没有发生变化则更新，但是如果一个值原来是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它的值没有发生变化，但是实际上却变化了。ABA问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加一，那么A－B－A 就会变成1A-2B－3A。<br>从Java1.5开始JDK的atomic包里提供了一个类AtomicStampedReference来解决ABA问题。这个类的compareAndSet方法作用是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。<br>关于ABA问题参考文档: <a href="http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html" target="_blank" rel="noopener">http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html</a></li>
 <li>循环时间长开销大。自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。如果JVM能支持处理器提供的pause指令那么效率会有一定的提升，pause指令有两个作用，第一它可以延迟流水线执行指令（de-pipeline）,使CPU不会消耗过多的执行资源，延迟的时间取决于具体实现的版本，在一些处理器上延迟时间是零。第二它可以避免在退出循环的时候因内存顺序冲突（memory order violation）而引起CPU流水线被清空（CPU pipeline flush），从而提高CPU的执行效率。</li>
 <li>只能保证一个共享变量的原子操作。当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性，这个时候就可以用锁，或者有一个取巧的办法，就是把多个共享变量合并成一个共享变量来操作。比如有两个共享变量i＝2,j=a，合并一下ij=2a，然后用CAS来操作ij。从Java1.5开始JDK提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。</li>
 </ol>
@@ -1714,154 +1865,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/26/java-aqs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/08/26/java-aqs/" itemprop="url">java的AQS详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-26T22:22:11+08:00">
-                26 Aug 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>谈到并发，不得不谈ReentrantLock；而谈到ReentrantLock，不得不谈AbstractQueuedSynchronized（AQS）！</p>
-<p>类如其名，抽象的队列式的同步器，AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如常用的ReentrantLock/Semaphore/CountDownLatch…。</p>
-<h1 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h1><p><a href="http://idiotsky.me/images1/java-aqs-1.png"><img src="http://idiotsky.me/images1/java-aqs-1.png" alt=""></a></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/08/26/java-aqs/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1912,7 +1915,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1934,7 +1937,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

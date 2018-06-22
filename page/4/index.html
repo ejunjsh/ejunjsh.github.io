@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/4/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -343,322 +344,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/16/redis-skiplist/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/16/redis-skiplist/" itemprop="url">redis数据结构-跳跃表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-16T12:07:30+08:00">
-                16 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。</p>
-<p>跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。</p>
-<p>在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。<br>Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。</p>
-</blockquote>
-<h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。<br><a href="http://idiotsky.me/images/redis-skiplist.png"><img src="http://idiotsky.me/images/redis-skiplist.png" alt=""></a><br>图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：</p>
-<ul>
-<li>header ：指向跳跃表的表头节点。</li>
-<li>tail ：指向跳跃表的表尾节点。</li>
-<li>level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。</li>
-<li>length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。</li>
-</ul>
-<p>位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性：</p>
-<ul>
-<li>层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。</li>
-<li>后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。</li>
-<li>分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。</li>
-<li>成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。</li>
-</ul>
-<p>注意表头节点和其他节点的构造是一样的： 表头节点也有后退指针、分值和成员对象， 不过表头节点的这些属性都不会被用到， 所以图中省略了这些部分， 只显示了表头节点的各个层。</p>
-<p>本节接下来的内容将对 zskiplistNode 和 zskiplist 两个结构进行更详细的介绍。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/16/redis-skiplist/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/15/redis-dict/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/15/redis-dict/" itemprop="url">redis数据结构-字典</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-15T00:59:31+08:00">
-                15 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一<br>Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。</p>
-</blockquote>
-<h1 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h1><p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 哈希表数组</span></div><div class="line">    dictEntry **table;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</div><div class="line"></div><div class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></div><div class="line">    <span class="comment">// 总是等于 size - 1</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</div><div class="line"></div><div class="line">    <span class="comment">// 该哈希表已有节点的数量</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</div><div class="line"></div><div class="line">&#125; dictht;</div></pre></td></tr></table></figure></p>
-<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。<br>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。<br>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。<br>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br><a href="http://idiotsky.me/images/redis-dict-1.png"><img src="http://idiotsky.me/images/redis-dict-1.png" alt=""></a><br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/15/redis-dict/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/14/redis-linkedlist/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -754,7 +439,7 @@
           <blockquote>
 <p>列表键的底层就是一个链表</p>
 </blockquote>
-<h1 id="链表节点"><a href="#链表节点" class="headerlink" title="链表节点"></a>链表节点</h1><p>每个链表节点使用一个 adlist.h/listNode 结构来表示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 前置节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 后置节点</span></div><div class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></div><div class="line"></div><div class="line">    <span class="comment">// 节点的值</span></div><div class="line">    <span class="keyword">void</span> *value;</div><div class="line"></div><div class="line">&#125; listNode;</div></pre></td></tr></table></figure></p>
+<h1 id="链表节点"><a href="#链表节点" class="headerlink" title="链表节点"></a>链表节点</h1><p>每个链表节点使用一个 adlist.h/listNode 结构来表示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 前置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点的值</span></span><br><span class="line">    <span class="keyword">void</span> *value;</span><br><span class="line"></span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure></p>
 <p>多个 listNode 可以通过 prev 和 next 指针组成双端链表， 如图 3-1 所示。<br><a href="http://idiotsky.me/images/redis-linkedlist-1.png"><img src="http://idiotsky.me/images/redis-linkedlist-1.png" alt=""></a><br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1488,7 +1173,7 @@
           <blockquote>
 <p>Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。例如键（key）底层就是SDS，而值如果是字符串对象，那这个对象的底层也是个SDS</p>
 </blockquote>
-<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>每个 sds.h/sdshdr 结构表示一个 SDS 值：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></div><div class="line"></div><div class="line">    <span class="comment">// 记录 buf 数组中已使用字节的数量</span></div><div class="line">    <span class="comment">// 等于 SDS 所保存字符串的长度</span></div><div class="line">    <span class="keyword">int</span> len;</div><div class="line"></div><div class="line">    <span class="comment">// 记录 buf 数组中未使用字节的数量</span></div><div class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</div><div class="line"></div><div class="line">    <span class="comment">// 字节数组，用于保存字符串</span></div><div class="line">    <span class="keyword">char</span> buf[];</div><div class="line"></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>每个 sds.h/sdshdr 结构表示一个 SDS 值：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录 buf 数组中已使用字节的数量</span></span><br><span class="line">    <span class="comment">// 等于 SDS 所保存字符串的长度</span></span><br><span class="line">    <span class="keyword">int</span> len;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录 buf 数组中未使用字节的数量</span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 字节数组，用于保存字符串</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
 <p>图 2-1 展示了一个 SDS 示例：</p>
 <ul>
 <li>free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间。</li>
@@ -1496,7 +1181,7 @@
 <li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。<br><a href="http://idiotsky.me/images/redis-string-1.png"><img src="http://idiotsky.me/images/redis-string-1.png" alt=""></a><br>SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。</li>
 </ul>
 <p>遵循空字符结尾这一惯例的好处是， SDS 可以直接重用一部分 C 字符串函数库里面的函数。</p>
-<p>举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s-&gt;buf);</div></pre></td></tr></table></figure></p>
+<p>举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s-&gt;buf);</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/13/redis-string/#more" rel="contents">
@@ -1646,54 +1331,54 @@
             <blockquote>
 <p>现在要开始安装compute服务了，前面一章都说了，虽然controller节点主要用来做控制服务节点的，如果做实验的话，可以用它的多余资源来充当一下compute节点，那么这个实验就可以有两台compute节点了。<br>开始安装吧。。。</p>
 </blockquote>
-<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> apt install nova-compute</span></div></pre></td></tr></table></figure>
+<h1 id="安装和配置组件"><a href="#安装和配置组件" class="headerlink" title="安装和配置组件"></a>安装和配置组件</h1><h2 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> apt install nova-compute</span></span><br></pre></td></tr></table></figure>
 <h2 id="修改-etc-nova-nova-conf"><a href="#修改-etc-nova-nova-conf" class="headerlink" title="修改/etc/nova/nova.conf"></a>修改<code>/etc/nova/nova.conf</code></h2><ul>
-<li>在<code>[DEFAULT]</code>区域，配置<code>RabbitMQ</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">transport_url</span> = rabbit://openstack:RABBIT_PASS@controller</div></pre></td></tr></table></figure>
+<li>在<code>[DEFAULT]</code>区域，配置<code>RabbitMQ</code><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">transport_url</span> = rabbit://openstack:RABBIT_PASS@controller</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>替换<code>RABBIT_PASS</code>为当时为<code>RabbitMQ</code>创建<code>openstack</code>用户时指定的密码</p>
 <ul>
-<li>在<code>[api]</code>和<code>[keystone——authtoken]</code>区域，配置keystone相关配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="section">[api]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_strategy</span> = keystone</div><div class="line"><span class="section"></span></div><div class="line">[keystone_authtoken]</div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></div><div class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">project_domain_name</span> = default</div><div class="line"><span class="attr">user_domain_name</span> = default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">username</span> = nova</div><div class="line"><span class="attr">password</span> = NOVA_PASS</div></pre></td></tr></table></figure>
+<li>在<code>[api]</code>和<code>[keystone——authtoken]</code>区域，配置keystone相关配置<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[api]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">auth_strategy</span> = keystone</span><br><span class="line"></span><br><span class="line"><span class="section">[keystone_authtoken]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">auth_uri</span> = http://controller:<span class="number">5000</span></span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span></span><br><span class="line"><span class="attr">memcached_servers</span> = controller:<span class="number">11211</span></span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">project_domain_name</span> = default</span><br><span class="line"><span class="attr">user_domain_name</span> = default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">username</span> = nova</span><br><span class="line"><span class="attr">password</span> = NOVA_PASS</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>替换<code>NOVA_PASS</code>为你创建nova用户时的密码</p>
 <ul>
 <li><p>在<code>[DEFAULT]</code>区域，配置<code>my_ip</code></p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">my_ip</span> = <span class="number">192.168</span>.<span class="number">199.11</span></div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">my_ip</span> = <span class="number">192.168</span>.<span class="number">199.11</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在<code>[DEFAULT]</code>区域，关掉防火墙和使用neutron</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="section">[DEFAULT]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></div><div class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[DEFAULT]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">use_neutron</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">firewall_driver</span> = nova.virt.firewall.NoopFirewallDriver</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>以前nova是提供网络服务的，现在有了neutron之后，就不用了，所以这里要关掉先。</p>
 <ul>
 <li><p>在<code>[vnc]</code>区域，配置远程访问：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="section">[vnc]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">enabled</span> = <span class="literal">True</span></div><div class="line"><span class="attr">vncserver_listen</span> = <span class="number">0.0</span>.<span class="number">0.0</span></div><div class="line"><span class="attr">vncserver_proxyclient_address</span> = <span class="variable">$my_ip</span></div><div class="line"><span class="attr">novncproxy_base_url</span> = http://controller:<span class="number">6080</span>/vnc_auto.html</div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[vnc]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">enabled</span> = <span class="literal">True</span></span><br><span class="line"><span class="attr">vncserver_listen</span> = <span class="number">0.0</span>.<span class="number">0.0</span></span><br><span class="line"><span class="attr">vncserver_proxyclient_address</span> = <span class="variable">$my_ip</span></span><br><span class="line"><span class="attr">novncproxy_base_url</span> = http://controller:<span class="number">6080</span>/vnc_auto.html</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在<code>[glance]</code>区域，配置镜像访问接口：</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[glance]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">api_servers</span> = http://controller:<span class="number">9292</span></div></pre></td></tr></table></figure>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[glance]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">api_servers</span> = http://controller:<span class="number">9292</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在<code>[DEFAULT]</code>区域,<code>log_dir</code>选项</p>
 </li>
-<li>在<code>[placement]</code>区域，配置Placement API:<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="section">[placement]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">os_region_name</span> = RegionOne</div><div class="line"><span class="attr">project_domain_name</span> = Default</div><div class="line"><span class="attr">project_name</span> = service</div><div class="line"><span class="attr">auth_type</span> = password</div><div class="line"><span class="attr">user_domain_name</span> = Default</div><div class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span>/v3</div><div class="line"><span class="attr">username</span> = placement</div><div class="line"><span class="attr">password</span> = PLACEMENT_PASS</div></pre></td></tr></table></figure>
+<li>在<code>[placement]</code>区域，配置Placement API:<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[placement]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">os_region_name</span> = RegionOne</span><br><span class="line"><span class="attr">project_domain_name</span> = Default</span><br><span class="line"><span class="attr">project_name</span> = service</span><br><span class="line"><span class="attr">auth_type</span> = password</span><br><span class="line"><span class="attr">user_domain_name</span> = Default</span><br><span class="line"><span class="attr">auth_url</span> = http://controller:<span class="number">35357</span>/v3</span><br><span class="line"><span class="attr">username</span> = placement</span><br><span class="line"><span class="attr">password</span> = PLACEMENT_PASS</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>替换<code>PLACEMENT_PASS</code>为之前配置placement用户时候设置的密码</p>
-<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="配置虚拟机类型"><a href="#配置虚拟机类型" class="headerlink" title="配置虚拟机类型"></a>配置虚拟机类型</h2><p>执行以下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> egrep -c <span class="string">'(vmx|svm)'</span> /proc/cpuinfo</span></div></pre></td></tr></table></figure></p>
-<p>如果返回多个，就代表你机子已经硬件支持kvm，所以不用配置什么<br>如果返回0，代表你机子不支持kvm，所以就需要修改为qemu<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="section">[libvirt]</span></div><div class="line"><span class="comment"># ...</span></div><div class="line"><span class="attr">virt_type</span> = qemu</div></pre></td></tr></table></figure></p>
-<h2 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> service nova-compute restart</span></div></pre></td></tr></table></figure>
+<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="配置虚拟机类型"><a href="#配置虚拟机类型" class="headerlink" title="配置虚拟机类型"></a>配置虚拟机类型</h2><p>执行以下命令：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> egrep -c <span class="string">'(vmx|svm)'</span> /proc/cpuinfo</span></span><br></pre></td></tr></table></figure></p>
+<p>如果返回多个，就代表你机子已经硬件支持kvm，所以不用配置什么<br>如果返回0，代表你机子不支持kvm，所以就需要修改为qemu<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[libvirt]</span></span><br><span class="line"><span class="comment"># ...</span></span><br><span class="line"><span class="attr">virt_type</span> = qemu</span><br></pre></td></tr></table></figure></p>
+<h2 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> service nova-compute restart</span></span><br></pre></td></tr></table></figure>
 <h1 id="添加compute节点到cell数据库"><a href="#添加compute节点到cell数据库" class="headerlink" title="添加compute节点到cell数据库"></a>添加compute节点到cell数据库</h1><blockquote>
 <p>以下操作只能在controller节点执行</p>
 </blockquote>
 <ol>
 <li><p>执行以下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></div><div class="line"><span class="meta"></span></div><div class="line">$<span class="bash"> openstack compute service list --service nova-compute</span></div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div><div class="line">| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |</div><div class="line">+----+-------+--------------+------+-------+---------+----------------------------+</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> . admin-openrc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> openstack compute service list --service nova-compute</span></span><br><span class="line">+----+-------+--------------+------+-------+---------+----------------------------+</span><br><span class="line">| ID | Host  | Binary       | Zone | State | Status  | Updated At                 |</span><br><span class="line">+----+-------+--------------+------+-------+---------+----------------------------+</span><br><span class="line">| 1  | node1 | nova-compute | nova | up    | enabled | 2017-04-14T15:30:44.000000 |</span><br><span class="line">+----+-------+--------------+------+-------+---------+----------------------------+</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>发现compute节点</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash"> su -s /bin/sh -c <span class="string">"nova-manage cell_v2 discover_hosts --verbose"</span> nova</span></div><div class="line"></div><div class="line">Found 2 cell mappings.</div><div class="line">Skipping cell0 since it does not contain hosts.</div><div class="line">Getting compute nodes from cell 'cell1': ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Found 1 computes in cell: ad5a5985-a719-4567-98d8-8d148aaae4bc</div><div class="line">Checking host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div><div class="line">Creating host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> su -s /bin/sh -c <span class="string">"nova-manage cell_v2 discover_hosts --verbose"</span> nova</span></span><br><span class="line"></span><br><span class="line">Found 2 cell mappings.</span><br><span class="line">Skipping cell0 since it does not contain hosts.</span><br><span class="line">Getting compute nodes from cell 'cell1': ad5a5985-a719-4567-98d8-8d148aaae4bc</span><br><span class="line">Found 1 computes in cell: ad5a5985-a719-4567-98d8-8d148aaae4bc</span><br><span class="line">Checking host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</span><br><span class="line">Creating host mapping for compute host 'compute': fe58ddc1-1d65-4f87-9456-bc040dc106b3</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>如果你新加了个compute，必须要再执行一遍上面的命令，或者在nova的配置文件改一个合适的间隔来自动发现吧。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="section">[scheduler]</span></div><div class="line"><span class="attr">discover_hosts_in_cells_interval</span> = <span class="number">300</span></div></pre></td></tr></table></figure></p>
+<p>如果你新加了个compute，必须要再执行一遍上面的命令，或者在nova的配置文件改一个合适的间隔来自动发现吧。<br><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[scheduler]</span></span><br><span class="line"><span class="attr">discover_hosts_in_cells_interval</span> = <span class="number">300</span></span><br></pre></td></tr></table></figure></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>nova服务到这里已经都装完了，如果你controller也安装了compute的服务的话，那就有两台compute node了😄<br>接下来要进入重头戏的网络服务neutron的安装了👿</p>
 
           
@@ -1840,13 +1525,13 @@
 </blockquote>
 <h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><ul>
 <li><p>用<code>root</code>用户权限执行<code>mysql</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> mysql</span></div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建<code>nova_api</code>, <code>nova</code>,和<code>nova_cell0</code>数据库：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_api;</div><div class="line">MariaDB [(none)]&gt; CREATE DATABASE nova;</div><div class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_cell0;</div></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_api;</span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova;</span><br><span class="line">MariaDB [(none)]&gt; CREATE DATABASE nova_cell0;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>赋予适合的权限给这些数据库</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div><div class="line"></div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div><div class="line"></div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \</div><div class="line">  IDENTIFIED BY 'NOVA_DBPASS';</div></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \</span><br><span class="line">  IDENTIFIED BY 'NOVA_DBPASS';</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>替换<code>NOVA_DBPASS</code>密码为合适的，下面会用到。</p>
@@ -1856,6 +1541,322 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/11/openstack-install-nova-1/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/11/epoll-mechanism/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/11/epoll-mechanism/" itemprop="url">linux epoll原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-11T01:35:15+08:00">
+                11 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。 </p>
+</blockquote>
+<p>先看看使用c封装的3个epoll系统调用：</p>
+<ul>
+<li><strong>int epoll_create(int size)</strong><br>  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。</li>
+<li><strong>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</strong><br>  epoll_ctl可以操作epoll_create创建的epoll，如将socket句柄加入到epoll中让其监控，或把epoll正在监控的某个socket句柄移出epoll。</li>
+<li><strong>int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout)</strong><br>  epoll_wait在调用时，在给定的timeout时间内，所监控的句柄中有事件发生时，就返回用户态的进程。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/11/epoll-mechanism/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/10/openstack-install-glance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/10/openstack-install-glance/" itemprop="url">openstack安装-glance</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-10T14:22:32+08:00">
+                10 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/openstack/" itemprop="url" rel="index">
+                    <span itemprop="name">openstack</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>glance提供镜像服务使用户能够发现，注册和检索虚拟机镜像。它提供了一个 REST API，可让您查询虚拟机镜像元数据并检索实际镜像。您可以存储镜像在各种位置（从简单的文件系统到像OpenStack Object Storage这样的对象存储系统）。<br>为了简单起见，这里只是教你如何配置镜像服务，并把镜像保存到controller节点的文件目录里面，此目录为/var/lib/glance/images/。<br>这一章还是在<code>controller</code>节点操作。。。</p>
+</blockquote>
+<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><ul>
+<li><p>用<code>root</code>用户权限执行<code>mysql</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建<code>glance</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; CREATE DATABASE glance;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>赋予适合的权限给<code>glance</code>数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;localhost&apos; \</span><br><span class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;%&apos; \</span><br><span class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>替换一下<code>GLANCE_DBPASS</code>为一个合适的密码，后面会用到</p>
+<ul>
+<li>退出mysql
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/10/openstack-install-glance/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1943,7 +1944,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1965,7 +1966,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

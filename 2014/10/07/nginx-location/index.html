@@ -110,7 +110,8 @@
 <meta property="og:url" content="http://idiotsky.me/2014/10/07/nginx-location/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="验证下，记录下，以后不用到处找">
-<meta property="og:updated_time" content="2017-10-28T08:45:18.352Z">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-10-28T08:45:18.353Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nginx location 语法和优先级">
 <meta name="twitter:description" content="验证下，记录下，以后不用到处找">
@@ -446,9 +447,9 @@
 </ul>
 <p>假如遇到同级的话</p>
 <ul>
-<li>~ 和~<em> （他们是同级的）比较的话，就是根据他们在文件的出现顺序。例如<br>location ~ /sb.txt<br>location ~</em> /sb.txt<br>如果访问 <a href="http://localhost/sb.txt,就会跳到第一个，访问" target="_blank" rel="external">http://localhost/sb.txt,就会跳到第一个，访问</a> <a href="http://localhost/SB.txt" target="_blank" rel="external">http://localhost/SB.txt</a> 跳到第二个，<br>换个顺序<br>location ~* /sb.txt<br>location ~ /sb.txt<br>不管访问 <a href="http://localhost/sb.txt" target="_blank" rel="external">http://localhost/sb.txt</a> 还是 <a href="http://localhost/SB.txt" target="_blank" rel="external">http://localhost/SB.txt</a> ,都只会跳到第一个</li>
-<li>^~ 的话，就根据他们的匹配度，例如<br>location ^~ /sb/<br>location ^~ /sb/sb2/<br>如果访问<a href="http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。" target="_blank" rel="external">http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。</a><br>如果访问<a href="http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。" target="_blank" rel="external">http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。</a></li>
-<li>什么都不加的话，也是根据他们的匹配度，例如<br>location /sb/<br>location /sb/sb2/<br>如果访问<a href="http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。" target="_blank" rel="external">http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。</a><br>如果访问<a href="http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。" target="_blank" rel="external">http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。</a></li>
+<li>~ 和~<em> （他们是同级的）比较的话，就是根据他们在文件的出现顺序。例如<br>location ~ /sb.txt<br>location ~</em> /sb.txt<br>如果访问 <a href="http://localhost/sb.txt,就会跳到第一个，访问" target="_blank" rel="noopener">http://localhost/sb.txt,就会跳到第一个，访问</a> <a href="http://localhost/SB.txt" target="_blank" rel="noopener">http://localhost/SB.txt</a> 跳到第二个，<br>换个顺序<br>location ~* /sb.txt<br>location ~ /sb.txt<br>不管访问 <a href="http://localhost/sb.txt" target="_blank" rel="noopener">http://localhost/sb.txt</a> 还是 <a href="http://localhost/SB.txt" target="_blank" rel="noopener">http://localhost/SB.txt</a> ,都只会跳到第一个</li>
+<li>^~ 的话，就根据他们的匹配度，例如<br>location ^~ /sb/<br>location ^~ /sb/sb2/<br>如果访问<a href="http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。" target="_blank" rel="noopener">http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。</a><br>如果访问<a href="http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。" target="_blank" rel="noopener">http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。</a></li>
+<li>什么都不加的话，也是根据他们的匹配度，例如<br>location /sb/<br>location /sb/sb2/<br>如果访问<a href="http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。" target="_blank" rel="noopener">http://localhost/sb/sb2/,就会跳到第二个去处理，因为他更加匹配吧。</a><br>如果访问<a href="http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。" target="_blank" rel="noopener">http://localhost/sb/，就会跳到第一个处理，如果访问http://localhost/sb/sb3,也会跳到第一个。</a></li>
 </ul>
 
       
@@ -560,7 +561,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -582,7 +583,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

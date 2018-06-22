@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2014/06/10/linux-free/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="属性讲解执行下面命令1$ free 结果(默认单位为KB)1234             total       used       free     shared    buffers     cachedMem:      24677460   23276064    1401396          0     870540   12084008-/+ buffers/cache:">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-10-28T06:57:29.284Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux的free命令详解">
@@ -432,21 +433,21 @@
       
 
       
-        <h1 id="属性讲解"><a href="#属性讲解" class="headerlink" title="属性讲解"></a>属性讲解</h1><p>执行下面命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> free</span></div></pre></td></tr></table></figure></p>
-<p>结果(默认单位为KB)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">             total       used       free     shared    buffers     cached</div><div class="line">Mem:      24677460   23276064    1401396          0     870540   12084008</div><div class="line">-/+ buffers/cache:   10321516   14355944</div><div class="line">Swap:     25151484     224188   24927296</div></pre></td></tr></table></figure></p>
+        <h1 id="属性讲解"><a href="#属性讲解" class="headerlink" title="属性讲解"></a>属性讲解</h1><p>执行下面命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> free</span></span><br></pre></td></tr></table></figure></p>
+<p>结果(默认单位为KB)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">             total       used       free     shared    buffers     cached</span><br><span class="line">Mem:      24677460   23276064    1401396          0     870540   12084008</span><br><span class="line">-/+ buffers/cache:   10321516   14355944</span><br><span class="line">Swap:     25151484     224188   24927296</span><br></pre></td></tr></table></figure></p>
 <a id="more"></a>
-<p>Mem：表示物理内存统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">total：表示物理内存总量(total = used + free)</div><div class="line">used：表示总计分配给缓存（包含buffers 与cached ）使用的数量，但其中可能部分缓存并未实际使用。</div><div class="line">free：未被分配的内存。</div><div class="line">shared：共享内存，一般系统不会用到，这里也不讨论。</div><div class="line">buffers：系统分配但未被使用的buffers 数量。</div><div class="line">cached：系统分配但未被使用的cache 数量。</div></pre></td></tr></table></figure></p>
-<p>-/+ buffers/cache：表示物理内存的缓存统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">used2：也就是第一行中的used – buffers-cached 也是实际使用的内存总量。 //used2为第二行</div><div class="line">free2= buffers1 + cached1 + free1 //free2为第二行、buffers1等为第一行</div><div class="line">free2：未被使用的buffers 与cache 和未被分配的内存之和，这就是系统当前实际可用内存。</div></pre></td></tr></table></figure></p>
+<p>Mem：表示物理内存统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">total：表示物理内存总量(total = used + free)</span><br><span class="line">used：表示总计分配给缓存（包含buffers 与cached ）使用的数量，但其中可能部分缓存并未实际使用。</span><br><span class="line">free：未被分配的内存。</span><br><span class="line">shared：共享内存，一般系统不会用到，这里也不讨论。</span><br><span class="line">buffers：系统分配但未被使用的buffers 数量。</span><br><span class="line">cached：系统分配但未被使用的cache 数量。</span><br></pre></td></tr></table></figure></p>
+<p>-/+ buffers/cache：表示物理内存的缓存统计<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">used2：也就是第一行中的used – buffers-cached 也是实际使用的内存总量。 //used2为第二行</span><br><span class="line">free2= buffers1 + cached1 + free1 //free2为第二行、buffers1等为第一行</span><br><span class="line">free2：未被使用的buffers 与cache 和未被分配的内存之和，这就是系统当前实际可用内存。</span><br></pre></td></tr></table></figure></p>
 <p>Swap：表示硬盘上交换分区的使用情况，这里我们不去关心。<br>系统的总物理内存：24677460（240M），但系统当前真正可用的内存并不是第一行free 标记的 1401396Kb，它仅代表未被分配的内存。</p>
 <h1 id="buffers与cached的区别"><a href="#buffers与cached的区别" class="headerlink" title="buffers与cached的区别"></a>buffers与cached的区别</h1><p>A buffer is something that has yet to be “written” to disk. A cache is something that has been “read” from the disk and stored for later use </p>
 <p>对于应用程序来说，buffers/cached 是等于可用的，因为buffer/cached是为了提高文件读取的性能，当应用程序需在用到内存的时候，buffer/cached会很快地被回收。<br>所以从应用程序的角度来说<strong>可用内存=系统free memory+buffers+cached</strong>.</p>
 <p>buffers是指用来给块设备做的缓冲大小，他只记录文件系统的metadata以及 tracking in-flight pages.<br>cached是用来给文件做缓冲。<br>那就是说：buffers是用来存储，目录里面有什么内容，权限等等。<br>而cached直接用来记忆我们打开的文件，如果你想知道他是不是真的生效，你可以试一下，先后执行两次命令#man X ,你就可以明显的感觉到第二次的开打的速度快很多。</p>
-<h2 id="cached实验"><a href="#cached实验" class="headerlink" title="cached实验"></a>cached实验</h2><p>在一台没有什么应用的机器上做会看得比较明显。记得实验只能做一次，如果想多做请换一个文件名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">#free</div><div class="line">#man X</div><div class="line">#free</div><div class="line">#man X</div><div class="line">#free</div></pre></td></tr></table></figure></p>
+<h2 id="cached实验"><a href="#cached实验" class="headerlink" title="cached实验"></a>cached实验</h2><p>在一台没有什么应用的机器上做会看得比较明显。记得实验只能做一次，如果想多做请换一个文件名。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#free</span><br><span class="line">#man X</span><br><span class="line">#free</span><br><span class="line">#man X</span><br><span class="line">#free</span><br></pre></td></tr></table></figure></p>
 <p>你可以先后比较一下free后显示cached的大小。</p>
-<h2 id="buffers实验"><a href="#buffers实验" class="headerlink" title="buffers实验"></a>buffers实验</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#free</div><div class="line">#ls /dev</div><div class="line">#free</div></pre></td></tr></table></figure>
+<h2 id="buffers实验"><a href="#buffers实验" class="headerlink" title="buffers实验"></a>buffers实验</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#free</span><br><span class="line">#ls /dev</span><br><span class="line">#free</span><br></pre></td></tr></table></figure>
 <p>你比较一下两个的大小，当然这个buffers随时都在增加，但你有ls过的话，增加的速度会变得快，这个就是buffers/chached的区别。</p>
 <p>因为Linux将你暂时不使用的内存作为文件和数据缓存，以提高系统性能，当你需要这些内存时，系统会自动释放（不像windows那样，即使你有很多空闲内存,他也要访问一下磁盘中的pagefiles）</p>
-<h1 id="简述swap"><a href="#简述swap" class="headerlink" title="简述swap"></a>简述swap</h1><p>当可用内存少于额定值的时候，就会开始进行交换.<br>如何看额定值（RHEL4.0）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#cat /proc/meminfo</div></pre></td></tr></table></figure></p>
+<h1 id="简述swap"><a href="#简述swap" class="headerlink" title="简述swap"></a>简述swap</h1><p>当可用内存少于额定值的时候，就会开始进行交换.<br>如何看额定值（RHEL4.0）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#cat /proc/meminfo</span><br></pre></td></tr></table></figure></p>
 <p>交换将通过三个途径来减少系统中使用的物理页面的个数：</p>
 <ol>
 <li>减少缓冲与页面cache的大小，</li>
@@ -454,10 +455,10 @@
 <li>换出或者丢弃页面。(Application 占用的内存页，也就是物理内存不足）。</li>
 </ol>
 <p>事实上，少量地使用swap是不是影响到系统性能的。</p>
-<h1 id="使用free命令"><a href="#使用free命令" class="headerlink" title="使用free命令"></a>使用free命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">语　　法： free [-bkmotV][-s &lt;间隔秒数&gt;]</div><div class="line"></div><div class="line">补充说明：free指令会显示内存的使用情况，包括实体内存，虚拟的交换文件内存，共享内存区段，以及系统核心使用的缓冲区等。</div><div class="line"></div><div class="line">参　　数：</div><div class="line">-b 　以Byte为单位显示内存使用情况。</div><div class="line">-k 　以KB为单位显示内存使用情况。</div><div class="line">-m 　以MB为单位显示内存使用情况。</div><div class="line">-o 　不显示缓冲区调节列。</div><div class="line">-s&lt;间隔秒数&gt; 　持续观察内存使用状况。</div><div class="line">-t 　显示内存总和列。</div><div class="line">-V 　显示版本信息。</div></pre></td></tr></table></figure>
-<p>常用操作:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">free //以KB为单位，显式系统内存使用情况</div><div class="line">free -ml -s 1  //每秒以M为单位，显式系统内存详细使用情况。</div><div class="line">free -c 4 -s 2  //为KB为单位，每2秒显式系统内存使用情况，一共显示4次</div></pre></td></tr></table></figure></p>
+<h1 id="使用free命令"><a href="#使用free命令" class="headerlink" title="使用free命令"></a>使用free命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">语　　法： free [-bkmotV][-s &lt;间隔秒数&gt;]</span><br><span class="line"></span><br><span class="line">补充说明：free指令会显示内存的使用情况，包括实体内存，虚拟的交换文件内存，共享内存区段，以及系统核心使用的缓冲区等。</span><br><span class="line"></span><br><span class="line">参　　数：</span><br><span class="line">-b 　以Byte为单位显示内存使用情况。</span><br><span class="line">-k 　以KB为单位显示内存使用情况。</span><br><span class="line">-m 　以MB为单位显示内存使用情况。</span><br><span class="line">-o 　不显示缓冲区调节列。</span><br><span class="line">-s&lt;间隔秒数&gt; 　持续观察内存使用状况。</span><br><span class="line">-t 　显示内存总和列。</span><br><span class="line">-V 　显示版本信息。</span><br></pre></td></tr></table></figure>
+<p>常用操作:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">free //以KB为单位，显式系统内存使用情况</span><br><span class="line">free -ml -s 1  //每秒以M为单位，显式系统内存详细使用情况。</span><br><span class="line">free -c 4 -s 2  //为KB为单位，每2秒显式系统内存使用情况，一共显示4次</span><br></pre></td></tr></table></figure></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>将used的值减去buffer和cache的值就是你当前真实内存使用–对操作系统来讲是Mem的参数.buffers/cached 都是属于被使用,所以它认为free只有1401396.<br>对应用程序来讲是(-/+ buffers/cached).buffers/cached 是等同可用的，因为buffer/cached是为了提高 程序执行的性能，当程序使用内存时，buffer/cached会很快地被使用。 所以,以应用来看看,以(-/+ buffers/cache)的free和used为主.所以我们看这个就好了.另外告诉大家 一些常识.Linux为了提高磁盘和内存存取效率, Linux做了很多精心的设计, 除了对dentry进行缓存(用于 VFS,加速文件路径名到inode的转换), 还采取了两种主要Cache方式：Buffer Cache和Page Cache。 前者针对磁盘块的读写，后者针对文件inode的读写。这些Cache能有效缩短了 I/O系统调用(比如read,write,getdents)的时间。 记住内存是拿来用的,不是拿来看的.不像windows,无论你的真实物理内存有多少,他都要拿硬盘交换 文件来读.这也就是windows为什么常常提示虚拟空间不足的原因.你们想想,多无聊,在内存还有大部分 的时候,拿出一部分硬盘空间来充当内存.硬盘怎么会快过内存.所以我们看linux,只要不用swap的交换 空间,就不用担心自己的内存太少.如果常常swap用很多,可能你就要考虑加物理内存了.这也是linux看 内存是否够用的标准哦.</p>
-<p>参考 <a href="http://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316438.html" target="_blank" rel="external">http://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316438.html</a></p>
+<p>参考 <a href="http://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316438.html" target="_blank" rel="noopener">http://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316438.html</a></p>
 
       
     </div>
@@ -579,7 +580,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -601,7 +602,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

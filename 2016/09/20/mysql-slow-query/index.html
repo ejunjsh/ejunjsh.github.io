@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2016/09/20/mysql-slow-query/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="简介开启慢查询日志，可以让MySQL记录下查询超过指定时间的语句，通过定位分析性能的瓶颈，才能更好的优化数据库系统的性能。 参数说明slow_query_log 慢查询开启状态slow_query_log_file 慢查询日志存放的位置（这个目录需要MySQL的运行帐号的可写权限，一般设置为MySQL的数据存放目录）long_query_time 查询超过多少秒才记录">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-09-23T09:51:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开启mysql慢查询">
@@ -436,30 +437,30 @@
 <h1 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h1><p><code>slow_query_log</code> 慢查询开启状态<br><code>slow_query_log_file</code> 慢查询日志存放的位置（这个目录需要MySQL的运行帐号的可写权限，一般设置为MySQL的数据存放目录）<br><code>long_query_time</code> 查询超过多少秒才记录<br><a id="more"></a></p>
 <h1 id="设置步骤"><a href="#设置步骤" class="headerlink" title="设置步骤"></a>设置步骤</h1><ol>
 <li><p>查看慢查询相关参数</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show variables like 'slow_query%';</div><div class="line">+---------------------------+----------------------------------+</div><div class="line">| Variable_name             | Value                            |</div><div class="line">+---------------------------+----------------------------------+</div><div class="line">| slow_query_log            | OFF                              |</div><div class="line">| slow_query_log_file       | /mysql/data/localhost-slow.log   |</div><div class="line">+---------------------------+----------------------------------+</div><div class="line"></div><div class="line">mysql&gt; show variables like 'long_query_time';</div><div class="line">+-----------------+-----------+</div><div class="line">| Variable_name   | Value     |</div><div class="line">+-----------------+-----------+</div><div class="line">| long_query_time | 10.000000 |</div><div class="line">+-----------------+-----------+</div></pre></td></tr></table></figure>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'slow_query%';</span><br><span class="line">+<span class="comment">---------------------------+----------------------------------+</span></span><br><span class="line">| Variable_name             | Value                            |</span><br><span class="line">+<span class="comment">---------------------------+----------------------------------+</span></span><br><span class="line">| slow_query_log            | OFF                              |</span><br><span class="line">| slow_query_log_file       | /mysql/data/localhost-slow.log   |</span><br><span class="line">+<span class="comment">---------------------------+----------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like 'long_query_time';</span><br><span class="line">+<span class="comment">-----------------+-----------+</span></span><br><span class="line">| Variable_name   | Value     |</span><br><span class="line">+<span class="comment">-----------------+-----------+</span></span><br><span class="line">| long_query_time | 10.000000 |</span><br><span class="line">+<span class="comment">-----------------+-----------+</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>设置方法<br> 方法一：全局变量设置<br> 将 <code>slow_query_log</code> 全局变量设置为“ON”状态</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; set global slow_query_log='ON';</div></pre></td></tr></table></figure>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global slow_query_log='ON';</span><br></pre></td></tr></table></figure>
 <p> 设置慢查询日志存放的位置</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; set global slow_query_log_file='/usr/local/mysql/data/slow.log';</div></pre></td></tr></table></figure>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global slow_query_log_file='/usr/local/mysql/data/slow.log';</span><br></pre></td></tr></table></figure>
 <p> 查询超过1秒就记录</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; set global long_query_time=1;</div></pre></td></tr></table></figure>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global long_query_time=1;</span><br></pre></td></tr></table></figure>
 <p> 方法二：配置文件设置<br> 修改配置文件my.cnf，在[mysqld]下的下方加入</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[mysqld]</div><div class="line">slow_query_log = ON</div><div class="line">slow_query_log_file = /usr/local/mysql/data/slow.log</div><div class="line">long_query_time = 1</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">slow_query_log = ON</span><br><span class="line">slow_query_log_file = /usr/local/mysql/data/slow.log</span><br><span class="line">long_query_time = 1</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>重启MySQL服务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service mysqld restart</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service mysqld restart</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>查看设置后的参数</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">mysql&gt; show variables like 'slow_query%';</div><div class="line">+---------------------+--------------------------------+</div><div class="line">| Variable_name       | Value                          |</div><div class="line">+---------------------+--------------------------------+</div><div class="line">| slow_query_log      | ON                             |</div><div class="line">| slow_query_log_file | /usr/local/mysql/data/slow.log |</div><div class="line">+---------------------+--------------------------------+</div><div class="line"></div><div class="line">mysql&gt; show variables like 'long_query_time';</div><div class="line">+-----------------+----------+</div><div class="line">| Variable_name   | Value    |</div><div class="line">+-----------------+----------+</div><div class="line">| long_query_time | 1.000000 |</div><div class="line">+-----------------+----------+</div></pre></td></tr></table></figure>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'slow_query%';</span><br><span class="line">+<span class="comment">---------------------+--------------------------------+</span></span><br><span class="line">| Variable_name       | Value                          |</span><br><span class="line">+<span class="comment">---------------------+--------------------------------+</span></span><br><span class="line">| slow_query_log      | ON                             |</span><br><span class="line">| slow_query_log_file | /usr/local/mysql/data/slow.log |</span><br><span class="line">+<span class="comment">---------------------+--------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like 'long_query_time';</span><br><span class="line">+<span class="comment">-----------------+----------+</span></span><br><span class="line">| Variable_name   | Value    |</span><br><span class="line">+<span class="comment">-----------------+----------+</span></span><br><span class="line">| long_query_time | 1.000000 |</span><br><span class="line">+<span class="comment">-----------------+----------+</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><ol>
 <li><p>执行一条慢查询SQL语句</p>
- <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mysql&gt; select sleep(2);</div></pre></td></tr></table></figure>
+ <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select sleep(2);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>查看是否生成慢查询日志</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ls /usr/local/mysql/data/slow.log</div></pre></td></tr></table></figure>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls /usr/local/mysql/data/slow.log</span><br></pre></td></tr></table></figure>
 <p> 如果日志存在，MySQL开启慢查询设置成功！</p>
 </li>
 </ol>
@@ -582,7 +583,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -604,7 +605,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

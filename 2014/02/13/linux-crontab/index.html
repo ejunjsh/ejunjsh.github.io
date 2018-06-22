@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2014/02/13/linux-crontab/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="描述一般编写调度让系统帮你定时做事情有两种方式：  在/etc目录下有几个cron.开头的文件夹，这里存放有系统运行的一些调度程序,可以把自己的调度写在这里。 每个用户可以用crontab命令建立自己的调度,调度文件存放在以用户名为名的文件/var/spool/cron/crontabs/[username]。">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images/linux-crontab.png">
 <meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
 <meta name="twitter:card" content="summary">
@@ -464,72 +465,72 @@
 </ul>
 <h1 id="20个超实用的Crontab使用实例"><a href="#20个超实用的Crontab使用实例" class="headerlink" title="20个超实用的Crontab使用实例"></a>20个超实用的Crontab使用实例</h1><ol>
 <li><p>每天 02:00 执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 2 * * * /bin/sh backup.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 2 * * * /bin/sh backup.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每天 5:00和17:00执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 5,17 * * * /scripts/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 5,17 * * * /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每分钟执行一次任务<br> 通常情况下，我们并没有每分钟都需要执行的脚本</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * *  /scripts/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * *  /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每周日 17:00 执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 17 * * sun  /scripts/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 17 * * sun  /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每 10min 执行一次任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">*/10 * * * * /scripts/monitor.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/10 * * * * /scripts/monitor.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在特定的某几个月执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * jan,may,aug * /script/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * jan,may,aug * /script/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>在特定的某几天执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 17 * * sun,fri /script/scripy.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 17 * * sun,fri /script/scripy.sh</span><br></pre></td></tr></table></figure>
 <p> 在每周五、周日的17点执行任务</p>
 </li>
 <li><p>在某个月的第一个周日执行任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 2 * * sun  [ $(date +%d) -le 07 ] &amp;&amp; /script/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 2 * * sun  [ $(date +%d) -le 07 ] &amp;&amp; /script/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每四个小时执行一个任务</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 */4 * * * /scripts/script.sh</div></pre></td></tr></table></figure>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 */4 * * * /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每周一、周日执行任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0 4,17 * * sun,mon /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 4,17 * * sun,mon /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每个30秒执行一次任务<br>我们没有办法直接通过上诉类似的例子去执行，因为最小的是1min。但是我们可以通过如下的方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">* * * * * /scripts/script.sh</div><div class="line">* * * * *  sleep 30; /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">* * * * * /scripts/script.sh</span><br><span class="line">* * * * *  sleep 30; /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>多个任务在一条命令中配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">* * * * * /scripts/script.sh; /scripts/scrit2.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* * * * * /scripts/script.sh; /scripts/scrit2.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每年执行一次任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@yearly /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@yearly /scripts/script.sh</span><br></pre></td></tr></table></figure>
 <p>@yearly 类似于“0 0 1 1 *”。它会在每年的第一分钟内执行，通常我们可以用这个发送新年的问候。</p>
 </li>
 <li><p>每月执行一次任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@monthly /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@monthly /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每周执行一次任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@weekly /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@weekly /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每天执行一次任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@daily /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@daily /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>每小时执行一次任务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@hourly /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@hourly /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>系统重启时执行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@reboot /scripts/script.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@reboot /scripts/script.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>将 Cron 结果重定向的特定的账户<br>默认情况下，cron 只会将结果详情发送给 cron 被指定的用户。如果需要发送给其他用户，可以设置<code>MAIL</code>属性：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -l</div><div class="line">MAIL=bob</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -l</span><br><span class="line">MAIL=bob</span><br><span class="line">0 2 * * * /script/backup.sh</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>将所有的 cron 命令备份到文本文件当中<br>这是一个当我们丢失了cron命令后方便快速的一个恢复方式。<br>下面是利用这个方式恢复cron的一个小例子。（看看就行~）<br>首先：检查当前的cron</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -l</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -l</span><br><span class="line">MAIL=rahul</span><br><span class="line">0 2 * * * /script/backup.sh</span><br></pre></td></tr></table></figure>
 <p>然后：备份cron到文件中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># crontab -l &gt; cron-backup.txt</div><div class="line"># cat cron-backup.txt</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># crontab -l &gt; cron-backup.txt</span><br><span class="line"># cat cron-backup.txt</span><br><span class="line">MAIL=rahul</span><br><span class="line">0 2 * * * /script/backup.sh</span><br></pre></td></tr></table></figure>
 <p>接着：移除当前的cron</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># crontab -r</div><div class="line"># crontab -l</div><div class="line">no crontab for root</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># crontab -r</span><br><span class="line"># crontab -l</span><br><span class="line">no crontab for root</span><br></pre></td></tr></table></figure>
 <p>恢复：从text file中恢复</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># crontab cron-backup.txt</div><div class="line"># crontab -l</div><div class="line">MAIL=rahul</div><div class="line">0 2 * * * /script/backup.sh</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># crontab cron-backup.txt</span><br><span class="line"># crontab -l</span><br><span class="line">MAIL=rahul</span><br><span class="line">0 2 * * * /script/backup.sh</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 
@@ -653,7 +654,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -675,7 +676,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

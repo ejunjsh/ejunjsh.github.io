@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="openstack,kvm,ubuntu," />
+  <meta name="keywords" content="openstack,ubuntu,kvm," />
 
 
 
@@ -104,12 +104,13 @@
 
 
 <meta name="description" content="上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。 按照官方建议，这次openstack安装的服务为：  Identity service (keystone) Image service (glance) Compute service (nova) Networking service (neutron) Dashb">
-<meta name="keywords" content="openstack,kvm,ubuntu">
+<meta name="keywords" content="openstack,ubuntu,kvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openstack安装准备(二)-环境的安装">
 <meta property="og:url" content="http://idiotsky.me/2017/08/19/openstack-install-prepare-2/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="上图是整个openstack的架构图，里面的椭圆方块都是openstack的服务，所以安装openstack就是要安装这些服务。 按照官方建议，这次openstack安装的服务为：  Identity service (keystone) Image service (glance) Compute service (nova) Networking service (neutron) Dashb">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images/openstack-install-prepare-2-1.png">
 <meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
 <meta name="twitter:card" content="summary">
@@ -446,19 +447,19 @@
 </ul>
 <a id="more"></a>
 <p>在安装上面服务前，先要弄好环境的😁<br>这次安装的openstack为最新的release，<strong>pike</strong></p>
-<h1 id="安装openstack仓库"><a href="#安装openstack仓库" class="headerlink" title="安装openstack仓库"></a>安装openstack仓库</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># change to root</span></div><div class="line">$ sudo -i</div><div class="line">$ apt install software-properties-common</div><div class="line">$ add-apt-repository cloud-archive:pike</div><div class="line">$ apt update &amp;&amp; apt dist-upgrade</div><div class="line">$ apt install python-openstackclient</div></pre></td></tr></table></figure>
+<h1 id="安装openstack仓库"><a href="#安装openstack仓库" class="headerlink" title="安装openstack仓库"></a>安装openstack仓库</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># change to root</span></span><br><span class="line">$ sudo -i</span><br><span class="line">$ apt install software-properties-common</span><br><span class="line">$ add-apt-repository cloud-archive:pike</span><br><span class="line">$ apt update &amp;&amp; apt dist-upgrade</span><br><span class="line">$ apt install python-openstackclient</span><br></pre></td></tr></table></figure>
 <p>上面的步骤两个节点都要安装。<br><strong>以下步骤安装在controller</strong></p>
 <h1 id="安装数据库"><a href="#安装数据库" class="headerlink" title="安装数据库"></a>安装数据库</h1><p>openstack所用到的数据都会存到数据库里，所以安装一个数据库是准备的一个重要步骤。mariadb是官方建议的数据库。</p>
-<h2 id="安装和配置mariadb"><a href="#安装和配置mariadb" class="headerlink" title="安装和配置mariadb"></a>安装和配置mariadb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ apt install mariadb-server python-pymysql</div><div class="line">$ vi /etc/mysql/mariadb.conf.d/99-openstack.cnf</div><div class="line"><span class="comment"># 加一个[mysqld]区，bind-address为管理网络ip</span></div><div class="line">[mysqld]</div><div class="line"><span class="built_in">bind</span>-address = controller <span class="comment"># 192.168.199.10 </span></div><div class="line"></div><div class="line">default-storage-engine = innodb</div><div class="line">innodb_file_per_table = on</div><div class="line">max_connections = 4096</div><div class="line">collation-server = utf8_general_ci</div><div class="line">character-set-server = utf8</div></pre></td></tr></table></figure>
-<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service mysql restart</div></pre></td></tr></table></figure></p>
-<p>设置下root用户的密码，这个密码后面要用到，务必谨记。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mysql_secure_installation</div></pre></td></tr></table></figure></p>
+<h2 id="安装和配置mariadb"><a href="#安装和配置mariadb" class="headerlink" title="安装和配置mariadb"></a>安装和配置mariadb</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ apt install mariadb-server python-pymysql</span><br><span class="line">$ vi /etc/mysql/mariadb.conf.d/99-openstack.cnf</span><br><span class="line"><span class="comment"># 加一个[mysqld]区，bind-address为管理网络ip</span></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">bind</span>-address = controller <span class="comment"># 192.168.199.10 </span></span><br><span class="line"></span><br><span class="line">default-storage-engine = innodb</span><br><span class="line">innodb_file_per_table = on</span><br><span class="line">max_connections = 4096</span><br><span class="line">collation-server = utf8_general_ci</span><br><span class="line">character-set-server = utf8</span><br></pre></td></tr></table></figure>
+<h2 id="收尾"><a href="#收尾" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ service mysql restart</span><br></pre></td></tr></table></figure></p>
+<p>设置下root用户的密码，这个密码后面要用到，务必谨记。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql_secure_installation</span><br></pre></td></tr></table></figure></p>
 <h1 id="安装消息队列"><a href="#安装消息队列" class="headerlink" title="安装消息队列"></a>安装消息队列</h1><p>openstack用消息队列来异步控制各种service，所以要装一个，rabbitmq是官方推荐，装之。</p>
-<h2 id="安装和配置rabbitmq"><a href="#安装和配置rabbitmq" class="headerlink" title="安装和配置rabbitmq"></a>安装和配置rabbitmq</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ apt install rabbitmq-server</div></pre></td></tr></table></figure>
-<p>加一个openstack用户。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl add_user openstack RABBIT_PASS <span class="comment">#用你的密码替换下RABBIT_PASS，谨记这个密码，后面有用。</span></div></pre></td></tr></table></figure></p>
-<p>赋予更多权限给openstack用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ rabbitmqctl set_permissions openstack <span class="string">".*"</span> <span class="string">".*"</span> <span class="string">".*"</span></div></pre></td></tr></table></figure></p>
+<h2 id="安装和配置rabbitmq"><a href="#安装和配置rabbitmq" class="headerlink" title="安装和配置rabbitmq"></a>安装和配置rabbitmq</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt install rabbitmq-server</span><br></pre></td></tr></table></figure>
+<p>加一个openstack用户。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rabbitmqctl add_user openstack RABBIT_PASS <span class="comment">#用你的密码替换下RABBIT_PASS，谨记这个密码，后面有用。</span></span><br></pre></td></tr></table></figure></p>
+<p>赋予更多权限给openstack用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rabbitmqctl set_permissions openstack <span class="string">".*"</span> <span class="string">".*"</span> <span class="string">".*"</span></span><br></pre></td></tr></table></figure></p>
 <h1 id="安装缓存"><a href="#安装缓存" class="headerlink" title="安装缓存"></a>安装缓存</h1><p>openstack用到缓存，memcached是官方推荐，还是装之。</p>
-<h2 id="安装和配置memcached"><a href="#安装和配置memcached" class="headerlink" title="安装和配置memcached"></a>安装和配置memcached</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ apt install memcached python-memcache</div><div class="line">$ vi /etc/memcached.conf</div><div class="line"><span class="comment">#监听管理网络ip</span></div><div class="line"><span class="comment">#-l 127.0.0.1 改成下面这样</span></div><div class="line">-l controller <span class="comment"># 192.168.199.10</span></div></pre></td></tr></table></figure>
-<h2 id="收尾-1"><a href="#收尾-1" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ service memcached restart</div></pre></td></tr></table></figure></p>
+<h2 id="安装和配置memcached"><a href="#安装和配置memcached" class="headerlink" title="安装和配置memcached"></a>安装和配置memcached</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ apt install memcached python-memcache</span><br><span class="line">$ vi /etc/memcached.conf</span><br><span class="line"><span class="comment">#监听管理网络ip</span></span><br><span class="line"><span class="comment">#-l 127.0.0.1 改成下面这样</span></span><br><span class="line">-l controller <span class="comment"># 192.168.199.10</span></span><br></pre></td></tr></table></figure>
+<h2 id="收尾-1"><a href="#收尾-1" class="headerlink" title="收尾"></a>收尾</h2><p>重启服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ service memcached restart</span><br></pre></td></tr></table></figure></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>基本上环境已经搭好了，接下来就要安装各种服务了。😈</p>
 
       
@@ -479,9 +480,9 @@
           
             <a href="/tags/openstack/" rel="tag"># openstack</a>
           
-            <a href="/tags/kvm/" rel="tag"># kvm</a>
-          
             <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/kvm/" rel="tag"># kvm</a>
           
         </div>
       
@@ -583,7 +584,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -605,7 +606,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2018/03/13/linux-copy-on-write/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="前面一篇文章又给自己挖坑，所以必须再mark一篇，这篇文章很好的说了关于写时复制的原理。  当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-1.png">
 <meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-3.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-2.png">
@@ -560,7 +561,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -582,7 +583,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/11/05/git-story/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="很有意思的通俗的总结了git。👿  Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。 初次见面老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用git init">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/git-story-3.jpg">
@@ -480,7 +481,7 @@
 <blockquote>
 <p>这里的reset也有三个选项，<code>--soft</code>，<code>--mixed</code>，<code>--hard</code>，因为这里执行的是恢复操作，所以这三个选项在这里的作用也需要反过来理解，hard自不用说，就是完全恢复到某个操作时的状态，而soft表示，虽然把HEAD指针拨到了某个操作时的状态，但在staging area中会产生可以让恢复后的状态重新修改回来的修改，就像物质与反物质那样。mixed同理。</p>
 </blockquote>
-<p>以上可能难以理解，这里我们再举个应用场景来说明下：<br>我们知道<code>git revert</code>每次只能回退某个commit，那我们如何同时revert掉多个commit呢。针对这种场景我们就可以进行以下操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//拨动HEAD指针到5add0e9</div><div class="line">git reset --hard 5add0e9 </div><div class="line">//恢复到以前的commit处信息，并且在staging area生成了中反修改</div><div class="line">git reset --soft HEAD@&#123;1&#125; </div><div class="line">// 注意此处用了--soft</div><div class="line">git commit -m &apos;revert to 5add0e9&apos;</div></pre></td></tr></table></figure></p>
+<p>以上可能难以理解，这里我们再举个应用场景来说明下：<br>我们知道<code>git revert</code>每次只能回退某个commit，那我们如何同时revert掉多个commit呢。针对这种场景我们就可以进行以下操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//拨动HEAD指针到5add0e9</span><br><span class="line">git reset --hard 5add0e9 </span><br><span class="line">//恢复到以前的commit处信息，并且在staging area生成了中反修改</span><br><span class="line">git reset --soft HEAD@&#123;1&#125; </span><br><span class="line">// 注意此处用了--soft</span><br><span class="line">git commit -m &apos;revert to 5add0e9&apos;</span><br></pre></td></tr></table></figure></p>
 <h1 id="多干点事"><a href="#多干点事" class="headerlink" title="多干点事"></a>多干点事</h1><p>老板：地皮准备好了， 我们既要种花，种草，还要盖个楼房啥的，种花要花几天功夫，种草好又得花几天。这几样事咱能不能一起干呢？干完了，分别拍个照片再合一块岂不美哉。</p>
 <p>Git先生：老板英明，针对这种情况我也早有准备。</p>
 <p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
@@ -505,7 +506,7 @@
 </blockquote>
 <h1 id="其他小技巧"><a href="#其他小技巧" class="headerlink" title="其他小技巧"></a>其他小技巧</h1><p><code>git cherry-pick &lt;commit-id&gt;</code><br>老板如果想把其他分支上的一些照片拣过来使用，可以使用此命令。如果该照片与本分支无冲突，则直接会在本分支上加上一条commit，如果有冲突，则需要解决冲突后重新提交。<br><code>git stash/ git stash pop</code><br>如果老板当前有些工作没有commit。但有些云端的commit或者其他分支的commit是自己后续开发所要依赖的，那就可以使用git stash把当前未提交的修改放入到缓存栈，等合并操作完成后，再用git stash pop，把修改再加回来，你可以用git stash list查看当前的缓存栈。</p>
 <h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>Git和Mercurial 都是在2005年时出现，分别由Linus和Matt主导开发。而两者的出现也源于一个共同的事件，2005年初BitKeeper宣布向开源社区收费。Mercurial在英语中有反复无常的意思，而Git也可以翻译成无用之人，Matt直接说他取名Mercurial的用意就是讽刺BitKeeper的开发者。</p>
-<p>from <a href="https://www.toutiao.com/i6484504341452440077/" target="_blank" rel="external">https://www.toutiao.com/i6484504341452440077/</a></p>
+<p>from <a href="https://www.toutiao.com/i6484504341452440077/" target="_blank" rel="noopener">https://www.toutiao.com/i6484504341452440077/</a></p>
 
       
     </div>
@@ -625,7 +626,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -647,7 +648,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

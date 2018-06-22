@@ -110,9 +110,10 @@
 <meta property="og:url" content="http://idiotsky.me/2018/01/11/elasticsearch-scroll/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="之前面试被问到深分页的问题，现在mark一下吧  背景Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images2/es-scroll-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images2/es-scroll-2.jpg">
-<meta property="og:updated_time" content="2018-01-11T12:40:46.639Z">
+<meta property="og:updated_time" content="2018-01-11T12:40:46.640Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用scroll实现Elasticsearch数据遍历和深度分页">
 <meta name="twitter:description" content="之前面试被问到深分页的问题，现在mark一下吧  背景Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用">
@@ -439,7 +440,7 @@
 <p>之前面试被问到深分页的问题，现在mark一下吧</p>
 </blockquote>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>Elasticsearch 是一个实时的分布式搜索与分析引擎，被广泛用来做全文搜索、结构化搜索、分析。在使用过程中，有一些典型的使用场景，比如分页、遍历等。在使用关系型数据库中，我们被告知要注意甚至被明确禁止使用深度分页，同理，在 Elasticsearch 中，也应该尽量避免使用深度分页。这篇文章主要介绍 Elasticsearch 中使用分页的方式、Elasticsearch 搜索执行过程以及为什么深度分页应该被禁止，最后再介绍使用 scroll 的方式遍历数据。</p>
-<h1 id="Elasticsearch-搜索内部执行原理"><a href="#Elasticsearch-搜索内部执行原理" class="headerlink" title="Elasticsearch 搜索内部执行原理"></a>Elasticsearch 搜索内部执行原理</h1><p>一个最基本的 Elasticsearch 查询语句是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">POST /my_index/my_type/_search</div><div class="line">&#123;</div><div class="line">    &quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;,</div><div class="line">    &quot;from&quot;: 100,</div><div class="line">    &quot;size&quot;:  10</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h1 id="Elasticsearch-搜索内部执行原理"><a href="#Elasticsearch-搜索内部执行原理" class="headerlink" title="Elasticsearch 搜索内部执行原理"></a>Elasticsearch 搜索内部执行原理</h1><p>一个最基本的 Elasticsearch 查询语句是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /my_index/my_type/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;,</span><br><span class="line">    &quot;from&quot;: 100,</span><br><span class="line">    &quot;size&quot;:  10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>上面的查询表示从搜索结果中取第100条开始的10条数据。下面讲解搜索过程时也以这个请求为例。</p>
 <p>那么，这个查询语句在 Elasticsearch 集群内部是怎么执行的呢？为了方便描述，我们假设该 index 只有primary shards，没有 replica shards。</p>
 <p>在 Elasticsearch 中，搜索一般包括两个阶段，query 和 fetch 阶段，可以简单的理解，query 阶段确定要取哪些doc，fetch 阶段取出具体的 doc。<br><a id="more"></a></p>
@@ -474,14 +475,14 @@
 <h1 id="利用-scroll-遍历数据"><a href="#利用-scroll-遍历数据" class="headerlink" title="利用 scroll 遍历数据"></a>利用 scroll 遍历数据</h1><p>可以把 scroll 理解为关系型数据库里的 cursor，因此，scroll 并不适合用来做实时搜索，而更适用于后台批处理任务，比如群发。</p>
 <p>可以把 scroll 分为初始化和遍历两步，初始化时将所有符合搜索条件的搜索结果缓存起来，可以想象成快照，在遍历时，从这个快照里取数据，也就是说，在初始化后对索引插入、删除、更新数据都不会影响遍历结果。</p>
 <h2 id="使用介绍"><a href="#使用介绍" class="headerlink" title="使用介绍"></a>使用介绍</h2><p>下面介绍下scroll的使用，可以通过 Elasticsearch 的 HTTP 接口做试验下，包括初始化和遍历两个部分。</p>
-<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST ip:port/my_index/my_type/_search?scroll=1m</div><div class="line">&#123;</div><div class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POST ip:port/my_index/my_type/_search?scroll=1m</span><br><span class="line">&#123;</span><br><span class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>初始化时需要像普通 search 一样，指明 index 和 type (当然，search 是可以不指明 index 和 type 的)，然后，加上参数 scroll，表示暂存搜索结果的时间，其它就像一个普通的search请求一样。</p>
 <p>初始化返回一个 _scroll_id，_scroll_id 用来下次取数据用。</p>
-<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST /_search?scroll=1m</div><div class="line">&#123;</div><div class="line">    &quot;scroll_id&quot;:&quot;XXXXXXXXXXXXXXXXXXXXXXX I am scroll id XXXXXXXXXXXXXXX&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POST /_search?scroll=1m</span><br><span class="line">&#123;</span><br><span class="line">    &quot;scroll_id&quot;:&quot;XXXXXXXXXXXXXXXXXXXXXXX I am scroll id XXXXXXXXXXXXXXX&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里的 scroll_id 即 上一次遍历取回的 _scroll_id 或者是初始化返回的 _scroll_id，同样的，需要带 scroll 参数。 重复这一步骤，直到返回的数据为空，即遍历完成。注意，每次都要传参数 scroll，刷新搜索结果的缓存时间。另外，不需要指定 index 和 type。</p>
 <p>设置scroll的时候，需要使搜索结果缓存到下一次遍历完成，同时，也不能太长，毕竟空间有限。</p>
 <h2 id="Scroll-Scan"><a href="#Scroll-Scan" class="headerlink" title="Scroll-Scan"></a>Scroll-Scan</h2><p>Elasticsearch 提供了 Scroll-Scan 方式进一步提高遍历性能。还是上面的例子，微信大V要给粉丝群发这种后台任务，是不需要关注顺序的，只要能遍历所有数据即可，这时候，就可以用Scroll-Scan。</p>
-<p>Scroll-Scan 的遍历与普通 Scroll 一样，初始化存在一点差别。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">POST ip:port/my_index/my_type/_search?search_type=scan&amp;scroll=1m&amp;size=50</div><div class="line">&#123;</div><div class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Scroll-Scan 的遍历与普通 Scroll 一样，初始化存在一点差别。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POST ip:port/my_index/my_type/_search?search_type=scan&amp;scroll=1m&amp;size=50</span><br><span class="line">&#123;</span><br><span class="line">	&quot;query&quot;: &#123; &quot;match_all&quot;: &#123;&#125;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>需要指明参数：</p>
 <ul>
 <li>search_type。赋值为scan，表示采用 Scroll-Scan 的方式遍历，同时告诉 Elasticsearch 搜索结果不需要排序。</li>
@@ -495,16 +496,16 @@
 <li>size 控制的是每个分片的返回的数据量而不是整个请求返回的数据量。</li>
 </ol>
 <h2 id="Java-实现"><a href="#Java-实现" class="headerlink" title="Java 实现"></a>Java 实现</h2><p>用 Java 举个例子。</p>
-<h3 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    response = esClient.prepareSearch(index)</div><div class="line">            .setTypes(type)</div><div class="line">            .setSearchType(SearchType.SCAN)</div><div class="line">            .setQuery(query)</div><div class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</div><div class="line">            .setSize(size)</div><div class="line">            .execute()</div><div class="line">            .actionGet();</div><div class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</div><div class="line">    <span class="comment">// handle Exception</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="初始化-1"><a href="#初始化-1" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    response = esClient.prepareSearch(index)</span><br><span class="line">            .setTypes(type)</span><br><span class="line">            .setSearchType(SearchType.SCAN)</span><br><span class="line">            .setQuery(query)</span><br><span class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</span><br><span class="line">            .setSize(size)</span><br><span class="line">            .execute()</span><br><span class="line">            .actionGet();</span><br><span class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</span><br><span class="line">    <span class="comment">// handle Exception</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>初始化返回 _scroll_id，然后，用 _scroll_id 去遍历，注意，上面的query是一个JSONObject，不过这里很多种实现方式，我这儿只是个例子。</p>
-<h3 id="遍历-1"><a href="#遍历-1" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    response = esClient.prepareSearchScroll(scrollId)</div><div class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</div><div class="line">            .execute()</div><div class="line">            .actionGet();</div><div class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</div><div class="line">    <span class="comment">// handle Exception</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="遍历-1"><a href="#遍历-1" class="headerlink" title="遍历"></a>遍历</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    response = esClient.prepareSearchScroll(scrollId)</span><br><span class="line">            .setScroll(<span class="keyword">new</span> TimeValue(timeout))</span><br><span class="line">            .execute()</span><br><span class="line">            .actionGet();</span><br><span class="line">&#125; <span class="keyword">catch</span> (ElasticsearchException e) &#123;</span><br><span class="line">    <span class="comment">// handle Exception</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
 <li>深度分页不管是关系型数据库还是Elasticsearch还是其他搜索引擎，都会带来巨大性能开销，特别是在分布式情况下。</li>
 <li>有些问题可以考业务解决而不是靠技术解决，比如很多业务都对页码有限制，google 搜索，往后翻到一定页码就不行了。</li>
 <li>Elasticsearch 提供的 Scroll 接口专门用来获取大量数据甚至全部数据，在顺序无关情况下，首推Scroll-Scan。</li>
 <li>描述搜索过程时，为了简化描述，假设 index 没有备份，实际上，index 肯定会有备份，这时候，就涉及到选择 shard。</li>
 </ol>
-<p>from <a href="http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html" target="_blank" rel="external">http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html</a></p>
+<p>from <a href="http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html" target="_blank" rel="noopener">http://lxwei.github.io/posts/%E4%BD%BF%E7%94%A8scroll%E5%AE%9E%E7%8E%B0Elasticsearch%E6%95%B0%E6%8D%AE%E9%81%8D%E5%8E%86%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.html</a></p>
 
       
     </div>
@@ -624,7 +625,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -646,7 +647,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

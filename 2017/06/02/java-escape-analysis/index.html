@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/06/02/java-escape-analysis/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="什么是逃逸分析逃逸分析(Escape Analysis)是目前Java虚拟机中比较前沿的优化技术。 逃逸分析的基本行为就是分析对象动态作用域：当一个对象在方法中被定义后，它可能被外部方法所引用，例如作为调用参数传递到其他地方中，称为方法逃逸。 例如： 123456public static StringBuffer craeteStringBuffer(String s1, String s2)">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2018-06-15T14:43:21.486Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java-逃逸分析">
@@ -435,11 +436,11 @@
         <h1 id="什么是逃逸分析"><a href="#什么是逃逸分析" class="headerlink" title="什么是逃逸分析"></a>什么是逃逸分析</h1><p>逃逸分析(Escape Analysis)是目前Java虚拟机中比较前沿的优化技术。</p>
 <p>逃逸分析的基本行为就是分析对象动态作用域：当一个对象在方法中被定义后，它可能被外部方法所引用，例如作为调用参数传递到其他地方中，称为方法逃逸。</p>
 <p>例如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuffer <span class="title">craeteStringBuffer</span><span class="params">(String s1, String s2)</span> </span>&#123;</div><div class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</div><div class="line">        sb.append(s1);</div><div class="line">        sb.append(s2);</div><div class="line">        <span class="keyword">return</span> sb;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StringBuffer <span class="title">craeteStringBuffer</span><span class="params">(String s1, String s2)</span> </span>&#123;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(s1);</span><br><span class="line">        sb.append(s2);</span><br><span class="line">        <span class="keyword">return</span> sb;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>StringBuffer sb是一个方法内部变量，上述代码中直接将sb返回，这样这个StringBuffer有可能被其他方法所改变，这样它的作用域就不只是在方法内部，虽然它是一个局部变量，称其逃逸到了方法外部。<br>甚至还有可能被外部线程访问到，譬如赋值给类变量或可以在其他线程中访问的实例变量，称为线程逃逸。</p>
 <p>上述代码如果想要StringBuffer sb不逃出方法，可以这样写：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">createStringBuffer</span><span class="params">(String s1, String s2)</span> </span>&#123;</div><div class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</div><div class="line">        sb.append(s1);</div><div class="line">        sb.append(s2);</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">createStringBuffer</span><span class="params">(String s1, String s2)</span> </span>&#123;</span><br><span class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">        sb.append(s1);</span><br><span class="line">        sb.append(s2);</span><br><span class="line">        <span class="keyword">return</span> sb.toString();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>不直接返回 StringBuffer，那么StringBuffer将不会逃逸出方法。</p>
 <p>如果能证明一个对象不会逃逸到方法或线程外，则可能为这个变量进行一些高效的优化。</p>
 <h1 id="栈上分配"><a href="#栈上分配" class="headerlink" title="栈上分配"></a>栈上分配</h1><p>我们都知道Java中的对象都是在堆上分配的，而垃圾回收机制会回收堆中不再使用的对象，但是筛选可回收对象，回收对象还有整理内存都需要消耗时间。</p>
@@ -453,7 +454,7 @@
 <p>Java对象在实际的JVM实现中可能在GC堆上分配空间，也可能在栈上分配空间，也可能完全就消失了。这种行为从Java源码中看不出来，也无法显式指定，只是聪明的JVM自动做的优化而已。</p>
 <p>但是逃逸分析会有时间消耗，所以性能未必提升多少，并且由于逃逸分析比较耗时，目前的实现都是采用不那么准确但是时间压力相对较小的算法来完成逃逸分析，这就可能导致效果不稳定，要慎用。</p>
 <p>由于HotSpot虚拟机目前的实现方法导致栈上分配实现起来比较复杂，因为在HotSpot中暂时还没有做这项优化。</p>
-<p>ref <a href="http://rednaxelafx.iteye.com/blog/659108/" target="_blank" rel="external">http://rednaxelafx.iteye.com/blog/659108/</a></p>
+<p>ref <a href="http://rednaxelafx.iteye.com/blog/659108/" target="_blank" rel="noopener">http://rednaxelafx.iteye.com/blog/659108/</a></p>
 
       
     </div>
@@ -573,7 +574,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -595,7 +596,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

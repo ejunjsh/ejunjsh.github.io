@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/11/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -343,6 +344,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/04/22/redis-trib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/04/22/redis-trib/" itemprop="url">redis cluster管理工具redis-trib.rb详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-04-22T23:40:47+08:00">
+                22 Apr 16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>redis-trib.rb是redis官方推出的管理redis集群的工具，集成在redis的源码src目录下，是基于redis提供的集群命令封装成简单、便捷、实用的操作工具。redis-trib.rb是redis作者用ruby完成的。为了看懂redis-trib.rb，我特意花了一个星期学习了ruby，也被ruby的简洁、明了所吸引。ruby是门非常灵活的语言，redis-trib.rb只用了1600行左右的代码，就实现了强大的集群操作。本文对redis-trib.rb的介绍是基于redis 3.0.6版本的源码。阅读本文需要对redis集群功能有一定的了解。关于redis集群功能的介绍，可以参考本人的另一篇文章《redis3.0 cluster功能介绍》。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/04/22/redis-trib/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/03/24/linux-route/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -438,7 +587,7 @@
           <blockquote>
 <p>mark一下，当笔记，以后忘了查看</p>
 </blockquote>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>使用下面的 route 命令可以查看 Linux 内核路由表。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ route  </div><div class="line">Destination     Gateway         Genmask        Flags Metric Ref    Use Iface  </div><div class="line">192.168.0.0     *               255.255.255.0   U     0      0        0 eth0  </div><div class="line">169.254.0.0     *               255.255.0.0     U     0      0        0 eth0  </div><div class="line">default         192.168.0.1     0.0.0.0         UG    0      0        0 eth0</div></pre></td></tr></table></figure></p>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>使用下面的 route 命令可以查看 Linux 内核路由表。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ route  </span><br><span class="line">Destination     Gateway         Genmask        Flags Metric Ref    Use Iface  </span><br><span class="line">192.168.0.0     *               255.255.255.0   U     0      0        0 eth0  </span><br><span class="line">169.254.0.0     *               255.255.0.0     U     0      0        0 eth0  </span><br><span class="line">default         192.168.0.1     0.0.0.0         UG    0      0        0 eth0</span><br></pre></td></tr></table></figure></p>
 <p>route 命令的输出项说明<br>输出项 说明<br>Destination    目标网段或者主机<br>Gateway    网关地址，”*” 表示目标是本主机所属的网络，不需要路由<br>Genmask    网络掩码<br>Flags    标记。一些可能的标记如下：<br>     U — 路由是活动的<br>     H — 目标是一个主机<br>     G — 路由指向网关<br>     R — 恢复动态路由产生的表项<br>     D — 由路由的后台程序动态地安装<br>     M — 由路由的后台程序修改<br>     ! — 拒绝路由<br>Metric    路由距离，到达指定网络所需的中转数（linux 内核中没有使用）<br>Ref    路由项引用次数（linux 内核中没有使用）<br>Use    此路由项被路由软件查找的次数<br>Iface    该路由表项对应的输出接口<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -585,14 +734,14 @@
 
       
         
-          <h1 id="先来一个数组"><a href="#先来一个数组" class="headerlink" title="先来一个数组"></a>先来一个数组</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Element[] array = &#123;<span class="keyword">new</span> Element(<span class="number">1</span>),<span class="keyword">new</span> Element(<span class="number">2</span>),<span class="keyword">new</span> Element(<span class="number">3</span>)&#125;;</div></pre></td></tr></table></figure>
-<h1 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ArrayList&lt;Element&gt; arrayList = <span class="keyword">new</span> ArrayList&lt;Element&gt;(Arrays.asList(array));</div></pre></td></tr></table></figure>
+          <h1 id="先来一个数组"><a href="#先来一个数组" class="headerlink" title="先来一个数组"></a>先来一个数组</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Element[] array = &#123;<span class="keyword">new</span> Element(<span class="number">1</span>),<span class="keyword">new</span> Element(<span class="number">2</span>),<span class="keyword">new</span> Element(<span class="number">3</span>)&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;Element&gt; arrayList = <span class="keyword">new</span> ArrayList&lt;Element&gt;(Arrays.asList(array));</span><br></pre></td></tr></table></figure>
 <p>首先，我们来看下ArrayList的构造方法的文档。<br>ArrayList(Collection &lt; ? extends E &gt; c) : 构造一个包含特定容器的元素的列表，并且根据容器迭代器的顺序返回。<br>所以构造方法所做的事情如下： </p>
 <ol>
 <li>将容器c转换为一个数组 </li>
 <li>将数组拷贝到ArrayList中称为”elementData”的数组中 </li>
 </ol>
-<p>ArrayList的构造方法的源码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</div><div class="line">       elementData = c.toArray();</div><div class="line">       size = elementData.length;</div><div class="line"> </div><div class="line">       <span class="keyword">if</span> (elementData.getClass() != Object[].class)</div><div class="line">             elementData = Arrays.copyOf(elementData, size, Object[].class);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>ArrayList的构造方法的源码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">       elementData = c.toArray();</span><br><span class="line">       size = elementData.length;</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span> (elementData.getClass() != Object[].class)</span><br><span class="line">             elementData = Arrays.copyOf(elementData, size, Object[].class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2016/02/09/java-arraylist-array/#more" rel="contents">
@@ -884,9 +1033,9 @@
 
       
         
-          <h1 id="Make的概念"><a href="#Make的概念" class="headerlink" title="Make的概念"></a>Make的概念</h1><p>Make这个词，英语的意思是”制作”。Make命令直接用了这个意思，就是要做出某个文件。比如，要做出文件a.txt，就可以执行下面的命令。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> make a.txt</span></div></pre></td></tr></table></figure></p>
-<p>但是，如果你真的输入这条命令，它并不会起作用。因为Make命令本身并不知道，如何做出a.txt，需要有人告诉它，如何调用其他命令完成这个目标。<br>比如，假设文件 a.txt 依赖于 b.txt 和 c.txt ，是后面两个文件连接（cat命令）的产物。那么，make 需要知道下面的规则。<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="section">a.txt: b.txt c.txt</span></div><div class="line">    cat b.txt c.txt &gt; a.txt</div></pre></td></tr></table></figure></p>
-<p>也就是说，make a.txt 这条命令的背后，实际上分成两步：第一步，确认 b.txt 和 c.txt 必须已经存在，第二步使用 cat 命令 将这个两个文件合并，输出为新文件。<br>像这样的规则，都写在一个叫做Makefile的文件中，Make命令依赖这个文件进行构建。Makefile文件也可以写为makefile， 或者用命令行参数指定为其他文件名。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> make -f rules.txt</span></div><div class="line"><span class="meta">#</span><span class="bash"> 或者</span></div><div class="line"><span class="meta">$</span><span class="bash"> make --file=rules.txt</span></div></pre></td></tr></table></figure></p>
+          <h1 id="Make的概念"><a href="#Make的概念" class="headerlink" title="Make的概念"></a>Make的概念</h1><p>Make这个词，英语的意思是”制作”。Make命令直接用了这个意思，就是要做出某个文件。比如，要做出文件a.txt，就可以执行下面的命令。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> make a.txt</span></span><br></pre></td></tr></table></figure></p>
+<p>但是，如果你真的输入这条命令，它并不会起作用。因为Make命令本身并不知道，如何做出a.txt，需要有人告诉它，如何调用其他命令完成这个目标。<br>比如，假设文件 a.txt 依赖于 b.txt 和 c.txt ，是后面两个文件连接（cat命令）的产物。那么，make 需要知道下面的规则。<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">a.txt: b.txt c.txt</span></span><br><span class="line">    cat b.txt c.txt &gt; a.txt</span><br></pre></td></tr></table></figure></p>
+<p>也就是说，make a.txt 这条命令的背后，实际上分成两步：第一步，确认 b.txt 和 c.txt 必须已经存在，第二步使用 cat 命令 将这个两个文件合并，输出为新文件。<br>像这样的规则，都写在一个叫做Makefile的文件中，Make命令依赖这个文件进行构建。Makefile文件也可以写为makefile， 或者用命令行参数指定为其他文件名。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> make -f rules.txt</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 或者</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> make --file=rules.txt</span></span><br></pre></td></tr></table></figure></p>
 <p>上面代码指定make命令依据rules.txt文件中的规则，进行构建。<br>总之，make只是一个根据指定的Shell命令进行构建的工具。它的规则很简单，你规定要构建哪个文件、它依赖哪些源文件，当那些文件有变动时，如何重新构建它。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1332,7 +1481,7 @@
           <blockquote>
 <p>对泛型擦除讲解非常不错的文章</p>
 </blockquote>
-<h1 id="java泛型的实现：类型擦除"><a href="#java泛型的实现：类型擦除" class="headerlink" title="java泛型的实现：类型擦除"></a>java泛型的实现：类型擦除</h1><p>前面已经说了，Java的泛型是伪泛型。为什么说Java的泛型是伪泛型呢？因为，在编译期间，所有的泛型信息都会被擦除掉。正确理解泛型概念的首要前提是理解类型擦出（type erasure）。<br>Java中的泛型基本上都是在编译器这个层次来实现的。在生成的Java字节码中是不包含泛型中的类型信息的。使用泛型的时候加上的类型参数，会在编译器在编译的时候去掉。这个过程就称为类型擦除。<br>如在代码中定义的List<object>和List<string>等类型，在编译后都会编程List。JVM看到的只是List，而由泛型附加的类型信息对JVM来说是不可见的。Java编译器会在编译时尽可能的发现可能出错的地方，但是仍然无法避免在运行时刻出现类型转换异常的情况。类型擦除也是Java的泛型实现方法与C++模版机制实现方式之间的重要区别。<br>可以通过两个简单的例子，来证明java泛型的类型擦除。<br>例1：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test4</span> </span>&#123;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </div><div class="line">        ArrayList&lt;String&gt; arrayList1=<span class="keyword">new</span> ArrayList&lt;String&gt;();  </div><div class="line">        arrayList1.add(<span class="string">"abc"</span>);  </div><div class="line">        ArrayList&lt;Integer&gt; arrayList2=<span class="keyword">new</span> ArrayList&lt;Integer&gt;();  </div><div class="line">        arrayList2.add(<span class="number">123</span>);  </div><div class="line">        System.out.println(arrayList1.getClass()==arrayList2.getClass());  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></string></object></p>
+<h1 id="java泛型的实现：类型擦除"><a href="#java泛型的实现：类型擦除" class="headerlink" title="java泛型的实现：类型擦除"></a>java泛型的实现：类型擦除</h1><p>前面已经说了，Java的泛型是伪泛型。为什么说Java的泛型是伪泛型呢？因为，在编译期间，所有的泛型信息都会被擦除掉。正确理解泛型概念的首要前提是理解类型擦出（type erasure）。<br>Java中的泛型基本上都是在编译器这个层次来实现的。在生成的Java字节码中是不包含泛型中的类型信息的。使用泛型的时候加上的类型参数，会在编译器在编译的时候去掉。这个过程就称为类型擦除。<br>如在代码中定义的List<object>和List<string>等类型，在编译后都会编程List。JVM看到的只是List，而由泛型附加的类型信息对JVM来说是不可见的。Java编译器会在编译时尽可能的发现可能出错的地方，但是仍然无法避免在运行时刻出现类型转换异常的情况。类型擦除也是Java的泛型实现方法与C++模版机制实现方式之间的重要区别。<br>可以通过两个简单的例子，来证明java泛型的类型擦除。<br>例1：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test4</span> </span>&#123;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </span><br><span class="line">        ArrayList&lt;String&gt; arrayList1=<span class="keyword">new</span> ArrayList&lt;String&gt;();  </span><br><span class="line">        arrayList1.add(<span class="string">"abc"</span>);  </span><br><span class="line">        ArrayList&lt;Integer&gt; arrayList2=<span class="keyword">new</span> ArrayList&lt;Integer&gt;();  </span><br><span class="line">        arrayList2.add(<span class="number">123</span>);  </span><br><span class="line">        System.out.println(arrayList1.getClass()==arrayList2.getClass());  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></string></object></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2015/05/14/java-generic-wipe/#more" rel="contents">
@@ -1479,11 +1628,11 @@
       
         
           <h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>先用代码开个头先</p>
-<p>爷爷类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.classloader;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Grandfather</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span></div><div class="line">    &#123;</div><div class="line">        System.out.println(<span class="string">"Grandfather"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>爸爸类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.classloader;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> <span class="keyword">extends</span> <span class="title">Grandfather</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span></div><div class="line">    &#123;</div><div class="line">        System.out.println(<span class="string">"Father init!"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> value = <span class="number">123</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Father</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        System.out.println(<span class="string">"init Father"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>小孩类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.classloader;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">Father</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">static</span></div><div class="line">    &#123;</div><div class="line">        System.out.println(<span class="string">"Child init"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Child</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        System.out.println(<span class="string">"init Child"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>main<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.sky.code.classloader;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestStatic</span></span></div><div class="line">&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></div><div class="line">    &#123;</div><div class="line">        System.out.println(Child.value);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>执行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Grandfather</div><div class="line">Father init!</div><div class="line">123</div></pre></td></tr></table></figure></p>
+<p>爷爷类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.code.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Grandfather</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"Grandfather"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>爸爸类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.code.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Father</span> <span class="keyword">extends</span> <span class="title">Grandfather</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"Father init!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> value = <span class="number">123</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Father</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"init Father"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>小孩类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.code.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">Father</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(<span class="string">"Child init"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Child</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"init Child"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>main<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.code.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestStatic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        System.out.println(Child.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>执行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Grandfather</span><br><span class="line">Father init!</span><br><span class="line">123</span><br></pre></td></tr></table></figure></p>
 <p>为什么没有输出 Child init。解释一下：对于静态字段，只有直接定义这个字段的类才会被初始化，因此通过其子类来引用父类中定义的静态字段，只会触发父类的初始化而不会触发子类的初始化。<br>上面就牵涉到了虚拟机类加载机制。如果有兴趣，可以继续看下去。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1673,154 +1822,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/10/17/nginx-loadbalance-stragedy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2014/10/17/nginx-loadbalance-stragedy/" itemprop="url">nginx负载均衡的5种策略</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-10-17T23:41:29+08:00">
-                17 Oct 14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/nginx/" itemprop="url" rel="index">
-                    <span itemprop="name">nginx</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>nginx可以根据客户端IP进行负载均衡，在upstream里设置ip_hash，就可以针对同一个C类地址段中的客户端选择同一个后端服务器，除非那个后端服务器宕了才会换一个。</p>
-<p>nginx的upstream目前支持的5种方式的分配</p>
-<h1 id="轮询（默认）"><a href="#轮询（默认）" class="headerlink" title="轮询（默认）"></a>轮询（默认）</h1><p>每个请求按时间顺序逐一分配到不同的后端服务器，如果后端服务器down掉，能自动剔除。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">upstream backserver &#123; </div><div class="line">server 192.168.0.14; </div><div class="line">server 192.168.0.15; </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2014/10/17/nginx-loadbalance-stragedy/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1871,7 +1872,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1893,7 +1894,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

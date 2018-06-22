@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2014/02/20/maven-resouce/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-08-07T12:54:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="maven resource 记录">
@@ -436,7 +437,7 @@
 <p>今天遇到maven打包的时候发现在main/java里面的xml没有打包进jar上。</p>
 </blockquote>
 <a id="more"></a>
-<p>上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">resources</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>src/main/java<span class="tag">&lt;/<span class="name">directory</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.properties<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.xml<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tld<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span> </div><div class="line">                <span class="tag">&lt;<span class="name">filtering</span>&gt;</span>true<span class="tag">&lt;/<span class="name">filtering</span>&gt;</span> </div><div class="line">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span> </div><div class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span> </div><div class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>上网搜了下，maven默认打包main/resource的资源，要想打包main/java的要像下面这样配。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">resources</span>&gt;</span> </span><br><span class="line">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span> </span><br><span class="line">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>src/main/java<span class="tag">&lt;/<span class="name">directory</span>&gt;</span> </span><br><span class="line">                <span class="tag">&lt;<span class="name">includes</span>&gt;</span> </span><br><span class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.properties<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </span><br><span class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.xml<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </span><br><span class="line">                    <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tld<span class="tag">&lt;/<span class="name">include</span>&gt;</span> </span><br><span class="line">                <span class="tag">&lt;/<span class="name">includes</span>&gt;</span> </span><br><span class="line">                <span class="tag">&lt;<span class="name">filtering</span>&gt;</span>true<span class="tag">&lt;/<span class="name">filtering</span>&gt;</span> </span><br><span class="line">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <p>搞定收工。。。不知道有没有更好到方法呢？</p>
 
       
@@ -550,7 +551,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -572,7 +573,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

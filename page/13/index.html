@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/13/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -343,6 +344,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/06/10/linux-free/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2014/06/10/linux-free/" itemprop="url">Linux的free命令详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-06-10T10:21:13+08:00">
+                10 Jun 14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="属性讲解"><a href="#属性讲解" class="headerlink" title="属性讲解"></a>属性讲解</h1><p>执行下面命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> free</span></span><br></pre></td></tr></table></figure></p>
+<p>结果(默认单位为KB)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">             total       used       free     shared    buffers     cached</span><br><span class="line">Mem:      24677460   23276064    1401396          0     870540   12084008</span><br><span class="line">-/+ buffers/cache:   10321516   14355944</span><br><span class="line">Swap:     25151484     224188   24927296</span><br></pre></td></tr></table></figure></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2014/06/10/linux-free/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/03/27/linux-ssh-gateway/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -435,9 +583,9 @@
 
       
         
-          <h1 id="免密码直连-user-hostA-ssh-hostB"><a href="#免密码直连-user-hostA-ssh-hostB" class="headerlink" title="免密码直连  [user@hostA ~] $ssh hostB"></a>免密码直连  [user@hostA ~] $ssh hostB</h1><h2 id="STEP1-在hostA上生成RSA公钥私钥（在-ssh-下生成RSA私钥id-rsa，公钥id-rsa-pub）"><a href="#STEP1-在hostA上生成RSA公钥私钥（在-ssh-下生成RSA私钥id-rsa，公钥id-rsa-pub）" class="headerlink" title="STEP1. 在hostA上生成RSA公钥私钥（在~/.ssh/下生成RSA私钥id_rsa，公钥id_rsa.pub）"></a>STEP1. 在hostA上生成RSA公钥私钥（在~/.ssh/下生成RSA私钥id_rsa，公钥id_rsa.pub）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[user@hostA ~]$ ssh-keygen -t rsa</div></pre></td></tr></table></figure>
-<h2 id="STEP2-将hostA的公钥传给hostB机器（在hostB机器的-ssh-authorized-keys里面添加A机器的id-rsa-pub）"><a href="#STEP2-将hostA的公钥传给hostB机器（在hostB机器的-ssh-authorized-keys里面添加A机器的id-rsa-pub）" class="headerlink" title="STEP2. 将hostA的公钥传给hostB机器（在hostB机器的.ssh/authorized_keys里面添加A机器的id_rsa.pub）"></a>STEP2. 将hostA的公钥传给hostB机器（在hostB机器的.ssh/authorized_keys里面添加A机器的id_rsa.pub）</h2><p>方法一：使用 ssh-copy-id工具<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[user@hostA ~]$ ssh-copy-id -i .ssh/id_rsa.pub hostB</div></pre></td></tr></table></figure></p>
-<p>方法二：人肉拼接<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[user@hostA ~]$ scp .ssh/id_rsa.pub hostB:~/.ssh/temp</div><div class="line">[user@hostB ~]$ cat .ssh/temp &gt;&gt; .ssh/authorized_keys</div></pre></td></tr></table></figure></p>
+          <h1 id="免密码直连-user-hostA-ssh-hostB"><a href="#免密码直连-user-hostA-ssh-hostB" class="headerlink" title="免密码直连  [user@hostA ~] $ssh hostB"></a>免密码直连  [user@hostA ~] $ssh hostB</h1><h2 id="STEP1-在hostA上生成RSA公钥私钥（在-ssh-下生成RSA私钥id-rsa，公钥id-rsa-pub）"><a href="#STEP1-在hostA上生成RSA公钥私钥（在-ssh-下生成RSA私钥id-rsa，公钥id-rsa-pub）" class="headerlink" title="STEP1. 在hostA上生成RSA公钥私钥（在~/.ssh/下生成RSA私钥id_rsa，公钥id_rsa.pub）"></a>STEP1. 在hostA上生成RSA公钥私钥（在~/.ssh/下生成RSA私钥id_rsa，公钥id_rsa.pub）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[user@hostA ~]$ ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+<h2 id="STEP2-将hostA的公钥传给hostB机器（在hostB机器的-ssh-authorized-keys里面添加A机器的id-rsa-pub）"><a href="#STEP2-将hostA的公钥传给hostB机器（在hostB机器的-ssh-authorized-keys里面添加A机器的id-rsa-pub）" class="headerlink" title="STEP2. 将hostA的公钥传给hostB机器（在hostB机器的.ssh/authorized_keys里面添加A机器的id_rsa.pub）"></a>STEP2. 将hostA的公钥传给hostB机器（在hostB机器的.ssh/authorized_keys里面添加A机器的id_rsa.pub）</h2><p>方法一：使用 ssh-copy-id工具<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[user@hostA ~]$ ssh-copy-id -i .ssh/id_rsa.pub hostB</span><br></pre></td></tr></table></figure></p>
+<p>方法二：人肉拼接<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[user@hostA ~]$ scp .ssh/id_rsa.pub hostB:~/.ssh/temp</span><br><span class="line">[user@hostB ~]$ cat .ssh/temp &gt;&gt; .ssh/authorized_keys</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2014/03/27/linux-ssh-gateway/#more" rel="contents">
@@ -737,7 +885,7 @@
           <blockquote>
 <p>javascript 设计不严谨，就判断一个Javascript对象是否存在，有超过50种写法。 这里列举些常用的，并总结下。。</p>
 </blockquote>
-<h1 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">　　<span class="keyword">if</span> (!myObj) &#123;</div><div class="line">　　　　myObj = &#123; &#125;;</div><div class="line">　　&#125;</div></pre></td></tr></table></figure>
+<h1 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h1><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="keyword">if</span> (!myObj) &#123;</span><br><span class="line">　　　　myObj = &#123; &#125;;</span><br><span class="line">　　&#125;</span><br></pre></td></tr></table></figure>
 <p>但是，运行这段代码，浏览器会直接抛出ReferenceError错误，导致运行中断。请问错在哪里？<br>对了，if语句判断myObj是否为空时，这个变量还不存在，所以才会报错。改成下面这样，就能正确运行了。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -945,7 +1093,7 @@
 </tr>
 </tbody>
 </table>
-<p>例如:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> dd <span class="keyword">if</span>=/dev/zero of=sun.txt bs=1M count=1 <span class="comment">#设置块大小为1mb</span></span></div></pre></td></tr></table></figure></p>
+<p>例如:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> dd <span class="keyword">if</span>=/dev/zero of=sun.txt bs=1M count=1 <span class="comment">#设置块大小为1mb</span></span></span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2014/03/01/linux-dd/#more" rel="contents">
@@ -1393,7 +1541,7 @@
       
         
           <ol>
-<li>下个jenkins，官网去下 <a href="http://jenkins-ci.org/，里面提供war包下载，直接部署到tomcat什么上面吧。" target="_blank" rel="external">http://jenkins-ci.org/，里面提供war包下载，直接部署到tomcat什么上面吧。</a>
+<li>下个jenkins，官网去下 <a href="http://jenkins-ci.org/，里面提供war包下载，直接部署到tomcat什么上面吧。" target="_blank" rel="noopener">http://jenkins-ci.org/，里面提供war包下载，直接部署到tomcat什么上面吧。</a>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2014/02/20/jenkins-jenkins-git-maven/#more" rel="contents">
@@ -1539,8 +1687,8 @@
 
       
         
-          <h1 id="常规篇"><a href="#常规篇" class="headerlink" title="常规篇"></a>常规篇</h1><p>首先，用ps查看进程，方法如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$ ps -ef </div><div class="line">…… </div><div class="line">smx       1822     1  0 11:38 ?        00:00:49 gnome-terminal </div><div class="line">smx       1823  1822  0 11:38 ?        00:00:00 gnome-pty-helper </div><div class="line">smx       1824  1822  0 11:38 pts/0    00:00:02 bash </div><div class="line">smx       1827     1  4 11:38 ?        00:26:28 /usr/lib/firefox-3.6.18/firefox-bin </div><div class="line">smx       1857  1822  0 11:38 pts/1    00:00:00 bash </div><div class="line">smx       1880  1619  0 11:38 ?        00:00:00 update-notifier </div><div class="line">…… </div><div class="line">smx      11946  1824  0 21:41 pts/0    00:00:00 ps -ef</div></pre></td></tr></table></figure></p>
-<p>或者：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">$ ps -aux </div><div class="line">…… </div><div class="line">smx       1822  0.1  0.8  58484 18152 ?        Sl   11:38   0:49 gnome-terminal </div><div class="line">smx       1823  0.0  0.0   1988   712 ?        S    11:38   0:00 gnome-pty-helper </div><div class="line">smx       1824  0.0  0.1   6820  3776 pts/0    Ss   11:38   0:02 bash </div><div class="line">smx       1827  4.3  5.8 398196 119568 ?       Sl   11:38  26:13 /usr/lib/firefox-3.6.18/firefox-bin </div><div class="line">smx       1857  0.0  0.1   6688  3644 pts/1    Ss   11:38   0:00 bash </div><div class="line">smx       1880  0.0  0.6  41536 12620 ?        S    11:38   0:00 update-notifier </div><div class="line">…… </div><div class="line">smx      11953  0.0  0.0   2716  1064 pts/0    R+   21:42   0:00 ps -aux</div></pre></td></tr></table></figure></p>
+          <h1 id="常规篇"><a href="#常规篇" class="headerlink" title="常规篇"></a>常规篇</h1><p>首先，用ps查看进程，方法如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ps -ef </span><br><span class="line">…… </span><br><span class="line">smx       1822     1  0 11:38 ?        00:00:49 gnome-terminal </span><br><span class="line">smx       1823  1822  0 11:38 ?        00:00:00 gnome-pty-helper </span><br><span class="line">smx       1824  1822  0 11:38 pts/0    00:00:02 bash </span><br><span class="line">smx       1827     1  4 11:38 ?        00:26:28 /usr/lib/firefox-3.6.18/firefox-bin </span><br><span class="line">smx       1857  1822  0 11:38 pts/1    00:00:00 bash </span><br><span class="line">smx       1880  1619  0 11:38 ?        00:00:00 update-notifier </span><br><span class="line">…… </span><br><span class="line">smx      11946  1824  0 21:41 pts/0    00:00:00 ps -ef</span><br></pre></td></tr></table></figure></p>
+<p>或者：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ ps -aux </span><br><span class="line">…… </span><br><span class="line">smx       1822  0.1  0.8  58484 18152 ?        Sl   11:38   0:49 gnome-terminal </span><br><span class="line">smx       1823  0.0  0.0   1988   712 ?        S    11:38   0:00 gnome-pty-helper </span><br><span class="line">smx       1824  0.0  0.1   6820  3776 pts/0    Ss   11:38   0:02 bash </span><br><span class="line">smx       1827  4.3  5.8 398196 119568 ?       Sl   11:38  26:13 /usr/lib/firefox-3.6.18/firefox-bin </span><br><span class="line">smx       1857  0.0  0.1   6688  3644 pts/1    Ss   11:38   0:00 bash </span><br><span class="line">smx       1880  0.0  0.6  41536 12620 ?        S    11:38   0:00 update-notifier </span><br><span class="line">…… </span><br><span class="line">smx      11953  0.0  0.0   2716  1064 pts/0    R+   21:42   0:00 ps -aux</span><br></pre></td></tr></table></figure></p>
 <p>此时如果我想杀了火狐的进程就在终端输入：<br><code>$ kill -s 9 1827</code><br>其中-s 9 制定了传递给进程的信号是９，即强制、尽快终止进程。各个终止信号及其作用见附录。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1730,154 +1878,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/02/14/linux-find/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2014/02/14/linux-find/" itemprop="url">find 命令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-02-14T22:43:22+08:00">
-                14 Feb 14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>mark一下，当笔记，以后忘了查看</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2014/02/14/linux-find/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1928,7 +1928,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1950,7 +1950,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

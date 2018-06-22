@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/11/01/tcp-something/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-1.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-2.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-3.png">
@@ -126,7 +127,7 @@
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-14.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-15.jpg">
 <meta property="og:image" content="http://idiotsky.me/images1/tcp-something-16.jpg">
-<meta property="og:updated_time" content="2018-02-26T11:25:41.824Z">
+<meta property="og:updated_time" content="2018-02-26T11:25:41.825Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP 的那些事儿">
 <meta name="twitter:description" content="tcp看了很多的文章，这篇总结的很好。此文有点长👿  tcp在网络OSI的七层模型中的第四层——Transport(传输)层，IP在第三层——Network(网络)层，ARP在第二层——Data Link(数据链路)层，在第二层上的数据，我们叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 首先，我们需要知道，我们程序的数据首先会打到TCP的Segment中，然后T">
@@ -478,19 +479,19 @@
 <ul>
 <li><strong>关于建连接时SYN超时</strong>。试想一下，如果server端接到了clien发的SYN后回了SYN-ACK后client掉线了，server端没有收到client回来的ACK，那么，这个连接处于一个中间状态，即没成功，也没失败。于是，server端如果在一定时间内没有收到的TCP会重发SYN-ACK。在Linux下，默认重试次数为5次，重试的间隔时间从1s开始每次都翻售，5次的重试时间间隔为1s, 2s, 4s, 8s, 16s，总共31s，第5次发出后还要等32s都知道第5次也超时了，所以，总共需要 1s + 2s + 4s+ 8s+ 16s + 32s = 2^6 -1 = 63s，TCP才会把断开这个连接。</li>
 <li><strong>关于SYN Flood攻击</strong>。一些恶意的人就为此制造了SYN Flood攻击——给服务器发了一个SYN后，就下线了，于是服务器需要默认等63s才会断开连接，这样，攻击者就可以把服务器的syn连接的队列耗尽，让正常的连接请求不能处理。于是，Linux下给了一个叫tcp_syncookies的参数来应对这个事——当SYN队列满了后，TCP会通过源地址端口、目标地址端口和时间戳打造出一个特别的Sequence Number发回去（又叫cookie），如果是攻击者则不会有响应，如果是正常连接，则会把这个 SYN Cookie发回来，然后服务端可以通过cookie建连接（即使你不在SYN队列中）。请注意，请先千万别用tcp_syncookies来处理正常的大负载的连接的情况。因为，synccookies是妥协版的TCP协议，并不严谨。对于正常的请求，你应该调整三个TCP参数可供你选择，第一个是：tcp_synack_retries 可以用他来减少重试次数；第二个是：tcp_max_syn_backlog，可以增大SYN连接数；第三个是：tcp_abort_on_overflow 处理不过来干脆就直接拒绝连接了。</li>
-<li><strong>关于ISN的初始化</strong>。ISN是不能hard code的，不然会出问题的——比如：如果连接建好后始终用1来做ISN，如果client发了30个segment过去，但是网络断了，于是 client重连，又用了1做ISN，但是之前连接的那些包到了，于是就被当成了新连接的包，此时，client的Sequence Number 可能是3，而Server端认为client端的这个号是30了。全乱了。<a href="http://tools.ietf.org/html/rfc793" target="_blank" rel="external">RFC793</a>中说，ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始。这样，一个ISN的周期大约是4.55个小时。因为，我们假设我们的TCP Segment在网络上的存活时间不会超过Maximum Segment Lifetime（缩写为MSL – <a href="http://en.wikipedia.org/wiki/Maximum_Segment_Lifetime" target="_blank" rel="external">Wikipedia语条</a>），所以，只要MSL的值小于4.55小时，那么，我们就不会重用到ISN。</li>
-<li><strong>关于 MSL 和 TIME_WAIT</strong>。通过上面的ISN的描述，相信你也知道MSL是怎么来的了。我们注意到，在TCP的状态图中，从TIME_WAIT状态到CLOSED状态，有一个超时设置，这个超时设置是 2*MSL（RFC793定义了MSL为2分钟，Linux设置成了30s）为什么要这有TIME_WAIT？为什么不直接给转成CLOSED状态呢？主要有两个原因：1）TIME_WAIT确保有足够的时间让对端收到了ACK，如果被动关闭的那方没有收到Ack，就会触发被动端重发Fin，一来一去正好2个MSL，2）有足够的时间让这个连接不会跟后面的连接混在一起（你要知道，有些自做主张的路由器会缓存IP数据包，如果连接被重用了，那么这些延迟收到的包就有可能会跟新连接混在一起）。你可以看看这篇文章《<a href="http://www.serverframework.com/asynchronousevents/2011/01/time-wait-and-its-design-implications-for-protocols-and-scalable-servers.html" target="_blank" rel="external">TIME_WAIT and its design implications for protocols and scalable client server systems</a>》</li>
+<li><strong>关于ISN的初始化</strong>。ISN是不能hard code的，不然会出问题的——比如：如果连接建好后始终用1来做ISN，如果client发了30个segment过去，但是网络断了，于是 client重连，又用了1做ISN，但是之前连接的那些包到了，于是就被当成了新连接的包，此时，client的Sequence Number 可能是3，而Server端认为client端的这个号是30了。全乱了。<a href="http://tools.ietf.org/html/rfc793" target="_blank" rel="noopener">RFC793</a>中说，ISN会和一个假的时钟绑在一起，这个时钟会在每4微秒对ISN做加一操作，直到超过2^32，又从0开始。这样，一个ISN的周期大约是4.55个小时。因为，我们假设我们的TCP Segment在网络上的存活时间不会超过Maximum Segment Lifetime（缩写为MSL – <a href="http://en.wikipedia.org/wiki/Maximum_Segment_Lifetime" target="_blank" rel="noopener">Wikipedia语条</a>），所以，只要MSL的值小于4.55小时，那么，我们就不会重用到ISN。</li>
+<li><strong>关于 MSL 和 TIME_WAIT</strong>。通过上面的ISN的描述，相信你也知道MSL是怎么来的了。我们注意到，在TCP的状态图中，从TIME_WAIT状态到CLOSED状态，有一个超时设置，这个超时设置是 2*MSL（RFC793定义了MSL为2分钟，Linux设置成了30s）为什么要这有TIME_WAIT？为什么不直接给转成CLOSED状态呢？主要有两个原因：1）TIME_WAIT确保有足够的时间让对端收到了ACK，如果被动关闭的那方没有收到Ack，就会触发被动端重发Fin，一来一去正好2个MSL，2）有足够的时间让这个连接不会跟后面的连接混在一起（你要知道，有些自做主张的路由器会缓存IP数据包，如果连接被重用了，那么这些延迟收到的包就有可能会跟新连接混在一起）。你可以看看这篇文章《<a href="http://www.serverframework.com/asynchronousevents/2011/01/time-wait-and-its-design-implications-for-protocols-and-scalable-servers.html" target="_blank" rel="noopener">TIME_WAIT and its design implications for protocols and scalable client server systems</a>》</li>
 <li><strong>关于TIME_WAIT数量太多</strong>。从上面的描述我们可以知道，TIME_WAIT是个很重要的状态，但是如果在大并发的短链接下，TIME_WAIT 就会太多，这也会消耗很多系统资源。只要搜一下，你就会发现，十有八九的处理方式都是教你设置两个参数，一个叫tcp_tw_reuse，另一个叫tcp_tw_recycle的参数，这两个参数默认值都是被关闭的，后者recyle比前者resue更为激进，resue要温柔一些。另外，如果使用tcp_tw_reuse，必需设置tcp_timestamps=1，否则无效。这里，你一定要注意，打开这两个参数会有比较大的坑——可能会让TCP连接出一些诡异的问题（因为如上述一样，如果不等待超时重用连接的话，新的连接可能会建不上。正如官方文档上说的一样“<strong>It should not be changed without advice/request of technical experts</strong>”）。<ul>
-<li><strong>关于tcp_tw_reuse</strong>。官方文档上说tcp_tw_reuse 加上tcp_timestamps（又叫PAWS, for Protection Against Wrapped Sequence Numbers）可以保证协议的角度上的安全，但是你需要tcp_timestamps在两边都被打开（你可以读一下<a href="http://lxr.free-electrons.com/ident?i=tcp_twsk_unique" target="_blank" rel="external">tcp_twsk_unique</a>的源码 ）。我个人估计还是有一些场景会有问题。</li>
-<li><strong>关于tcp_tw_recycle</strong>。如果是tcp_tw_recycle被打开了话，会假设对端开启了tcp_timestamps，然后会去比较时间戳，如果时间戳变大了，就可以重用。但是，如果对端是一个NAT网络的话（如：一个公司只用一个IP出公网）或是对端的IP被另一台重用了，这个事就复杂了。建链接的SYN可能就被直接丢掉了（你可能会看到connection time out的错误）（如果你想观摩一下Linux的内核代码，请参看源码 <a href="http://lxr.free-electrons.com/ident?i=tcp_timewait_state_process" target="_blank" rel="external">tcp_timewait_state_process</a>）。</li>
+<li><strong>关于tcp_tw_reuse</strong>。官方文档上说tcp_tw_reuse 加上tcp_timestamps（又叫PAWS, for Protection Against Wrapped Sequence Numbers）可以保证协议的角度上的安全，但是你需要tcp_timestamps在两边都被打开（你可以读一下<a href="http://lxr.free-electrons.com/ident?i=tcp_twsk_unique" target="_blank" rel="noopener">tcp_twsk_unique</a>的源码 ）。我个人估计还是有一些场景会有问题。</li>
+<li><strong>关于tcp_tw_recycle</strong>。如果是tcp_tw_recycle被打开了话，会假设对端开启了tcp_timestamps，然后会去比较时间戳，如果时间戳变大了，就可以重用。但是，如果对端是一个NAT网络的话（如：一个公司只用一个IP出公网）或是对端的IP被另一台重用了，这个事就复杂了。建链接的SYN可能就被直接丢掉了（你可能会看到connection time out的错误）（如果你想观摩一下Linux的内核代码，请参看源码 <a href="http://lxr.free-electrons.com/ident?i=tcp_timewait_state_process" target="_blank" rel="noopener">tcp_timewait_state_process</a>）。</li>
 <li><strong>关于tcp_max_tw_buckets</strong>。这个是控制并发的TIME_WAIT的数量，默认值是180000，如果超限，那么，系统会把多的给destory掉，然后在日志里打一个警告（如：time wait bucket table overflow），官网文档说这个参数是用来对抗DDoS攻击的。也说的默认值180000并不小。这个还是需要根据实际情况考虑。</li>
 </ul>
 </li>
 </ul>
 <blockquote>
-<p>Again，使用tcp_tw_reuse和tcp_tw_recycle来解决TIME_WAIT的问题是非常非常危险的，因为这两个参数违反了TCP协议（<a href="http://tools.ietf.org/html/rfc1122" target="_blank" rel="external">RFC 1122</a>）</p>
+<p>Again，使用tcp_tw_reuse和tcp_tw_recycle来解决TIME_WAIT的问题是非常非常危险的，因为这两个参数违反了TCP协议（<a href="http://tools.ietf.org/html/rfc1122" target="_blank" rel="noopener">RFC 1122</a>）</p>
 </blockquote>
-<p>其实，TIME_WAIT表示的是你主动断连接，所以，这就是所谓的“不作死不会死”。试想，如果让对端断连接，那么这个破问题就是对方的了，呵呵。另外，如果你的服务器是于HTTP服务器，那么设置一个<a href="http://en.wikipedia.org/wiki/HTTP_persistent_connection" target="_blank" rel="external">HTTP的KeepAlive</a>有多重要（浏览器会重用一个TCP连接来处理多个HTTP请求），然后让客户端去断链接（你要小心，浏览器可能会非常贪婪，他们不到万不得已不会主动断连接）。</p>
+<p>其实，TIME_WAIT表示的是你主动断连接，所以，这就是所谓的“不作死不会死”。试想，如果让对端断连接，那么这个破问题就是对方的了，呵呵。另外，如果你的服务器是于HTTP服务器，那么设置一个<a href="http://en.wikipedia.org/wiki/HTTP_persistent_connection" target="_blank" rel="noopener">HTTP的KeepAlive</a>有多重要（浏览器会重用一个TCP连接来处理多个HTTP请求），然后让客户端去断链接（你要小心，浏览器可能会非常贪婪，他们不到万不得已不会主动断连接）。</p>
 <h1 id="数据传输中的Sequence-Number"><a href="#数据传输中的Sequence-Number" class="headerlink" title="数据传输中的Sequence Number"></a>数据传输中的Sequence Number</h1><p>下图是我从Wireshark中截了个我在访问coolshell.cn时的有数据传输的图给你看一下，SeqNum是怎么变的。（使用Wireshark菜单中的Statistics -&gt;Flow Graph… ）<br><a href="http://idiotsky.me/images1/tcp-something-6.jpg"><img src="http://idiotsky.me/images1/tcp-something-6.jpg" alt=""></a><br>你可以看到，<strong>SeqNum的增加是和传输的字节数相关的</strong>。上图中，三次握手后，来了两个Len:1440的包，而第二个包的SeqNum就成了1441。然后第一个ACK回的是1441，表示第一个1440收到了。</p>
 <p><em>SeqNum为当前成功发送的数据字节数，ACK为当前成功接收的数据字节数</em></p>
 <p><strong>注意</strong>：如果你用Wireshark抓包程序看3次握手，你会发现SeqNum总是为0，不是这样的，Wireshark为了显示更友好，使用了Relative SeqNum——相对序号，你只要在右键菜单中的protocol preference 中取消掉就可以看到“Absolute SeqNum”了</p>
@@ -506,19 +507,19 @@
 <p>这两种方式有好也有不好。第一种会节省带宽，但是慢，第二种会快一点，但是会浪费带宽，也可能会有无用功。但总体来说都不好。因为都在等timeout，timeout可能会很长（在下篇会说TCP是怎么动态地计算出timeout的）</p>
 <h2 id="快速重传机制"><a href="#快速重传机制" class="headerlink" title="快速重传机制"></a>快速重传机制</h2><p>于是，TCP引入了一种叫Fast Retransmit 的算法，不以时间驱动，而以数据驱动重传。也就是说，如果，包没有连续到达，就ack最后那个可能被丢了的包，如果发送方连续收到3次相同的ack，就重传。Fast Retransmit的好处是不用等timeout了再重传。</p>
 <p>比如：如果发送方发出了1，2，3，4，5份数据，第一份先到送了，于是就ack回2，结果2因为某些原因没收到，3到达了，于是还是ack回2，后面的4和5都到了，但是还是ack回2，因为2还是没有收到，于是发送端收到了三个ack=2的确认，知道了2还没有到，于是就马上重转2。然后，接收端收到了2，此时因为3，4，5都收到了，于是ack回6。示意图如下：<br><a href="http://idiotsky.me/images1/tcp-something-7.png"><img src="http://idiotsky.me/images1/tcp-something-7.png" alt=""></a><br>Fast Retransmit只解决了一个问题，就是timeout的问题，它依然面临一个艰难的选择，就是，是重传之前的一个还是重传所有的问题。对于上面的示例来说，是重传#2呢还是重传#2，#3，#4，#5呢？因为发送端并不清楚这连续的3个ack(2)是谁传回来的？也许发送端发了20份数据，是#6，#10，#20传来的呢。这样，发送端很有可能要重传从2到20的这堆数据（这就是某些TCP的实际的实现）。可见，这是一把双刃剑。</p>
-<h2 id="SACK-方法"><a href="#SACK-方法" class="headerlink" title="SACK 方法"></a>SACK 方法</h2><p>另外一种更好的方式叫：Selective Acknowledgment (SACK)（参看<a href="http://tools.ietf.org/html/rfc2018" target="_blank" rel="external">RFC 2018</a>），这种方式需要在TCP头里加一个SACK的东西，ACK还是Fast Retransmit的ACK，SACK则是汇报收到的数据碎版。参看下图：<br><a href="http://idiotsky.me/images1/tcp-something-8.jpg"><img src="http://idiotsky.me/images1/tcp-something-8.jpg" alt=""></a></p>
+<h2 id="SACK-方法"><a href="#SACK-方法" class="headerlink" title="SACK 方法"></a>SACK 方法</h2><p>另外一种更好的方式叫：Selective Acknowledgment (SACK)（参看<a href="http://tools.ietf.org/html/rfc2018" target="_blank" rel="noopener">RFC 2018</a>），这种方式需要在TCP头里加一个SACK的东西，ACK还是Fast Retransmit的ACK，SACK则是汇报收到的数据碎版。参看下图：<br><a href="http://idiotsky.me/images1/tcp-something-8.jpg"><img src="http://idiotsky.me/images1/tcp-something-8.jpg" alt=""></a></p>
 <p>这样，在发送端就可以根据回传的SACK来知道哪些数据到了，哪些没有到。于是就优化了Fast Retransmit的算法。当然，这个协议需要两边都支持。在 Linux下，可以通过tcp_sack参数打开这个功能（Linux 2.4后默认打开）。</p>
 <p>这里还需要注意一个问题——接收方Reneging，所谓Reneging的意思就是接收方有权把已经报给发送端SACK里的数据给丢了。这样干是不被鼓励的，因为这个事会把问题复杂化了，但是，接收方这么做可能会有些极端情况，比如要把内存给别的更重要的东西。所以，发送方也不能完全依赖SACK，还是要依赖ACK，并维护Time-Out，如果后续的ACK没有增长，那么还是要把SACK的东西重传，另外，接收端这边永远不能把SACK的包标记为Ack。</p>
-<p>注意：SACK会消费发送方的资源，试想，如果一个攻击者给数据发送方发一堆SACK的选项，这会导致发送方开始要重传甚至遍历已经发出的数据，这会消耗很多发送端的资源。详细的东西请参看《<a href="http://www.ibm.com/developerworks/cn/linux/l-tcp-sack/" target="_blank" rel="external">TCP SACK的性能权衡</a>》</p>
-<h2 id="Duplicate-SACK-–-重复收到数据的问题"><a href="#Duplicate-SACK-–-重复收到数据的问题" class="headerlink" title="Duplicate SACK – 重复收到数据的问题"></a>Duplicate SACK – 重复收到数据的问题</h2><p>Duplicate SACK又称D-SACK，其主要使用了SACK来告诉发送方有哪些数据被重复接收了。<a href="http://www.ietf.org/rfc/rfc2883.txt" target="_blank" rel="external">RFC-2883</a> 里有详细描述和示例。下面举几个例子（来源于<a href="http://www.ietf.org/rfc/rfc2883.txt" target="_blank" rel="external">RFC-2883</a>）</p>
+<p>注意：SACK会消费发送方的资源，试想，如果一个攻击者给数据发送方发一堆SACK的选项，这会导致发送方开始要重传甚至遍历已经发出的数据，这会消耗很多发送端的资源。详细的东西请参看《<a href="http://www.ibm.com/developerworks/cn/linux/l-tcp-sack/" target="_blank" rel="noopener">TCP SACK的性能权衡</a>》</p>
+<h2 id="Duplicate-SACK-–-重复收到数据的问题"><a href="#Duplicate-SACK-–-重复收到数据的问题" class="headerlink" title="Duplicate SACK – 重复收到数据的问题"></a>Duplicate SACK – 重复收到数据的问题</h2><p>Duplicate SACK又称D-SACK，其主要使用了SACK来告诉发送方有哪些数据被重复接收了。<a href="http://www.ietf.org/rfc/rfc2883.txt" target="_blank" rel="noopener">RFC-2883</a> 里有详细描述和示例。下面举几个例子（来源于<a href="http://www.ietf.org/rfc/rfc2883.txt" target="_blank" rel="noopener">RFC-2883</a>）</p>
 <p>D-SACK使用了SACK的第一个段来做标志，</p>
 <ul>
 <li>如果SACK的第一个段的范围被ACK所覆盖，那么就是D-SACK</li>
 <li>如果SACK的第一个段的范围被SACK的第二个段覆盖，那么就是D-SACK</li>
 </ul>
-<h3 id="示例一：ACK丢包"><a href="#示例一：ACK丢包" class="headerlink" title="示例一：ACK丢包"></a>示例一：ACK丢包</h3><p>下面的示例中，丢了两个ACK，所以，发送端重传了第一个数据包（3000-3499），于是接收端发现重复收到，于是回了一个SACK=3000-3500，因为ACK都到了4000意味着收到了4000之前的所有数据，所以这个SACK就是D-SACK——旨在告诉发送端我收到了重复的数据，而且我们的发送端还知道，数据包没有丢，丢的是ACK包。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Transmitted  Received    ACK Sent</div><div class="line">Segment      Segment     (Including SACK Blocks)</div><div class="line"> </div><div class="line">3000-3499    3000-3499   3500 (ACK dropped)</div><div class="line">3500-3999    3500-3999   4000 (ACK dropped)</div><div class="line">3000-3499    3000-3499   4000, SACK=3000-3500</div><div class="line">                                    ---------</div></pre></td></tr></table></figure></p>
+<h3 id="示例一：ACK丢包"><a href="#示例一：ACK丢包" class="headerlink" title="示例一：ACK丢包"></a>示例一：ACK丢包</h3><p>下面的示例中，丢了两个ACK，所以，发送端重传了第一个数据包（3000-3499），于是接收端发现重复收到，于是回了一个SACK=3000-3500，因为ACK都到了4000意味着收到了4000之前的所有数据，所以这个SACK就是D-SACK——旨在告诉发送端我收到了重复的数据，而且我们的发送端还知道，数据包没有丢，丢的是ACK包。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Transmitted  Received    ACK Sent</span><br><span class="line">Segment      Segment     (Including SACK Blocks)</span><br><span class="line"> </span><br><span class="line">3000-3499    3000-3499   3500 (ACK dropped)</span><br><span class="line">3500-3999    3500-3999   4000 (ACK dropped)</span><br><span class="line">3000-3499    3000-3499   4000, SACK=3000-3500</span><br><span class="line">                                    ---------</span><br></pre></td></tr></table></figure></p>
 <h3 id="示例二，网络延误"><a href="#示例二，网络延误" class="headerlink" title="示例二，网络延误"></a>示例二，网络延误</h3><p>下面的示例中，网络包（1000-1499）被网络给延误了，导致发送方没有收到ACK，而后面到达的三个包触发了“Fast Retransmit算法”，所以重传，但重传时，被延误的包又到了，所以，回了一个SACK=1000-1500，因为ACK已到了3000，所以，这个SACK是D-SACK——标识收到了重复的包。</p>
-<p>这个案例下，发送端知道之前因为“Fast Retransmit算法”触发的重传不是因为发出去的包丢了，也不是因为回应的ACK包丢了，而是因为网络延时了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Transmitted    Received    ACK Sent</div><div class="line">Segment        Segment     (Including SACK Blocks)</div><div class="line"> </div><div class="line">500-999        500-999     1000</div><div class="line">1000-1499      (delayed)</div><div class="line">1500-1999      1500-1999   1000, SACK=1500-2000</div><div class="line">2000-2499      2000-2499   1000, SACK=1500-2500</div><div class="line">2500-2999      2500-2999   1000, SACK=1500-3000</div><div class="line">1000-1499      1000-1499   3000</div><div class="line">               1000-1499   3000, SACK=1000-1500</div><div class="line">                                      ---------</div></pre></td></tr></table></figure></p>
+<p>这个案例下，发送端知道之前因为“Fast Retransmit算法”触发的重传不是因为发出去的包丢了，也不是因为回应的ACK包丢了，而是因为网络延时了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Transmitted    Received    ACK Sent</span><br><span class="line">Segment        Segment     (Including SACK Blocks)</span><br><span class="line"> </span><br><span class="line">500-999        500-999     1000</span><br><span class="line">1000-1499      (delayed)</span><br><span class="line">1500-1999      1500-1999   1000, SACK=1500-2000</span><br><span class="line">2000-2499      2000-2499   1000, SACK=1500-2500</span><br><span class="line">2500-2999      2500-2999   1000, SACK=1500-3000</span><br><span class="line">1000-1499      1000-1499   3000</span><br><span class="line">               1000-1499   3000, SACK=1000-1500</span><br><span class="line">                                      ---------</span><br></pre></td></tr></table></figure></p>
 <p>可见，引入了D-SACK，有这么几个好处：</p>
 <ol>
 <li>可以让发送方知道，是发出去的包丢了，还是回来的ACK包丢了。</li>
@@ -533,7 +534,7 @@
 <li>设短了，会导致可能并没有丢就重发。于是重发的就快，会增加网络拥塞，导致更多的超时，更多的超时导致更多的重发。</li>
 </ul>
 <p>而且，这个超时时间在不同的网络的情况下，根本没有办法设置一个死的值。只能动态地设置。 为了动态地设置，TCP引入了RTT——Round Trip Time，也就是一个数据包从发出去到回来的时间。这样发送端就大约知道需要多少的时间，从而可以方便地设置Timeout——RTO（Retransmission TimeOut），以让我们的重传机制更高效。 听起来似乎很简单，好像就是在发送端发包时记下t0，然后接收端再把这个ack回来时再记一个t1，于是RTT = t1 – t0。没那么简单，这只是一个采样，不能代表普遍情况。</p>
-<h2 id="经典算法"><a href="#经典算法" class="headerlink" title="经典算法"></a>经典算法</h2><p><a href="http://tools.ietf.org/html/rfc793" target="_blank" rel="external">RFC793</a>中定义的经典算法是这样的：</p>
+<h2 id="经典算法"><a href="#经典算法" class="headerlink" title="经典算法"></a>经典算法</h2><p><a href="http://tools.ietf.org/html/rfc793" target="_blank" rel="noopener">RFC793</a>中定义的经典算法是这样的：</p>
 <ol>
 <li>首先，先采样RTT，记下最近好几次的RTT值。</li>
 <li>然后做平滑计算SRTT（ Smoothed RTT）。公式为：（其中的 α 取值在0.8 到 0.9之间，这个算法英文叫Exponential weighted moving average，中文叫：加权移动平均）<br>SRTT = ( α <em> SRTT ) + ((1- α) </em> RTT)</li>
@@ -551,9 +552,9 @@
 <li>情况（a）是ack没回来，所以重传。如果你计算第一次发送和ACK的时间，那么，明显算大了。</li>
 <li>情况（b）是ack回来慢了，但是导致了重传，但刚重传不一会儿，之前ACK就回来了。如果你是算重传的时间和ACK回来的时间的差，就会算短了。<br><a href="http://idiotsky.me/images1/tcp-something-9.jpg"><img src="http://idiotsky.me/images1/tcp-something-9.jpg" alt=""></a></li>
 </ul>
-<p>所以1987年的时候，搞了一个叫<a href="http://en.wikipedia.org/wiki/Karn&#39;s_Algorithm" target="_blank" rel="external">Karn / Partridge Algorithm</a>，这个算法的最大特点是——<strong>忽略重传，不把重传的RTT做采样</strong>（你看，你不需要去解决不存在的问题）。</p>
+<p>所以1987年的时候，搞了一个叫<a href="http://en.wikipedia.org/wiki/Karn&#39;s_Algorithm" target="_blank" rel="noopener">Karn / Partridge Algorithm</a>，这个算法的最大特点是——<strong>忽略重传，不把重传的RTT做采样</strong>（你看，你不需要去解决不存在的问题）。</p>
 <p>但是，这样一来，又会引发一个大BUG——<strong>如果在某一时间，网络闪动，突然变慢了，产生了比较大的延时，这个延时导致要重转所有的包（因为之前的RTO很小），于是，因为重转的不算，所以，RTO就不会被更新，这是一个灾难</strong>。 于是Karn算法用了一个取巧的方式——只要一发生重传，就对现有的RTO值翻倍（这就是所谓的 Exponential backoff），很明显，这种死规矩对于一个需要估计比较准确的RTT也不靠谱。</p>
-<h2 id="Jacobson-Karels-算法"><a href="#Jacobson-Karels-算法" class="headerlink" title="Jacobson / Karels 算法"></a>Jacobson / Karels 算法</h2><p>前面两种算法用的都是“加权移动平均”，这种方法最大的毛病就是如果RTT有一个大的波动的话，很难被发现，因为被平滑掉了。所以，1988年，又有人推出来了一个新的算法，这个算法叫Jacobson / Karels Algorithm（参看<a href="http://tools.ietf.org/html/rfc6298" target="_blank" rel="external">RFC6289</a>）。这个算法引入了最新的RTT的采样和平滑过的SRTT的差距做因子来计算。 公式如下：（其中的DevRTT是Deviation RTT的意思）<br>SRTT = SRTT + α (RTT – SRTT)  —— 计算平滑RTT</p>
+<h2 id="Jacobson-Karels-算法"><a href="#Jacobson-Karels-算法" class="headerlink" title="Jacobson / Karels 算法"></a>Jacobson / Karels 算法</h2><p>前面两种算法用的都是“加权移动平均”，这种方法最大的毛病就是如果RTT有一个大的波动的话，很难被发现，因为被平滑掉了。所以，1988年，又有人推出来了一个新的算法，这个算法叫Jacobson / Karels Algorithm（参看<a href="http://tools.ietf.org/html/rfc6298" target="_blank" rel="noopener">RFC6289</a>）。这个算法引入了最新的RTT的采样和平滑过的SRTT的差距做因子来计算。 公式如下：（其中的DevRTT是Deviation RTT的意思）<br>SRTT = SRTT + α (RTT – SRTT)  —— 计算平滑RTT</p>
 <p>DevRTT = (1-β)*DevRTT + β*(|RTT-SRTT|) ——计算平滑RTT和真实的差距（加权移动平均）</p>
 <p>RTO= µ <em> SRTT + ∂ </em>DevRTT —— 神一样的公式</p>
 <p>（其中：在Linux下，α = 0.125，β = 0.25， μ = 1，∂ = 4 ——这就是算法中的“调得一手好参数”，nobody knows why, it just works…） 最后的这个算法在被用在今天的TCP协议中（Linux的源代码在：tcp_rtt_estimator）。</p>
@@ -581,7 +582,7 @@
 <p>下面我们来看一个接受端控制发送端的图示：<br><a href="http://idiotsky.me/images1/tcp-something-13.png"><img src="http://idiotsky.me/images1/tcp-something-13.png" alt=""></a></p>
 <h2 id="Zero-Window"><a href="#Zero-Window" class="headerlink" title="Zero Window"></a>Zero Window</h2><p>上图，我们可以看到一个处理缓慢的Server（接收端）是怎么把Client（发送端）的TCP Sliding Window给降成0的。此时，你一定会问，如果Window变成0了，TCP会怎么样？是不是发送端就不发数据了？是的，发送端就不发数据了，你可以想像成“Window Closed”，那你一定还会问，如果发送端不发数据了，接收方一会儿Window size 可用了，怎么通知发送端呢？</p>
 <p>解决这个问题，TCP使用了Zero Window Probe技术，缩写为ZWP，也就是说，发送端在窗口变成0后，会发ZWP的包给接收方，让接收方来ack他的Window尺寸，一般这个值会设置成3次，第次大约30-60秒（不同的实现可能会不一样）。如果3次过后还是0的话，有的TCP实现就会发RST把链接断了。</p>
-<p><strong>注意</strong>：只要有等待的地方都可能出现DDoS攻击，Zero Window也不例外，一些攻击者会在和HTTP建好链发完GET请求后，就把Window设置为0，然后服务端就只能等待进行ZWP，于是攻击者会并发大量的这样的请求，把服务器端的资源耗尽。（关于这方面的攻击，大家可以移步看一下<a href="http://en.wikipedia.org/wiki/Sockstress" target="_blank" rel="external">Wikipedia的SockStress词条</a>）</p>
+<p><strong>注意</strong>：只要有等待的地方都可能出现DDoS攻击，Zero Window也不例外，一些攻击者会在和HTTP建好链发完GET请求后，就把Window设置为0，然后服务端就只能等待进行ZWP，于是攻击者会并发大量的这样的请求，把服务器端的资源耗尽。（关于这方面的攻击，大家可以移步看一下<a href="http://en.wikipedia.org/wiki/Sockstress" target="_blank" rel="noopener">Wikipedia的SockStress词条</a>）</p>
 <p>另外，Wireshark中，你可以使用tcp.analysis.zero_window来过滤包，然后使用右键菜单里的follow TCP stream，你可以看到ZeroWindowProbe及ZeroWindowProbeAck的包。</p>
 <h2 id="Silly-Window-Syndrome"><a href="#Silly-Window-Syndrome" class="headerlink" title="Silly Window Syndrome"></a>Silly Window Syndrome</h2><p>Silly Window Syndrome翻译成中文就是“糊涂窗口综合症”。正如你上面看到的一样，如果我们的接收方太忙了，来不及取走Receive Windows里的数据，那么，就会导致发送方越来越小。到最后，如果接收方腾出几个字节并告诉发送方现在有几个字节的window，而我们的发送方会义无反顾地发送这几个字节。</p>
 <p>要知道，我们的TCP+IP头有40个字节，为了几个字节，要达上这么大的开销，这太不经济了。</p>
@@ -592,12 +593,12 @@
 <li>如果这个问题是由Receiver端引起的，那么就会使用 David D Clark’s 方案。在receiver端，如果收到的数据导致window size小于某个值，可以直接ack(0)回sender，这样就把window给关闭了，也阻止了sender再发数据过来，等到receiver端处理了一些数据后windows size 大于等于了MSS，或者，receiver buffer有一半为空，就可以把window打开让send 发送数据过来。</li>
 <li>如果这个问题是由Sender端引起的，那么就会使用著名的 Nagle’s algorithm。这个算法的思路也是延时处理，他有两个主要的条件：1）要等到 Window Size&gt;=MSS 或是 Data Size &gt;=MSS，2）收到之前发送数据的ack回包，他才会发数据，否则就是在攒数据。</li>
 </ul>
-<p>另外，Nagle算法默认是打开的，所以，对于一些需要小包场景的程序——比如像telnet或ssh这样的交互性比较强的程序，你需要关闭这个算法。你可以在Socket设置TCP_NODELAY选项来关闭这个算法（关闭Nagle算法没有全局参数，需要根据每个应用自己的特点来关闭）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY, (<span class="keyword">char</span> *)&amp;value,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</div></pre></td></tr></table></figure></p>
+<p>另外，Nagle算法默认是打开的，所以，对于一些需要小包场景的程序——比如像telnet或ssh这样的交互性比较强的程序，你需要关闭这个算法。你可以在Socket设置TCP_NODELAY选项来关闭这个算法（关闭Nagle算法没有全局参数，需要根据每个应用自己的特点来关闭）<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY, (<span class="keyword">char</span> *)&amp;value,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br></pre></td></tr></table></figure></p>
 <p>另外，网上有些文章说TCP_CORK的socket option是也关闭Nagle算法，这不对。<strong>TCP_CORK其实是更新激进的Nagle算汉，完全禁止小包发送，而Nagle算法没有禁止小包发送，只是禁止了大量的小包发送</strong>。最好不要两个选项都设置。</p>
 <h1 id="TCP的拥塞处理-–-Congestion-Handling"><a href="#TCP的拥塞处理-–-Congestion-Handling" class="headerlink" title="TCP的拥塞处理 – Congestion Handling"></a>TCP的拥塞处理 – Congestion Handling</h1><p>上面我们知道了，TCP通过Sliding Window来做流控（Flow Control），但是TCP觉得这还不够，因为Sliding Window需要依赖于连接的发送端和接收端，其并不知道网络中间发生了什么。TCP的设计者觉得，一个伟大而牛逼的协议仅仅做到流控并不够，因为流控只是网络模型4层以上的事，TCP的还应该更聪明地知道整个网络上的事。</p>
 <p>具体一点，我们知道TCP通过一个timer采样了RTT并计算RTO，但是，<strong>如果网络上的延时突然增加，那么，TCP对这个事做出的应对只有重传数据，但是，重传会导致网络的负担更重，于是会导致更大的延迟以及更多的丢包，于是，这个情况就会进入恶性循环被不断地放大。试想一下，如果一个网络内有成千上万的TCP连接都这么行事，那么马上就会形成“网络风暴”，TCP这个协议就会拖垮整个网络</strong>。这是一个灾难。</p>
 <p>所以，TCP不能忽略网络上发生的事情，而无脑地一个劲地重发数据，对网络造成更大的伤害。对此TCP的设计理念是：<strong>TCP不是一个自私的协议，当拥塞发生的时候，要做自我牺牲。就像交通阻塞一样，每个车都应该把路让出来，而不要再去抢路了</strong>。</p>
-<p>关于拥塞控制的论文请参看《<a href="http://ee.lbl.gov/papers/congavoid.pdf" target="_blank" rel="external">Congestion Avoidance and Control</a> 》(PDF)</p>
+<p>关于拥塞控制的论文请参看《<a href="http://ee.lbl.gov/papers/congavoid.pdf" target="_blank" rel="noopener">Congestion Avoidance and Control</a> 》(PDF)</p>
 <p>拥塞控制主要是四个算法：<strong>1）慢启动，2）拥塞避免，3）拥塞发生，4）快速恢复</strong>。这四个算法不是一天都搞出来的，这个四算法的发展经历了很多时间，到今天都还在优化中。 备注:</p>
 <ul>
 <li>1988年，TCP-Tahoe 提出了1）慢启动，2）拥塞避免，3）拥塞发生时的快速重传</li>
@@ -612,7 +613,7 @@
 <li>还有一个ssthresh（slow start threshold），是一个上限，当cwnd &gt;= ssthresh时，就会进入“拥塞避免算法”（后面会说这个算法）</li>
 </ol>
 <p>所以，我们可以看到，如果网速很快的话，ACK也会返回得快，RTT也会短，那么，这个慢启动就一点也不慢。下图说明了这个过程。<br><a href="http://idiotsky.me/images1/tcp-something-14.jpg"><img src="http://idiotsky.me/images1/tcp-something-14.jpg" alt=""></a></p>
-<p>这里，我需要提一下的是一篇Google的论文《<a href="http://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/36640.pdf" target="_blank" rel="external">An Argument for Increasing TCP’s Initial Congestion Window</a>》Linux 3.0后采用了这篇论文的建议——把cwnd 初始化成了 10个MSS。 而Linux 3.0以前，比如2.6，Linux采用了<a href="http://www.rfc-editor.org/rfc/rfc3390.txt" target="_blank" rel="external">RFC3390</a>，cwnd是跟MSS的值来变的，如果MSS&lt; 1095，则cwnd = 4；如果MSS&gt;2190，则cwnd=2；其它情况下，则是3。</p>
+<p>这里，我需要提一下的是一篇Google的论文《<a href="http://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/36640.pdf" target="_blank" rel="noopener">An Argument for Increasing TCP’s Initial Congestion Window</a>》Linux 3.0后采用了这篇论文的建议——把cwnd 初始化成了 10个MSS。 而Linux 3.0以前，比如2.6，Linux采用了<a href="http://www.rfc-editor.org/rfc/rfc3390.txt" target="_blank" rel="noopener">RFC3390</a>，cwnd是跟MSS的值来变的，如果MSS&lt; 1095，则cwnd = 4；如果MSS&gt;2190，则cwnd=2；其它情况下，则是3。</p>
 <h2 id="拥塞避免算法-–-Congestion-Avoidance"><a href="#拥塞避免算法-–-Congestion-Avoidance" class="headerlink" title="拥塞避免算法 – Congestion Avoidance"></a>拥塞避免算法 – Congestion Avoidance</h2><p>前面说过，还有一个ssthresh（slow start threshold），是一个上限，当cwnd &gt;= ssthresh时，就会进入“拥塞避免算法”。一般来说ssthresh的值是65535，单位是字节，当cwnd达到这个值时后，算法如下：</p>
 <ol>
 <li>收到一个ACK时，cwnd = cwnd + 1/cwnd</li>
@@ -639,7 +640,7 @@
 </li>
 </ol>
 <p>上面我们可以看到RTO超时后，sshthresh会变成cwnd的一半，这意味着，如果cwnd&lt;=sshthresh时出现的丢包，那么TCP的sshthresh就会减了一半，然后等cwnd又很快地以指数级增涨爬到这个地方时，就会成慢慢的线性增涨。我们可以看到，TCP是怎么通过这种强烈地震荡快速而小心得找到网站流量的平衡点的。</p>
-<h2 id="快速恢复算法-–-Fast-Recovery"><a href="#快速恢复算法-–-Fast-Recovery" class="headerlink" title="快速恢复算法 – Fast Recovery"></a>快速恢复算法 – Fast Recovery</h2><h3 id="TCP-Reno"><a href="#TCP-Reno" class="headerlink" title="TCP Reno"></a>TCP Reno</h3><p>这个算法定义在<a href="http://tools.ietf.org/html/rfc5681" target="_blank" rel="external">RFC5681</a>。快速重传和快速恢复算法一般同时使用。快速恢复算法是认为，你还有3个Duplicated Acks说明网络也不那么糟糕，所以没有必要像RTO超时那么强烈。 注意，正如前面所说，进入Fast Recovery之前，cwnd 和 sshthresh已被更新：</p>
+<h2 id="快速恢复算法-–-Fast-Recovery"><a href="#快速恢复算法-–-Fast-Recovery" class="headerlink" title="快速恢复算法 – Fast Recovery"></a>快速恢复算法 – Fast Recovery</h2><h3 id="TCP-Reno"><a href="#TCP-Reno" class="headerlink" title="TCP Reno"></a>TCP Reno</h3><p>这个算法定义在<a href="http://tools.ietf.org/html/rfc5681" target="_blank" rel="noopener">RFC5681</a>。快速重传和快速恢复算法一般同时使用。快速恢复算法是认为，你还有3个Duplicated Acks说明网络也不那么糟糕，所以没有必要像RTO超时那么强烈。 注意，正如前面所说，进入Fast Recovery之前，cwnd 和 sshthresh已被更新：</p>
 <ul>
 <li>cwnd = cwnd /2</li>
 <li>sshthresh = cwnd</li>
@@ -653,14 +654,14 @@
 </ul>
 <p>如果你仔细思考一下上面的这个算法，你就会知道，<strong>上面这个算法也有问题，那就是——它依赖于3个重复的Acks</strong>。注意，3个重复的Acks并不代表只丢了一个数据包，很有可能是丢了好多包。但这个算法只会重传一个，而剩下的那些包只能等到RTO超时，于是，进入了恶梦模式——超时一个窗口就减半一下，多个超时会超成TCP的传输速度呈级数下降，而且也不会触发Fast Recovery算法了。</p>
 <p>通常来说，正如我们前面所说的，SACK或D-SACK的方法可以让Fast Recovery或Sender在做决定时更聪明一些，但是并不是所有的TCP的实现都支持SACK（SACK需要两端都支持），所以，需要一个没有SACK的解决方案。而通过SACK进行拥塞控制的算法是FACK（后面会讲）</p>
-<h3 id="TCP-New-Reno"><a href="#TCP-New-Reno" class="headerlink" title="TCP New Reno"></a>TCP New Reno</h3><p>于是，1995年，TCP New Reno（参见 <a href="http://tools.ietf.org/html/rfc6582" target="_blank" rel="external">RFC 6582</a> ）算法提出来，主要就是在没有SACK的支持下改进Fast Recovery算法的——</p>
+<h3 id="TCP-New-Reno"><a href="#TCP-New-Reno" class="headerlink" title="TCP New Reno"></a>TCP New Reno</h3><p>于是，1995年，TCP New Reno（参见 <a href="http://tools.ietf.org/html/rfc6582" target="_blank" rel="noopener">RFC 6582</a> ）算法提出来，主要就是在没有SACK的支持下改进Fast Recovery算法的——</p>
 <ul>
 <li>当sender这边收到了3个Duplicated Acks，进入Fast Retransimit模式，开发重传重复Acks指示的那个包。如果只有这一个包丢了，那么，重传这个包后回来的Ack会把整个已经被sender传输出去的数据ack回来。如果没有的话，说明有多个包丢了。我们叫这个ACK为Partial ACK。</li>
 <li>一旦Sender这边发现了Partial ACK出现，那么，sender就可以推理出来有多个包被丢了，于是乎继续重传sliding window里未被ack的第一个包。直到再也收不到了Partial Ack，才真正结束Fast Recovery这个过程</li>
 </ul>
 <p>我们可以看到，这个“Fast Recovery的变更”是一个非常激进的玩法，他同时延长了Fast Retransmit和Fast Recovery的过程。</p>
 <h2 id="算法示意图"><a href="#算法示意图" class="headerlink" title="算法示意图"></a>算法示意图</h2><p>下面我们来看一个简单的图示以同时看一下上面的各种算法的样子：<br><a href="http://idiotsky.me/images1/tcp-something-15.jpg"><img src="http://idiotsky.me/images1/tcp-something-15.jpg" alt=""></a></p>
-<h2 id="FACK算法"><a href="#FACK算法" class="headerlink" title="FACK算法"></a>FACK算法</h2><p>FACK全称Forward Acknowledgment 算法，论文地址在这里（PDF）<a href="http://conferences.sigcomm.org/sigcomm/1996/papers/mathis.pdf" target="_blank" rel="external">Forward Acknowledgement: Refining TCP Congestion Control</a> 这个算法是其于SACK的，前面我们说过SACK是使用了TCP扩展字段Ack了有哪些数据收到，哪些数据没有收到，他比Fast Retransmit的3 个duplicated acks好处在于，前者只知道有包丢了，不知道是一个还是多个，而SACK可以准确的知道有哪些包丢了。 所以，SACK可以让发送端这边在重传过程中，把那些丢掉的包重传，而不是一个一个的传，但这样的一来，如果重传的包数据比较多的话，又会导致本来就很忙的网络就更忙了。所以，FACK用来做重传过程中的拥塞流控。</p>
+<h2 id="FACK算法"><a href="#FACK算法" class="headerlink" title="FACK算法"></a>FACK算法</h2><p>FACK全称Forward Acknowledgment 算法，论文地址在这里（PDF）<a href="http://conferences.sigcomm.org/sigcomm/1996/papers/mathis.pdf" target="_blank" rel="noopener">Forward Acknowledgement: Refining TCP Congestion Control</a> 这个算法是其于SACK的，前面我们说过SACK是使用了TCP扩展字段Ack了有哪些数据收到，哪些数据没有收到，他比Fast Retransmit的3 个duplicated acks好处在于，前者只知道有包丢了，不知道是一个还是多个，而SACK可以准确的知道有哪些包丢了。 所以，SACK可以让发送端这边在重传过程中，把那些丢掉的包重传，而不是一个一个的传，但这样的一来，如果重传的包数据比较多的话，又会导致本来就很忙的网络就更忙了。所以，FACK用来做重传过程中的拥塞流控。</p>
 <ul>
 <li>这个算法会把SACK中最大的Sequence Number 保存在snd.fack这个变量中，snd.fack的更新由ack带秋，如果网络一切安好则和snd.una一样（snd.una就是还没有收到ack的地方，也就是前面sliding window里的category #2的第一个地方）</li>
 <li>然后定义一个awnd = snd.nxt – snd.fack（snd.nxt指向发送端sliding window中正在要被发送的地方——前面sliding windows图示的category#3第一个位置），这样awnd的意思就是在网络上的数据。（所谓awnd意为：actual quantity of data outstanding in the network）</li>
@@ -669,23 +670,23 @@
 </ul>
 <p>我们可以看到如果没有FACK在，那么在丢包比较多的情况下，原来保守的算法会低估了需要使用的window的大小，而需要几个RTT的时间才会完成恢复，而FACK会比较激进地来干这事。 但是，FACK如果在一个网络包会被 reordering的网络里会有很大的问题。</p>
 <h1 id="其它拥塞控制算法简介"><a href="#其它拥塞控制算法简介" class="headerlink" title="其它拥塞控制算法简介"></a>其它拥塞控制算法简介</h1><h2 id="TCP-Vegas-拥塞控制算法"><a href="#TCP-Vegas-拥塞控制算法" class="headerlink" title="TCP Vegas 拥塞控制算法"></a>TCP Vegas 拥塞控制算法</h2><p>这个算法1994年被提出，它主要对TCP Reno 做了些修改。这个算法通过对RTT的非常重的监控来计算一个基准RTT。然后通过这个基准RTT来估计当前的网络实际带宽，如果实际带宽比我们的期望的带宽要小或是要多的活，那么就开始线性地减少或增加cwnd的大小。如果这个计算出来的RTT大于了Timeout后，那么，不等ack超时就直接重传。（Vegas 的核心思想是用RTT的值来影响拥塞窗口，而不是通过丢包） 这个算法的论文是《TCP Vegas: End to End Congestion Avoidance on a Global Internet》这篇论文给了Vegas和 New Reno的对比：<br><a href="http://idiotsky.me/images1/tcp-something-16.jpg"><img src="http://idiotsky.me/images1/tcp-something-16.jpg" alt=""></a></p>
-<p>关于这个算法实现，你可以参看Linux源码：<a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_vegas.h" target="_blank" rel="external">/net/ipv4/tcp_vegas.h</a>， <a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_vegas.c" target="_blank" rel="external">/net/ipv4/tcp_vegas.c</a></p>
-<h2 id="HSTCP-High-Speed-TCP-算法"><a href="#HSTCP-High-Speed-TCP-算法" class="headerlink" title="HSTCP(High Speed TCP) 算法"></a>HSTCP(High Speed TCP) 算法</h2><p>这个算法来自<a href="http://tools.ietf.org/html/rfc3649" target="_blank" rel="external">RFC 3649</a>（<a href="http://en.wikipedia.org/wiki/HSTCP" target="_blank" rel="external">Wikipedia词条</a>）。其对最基础的算法进行了更改，他使得Congestion Window涨得快，减得慢。其中：</p>
+<p>关于这个算法实现，你可以参看Linux源码：<a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_vegas.h" target="_blank" rel="noopener">/net/ipv4/tcp_vegas.h</a>， <a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_vegas.c" target="_blank" rel="noopener">/net/ipv4/tcp_vegas.c</a></p>
+<h2 id="HSTCP-High-Speed-TCP-算法"><a href="#HSTCP-High-Speed-TCP-算法" class="headerlink" title="HSTCP(High Speed TCP) 算法"></a>HSTCP(High Speed TCP) 算法</h2><p>这个算法来自<a href="http://tools.ietf.org/html/rfc3649" target="_blank" rel="noopener">RFC 3649</a>（<a href="http://en.wikipedia.org/wiki/HSTCP" target="_blank" rel="noopener">Wikipedia词条</a>）。其对最基础的算法进行了更改，他使得Congestion Window涨得快，减得慢。其中：</p>
 <ul>
 <li>拥塞避免时的窗口增长方式： cwnd = cwnd + α(cwnd) / cwnd</li>
 <li>丢包后窗口下降方式：cwnd = (1- β(cwnd))*cwnd</li>
 </ul>
-<p>注：α(cwnd)和β(cwnd)都是函数，如果你要让他们和标准的TCP一样，那么让α(cwnd)=1，β(cwnd)=0.5就可以了。 对于α(cwnd)和β(cwnd)的值是个动态的变换的东西。 关于这个算法的实现，你可以参看Linux源码：<a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_highspeed.c" target="_blank" rel="external">/net/ipv4/tcp_highspeed.c</a></p>
-<h2 id="TCP-BIC-算法"><a href="#TCP-BIC-算法" class="headerlink" title="TCP BIC 算法"></a>TCP BIC 算法</h2><p>2004年，产内出BIC算法。现在你还可以查得到相关的新闻《Google：<a href="https://www.google.com/search?lr=lang_zh-CN%7Clang_zh-TW&amp;newwindow=1&amp;biw=1366&amp;bih=597&amp;tbs=lr%3Alang_1zh-CN%7Clang_1zh-TW&amp;q=美科学家研发BIC-TCP协议+速度是DSL六千倍&amp;oq=美科学家研发BIC-TCP协议+速度是DSL六千倍" target="_blank" rel="external">美科学家研发BIC-TCP协议 速度是DSL六千倍</a>》 BIC全称<a href="http://research.csc.ncsu.edu/netsrv/?q=content/bic-and-cubic" target="_blank" rel="external">Binary Increase Congestion control</a>，在Linux 2.6.8中是默认拥塞控制算法。BIC的发明者发这么多的拥塞控制算法都在努力找一个合适的cwnd – Congestion Window，而且BIC-TCP的提出者们看穿了事情的本质，其实这就是一个搜索的过程，所以BIC这个算法主要用的是Binary Search——二分查找来干这个事。 关于这个算法实现，你可以参看Linux源码：<a href="http://research.csc.ncsu.edu/netsrv/?q=content/bic-and-cubic" target="_blank" rel="external">/net/ipv4/tcp_bic.c</a></p>
-<h2 id="TCP-WestWood算法"><a href="#TCP-WestWood算法" class="headerlink" title="TCP WestWood算法"></a>TCP WestWood算法</h2><p>westwood采用和Reno相同的慢启动算法、拥塞避免算法。westwood的主要改进方面：在发送端做带宽估计，当探测到丢包时，根据带宽值来设置拥塞窗口、慢启动阈值。 那么，这个算法是怎么测量带宽的？每个RTT时间，会测量一次带宽，测量带宽的公式很简单，就是这段RTT内成功被ack了多少字节。因为，这个带宽和用RTT计算RTO一样，也是需要从每个样本来平滑到一个值的——也是用一个加权移平均的公式。 另外，我们知道，如果一个网络的带宽是每秒可以发送X个字节，而RTT是一个数据发出去后确认需要的时候，所以，X <em> RTT应该是我们缓冲区大小。所以，在这个算法中，ssthresh的值就是est_BD </em> min-RTT(最小的RTT值)，如果丢包是Duplicated ACKs引起的，那么如果cwnd &gt; ssthresh，则 cwin = ssthresh。如果是RTO引起的，cwnd = 1，进入慢启动。   关于这个算法实现，你可以参看Linux源码： <a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_westwood.c" target="_blank" rel="external">/net/ipv4/tcp_westwood.c</a></p>
-<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p>更多的算法，你可以从Wikipedia的 <a href="http://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm" target="_blank" rel="external">TCP Congestion Avoidance Algorithm</a>词条中找到相关的线索</p>
+<p>注：α(cwnd)和β(cwnd)都是函数，如果你要让他们和标准的TCP一样，那么让α(cwnd)=1，β(cwnd)=0.5就可以了。 对于α(cwnd)和β(cwnd)的值是个动态的变换的东西。 关于这个算法的实现，你可以参看Linux源码：<a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_highspeed.c" target="_blank" rel="noopener">/net/ipv4/tcp_highspeed.c</a></p>
+<h2 id="TCP-BIC-算法"><a href="#TCP-BIC-算法" class="headerlink" title="TCP BIC 算法"></a>TCP BIC 算法</h2><p>2004年，产内出BIC算法。现在你还可以查得到相关的新闻《Google：<a href="https://www.google.com/search?lr=lang_zh-CN%7Clang_zh-TW&amp;newwindow=1&amp;biw=1366&amp;bih=597&amp;tbs=lr%3Alang_1zh-CN%7Clang_1zh-TW&amp;q=美科学家研发BIC-TCP协议+速度是DSL六千倍&amp;oq=美科学家研发BIC-TCP协议+速度是DSL六千倍" target="_blank" rel="noopener">美科学家研发BIC-TCP协议 速度是DSL六千倍</a>》 BIC全称<a href="http://research.csc.ncsu.edu/netsrv/?q=content/bic-and-cubic" target="_blank" rel="noopener">Binary Increase Congestion control</a>，在Linux 2.6.8中是默认拥塞控制算法。BIC的发明者发这么多的拥塞控制算法都在努力找一个合适的cwnd – Congestion Window，而且BIC-TCP的提出者们看穿了事情的本质，其实这就是一个搜索的过程，所以BIC这个算法主要用的是Binary Search——二分查找来干这个事。 关于这个算法实现，你可以参看Linux源码：<a href="http://research.csc.ncsu.edu/netsrv/?q=content/bic-and-cubic" target="_blank" rel="noopener">/net/ipv4/tcp_bic.c</a></p>
+<h2 id="TCP-WestWood算法"><a href="#TCP-WestWood算法" class="headerlink" title="TCP WestWood算法"></a>TCP WestWood算法</h2><p>westwood采用和Reno相同的慢启动算法、拥塞避免算法。westwood的主要改进方面：在发送端做带宽估计，当探测到丢包时，根据带宽值来设置拥塞窗口、慢启动阈值。 那么，这个算法是怎么测量带宽的？每个RTT时间，会测量一次带宽，测量带宽的公式很简单，就是这段RTT内成功被ack了多少字节。因为，这个带宽和用RTT计算RTO一样，也是需要从每个样本来平滑到一个值的——也是用一个加权移平均的公式。 另外，我们知道，如果一个网络的带宽是每秒可以发送X个字节，而RTT是一个数据发出去后确认需要的时候，所以，X <em> RTT应该是我们缓冲区大小。所以，在这个算法中，ssthresh的值就是est_BD </em> min-RTT(最小的RTT值)，如果丢包是Duplicated ACKs引起的，那么如果cwnd &gt; ssthresh，则 cwin = ssthresh。如果是RTO引起的，cwnd = 1，进入慢启动。   关于这个算法实现，你可以参看Linux源码： <a href="http://lxr.free-electrons.com/source/net/ipv4/tcp_westwood.c" target="_blank" rel="noopener">/net/ipv4/tcp_westwood.c</a></p>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p>更多的算法，你可以从Wikipedia的 <a href="http://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm" target="_blank" rel="noopener">TCP Congestion Avoidance Algorithm</a>词条中找到相关的线索</p>
 <h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>好了，到这里我想可以结束了，TCP发展到今天，里面的东西可以写上好几本书。本文主要目的，还是把你带入这些古典的基础技术和知识中，希望本文能让你了解TCP，更希望本文能让你开始有学习这些基础或底层知识的兴趣和信心。</p>
 <p>当然，TCP东西太多了，不同的人可能有不同的理解，而且本文可能也会有一些荒谬之言甚至错误，还希望得到您的反馈和批评。</p>
 <p>（全文完）</p>
 <blockquote>
 <p>好长的文章</p>
 </blockquote>
-<p>from <a href="https://coolshell.cn" target="_blank" rel="external">酷壳</a></p>
+<p>from <a href="https://coolshell.cn" target="_blank" rel="noopener">酷壳</a></p>
 
       
     </div>
@@ -805,7 +806,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -827,7 +828,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

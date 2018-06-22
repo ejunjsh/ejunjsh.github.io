@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2017/07/20/raspberry-nas/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="准备 raspberry pi 3 硬盘（格式化过ext4的） 连接raspberry用的终端">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images/nas-screenshot.png">
 <meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
 <meta name="twitter:card" content="summary">
@@ -440,18 +441,18 @@
 <li>连接raspberry用的终端</li>
 </ul>
 <a id="more"></a>
-<h1 id="安装samba"><a href="#安装samba" class="headerlink" title="安装samba"></a>安装samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install samba samba-common-bin</div></pre></td></tr></table></figure>
-<h1 id="配置samba"><a href="#配置samba" class="headerlink" title="配置samba"></a>配置samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.back</div><div class="line">sudo vim /etc/samba/smb.conf</div></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 在末尾加入如下内容</span></div><div class="line"><span class="comment"># 分享名称</span></div><div class="line">[MyNAS]</div><div class="line"><span class="comment"># 说明信息</span></div><div class="line">comment = NAS Storage</div><div class="line"><span class="comment"># 可以访问的用户</span></div><div class="line">valid users = pi,root</div><div class="line"><span class="comment"># 共享文件的路径,raspberry pi 会自动将连接到其上的外接存储设备挂载到/media/pi/目录下。</span></div><div class="line">path = /media/pi/</div><div class="line"><span class="comment"># 可被其他人看到资源名称（非内容）</span></div><div class="line">browseable = yes</div><div class="line"><span class="comment"># 可写</span></div><div class="line">writable = yes</div><div class="line"><span class="comment"># 新建文件的权限为 664</span></div><div class="line">create mask = 0664</div><div class="line"><span class="comment"># 新建目录的权限为 775</span></div><div class="line">directory mask = 0775</div></pre></td></tr></table></figure>
-<p>可以把配置文件中你不需要的分享名称删除，例如 [homes], [printers] 等。<br>测试配置文件是否有错误，根据提示做相应修改<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">testparm</div></pre></td></tr></table></figure></p>
-<p>添加登陆账户并创建密码，必须是 linux 已存在的用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo smbpasswd -a pi</div></pre></td></tr></table></figure></p>
-<p>重启 samba 服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo /etc/init.d/samba restart</div></pre></td></tr></table></figure></p>
+<h1 id="安装samba"><a href="#安装samba" class="headerlink" title="安装samba"></a>安装samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install samba samba-common-bin</span><br></pre></td></tr></table></figure>
+<h1 id="配置samba"><a href="#配置samba" class="headerlink" title="配置samba"></a>配置samba</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.back</span><br><span class="line">sudo vim /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在末尾加入如下内容</span></span><br><span class="line"><span class="comment"># 分享名称</span></span><br><span class="line">[MyNAS]</span><br><span class="line"><span class="comment"># 说明信息</span></span><br><span class="line">comment = NAS Storage</span><br><span class="line"><span class="comment"># 可以访问的用户</span></span><br><span class="line">valid users = pi,root</span><br><span class="line"><span class="comment"># 共享文件的路径,raspberry pi 会自动将连接到其上的外接存储设备挂载到/media/pi/目录下。</span></span><br><span class="line">path = /media/pi/</span><br><span class="line"><span class="comment"># 可被其他人看到资源名称（非内容）</span></span><br><span class="line">browseable = yes</span><br><span class="line"><span class="comment"># 可写</span></span><br><span class="line">writable = yes</span><br><span class="line"><span class="comment"># 新建文件的权限为 664</span></span><br><span class="line">create mask = 0664</span><br><span class="line"><span class="comment"># 新建目录的权限为 775</span></span><br><span class="line">directory mask = 0775</span><br></pre></td></tr></table></figure>
+<p>可以把配置文件中你不需要的分享名称删除，例如 [homes], [printers] 等。<br>测试配置文件是否有错误，根据提示做相应修改<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">testparm</span><br></pre></td></tr></table></figure></p>
+<p>添加登陆账户并创建密码，必须是 linux 已存在的用户<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo smbpasswd -a pi</span><br></pre></td></tr></table></figure></p>
+<p>重启 samba 服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /etc/init.d/samba restart</span><br></pre></td></tr></table></figure></p>
 <h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>一般树莓派跟你的WiFi相连的话，你的网络就能看到跟上面配置一样的分享名称，如mac上面这样的显示：<br><a href="http://idiotsky.me/images/nas-screenshot.png"><img src="http://idiotsky.me/images/nas-screenshot.png" alt=""></a><br>如果显示没权限，可以断开连接，用你上面添加的账号登录。</p>
 <h1 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h1><ul>
 <li>基本上不是ext4格式的硬盘都不用上传到NAS上了，因为树莓对其他格式的硬盘只有读权限。</li>
 <li>如果是ext4格式，也不要高兴，那上传速度可以😭的</li>
 <li><p>如果是其他格式的话，上面都说只能读，一般情况拷进硬盘的片片是可以用pi用户读的，如果遇到连pi用户都没有读权限的话，而且登上树莓派进到硬盘里面强制改权限都是改不了的。所以，老老实实加个root用户吧。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo smbpasswd -a root</div></pre></td></tr></table></figure>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo smbpasswd -a root</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>用root用户连上去基本没有不能读的。但是还是不能写。老老实实还是拔硬盘到电脑烤吧。</p>
 </li>
@@ -579,7 +580,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -601,7 +602,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -110,6 +110,7 @@
 <meta property="og:url" content="http://idiotsky.me/2014/07/19/java-cglib/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="经常用cglib来创建代理类来实现aop的功能，可是，当想用反射来取得代理类所代理的类的注解的时候，却怎么也取不到。。。。">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-08-07T12:45:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用cglib生成的代理类取不到注解的问题">
@@ -436,7 +437,7 @@
 <p>经常用cglib来创建代理类来实现aop的功能，可是，当想用反射来取得代理类所代理的类的注解的时候，却怎么也取不到。。。。</p>
 </blockquote>
 <a id="more"></a>
-<p>然后搜了下stackoverflow，<a href="http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies" target="_blank" rel="external">http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies</a><br>用<code>@Inherited</code>,注解自己的注解（绕~~）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Inherited</span></div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</div><div class="line"><span class="meta">@Target</span>(ElementType.TYPE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然后搜了下stackoverflow，<a href="http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies" target="_blank" rel="noopener">http://stackoverflow.com/questions/1706751/retain-annotations-on-cglib-proxies</a><br>用<code>@Inherited</code>,注解自己的注解（绕~~）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>然后用这个注解注解你要代理的类，那样通过反射可以拿到被代理的注解。<br>原来CGLIB 返回的代理类是被代理的类的子类，加上这个标志就可以令子类继承这个注解，<code>@Inherited</code> 字面意思就是有继承的意思。</p>
 
       
@@ -548,7 +549,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -570,7 +571,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -109,6 +109,7 @@
 <meta property="og:url" content="http://idiotsky.me/page/5/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IdiotSky">
 <meta name="twitter:description" content="code freak">
@@ -343,322 +344,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/11/epoll-mechanism/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/11/epoll-mechanism/" itemprop="url">linux epoll原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-11T01:35:15+08:00">
-                11 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>epoll是Linux下的一种IO多路复用技术，可以非常高效的处理数以百万计的socket句柄。 </p>
-</blockquote>
-<p>先看看使用c封装的3个epoll系统调用：</p>
-<ul>
-<li><strong>int epoll_create(int size)</strong><br>  epoll_create建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。</li>
-<li><strong>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</strong><br>  epoll_ctl可以操作epoll_create创建的epoll，如将socket句柄加入到epoll中让其监控，或把epoll正在监控的某个socket句柄移出epoll。</li>
-<li><strong>int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout)</strong><br>  epoll_wait在调用时，在给定的timeout时间内，所监控的句柄中有事件发生时，就返回用户态的进程。</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/11/epoll-mechanism/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/10/openstack-install-glance/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/10/openstack-install-glance/" itemprop="url">openstack安装-glance</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-10T14:22:32+08:00">
-                10 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/openstack/" itemprop="url" rel="index">
-                    <span itemprop="name">openstack</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>glance提供镜像服务使用户能够发现，注册和检索虚拟机镜像。它提供了一个 REST API，可让您查询虚拟机镜像元数据并检索实际镜像。您可以存储镜像在各种位置（从简单的文件系统到像OpenStack Object Storage这样的对象存储系统）。<br>为了简单起见，这里只是教你如何配置镜像服务，并把镜像保存到controller节点的文件目录里面，此目录为/var/lib/glance/images/。<br>这一章还是在<code>controller</code>节点操作。。。</p>
-</blockquote>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><ul>
-<li><p>用<code>root</code>用户权限执行<code>mysql</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> mysql</span></div></pre></td></tr></table></figure>
-</li>
-<li><p>创建<code>glance</code>数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; CREATE DATABASE glance;</div></pre></td></tr></table></figure>
-</li>
-<li><p>赋予适合的权限给<code>glance</code>数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;localhost&apos; \</div><div class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;%&apos; \</div><div class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>替换一下<code>GLANCE_DBPASS</code>为一个合适的密码，后面会用到</p>
-<ul>
-<li>退出mysql
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/10/openstack-install-glance/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/09/openstack-install-keystone/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -756,13 +441,13 @@
 </blockquote>
 <h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><ol>
 <li><p>切换到<code>root</code>用户，执行下面命令</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ mysql</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建<code>keystone</code>数据库:</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; CREATE DATABASE keystone;</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; CREATE DATABASE keystone;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>赋予合适权限给<code>keystone</code>数据库：</p>
- <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'localhost'</span> \</div><div class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</div><div class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'%'</span> \</div><div class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</div></pre></td></tr></table></figure>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'localhost'</span> \</span><br><span class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO <span class="string">'keystone'</span>@<span class="string">'%'</span> \</span><br><span class="line">IDENTIFIED BY <span class="string">'KEYSTONE_DBPASS'</span>;</span><br></pre></td></tr></table></figure>
 <p> <strong>用一个合适的密码覆盖<code>KEYSTONE_DBPASS</code></strong></p>
 </li>
 <li>退出数据库</li>
@@ -913,10 +598,10 @@
       
         
           <blockquote>
-<p>前几天逛v2ex，无聊看到一个关于这个的话题 <a href="https://www.v2ex.com/t/389157" target="_blank" rel="external">golang 的字面值与类型转换，来猜猜结果</a>，所以现在总结下，免得以后进坑。</p>
+<p>前几天逛v2ex，无聊看到一个关于这个的话题 <a href="https://www.v2ex.com/t/389157" target="_blank" rel="noopener">golang 的字面值与类型转换，来猜猜结果</a>，所以现在总结下，免得以后进坑。</p>
 </blockquote>
-<h1 id="论述"><a href="#论述" class="headerlink" title="论述"></a>论述</h1><p>先上代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"> a := <span class="number">1</span></div><div class="line"> b := <span class="number">3</span></div><div class="line"> </div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / b)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3.0</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3</span>)</div><div class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3.0</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>运行代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">int</div><div class="line">int</div><div class="line">int</div><div class="line">int</div><div class="line">float64</div></pre></td></tr></table></figure></p>
+<h1 id="论述"><a href="#论述" class="headerlink" title="论述"></a>论述</h1><p>先上代码<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"> a := <span class="number">1</span></span><br><span class="line"> b := <span class="number">3</span></span><br><span class="line"> </span><br><span class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / b)</span><br><span class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3</span>)</span><br><span class="line"> fmt.Printf(<span class="string">"%T\n"</span>, a / <span class="number">3.0</span>)</span><br><span class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3</span>)</span><br><span class="line"> fmt.Printf(<span class="string">"%T\n"</span>, <span class="number">1</span> / <span class="number">3.0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int</span><br><span class="line">int</span><br><span class="line">int</span><br><span class="line">int</span><br><span class="line">float64</span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/09/go-type-literal/#more" rel="contents">
@@ -1848,6 +1533,302 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/10/postman/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/10/postman/" itemprop="url">postman的几种body的使用介绍</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-10T20:11:55+08:00">
+                10 Aug 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/http/" itemprop="url" rel="index">
+                    <span itemprop="name">http</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>postman,用来模拟发送http请求的工具，里面涉及的请求body有以下几个类型，所以记下，而且也能理解http body的几种格式，分享之。。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/10/postman/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/03/go-worker-pool-if-need/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/03/go-worker-pool-if-need/" itemprop="url">go的是否需要用goroutine pool？</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-03T23:10:02+08:00">
+                03 Aug 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>这几天无聊，想到java有自己的线程池，是否对应go也有它的goroutine pool呢，所以搜了下，标准库没有，github有，但都大同小异，所以自己实现了一个。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/08/03/go-worker-pool-if-need/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1898,7 +1879,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1920,7 +1901,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

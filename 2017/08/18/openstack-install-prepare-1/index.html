@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="openstack,kvm,ubuntu," />
+  <meta name="keywords" content="openstack,ubuntu,kvm," />
 
 
 
@@ -104,12 +104,13 @@
 
 
 <meta name="description" content="准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
-<meta name="keywords" content="openstack,kvm,ubuntu">
+<meta name="keywords" content="openstack,ubuntu,kvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="openstack安装准备(一)">
 <meta property="og:url" content="http://idiotsky.me/2017/08/18/openstack-install-prepare-1/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="准备VMware由于我是习惯了mac上做实验，所以用VMware fusion，随便下个破解版即可。 准备UbuntuUbuntu去官网下载16.04的服务器版本的ISO即可。">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-09-02T13:53:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="openstack安装准备(一)">
@@ -436,7 +437,7 @@
 <h1 id="准备Ubuntu"><a href="#准备Ubuntu" class="headerlink" title="准备Ubuntu"></a>准备Ubuntu</h1><p>Ubuntu去官网下载16.04的服务器版本的ISO即可。</p>
 <a id="more"></a>
 <h1 id="准备网络"><a href="#准备网络" class="headerlink" title="准备网络"></a>准备网络</h1><p>这次实验用到两台虚拟机： controller,compute</p>
-<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">controller</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.10</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.10</div><div class="line">netmask 255.255.255.0</div><div class="line"></div><div class="line">auto ens35</div><div class="line">iface ens35 inet manual</div></pre></td></tr></table></figure>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/hostname</span><br><span class="line">controller</span><br><span class="line"></span><br><span class="line">$ cat /etc/hosts</span><br><span class="line">127.0.0.1	localhost</span><br><span class="line">192.168.199.11  compute</span><br><span class="line">192.168.199.10  controller</span><br><span class="line"></span><br><span class="line">$ cat /etc/network/interfaces</span><br><span class="line"><span class="comment"># The loopback network interface</span></span><br><span class="line">auto lo</span><br><span class="line">iface lo inet loopback</span><br><span class="line"></span><br><span class="line"><span class="comment"># The primary network interface</span></span><br><span class="line">auto ens33</span><br><span class="line">iface ens33 inet static</span><br><span class="line">address 192.168.199.10</span><br><span class="line">netmask 255.255.255.0</span><br><span class="line">gateway 192.168.199.1</span><br><span class="line">dns-nameservers 192.168.199.1</span><br><span class="line"></span><br><span class="line">auto ens34</span><br><span class="line">iface ens34 inet static</span><br><span class="line">address 10.170.56.10</span><br><span class="line">netmask 255.255.255.0</span><br><span class="line"></span><br><span class="line">auto ens35</span><br><span class="line">iface ens35 inet manual</span><br></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -463,7 +464,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">$ cat /etc/hostname</div><div class="line">compute</div><div class="line"></div><div class="line">$ cat /etc/hosts</div><div class="line">127.0.0.1	localhost</div><div class="line">192.168.199.11  compute</div><div class="line">192.168.199.10  controller</div><div class="line"></div><div class="line">$ cat /etc/network/interfaces</div><div class="line"><span class="comment"># The loopback network interface</span></div><div class="line">auto lo</div><div class="line">iface lo inet loopback</div><div class="line"></div><div class="line"><span class="comment"># The primary network interface</span></div><div class="line">auto ens33</div><div class="line">iface ens33 inet static</div><div class="line">address 192.168.199.11</div><div class="line">netmask 255.255.255.0</div><div class="line">gateway 192.168.199.1</div><div class="line">dns-nameservers 192.168.199.1</div><div class="line"></div><div class="line">auto ens34</div><div class="line">iface ens34 inet static</div><div class="line">address 10.170.56.11</div><div class="line">netmask 255.255.255.0</div></pre></td></tr></table></figure>
+<h2 id="compute"><a href="#compute" class="headerlink" title="compute"></a>compute</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/hostname</span><br><span class="line">compute</span><br><span class="line"></span><br><span class="line">$ cat /etc/hosts</span><br><span class="line">127.0.0.1	localhost</span><br><span class="line">192.168.199.11  compute</span><br><span class="line">192.168.199.10  controller</span><br><span class="line"></span><br><span class="line">$ cat /etc/network/interfaces</span><br><span class="line"><span class="comment"># The loopback network interface</span></span><br><span class="line">auto lo</span><br><span class="line">iface lo inet loopback</span><br><span class="line"></span><br><span class="line"><span class="comment"># The primary network interface</span></span><br><span class="line">auto ens33</span><br><span class="line">iface ens33 inet static</span><br><span class="line">address 192.168.199.11</span><br><span class="line">netmask 255.255.255.0</span><br><span class="line">gateway 192.168.199.1</span><br><span class="line">dns-nameservers 192.168.199.1</span><br><span class="line"></span><br><span class="line">auto ens34</span><br><span class="line">iface ens34 inet static</span><br><span class="line">address 10.170.56.11</span><br><span class="line">netmask 255.255.255.0</span><br></pre></td></tr></table></figure>
 <table>
 <thead>
 <tr>
@@ -518,9 +519,9 @@
           
             <a href="/tags/openstack/" rel="tag"># openstack</a>
           
-            <a href="/tags/kvm/" rel="tag"># kvm</a>
-          
             <a href="/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/tags/kvm/" rel="tag"># kvm</a>
           
         </div>
       
@@ -622,7 +623,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">141</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -644,7 +645,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">131</span>
+                <span class="site-state-item-count">135</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
