@@ -103,13 +103,13 @@
 
 
 
-<meta name="description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。 跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。 在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用跳跃表作">
+<meta name="description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。   跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。   在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用">
 <meta name="keywords" content="数据结构,redis,跳跃表">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis数据结构-跳跃表">
 <meta property="og:url" content="http://idiotsky.me/2017/09/16/redis-skiplist/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。 跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。 在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用跳跃表作">
+<meta property="og:description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。   跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。   在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.me/images/redis-skiplist.png">
 <meta property="og:image" content="http://idiotsky.me/images/redis-skiplist-1.png">
@@ -123,7 +123,7 @@
 <meta property="og:updated_time" content="2017-09-24T06:26:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis数据结构-跳跃表">
-<meta name="twitter:description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。 跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。 在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用跳跃表作">
+<meta name="twitter:description" content="跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。   跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。   在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。Redis 使用">
 <meta name="twitter:image" content="http://idiotsky.me/images/redis-skiplist.png">
 
 
@@ -445,7 +445,11 @@
       
         <blockquote>
 <p>跳跃表（skiplist）是一种有序数据结构， 它通过在每个节点中维持多个指向其他节点的指针， 从而达到快速访问节点的目的。</p>
+</blockquote>
+<blockquote>
 <p>跳跃表支持平均 O(\log N) 最坏 O(N) 复杂度的节点查找， 还可以通过顺序性操作来批量处理节点。</p>
+</blockquote>
+<blockquote>
 <p>在大部分情况下， 跳跃表的效率可以和平衡树相媲美， 并且因为跳跃表的实现比平衡树要来得更为简单， 所以有不少程序都使用跳跃表来代替平衡树。<br>Redis 使用跳跃表作为有序集合键的底层实现之一： 如果一个有序集合包含的元素数量比较多， 又或者有序集合中元素的成员（member）是比较长的字符串时， Redis 就会使用跳跃表来作为有序集合键的底层实现。</p>
 </blockquote>
 <h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>Redis 的跳跃表由 redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义， 其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 等等。<br><a href="http://idiotsky.me/images/redis-skiplist.png"><img src="http://idiotsky.me/images/redis-skiplist.png" alt=""></a><br>图 5-1 展示了一个跳跃表示例， 位于图片最左边的是 zskiplist 结构， 该结构包含以下属性：</p>

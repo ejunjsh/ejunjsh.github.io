@@ -697,6 +697,8 @@
 </ul>
 <blockquote>
 <p>Redis在fork子进程时需要将内存分页表拷贝至子进程，以占用了24GB内存的Redis实例为例，共需要拷贝24GB / 4kB * 8 = 48MB的数据。在使用单Xeon 2.27Ghz的物理机上，这一fork操作耗时216ms。</p>
+</blockquote>
+<blockquote>
 <p>可以通过INFO命令返回的latest_fork_usec字段查看上一次fork操作的耗时（微秒）</p>
 </blockquote>
 <h2 id="Swap引发的延迟"><a href="#Swap引发的延迟" class="headerlink" title="Swap引发的延迟"></a>Swap引发的延迟</h2><p>当Linux将Redis所用的内存分页移至swap空间时，将会阻塞Redis进程，导致Redis出现不正常的延迟。Swap通常在物理内存不足或一些进程在进行大量I/O操作时发生，应尽可能避免上述两种情况的出现。</p>

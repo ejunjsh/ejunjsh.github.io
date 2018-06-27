@@ -572,7 +572,7 @@
 </li>
 </ol>
 <p>在循环过程中会分别调用 4000 次 Integer.intValue() 和 Integer.valueOf(int)，并 new 4000 个 Integer 对象，而这些操作将 sum 的类型改为 int 即可避免，节约运行时间和空间，提升性能。</p>
-<ol>
+<ol start="2">
 <li>java.lang.NullPointerException<br>尝试对一个值为 null 的包装类对象进行自动拆箱，就有可能造成 NullPointerException。<br>比如：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Integer v1 = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> v2 = v1; <span class="comment">// NullPointerException</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (v1 &gt; <span class="number">10</span>) &#123; <span class="comment">// NullPointerException</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> v3 = v1 + <span class="number">10</span>; <span class="comment">// NullPointerException</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>

@@ -487,6 +487,8 @@
 <p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
 <blockquote>
 <p>针对老板说的这种情况，我们只需要创建如下分支。然后分别在flower里种花，grass中种草，building中盖楼，最后在master分支中把完成的照片merge过来就行。<br>➜ GitTestRepo git:(master) git branch flower<br>➜ GitTestRepo git:(master) git branch grass<br>➜ GitTestRepo git:(master) git branch building<br>➜ GitTestRepo git:(master) git branch<br>building<br>flower<br>grass<br>* master</p>
+</blockquote>
+<blockquote>
 <p>导演注：分支前加*号的为当前工作分支</p>
 </blockquote>
 <h1 id="合作共赢"><a href="#合作共赢" class="headerlink" title="合作共赢"></a>合作共赢</h1><p>Git先生：报告老板，您这块地皮很大，要是只有我们开发，那得花上很久时间，何不把它开放出去，让其他老板们一起进来把这块蛋糕做大呢。</p>
