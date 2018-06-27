@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.me/"/>
-  <updated>2018-06-19T14:30:41.197Z</updated>
+  <updated>2018-06-27T13:12:43.863Z</updated>
   <id>http://idiotsky.me/</id>
   
   <author>
@@ -16,11 +16,158 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>分布式事务概述</title>
+    <link href="http://idiotsky.me/2018/06/27/distributed-transaction/"/>
+    <id>http://idiotsky.me/2018/06/27/distributed-transaction/</id>
+    <published>2018-06-27T12:53:24.000Z</published>
+    <updated>2018-06-27T13:12:43.863Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>👿mark之</p>
+</blockquote>
+<p>分布式事务是企业集成中的一个技术难点，也是每一个分布式系统架构中都会涉及到的一个东西，特别是在这几年越来越火的微服务架构中，几乎可以说是无法避免，本文就围绕分布式事务各方面与大家进行介绍。</p>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h2><p>数据库事务（简称：事务，Transaction）是指数据库执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。</p>
+<p>事务拥有以下四个特性，习惯上被称为ACID特性：</p>
+<ol>
+<li>原子性（Atomicity）：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行。</li>
+<li>一致性（Consistency）：事务应确保数据库的状态从一个一致状态转变为另一个一致状态。一致状态是指数据库中的数据应满足完整性约束。除此之外，一致性还有另外一层语义，就是事务的中间状态不能被观察到（这层语义也有说应该属于原子性）。</li>
+<li>隔离性（Isolation）：多个事务并发执行时，一个事务的执行不应影响其他事务的执行，如同只有这一个操作在被数据库所执行一样。</li>
+<li>持久性（Durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。在事务结束时，此操作将不可逆转。</li>
+</ol>
+<a id="more"></a>
+<h2 id="本地事务"><a href="#本地事务" class="headerlink" title="本地事务"></a>本地事务</h2><p>起初，事务仅限于对单一数据库资源的访问控制：</p>
+<p><a href="http://idiotsky.me/images3/dt-1.jpg"><img src="http://idiotsky.me/images3/dt-1.jpg" alt=""></a></p>
+<p>架构服务化以后，事务的概念延伸到了服务中。倘若将一个单一的服务操作作为一个事务，那么整个服务操作只能涉及一个单一的数据库资源：</p>
+<p><a href="http://idiotsky.me/images3/dt-2.jpg"><img src="http://idiotsky.me/images3/dt-2.jpg" alt=""></a></p>
+<p>这类基于单个服务单一数据库资源访问的事务，被称为本地事务（Local Transaction）。</p>
+<h1 id="分布式事务应用架构"><a href="#分布式事务应用架构" class="headerlink" title="分布式事务应用架构"></a>分布式事务应用架构</h1><p>本地事务主要限制在单个会话内，不涉及多个数据库资源。但是在基于SOA（Service-Oriented Architecture，面向服务架构）的分布式应用环境下，越来越多的应用要求对多个数据库资源，多个服务的访问都能纳入到同一个事务当中，分布式事务应运而生。</p>
+<p>最早的分布式事务应用架构很简单，不涉及服务间的访问调用，仅仅是服务内操作涉及到对多个数据库资源的访问。</p>
+<p><a href="http://idiotsky.me/images3/dt-3.jpg"><img src="http://idiotsky.me/images3/dt-3.jpg" alt=""></a></p>
+<p>当一个服务操作访问不同的数据库资源，又希望对它们的访问具有事务特性时，就需要采用分布式事务来协调所有的事务参与者。</p>
+<p>对于上面介绍的分布式事务应用架构，尽管一个服务操作会访问多个数据库资源，但是毕竟整个事务还是控制在单一服务的内部。如果一个服务操作需要调用另外一个服务，这时的事务就需要跨越多个服务了。在这种情况下，起始于某个服务的事务在调用另外一个服务的时候，需要以某种机制流转到另外一个服务，从而使被调用的服务访问的资源也自动加入到该事务当中来。下图反映了这样一个跨越多个服务的分布式事务：</p>
+<p><a href="http://idiotsky.me/images3/dt-4.jpg"><img src="http://idiotsky.me/images3/dt-4.jpg" alt=""></a></p>
+<p>如果将上面这两种场景（一个服务可以调用多个数据库资源，也可以调用其他服务）结合在一起，对此进行延伸，整个分布式事务的参与者将会组成如下图所示的树形拓扑结构。在一个跨服务的分布式事务中，事务的发起者和提交均系同一个，它可以是整个调用的客户端，也可以是客户端最先调用的那个服务。</p>
+<p><a href="http://idiotsky.me/images3/dt-5.jpg"><img src="http://idiotsky.me/images3/dt-5.jpg" alt=""></a></p>
+<p>较之基于单一数据库资源访问的本地事务，分布式事务的应用架构更为复杂。在不同的分布式应用架构下，实现一个分布式事务要考虑的问题并不完全一样，比如对多资源的协调、事务的跨服务传播等，实现机制也是复杂多变。尽管有这么多工程细节需要考虑，但分布式事务最核心的还是其 ACID 特性。因此，想要了解一个分布式事务，就先从了解它是怎么实现事务 ACID 特性开始。</p>
+<p>下文将从两个最常见的分布式事务模型入手，着重分析分布式事务的基础共通点，即如何保证分布式事务的 ACID 特性。</p>
+<h1 id="常见分布式事务模型-ACID-实现分析"><a href="#常见分布式事务模型-ACID-实现分析" class="headerlink" title="常见分布式事务模型 ACID 实现分析"></a>常见分布式事务模型 ACID 实现分析</h1><h2 id="X-Open-XA-协议"><a href="#X-Open-XA-协议" class="headerlink" title="X/Open XA 协议"></a>X/Open XA 协议</h2><p>最早的分布式事务模型是 X/Open 国际联盟提出的 X/Open Distributed Transaction Processing（DTP）模型，也就是大家常说的 X/Open XA 协议，简称XA 协议。</p>
+<p><a href="http://idiotsky.me/images3/dt-6.jpg"><img src="http://idiotsky.me/images3/dt-6.jpg" alt=""></a></p>
+<p>DTP 模型中包含一个全局事务管理器（TM，Transaction Manager）和多个资源管理器（RM，Resource Manager）。全局事务管理器负责管理全局事务状态与参与的资源，协同资源一起提交或回滚；资源管理器则负责具体的资源操作。</p>
+<p>XA 协议描述了 TM 与 RM 之间的接口，允许多个资源在同一分布式事务中访问。</p>
+<p>基于 DTP 模型的分布式事务流程大致如下：</p>
+<p><a href="http://idiotsky.me/images3/dt-7.jpg"><img src="http://idiotsky.me/images3/dt-7.jpg" alt=""></a></p>
+<ol>
+<li>应用程序（AP，Application）向 TM 申请开始一个全局事务。</li>
+<li>针对要操作的 RM，AP 会先向 TM 注册（TM 负责记录 AP 操作过哪些 RM，即分支事务），TM 通过 XA 接口函数通知相应 RM 开启分布式事务的子事务，接着 AP 就可以对该 RM 管理的资源进行操作。</li>
+<li>当 AP 对所有 RM 操作完毕后，AP 根据执行情况通知 TM 提交或回滚该全局事务，TM 通过 XA 接口函数通知各 RM 完成操作。TM 会先要求各个 RM 做预提交，所有 RM 返回成功后，再要求各 RM 做正式提交，XA 协议要求，一旦 RM 预提交成功，则后续的正式提交也必须能成功；如果任意一个 RM 预提交失败，则 TM 通知各 RM 回滚。</li>
+<li>所有 RM 提交或回滚完成后，全局事务结束。</li>
+</ol>
+<h3 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h3><p>XA 协议使用 2PC（Two Phase Commit，两阶段提交）原子提交协议来保证分布式事务原子性。</p>
+<p>两阶段提交是指将提交过程分为两个阶段，即准备阶段（投票阶段）和提交阶段（执行阶段）：</p>
+<p><a href="http://idiotsky.me/images3/dt-8.jpg"><img src="http://idiotsky.me/images3/dt-8.jpg" alt=""></a></p>
+<p>准备阶段：</p>
+<p>TM 向每个 RM 发送准备消息。如果 RM 的本地事务操作执行成功，则返回成功；如果 RM 的本地事务操作执行失败，则返回失败。</p>
+<p>提交阶段</p>
+<p>如果 TM 收到了所有 RM 回复的成功消息，则向每个 RM 发送提交消息；否则发送回滚消息；RM 根据 TM 的指令执行提交或者回滚本地事务操作，释放所有事务处理过程中使用的锁资源。</p>
+<h3 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h3><p>XA 协议中没有描述如何实现分布式事务的隔离性，但是 XA 协议要求DTP 模型中的每个 RM 都要实现本地事务，也就是说，基于 XA 协议实现的分布式事务的隔离性是由每个 RM 本地事务的隔离性来保证的，当一个分布式事务的所有子事务都是隔离的，那么这个分布式事务天然的就实现了隔离性。</p>
+<p>以 MySQL 来举例，MySQL 使用 2PL（Two-Phase Locking，两阶段锁）机制来控制本地事务的并发，保证隔离性。2PL 与 2PC 类似，也是将锁操作分为加锁和解锁两个阶段，并且保证两个阶段完全不相交。加锁阶段，只加锁，不放锁。解锁阶段，只放锁，不加锁。</p>
+<p><a href="http://idiotsky.me/images3/dt-9.jpg"><img src="http://idiotsky.me/images3/dt-9.jpg" alt=""></a></p>
+<p>如上图所示，在一个本地事务中，每执行一条更新操作之前，都会先获取对应的锁资源，只有获取锁资源成功才会执行该操作，并且一旦获取了锁资源就会持有该锁资源直到本事务执行结束。</p>
+<p>MySQL 通过这种 2PL 机制，可以保证在本地事务执行过程中，其他并发事务不能操作相同资源，从而实现了事务隔离。</p>
+<h3 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h3><p>前面提到一致性有两层语义，一层是确保事务执行结束后，数据库从一个一致状态转变为另一个一致状态。另一层语义是事务执行过程中的中间状态不能被观察到。</p>
+<p>前一层语义的实现很简单，通过原子性、隔离性以及 RM 自身一致性的实现就可以保证。至于后一层语义，我们先来看看单个 RM 上的本地事务是怎么实现的。还是以 MySQL 举例，MySQL 通过 MVCC（Multi Version Concurrency Control，多版本并发控制）机制，为每个一致性状态生成快照（Snapshot），每个事务看到的都是各Snapshot对应的一致性状态，从而也就保证了本地事务的中间状态不会被观察到。</p>
+<p>虽然单个 RM 上实现了Snapshot，但是在分布式应用架构下，会遇到什么问题呢？</p>
+<p><a href="http://idiotsky.me/images3/dt-10.jpg"><img src="http://idiotsky.me/images3/dt-10.jpg" alt=""></a></p>
+<p>如上图所示，在 RM1 的本地子事务提交完毕到 RM2 的本地子事务提交完毕之间，只能读到 RM1 上子事务执行的内容，读不到 RM2 上的子事务。也就是说，虽然在单个 RM 上的本地事务是一致的，但是从全局来看，一个全局事务执行过程的中间状态被观察到了，全局一致性就被破坏了。</p>
+<p>XA 协议并没有定义怎么实现全局的 Snapshot，像 MySQL 官方文档里就建议使用串行化的隔离级别来保证分布式事务一致性： “As with nondistributed transactions, SERIALIZABLE may be preferred if your applications are sensitive to read phenomena. REPEATABLE READ may not be sufficient for distributed transactions.”（对于分布式事务来说，可重复读隔离级别不足以保证事务一致性，如果你的程序有全局一致性读要求，可以考虑串行化隔离级别.）</p>
+<p>当然，由于串行化隔离级别的性能较差，所以很多分布式数据库都自己实现了分布式 MVCC 机制来提供全局的一致性读。一个基本思路是用一个集中式或者逻辑上单调递增的东西来控制生成全局 Snapshot，每个事务或者每条 SQL 执行时都去获取一次，从而实现不同隔离级别下的一致性。比如 Google 的 Spanner 就是用 TrueTime 来控制访问全局 Snapshot。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>XA 协议通常实现在数据库资源层，直接作用于资源管理器上。因此，基于 XA 协议实现的分布式事务产品，无论是分布式数据库，还是分布式事务框架，对业务几乎都没有侵入，就像使用普通数据库一样。</p>
+<p>XA 协议严格保障事务 ACID 特性，能够满足所有业务领域的功能需求，但是，这同样是一把双刃剑。</p>
+<p>由于隔离性的互斥要求，在事务执行过程中，所有的资源都被锁定，只适用于执行时间确定的短事务。同时，整个事务期间都是独占数据，对于热点数据的并发性能可能会很低，实现了分布式 MVCC 或乐观锁（optimistic locking）以后，性能可能会有所提升。</p>
+<p>同时，为了保障一致性，要求所有 RM 同等可信、可靠，要求故障恢复机制可靠、快速，在网络故障隔离的情况下，服务基本不可用。</p>
+<h2 id="TCC-模型"><a href="#TCC-模型" class="headerlink" title="TCC 模型"></a>TCC 模型</h2><p>TCC（Try-Confirm-Cancel）分布式事务模型相对于 XA 等传统模型，其特征在于它不依赖资源管理器（RM）对分布式事务的支持，而是通过对业务逻辑的分解来实现分布式事务。</p>
+<p>TCC 模型认为对于业务系统中一个特定的业务逻辑，其对外提供服务时，必须接受一些不确定性，即对业务逻辑初步操作的调用仅是一个临时性操作，调用它的主业务服务保留了后续的取消权。如果主业务服务认为全局事务应该回滚，它会要求取消之前的临时性操作，这就对应从业务服务的取消操作。而当主业务服务认为全局事务应该提交时，它会放弃之前临时性操作的取消权，这对应从业务服务的确认操作。每一个初步操作，最终都会被确认或取消。</p>
+<p>因此，针对一个具体的业务服务，TCC 分布式事务模型需要业务系统提供三段业务逻辑：</p>
+<ol>
+<li>初步操作 Try：完成所有业务检查，预留必须的业务资源。</li>
+<li>确认操作 Confirm：真正执行的业务逻辑，不作任何业务检查，只使用 Try 阶段预留的业务资源。因此，只要 Try 操作成功，Confirm 必须能成功。另外，Confirm 操作需满足幂等性，保证一笔分布式事务有且只能成功一次。</li>
+<li>取消操作 Cancel：释放 Try 阶段预留的业务资源。同样的，Cancel 操作也需要满足幂等性。</li>
+</ol>
+<p><a href="http://idiotsky.me/images3/dt-11.jpg"><img src="http://idiotsky.me/images3/dt-11.jpg" alt=""></a></p>
+<p>TCC 分布式事务模型包括三部分：</p>
+<ol>
+<li>主业务服务：主业务服务为整个业务活动的发起方，服务的编排者，负责发起并完成整个业务活动。</li>
+<li>从业务服务：从业务服务是整个业务活动的参与方，负责提供 TCC 业务操作，实现初步操作（Try）、确认操作（Confirm）、取消操作（Cancel）三个接口，供主业务服务调用。</li>
+<li>业务活动管理器：业务活动管理器管理控制整个业务活动，包括记录维护 TCC 全局事务的事务状态和每个从业务服务的子事务状态，并在业务活动提交时调用所有从业务服务的 Confirm 操作，在业务活动取消时调用所有从业务服务的 Cancel 操作。</li>
+</ol>
+<p>一个完整的 TCC 分布式事务流程如下：</p>
+<ol>
+<li>主业务服务首先开启本地事务；</li>
+<li>主业务服务向业务活动管理器申请启动分布式事务主业务活动；</li>
+<li>然后针对要调用的从业务服务，主业务活动先向业务活动管理器注册从业务活动，然后调用从业务服务的 Try 接口；</li>
+<li>当所有从业务服务的 Try 接口调用成功，主业务服务提交本地事务；若调用失败，主业务服务回滚本地事务；</li>
+<li>若主业务服务提交本地事务，则 TCC 模型分别调用所有从业务服务的 Confirm 接口；若主业务服务回滚本地事务，则分别调用 Cancel 接口；</li>
+<li>所有从业务服务的 Confirm 或 Cancel 操作完成后，全局事务结束。</li>
+</ol>
+<h3 id="原子性-1"><a href="#原子性-1" class="headerlink" title="原子性"></a>原子性</h3><p>TCC 模型也使用 2PC 原子提交协议来保证事务原子性。Try 操作对应2PC 的一阶段准备（Prepare）；Confirm 对应 2PC 的二阶段提交（Commit），Cancel 对应 2PC 的二阶段回滚（Rollback），可以说 TCC 就是应用层的 2PC。</p>
+<h3 id="隔离性-1"><a href="#隔离性-1" class="headerlink" title="隔离性"></a>隔离性</h3><p>TCC 分布式事务模型仅提供两阶段原子提交协议，保证分布式事务原子性。事务的隔离交给业务逻辑来实现。</p>
+<p>隔离的本质是控制并发，防止并发事务操作相同资源而引起的结果错乱。</p>
+<p>举个例子，比如金融行业里管理用户资金，当用户发起交易时，一般会先检查用户资金，如果资金充足，则扣除相应交易金额，增加卖家资金，完成交易。如果没有事务隔离，用户同时发起两笔交易，两笔交易的检查都认为资金充足，实际上却只够支付一笔交易，结果两笔交易都支付成功，导致资损。</p>
+<p>可以发现，并发控制是业务逻辑执行正确的保证，但是像两阶段锁这样的并发访问控制技术要求一直持有数据库资源锁直到整个事务执行结束，特别是在分布式事务架构下，要求持有锁到分布式事务第二阶段执行结束，也就是说，分布式事务会加长资源锁的持有时间，导致并发性能进一步下降。</p>
+<p>因此，TCC 模型的隔离性思想就是通过业务的改造，在第一阶段结束之后，从底层数据库资源层面的加锁过渡为上层业务层面的加锁，从而释放底层数据库锁资源，放宽分布式事务锁协议，提高业务并发性能。</p>
+<p>还是以上面的例子举例：</p>
+<ol>
+<li>第一阶段：检查用户资金，如果资金充足，冻结用户本次交易资金，这笔资金被业务隔离，不允许除本事务之外的其它并发事务动用。</li>
+<li>第二阶段：扣除第一阶段预冻结的用户资金，增加卖家资金，完成交易。 采用业务加锁的方式，隔离用户冻结资金，在第一阶段结束后直接释放底层资源锁，该用户和卖家的其他交易都可以立刻并发执行，而不用等到整个分布式事务结束，可以获得更高的并发交易能力。</li>
+</ol>
+<h3 id="一致性-1"><a href="#一致性-1" class="headerlink" title="一致性"></a>一致性</h3><p>再来看看 TCC 分布式事务模型下的一致性实现。与 XA 协议实现一致性第一层语义类似，通过原子性保证事务的原子提交、业务隔离性控制事务的并发访问，实现分布式事务的一致性状态转变。</p>
+<p>至于第二层语义：事务的中间状态不能被观察到。我们来看看，在 SOA分布式应用环境下是否是必须的。</p>
+<p>还是以账务服务举例。转账业务（用户 A  用户 B），由交易服务和账务服务组成分布式事务，交易服务作为主业务服务，账务服务作为从业务服务，账务服务的 Try 操作预冻结用户 A 的资金；Commit 操作扣除用户 A 的预冻结资金，增加用户 B 的可用资金；Cancel 操作解冻用户 A 的预冻结资金。</p>
+<p>当账务服务执行完 Try 阶段后，交易主业务就可以 Commit 了，然后由TCC 框架调用账务的 Commit 阶段。在账务 Commit 阶段还没执行结束的时候，用户 A 可以查询到自己的余额已扣除，但是，此时用户 B 的可用资金还没增加。</p>
+<p>从系统的角度来看，确实有问题与不确定性。在第一阶段执行结束到第二阶段执行结束之间，有一段时间的延时，在这段时间内，看似任何用户都不享有这笔资产。</p>
+<p>但是，从用户的角度来考虑这个问题的话，这个时间间隔可能就无所谓或者根本就不存在。特别是当这个时间间隔仅仅是几秒钟，对于具体沟通资产转移的用户来讲，这个过程是隐蔽的或确实可以接受的，且保证了结果的最终一致性。</p>
+<p>当然，对于这样的系统，如果确实需要查看系统的某个一致性状态，可以采用额外的方法实现。</p>
+<p>一般来讲，服务之间的一致性比服务内部的一致性要更加容易弱化，这也是为什么 XA 等直接在资源层面上实现通用分布式事务的模型会注重一致性的保证，而当上升到服务层面，服务与服务之间已经实现了功能的划分，逻辑的解耦，也就更容易弱化一致性，这就是 SOA 架构下 BASE 理论的最终一致性思想。</p>
+<p>BASE 理论是指 BA（Basic Availability，基本业务可用性）；S（Soft state，柔性状态）；E（Eventual consistency，最终一致性）。该理论认为为了可用性、性能与降级服务的需要，可以适当降低一点一致性的要求，即“基本可用，最终一致”。</p>
+<p>业内通常把严格遵循 ACID 的事务称为刚性事务；而基于 BASE 思想实现的事务称为柔性事务。柔性事务并不是完全放弃了 ACID，仅仅是放宽了一致性要求：事务完成后的一致性严格遵循，事务中的一致性可适当放宽；</p>
+<h3 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h3><p>TCC 分布式事务模型的业务实现特性决定了其可以跨 DB、跨服务实现资源管理，将对不同的 DB 访问、不同的业务操作通过 TCC 模型协调为一个原子操作，解决了分布式应用架构场景下的事务问题。</p>
+<p>TCC 模型通过 2PC 原子提交协议保证分布式事务的的原子性，把资源层的隔离性上升到业务层，交给业务逻辑来实现。TCC 的每个操作对于资源层来说，就是单个本地事务的使用，操作结束则本地事务结束，规避了资源层在 2PC 和 2PL 下对资源占用导致的性能低下问题。</p>
+<p>同时，TCC 模型也可以根据业务需要，做一些定制化的功能，比如交易异步化实现削峰填谷等。</p>
+<p>但是，业务接入 TCC 模型需要拆分业务逻辑成两个阶段，并实现 Try、Confirm、Cancel 三个接口，定制化程度高，开发成本高。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文首先介绍了典型的分布式事务的架构场景。分布式事务刚开始是为解决单服务多数据库资源的场景而诞生的。随着技术的发展，特别是 SOA 分布式应用架构以及微服务时代的到来，服务变成了基本业务单元。因此，又产生了跨服务的分布式事务需求。然后从 XA 和 TCC 两种常用的分布式事务模型入手，介绍了其实现机制，着重分析了各模型是如何实现分布式事务 ACID 特性的。</p>
+<p>ref <a href="https://zhuanlan.zhihu.com/p/38388143" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38388143</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;👿mark之&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;分布式事务是企业集成中的一个技术难点，也是每一个分布式系统架构中都会涉及到的一个东西，特别是在这几年越来越火的微服务架构中，几乎可以说是无法避免，本文就围绕分布式事务各方面与大家进行介绍。&lt;/p&gt;
+&lt;h1 id=&quot;事务&quot;&gt;&lt;a href=&quot;#事务&quot; class=&quot;headerlink&quot; title=&quot;事务&quot;&gt;&lt;/a&gt;事务&lt;/h1&gt;&lt;h2 id=&quot;什么是事务&quot;&gt;&lt;a href=&quot;#什么是事务&quot; class=&quot;headerlink&quot; title=&quot;什么是事务&quot;&gt;&lt;/a&gt;什么是事务&lt;/h2&gt;&lt;p&gt;数据库事务（简称：事务，Transaction）是指数据库执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。&lt;/p&gt;
+&lt;p&gt;事务拥有以下四个特性，习惯上被称为ACID特性：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;原子性（Atomicity）：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行。&lt;/li&gt;
+&lt;li&gt;一致性（Consistency）：事务应确保数据库的状态从一个一致状态转变为另一个一致状态。一致状态是指数据库中的数据应满足完整性约束。除此之外，一致性还有另外一层语义，就是事务的中间状态不能被观察到（这层语义也有说应该属于原子性）。&lt;/li&gt;
+&lt;li&gt;隔离性（Isolation）：多个事务并发执行时，一个事务的执行不应影响其他事务的执行，如同只有这一个操作在被数据库所执行一样。&lt;/li&gt;
+&lt;li&gt;持久性（Durability）：已被提交的事务对数据库的修改应该永久保存在数据库中。在事务结束时，此操作将不可逆转。&lt;/li&gt;
+&lt;/ol&gt;
+    
+    </summary>
+    
+      <category term="分布式事务" scheme="http://idiotsky.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+    
+    
+      <category term="分布式事务" scheme="http://idiotsky.me/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+    
+  </entry>
+  
+  <entry>
     <title>HTTP 总结</title>
     <link href="http://idiotsky.me/2018/05/22/http-summary/"/>
     <id>http://idiotsky.me/2018/05/22/http-summary/</id>
     <published>2018-05-22T14:51:18.000Z</published>
-    <updated>2018-06-19T14:30:41.197Z</updated>
+    <updated>2018-06-27T12:56:51.844Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>👿 mark ，很长 😄</p>
@@ -1405,12 +1552,12 @@
     
     </summary>
     
-      <category term="protocol" scheme="http://idiotsky.me/categories/protocol/"/>
+      <category term="protocols" scheme="http://idiotsky.me/categories/protocols/"/>
     
+    
+      <category term="protocols" scheme="http://idiotsky.me/tags/protocols/"/>
     
       <category term="http" scheme="http://idiotsky.me/tags/http/"/>
-    
-      <category term="protocol" scheme="http://idiotsky.me/tags/protocol/"/>
     
   </entry>
   
@@ -2067,7 +2214,7 @@
     <link href="http://idiotsky.me/2018/01/16/c-malloc/"/>
     <id>http://idiotsky.me/2018/01/16/c-malloc/</id>
     <published>2018-01-16T15:46:42.000Z</published>
-    <updated>2018-04-24T16:17:14.209Z</updated>
+    <updated>2018-06-27T12:59:11.699Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>这篇文章很好的总结了很多关于内存的知识，虽然它讲的只是一个c标准库的一个函数，mark之👿</p>
@@ -2771,7 +2918,7 @@
     <link href="http://idiotsky.me/2017/11/01/tcp-something/"/>
     <id>http://idiotsky.me/2017/11/01/tcp-something/</id>
     <published>2017-11-01T14:56:41.000Z</published>
-    <updated>2018-02-26T11:25:41.825Z</updated>
+    <updated>2018-06-27T12:57:09.794Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>tcp看了很多的文章，这篇总结的很好。此文有点长👿</p>
@@ -3034,10 +3181,12 @@
     
     </summary>
     
-      <category term="tcp" scheme="http://idiotsky.me/categories/tcp/"/>
+      <category term="protocols" scheme="http://idiotsky.me/categories/protocols/"/>
     
     
       <category term="tcp" scheme="http://idiotsky.me/tags/tcp/"/>
+    
+      <category term="protocols" scheme="http://idiotsky.me/tags/protocols/"/>
     
   </entry>
   
@@ -3073,156 +3222,6 @@
       <category term="正向代理" scheme="http://idiotsky.me/tags/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86/"/>
     
       <category term="反向代理" scheme="http://idiotsky.me/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>JavaScript是如何工作的(三)</title>
-    <link href="http://idiotsky.me/2017/10/05/javascript-how-work-3/"/>
-    <id>http://idiotsky.me/2017/10/05/javascript-how-work-3/</id>
-    <published>2017-10-05T12:01:15.000Z</published>
-    <updated>2017-10-07T13:22:50.983Z</updated>
-    
-    <content type="html"><![CDATA[<p>几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。</p>
-<p>这个系列的第一篇博客专注于介绍<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">对于引擎，运行时以及调用栈的概述</a>。<a href="http://idiotsky.me/2017/08/26/javascript-how-work-2/">第二篇博客近距离地检测了Google V8 引擎的内部</a>并且提供了一些如何写出更好的JavaScript代码的建议。</p>
-<p>在第三篇博客中，我们将会讨论另外一个关键的话题。这个话题由于随着编程语言的逐渐成熟和复杂化，越来越被开发者所忽视，这个话题就是在日常工作中使用到的——内存管理。</p>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>语言，比如C，具有低层次的内存管理方法，比如<code>malloc()</code>以及<code>free()</code>。开发者利用这些方法精确地为操作系统分配以及释放内存。</p>
-<p>同时，JavaScript会在创建一些变量（对象，字符串等等）的时候分配内存，并且会在这些不被使用之后“自动地”释放这些内存，这个过程被称为<em>垃圾收集</em>。这个看起来“自动化的”特性其实就是产生误解的原因，并且给JavaScript（以及其他高层次语言）开发者一个假象，他们不需要关心内存管理。<strong>大错特错。</strong></p>
-<p>即使是使用高层次语言，开发者应该对于内存管理有一定的理解（或者最基本的理解）。有时候自动的内存管理会存在一些问题（比如一些bug或者垃圾收集器的一些限制等等），对于这些开发者必须能够理解从而能够合适地处理（或者使用最小的代价以及代码债务去绕过这个问题）。<br><a id="more"></a></p>
-<h1 id="内存生命周期"><a href="#内存生命周期" class="headerlink" title="内存生命周期"></a>内存生命周期</h1><p>不管你在使用什么编程语言，内存的生命周期基本上都是一样的：</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-1.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-1.png" alt=""></a></p>
-<p>下面是对于周期中每一步所发生的情况的概述：</p>
-<ul>
-<li><strong>分配内存</strong>——操作系统为你的程序分配内存并且允许其使用。在低层次语言中（比如C），这正是开发者应该处理的操作。在高层次的语言，然而，就由语言帮你实现了。</li>
-<li><strong>使用内存</strong>——当你的程序确实在使用之前分配的内存的阶段。当你在使用你代码里面分配的变量的时候会发生<strong>读</strong>以及<strong>写</strong>操作。</li>
-<li><strong>释放内存</strong>——这个阶段就是释放你不再需要的内存，从而这些内存被释放并且能够再次被使用。和<strong>分配内存</strong>操作一样，这在低层次的语言也是开发者需要明确的操作。</li>
-</ul>
-<p>对于调用栈以及内存堆有一个快速的概念认识，你可以阅读我们<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">关于这个话题的第一篇博客</a>。</p>
-<h2 id="什么是内存？"><a href="#什么是内存？" class="headerlink" title="什么是内存？"></a>什么是内存？</h2><p>在我们讲述JavaScript内存之前，我们将简要地讨论一下内存是什么以及它们是如何在 nutshell 中工作的。</p>
-<p>在硬件层次上，计算机内存由大量的 <a href="https://en.wikipedia.org/wiki/Flip-flop_%28electronics%29" target="_blank" rel="noopener">寄存器</a> 组成。每一个寄存器都包含一些晶体管并且能够存储一比特。单独的寄存器可以通过<strong>独特的标识符</strong>去访问，因此我们能够读取以及重写它们。因此，从概念上来说，我们可以认为我们的整个计算机内存就是一个我们能够读写的大型比特数组。</p>
-<p>因为作为人类，我们不擅长直接基于比特进行思考以及算术，我们将它们组织成大规模群组，它们在一起可以代表一个数字。8个比特称为一个字节。除了字节，还有词（有时候是16比特，有时候是32比特）。</p>
-<p>内存中存储了很多东西：</p>
-<ol>
-<li>所有程序使用的变量和其他数据</li>
-<li>程序的代码，包括操作系统的代码。</li>
-</ol>
-<p>编译器和操作系统共同合作为你处理大部分的内存管理，但是我们建议你应该了解其内部的运行原理。</p>
-<p>当你编译你的代码的时候，编译器将会检查原始数据类型并且提前计算好它们需要多少内存。需要的内存被分配给程序，这被称为<strong>栈空间</strong>。这些被分配给变量的空间被称为栈空间，因为一旦函数被调用，它们的内存就会增加到现有内存的上面。当它们终止的时候，它们就会以后进先出(LIFO)的顺序移除。比如，考虑下面的声明。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> n; <span class="comment">// 4 bytes</span></span><br><span class="line"><span class="keyword">int</span> x[<span class="number">4</span>]; <span class="comment">// array of 4 elements, each 4 bytes</span></span><br><span class="line"><span class="keyword">double</span> m; <span class="comment">// 8 bytes</span></span><br></pre></td></tr></table></figure>
-<p>编译器能够立即计算出代码需要</p>
-<p>4 + 4 × 4 + 8 = 28 字节</p>
-<blockquote>
-<p>那就是它如何对于现有的整形以及双浮点型工作。大约20年前，整形典型都是2个字节，双浮点型是4个字节。你的代码不应该取决于当下基本数据类型的大小。</p>
-</blockquote>
-<p>编译器将会插入能够与操作系统交互的代码，从而在栈上获取你需要存储变量需要的字节数。</p>
-<p>在上述的例子中，编译器知道每一个变量的准确的内存地址。事实上，无论我们何时写变量 n ，这都会在内部转化为类似于“内存地址 4127963”的东西。</p>
-<p>注意如果我们希望在这访问 x[4] 我们将会需要访问和 m 相关联的数据。这是因为我们在访问数组里面并不存在的元素——它比数组实际分配的最后一个元素 x[3] 要多4个字节，并且最后可能是阅读（或者重写）一些 m 的比特。这将很可能给程序的其他部分带来一些不良的后果。<br><a href="http://idiotsky.me/images1/javascript-how-work-3-2.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-2.png" alt=""></a></p>
-<p>当函数调用其它函数的时候，当它被调用的时候都会获取它自己的堆栈块。它在那保存了它所有的局部变量，但是还会有一个程序计数器记录它执行的位置。当这个函数执行完毕，它的内存块就可以再次用于其他目的。</p>
-<h2 id="动态分配"><a href="#动态分配" class="headerlink" title="动态分配"></a>动态分配</h2><p>不幸的是，当我们在编译的时候不知道变量需要多少内存的话事情可能就不那么简单。假设我们想做下面的事情：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">int</span> n = readInput(); <span class="comment">// reads input from the user</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">// create an array with "n" elements</span></span><br></pre></td></tr></table></figure></p>
-<p>在此，在编译阶段中，编译器就没有办法知道数组需要多少内存，因为它取决于用户的输入。</p>
-<p>因此，它就不能够为栈上的变量分配空间。相反，我们的程序需要明确地询问操作运行时需要的空间数量。这个内存是从<strong>堆空间</strong>中分配出来的。动态内存和静态内存分配的区别总结如下表格：<br><a href="http://idiotsky.me/images1/javascript-how-work-3-3.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-3.png" alt=""></a></p>
-<p>为了深入地理解动态内存分配是如何工作的，我们需要花费更多的时间在<strong>指针</strong>，这个可能有点偏离这篇博客的话题。如果你感兴趣了解更多，在评论里面告诉我，我将会在后续的博客中挖掘更多的细节。</p>
-<h2 id="JavaScript中的分配"><a href="#JavaScript中的分配" class="headerlink" title="JavaScript中的分配"></a>JavaScript中的分配</h2><p>现在我们将解释JavaScript中的第一步（分配内存）。</p>
-<p>JavaScript 将开发者从内存分配的处理中解放出来——JavaScript自身可以利用声明变量来完成这些任务。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> n = <span class="number">374</span>; <span class="comment">// allocates memory for a number</span></span><br><span class="line"><span class="keyword">var</span> s = <span class="string">'sessionstack'</span>; <span class="comment">// allocates memory for a string </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> o = &#123;</span><br><span class="line">  a: <span class="number">1</span>,</span><br><span class="line">  b: <span class="literal">null</span></span><br><span class="line">&#125;; <span class="comment">// allocates memory for an object and its contained values</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="literal">null</span>, <span class="string">'str'</span>];  <span class="comment">// (like object) allocates memory for the</span></span><br><span class="line">                           <span class="comment">// array and its contained values</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> a + <span class="number">3</span>;</span><br><span class="line">&#125; <span class="comment">// allocates a function (which is a callable object)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// function expressions also allocate an object</span></span><br><span class="line">someElement.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  someElement.style.backgroundColor = <span class="string">'blue'</span>;</span><br><span class="line">&#125;, <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
-<p>一些函数调用也会导致一些对象的分配：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">Date</span>(); <span class="comment">// allocates a Date object</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> e = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>); <span class="comment">// allocates a DOM element</span></span><br></pre></td></tr></table></figure>
-<p>能够分配新的值或者对象的方法：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 = <span class="string">'sessionstack'</span>;</span><br><span class="line"><span class="keyword">var</span> s2 = s1.substr(<span class="number">0</span>, <span class="number">3</span>); <span class="comment">// s2 is a new string</span></span><br><span class="line"><span class="comment">// Since strings are immutable, </span></span><br><span class="line"><span class="comment">// JavaScript may decide to not allocate memory, </span></span><br><span class="line"><span class="comment">// but just store the [0, 3] range.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a1 = [<span class="string">'str1'</span>, <span class="string">'str2'</span>];</span><br><span class="line"><span class="keyword">var</span> a2 = [<span class="string">'str3'</span>, <span class="string">'str4'</span>];</span><br><span class="line"><span class="keyword">var</span> a3 = a1.concat(a2); </span><br><span class="line"><span class="comment">// new array with 4 elements being</span></span><br><span class="line"><span class="comment">// the concatenation of a1 and a2 elements</span></span><br></pre></td></tr></table></figure>
-<h2 id="在JavaScript中使用内存"><a href="#在JavaScript中使用内存" class="headerlink" title="在JavaScript中使用内存"></a>在JavaScript中使用内存</h2><p>基本上在JavaScript中分配内存，就意味着在其中读写。</p>
-<p>这可以通过对一个变量或者一个对象的属性甚至是向函数传递一个参数来完成。</p>
-<h2 id="当内存不再需要的时候释放它"><a href="#当内存不再需要的时候释放它" class="headerlink" title="当内存不再需要的时候释放它"></a>当内存不再需要的时候释放它</h2><p>大多数的内存管理的问题就来自于这个阶段。</p>
-<p>最困难的任务就是如何知道何时被分配的不再需要了。它经常需要开发者决定在程序的什么地方某段内存不再需要了并且对其进行释放。</p>
-<p>高层次语言内嵌了一个称为<strong>垃圾收集器</strong>的软件，他的任务就是跟踪内存分配并且用于需找不再需要的分配过的内存，并且自动地对其进行释放。</p>
-<p>不幸的是，这个过程是一个近似，因为知道是否某块内存是需要的问题是<a href="http://en.wikipedia.org/wiki/Decidability_%28logic%29" target="_blank" rel="noopener">不可决定的</a>（无法通过算法解决）</p>
-<p>大多数的垃圾收集器通过收集再也无法访问的内存工作，比如：指向它的所有变量都超出了作用域。然而，这依然是对于可以收集的内存空间的预估，因为在任何位置仍可能一些变量在作用域内指向这个内存，然而它再也不能被访问了。</p>
-<h1 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h1><p>由于找到一些是“不再需要的”是不可决定的事实，垃圾收集实现了对一般问题的解决方案的限制。这一节将会解释理解主要的垃圾收集算法以及它们的限制的需要注意的事项。</p>
-<h2 id="内存引用"><a href="#内存引用" class="headerlink" title="内存引用"></a>内存引用</h2><p>垃圾收集算法依赖的主要概念之一就是<strong>引用</strong>。</p>
-<p>在内存管理的上下文中，一个对象被称为是对于另外一个对象的引用，如果前者可以访问后者（隐含或明确的）。例如，一个JavaScript对象都有一个指向其<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain" target="_blank" rel="noopener">原型</a>的引用（<strong>隐含的引用</strong>）</p>
-<p>在这个上下文中，“对象”的概念扩展到比普通的JavaScript对象要广并且包括函数作用域（或者全局<strong>词法作用域</strong>）。</p>
-<blockquote>
-<p> 词法作用域定义了变量名称是如何在嵌套函数中解析的：内部函数包含了父函数的作用域即使父函数已经返回了。</p>
-</blockquote>
-<h2 id="基于引用计数的垃圾收集器"><a href="#基于引用计数的垃圾收集器" class="headerlink" title="基于引用计数的垃圾收集器"></a>基于引用计数的垃圾收集器</h2><p>这是最简单的垃圾收集器算法。如果没有引用指向这个对象的时候，这个对象就被认为是“可以作为垃圾收集”。</p>
-<p>请看如下代码：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> o1 = &#123;</span><br><span class="line">  o2: &#123;</span><br><span class="line">    x: <span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2 objects are created. </span></span><br><span class="line"><span class="comment">// 'o2' is referenced by 'o1' object as one of its properties.</span></span><br><span class="line"><span class="comment">// None can be garbage-collected</span></span><br><span class="line"><span class="keyword">var</span> o3 = o1; <span class="comment">// the 'o3' variable is the second thing that </span></span><br><span class="line">            <span class="comment">// has a reference to the object pointed by 'o1'. </span></span><br><span class="line">o1 = <span class="number">1</span>;      <span class="comment">// now, the object that was originally in 'o1' has a         </span></span><br><span class="line">            <span class="comment">// single reference, embodied by the 'o3' variable</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> o4 = o3.o2; <span class="comment">// reference to 'o2' property of the object.</span></span><br><span class="line">                <span class="comment">// This object has now 2 references: one as</span></span><br><span class="line">                <span class="comment">// a property. </span></span><br><span class="line">                <span class="comment">// The other as the 'o4' variable</span></span><br><span class="line"></span><br><span class="line">o3 = <span class="string">'374'</span>; <span class="comment">// The object that was originally in 'o1' has now zero</span></span><br><span class="line">            <span class="comment">// references to it. </span></span><br><span class="line">            <span class="comment">// It can be garbage-collected.</span></span><br><span class="line">            <span class="comment">// However, what was its 'o2' property is still</span></span><br><span class="line">            <span class="comment">// referenced by the 'o4' variable, so it cannot be</span></span><br><span class="line">            <span class="comment">// freed.</span></span><br><span class="line"></span><br><span class="line">o4 = <span class="literal">null</span>; <span class="comment">// what was the 'o2' property of the object originally in</span></span><br><span class="line">           <span class="comment">// 'o1' has zero references to it. </span></span><br><span class="line">           <span class="comment">// It can be garbage collected.</span></span><br></pre></td></tr></table></figure>
-<h2 id="循环在产生问题"><a href="#循环在产生问题" class="headerlink" title="循环在产生问题"></a>循环在产生问题</h2><p>当遇到循环的时候就会有一个限制。在下面的实例之中，创建两个对象，并且互相引用，因此就会产生一个循环。当函数调用结束之后它们会走出作用域之外，因此它们就没什么用并且可以被释放。但是，基于引用计数的算法认为这两个对象都会被至少引用一次，所以它俩都不会被垃圾收集器收集。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> o1 = &#123;&#125;;</span><br><span class="line">  <span class="keyword">var</span> o2 = &#123;&#125;;</span><br><span class="line">  o1.p = o2; <span class="comment">// o1 references o2</span></span><br><span class="line">  o2.p = o1; <span class="comment">// o2 references o1. This creates a cycle.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f();</span><br></pre></td></tr></table></figure>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-4.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-4.png" alt=""></a></p>
-<h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>为了决定哪个对象是需要的，算法会决定是否这个对象是可访问的。</p>
-<p>这个算法由以下步骤组成：</p>
-<ol>
-<li>这个垃圾收集器构建一个“roots”列表。Root是全局变量，被代码中的引用所保存。在 JavaScript中，“window”就是这样的作为root的全局变量的例子。</li>
-<li>所有的root都会被监测并且被标志成活跃的（比如不是垃圾）。所有的子代也会递归地被监测。所有能够由root访问的一切都不会被认为是垃圾。</li>
-<li>所有不再被标志成活跃的内存块都被认为是垃圾。这个收集器现在就可以释放这些内存并将它们返还给操作系统。</li>
-</ol>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-5.gif"><img src="http://idiotsky.me/images1/javascript-how-work-3-5.gif" alt=""></a></p>
-<p>这个算法要优于之前的因为“一个具有0引用的对象”可以让一个对象不能够再被访问。但是相反的却不一定成立，比如我们遇到循环的时候。</p>
-<p>在2012年，所有的现代浏览器都使用标记-清除垃圾收集器。过去几年，JavaScript垃圾收集（代数/增量/并行/并行垃圾收集）领域的所有改进都是对该算法（标记和扫描）的实现进行了改进，但并没有对垃圾收集算法本身的改进， 其目标是确定一个对象是否可达。</p>
-<p><a href="https://en.wikipedia.org/wiki/Tracing_garbage_collection" target="_blank" rel="noopener">在这篇文章中</a>，你可以得到更多关于垃圾收集追踪并且也覆盖到了关于标记-清除算法的优化。</p>
-<h2 id="循环不再是一个问题"><a href="#循环不再是一个问题" class="headerlink" title="循环不再是一个问题"></a>循环不再是一个问题</h2><p>在上述的第一个例子中，在函数调用返回之后，这两个对象不能够被全局对象所访问。因此，垃圾收集器就会发现它们不能够被访问了。</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-6.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-6.png" alt=""></a></p>
-<p>即使在这两个对象之间存在着引用，它们再也不能从root访问了。</p>
-<h2 id="列举垃圾收集器的直观行为"><a href="#列举垃圾收集器的直观行为" class="headerlink" title="列举垃圾收集器的直观行为"></a>列举垃圾收集器的直观行为</h2><p>虽然垃圾收集器很方便，但它们自己也有自己的代价。 其中一个是非确定论。 换句话说，GC是不可预测的。 你不能真正地告诉你什么时候会收集。 这意味着在某些情况下，程序会使用实际需要的更多内存。 在其他情况下，特别敏感的应用程序可能会引起短暂暂停。 虽然非确定性意味着在执行集合时无法确定，但大多数GC实现共享在分配期间执行收集遍历的常见模式。 如果没有执行分配，大多数GC保持空闲状态。 考虑以下情况：</p>
-<ol>
-<li>执行相当大的一组分配。</li>
-<li>这些元素中的大多数（或全部）被标记为不可访问（假设我们将指向我们不再需要的缓存的引用置空）。</li>
-<li>不再执行分配。</li>
-</ol>
-<p>在这种情况下，大多数GC不会再运行收集处理。换句话说，即使存在对于收集器来说不可访问的引用，它们也不会被收集器所认领。严格意义来说这并不是泄露，但是依然会导致比平常更多的内存使用。</p>
-<h1 id="什么是内存泄露？"><a href="#什么是内存泄露？" class="headerlink" title="什么是内存泄露？"></a>什么是内存泄露？</h1><p>实质上，内存泄漏可以被定义为应用程序不再需要的内存，但是由于某些原因不会返回到操作系统或可用内存池。</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-7.jpg"><img src="http://idiotsky.me/images1/javascript-how-work-3-7.jpg" alt=""></a></p>
-<p>编程语言有支持管理内存的不同方法。 然而，某块内存是否被使用实际上是一个<a href="ttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management#Release_when_the_memory_is_not_needed_anymore" target="_blank" rel="noopener">不可判定的问题</a>。 换句话说，只有开发人员可以清楚一个内存是否可以返回到操作系统。</p>
-<p>某些编程语言提供了帮助开发者执行此操作的功能。其他的则期望开发人员能够完全明确何时使用一块内存。 维基百科有关于<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="noopener">手动</a>和<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="noopener">自动</a>内存管理的好文章。</p>
-<h2 id="四种常见的JavaScript泄露"><a href="#四种常见的JavaScript泄露" class="headerlink" title="四种常见的JavaScript泄露"></a>四种常见的JavaScript泄露</h2><h3 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h3><p>JavaScript 使用一种有趣的方式处理未声明的变量：一个未声明变量的引用会在<em>全局</em>对象内部产生一个新的变量。在浏览器的情况，这个全局变量就会是window。换句话说：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">arg</span>) </span>&#123;</span><br><span class="line">    bar = <span class="string">"some text"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>等同于：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">arg</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">window</span>.bar = <span class="string">"some text"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果bar被期望仅仅在foo函数作用域内保持对变量的引用，并且你忘记使用var去声明它，一个意想不到的全局变量就产生了。</p>
-<p>在这个例子中，泄露就仅仅是一个字符串并不会带来太多危害，但是它可能会变得更糟。</p>
-<p>另外一种可能产生意外的全局变量的方式是：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.var1 = <span class="string">"potential accidental global"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Foo called on its own, this points to the global object (window)</span></span><br><span class="line"><span class="comment">// rather than being undefined.</span></span><br><span class="line">foo();</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p> 为了阻止这些错误的发生，可以在js文件头部添加’use strict’。这将会使用严格模式来解析 JavaScript 从而阻止意外的全局变量。<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode" target="_blank" rel="noopener">了解更多</a>关于JavaScript执行的模式。</p>
-</blockquote>
-<p>即使我们讨论了未预期的全局变量，但仍然有很多代码用显式的全局变量填充。 这些定义是不可收集的（除非分配为null或重新分配）。 特别是，用于临时存储和处理大量信息的全局变量值得关注。 如果你必须使用全局变量来存储大量数据，请确保在完成之后<strong>将其分配为null或重新分配</strong>。</p>
-<h3 id="被遗忘的计时器和回调"><a href="#被遗忘的计时器和回调" class="headerlink" title="被遗忘的计时器和回调"></a>被遗忘的计时器和回调</h3><p><code>setInterval</code> 在 JavaScript 中是经常被使用的。</p>
-<p>大多数提供观察者和其他模式的回调函数库都会在调用自己的实例变得无法访问之后对其任何引用也设置为不可访问。 但是在<code>setInterval</code>的情况下，这样的代码很常见：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> serverData = loadData();</span><br><span class="line">setInterval(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> renderer = <span class="built_in">document</span>.getElementById(<span class="string">'renderer'</span>);</span><br><span class="line">    <span class="keyword">if</span>(renderer) &#123;</span><br><span class="line">        renderer.innerHTML = <span class="built_in">JSON</span>.stringify(serverData);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="number">5000</span>); <span class="comment">//This will be executed every ~5 seconds.</span></span><br></pre></td></tr></table></figure>
-<p>这个例子说明了计时器可能发生的情况：计时器可能会产生再也不被需要的节点或者数据的引用。</p>
-<p><code>renderer</code>所代表的对象在未来可能被移除，让部分interval 处理器中代码变得不再被需要。然而，这个处理器不能够被收集因为interval依然活跃的（这个interval需要被停止从而表面这种情况）。如果这个interval处理器不能够被收集，那么它的依赖也不能够被收集。这意味这存储大量数据的<code>severData</code>也不能够被收集。</p>
-<p>在这种观察者的情况下，做出准确的调用从而在不需要它们的时候立即将其移除是非常重要的（或者相关的对象被置为不可访问的）。</p>
-<p>过去，以前特别重要的是某些浏览器（好的老IE 6）无法管理好循环引用（有关更多信息，请参见下文）。 如今，大多数浏览器一旦观察到的对象变得无法访问，就能收集观察者处理器，即使侦听器没有被明确删除。 但是，在处理对象之前，明确删除这些观察者仍然是一个很好的做法。 例如：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> element = <span class="built_in">document</span>.getElementById(<span class="string">'launch-button'</span>);</span><br><span class="line"><span class="keyword">var</span> counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onClick</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">   counter++;</span><br><span class="line">   element.innerHtml = <span class="string">'text '</span> + counter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">element.addEventListener(<span class="string">'click'</span>, onClick);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Do stuff</span></span><br><span class="line"></span><br><span class="line">element.removeEventListener(<span class="string">'click'</span>, onClick);</span><br><span class="line">element.parentNode.removeChild(element);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Now when element goes out of scope,</span></span><br><span class="line"><span class="comment">// both element and onClick will be collected even in old browsers // that don't handle cycles well.</span></span><br></pre></td></tr></table></figure>
-<p>当今，现在浏览器（报错IE和Edge）都使用了现代的垃圾收集算法，其能够检测到这些循环并且进行适宜的处理。换句话说，再也不是严格需要在将节点置为不可访问之前调用removeEventListener 。</p>
-<p>框架和库（如jQuery）在处理节点之前（在为其使用特定的API时）会删除侦听器。 这是由库内部处理的，这也确保没有泄漏，即使在有问题的浏览器下运行，如…是的，IE 6。</p>
-<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>JavaScript 开发的一个关键方面是闭包：一个可以访问外部（封闭）函数变量的内部函数。 由于JavaScript运行时的实现细节，可以通过以下方式泄漏内存：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">var</span> theThing = <span class="literal">null</span>;</span><br><span class="line"> <span class="keyword">var</span> replaceThing = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line"> 	<span class="keyword">var</span> originalThing = theThing;</span><br><span class="line"> 	<span class="keyword">var</span> unused = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    	<span class="keyword">if</span> (originalThing) <span class="comment">// a reference to 'originalThing'</span></span><br><span class="line">      		<span class="built_in">console</span>.log(<span class="string">"hi"</span>);</span><br><span class="line">  	&#125;;</span><br><span class="line"></span><br><span class="line">  	theThing = &#123;</span><br><span class="line">    	longStr: <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>).join(<span class="string">'*'</span>),</span><br><span class="line">    	someMethod: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      		<span class="built_in">console</span>.log(<span class="string">"message"</span>);</span><br><span class="line">    	&#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">setInterval(replaceThing, <span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
-<p>这个代码段会做一件事情：每次 <code>replaceThing</code> 被调用时，<code>theThing</code> 都会获取一个一个包含一个大数组的以及一个新的闭包（<code>someMethod</code>）。同时，<code>unused</code> 会保持一个指向<code>originalThing</code>引用的闭包（从上一个调用的<code>theThing</code>到<code>replaceThing</code>）。可能已经很迷惑了，是不是？重要的事情是<strong>一旦在相同的父级作用域为闭包产生作用域，这个作用域就会被共享</strong>。</p>
-<p>在这种情况下，为<code>someMethod</code>闭包产生的作用域就会被<code>unused</code> 所共享。<code>unused</code> 具有对于<code>originaThing</code>的引用。即使 <code>unused</code>  不再被使用，<code>someMethod</code>依然可以通过<code>replaceThing</code>作用域之外的<code>theThing</code>来使用。并且由于<code>somethod</code>和<code>unused</code> 共享闭包作用域，unused指向originalThing的引用强迫其保持活跃（两个闭包之间的整个共享作用域）。这将会阻止垃圾手机。</p>
-<p>当这个代码段重复运行时，可以观察到内存使用量的稳定增长。 当GC运行时，这不会变小。 实质上，创建了一个关闭的链接列表（其root以TheThing变量的形式），并且这些闭包的范围中的每一个都对大数组进行间接引用，导致相当大的泄漏。</p>
-<p>这个问题由Meteor团队发现，他们有<a href="https://blog.meteor.com/an-interesting-kind-of-javascript-memory-leak-8b47d2e7f156" target="_blank" rel="noopener">一篇很好的文章</a>，详细描述了这个问题。</p>
-<h3 id="DOM-之外的引用"><a href="#DOM-之外的引用" class="headerlink" title="DOM 之外的引用"></a>DOM 之外的引用</h3><p>有时将DOM节点存储在数据结构中可能是有用的。 假设要快速更新表中的几行内容。 存储对字典或数组中每个DOM行的引用可能是有意义的。 当发生这种情况时，会保留对同一DOM元素的两个引用：一个在DOM树中，另一个在字典中。 如果将来某个时候您决定删除这些行，则需要使两个引用置为不可访问。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> elements = &#123;</span><br><span class="line">    button: <span class="built_in">document</span>.getElementById(<span class="string">'button'</span>),</span><br><span class="line">    image: <span class="built_in">document</span>.getElementById(<span class="string">'image'</span>)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doStuff</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    image.src = <span class="string">'http://example.com/image_name.png'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">removeImage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// The image is a direct child of the body element.</span></span><br><span class="line">    <span class="built_in">document</span>.body.removeChild(<span class="built_in">document</span>.getElementById(<span class="string">'image'</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// At this point, we still have a reference to #button in the</span></span><br><span class="line">    <span class="comment">//global elements object. In other words, the button element is</span></span><br><span class="line">    <span class="comment">//still in memory and cannot be collected by the GC.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>还有一个额外的考虑，当涉及对DOM树内部的内部或叶节点的引用时，必须考虑这一点。 假设你在JavaScript代码中保留对表格特定单元格（<code>&lt;td&gt;</code>标记）的引用。 有一天，你决定从DOM中删除该表，但保留对该单元格的引用。 直观地，可以假设GC将收集除了该单元格之外的所有内容。 实际上，这不会发生：该单元格是该表的子节点，并且孩子们保持对父代的引用。 也就是说，从JavaScript代码引用表格单元会导致整个表保留在内存中。 保持对DOM元素的引用时需要仔细考虑。</p>
-<p>参考 <a href="https://segmentfault.com/a/1190000011229300" target="_blank" rel="noopener">https://segmentfault.com/a/1190000011229300</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。&lt;/p&gt;
-&lt;p&gt;这个系列的第一篇博客专注于介绍&lt;a href=&quot;http://idiotsky.me/2017/08/26/javascript-how-work/&quot;&gt;对于引擎，运行时以及调用栈的概述&lt;/a&gt;。&lt;a href=&quot;http://idiotsky.me/2017/08/26/javascript-how-work-2/&quot;&gt;第二篇博客近距离地检测了Google V8 引擎的内部&lt;/a&gt;并且提供了一些如何写出更好的JavaScript代码的建议。&lt;/p&gt;
-&lt;p&gt;在第三篇博客中，我们将会讨论另外一个关键的话题。这个话题由于随着编程语言的逐渐成熟和复杂化，越来越被开发者所忽视，这个话题就是在日常工作中使用到的——内存管理。&lt;/p&gt;
-&lt;h1 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h1&gt;&lt;p&gt;语言，比如C，具有低层次的内存管理方法，比如&lt;code&gt;malloc()&lt;/code&gt;以及&lt;code&gt;free()&lt;/code&gt;。开发者利用这些方法精确地为操作系统分配以及释放内存。&lt;/p&gt;
-&lt;p&gt;同时，JavaScript会在创建一些变量（对象，字符串等等）的时候分配内存，并且会在这些不被使用之后“自动地”释放这些内存，这个过程被称为&lt;em&gt;垃圾收集&lt;/em&gt;。这个看起来“自动化的”特性其实就是产生误解的原因，并且给JavaScript（以及其他高层次语言）开发者一个假象，他们不需要关心内存管理。&lt;strong&gt;大错特错。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;即使是使用高层次语言，开发者应该对于内存管理有一定的理解（或者最基本的理解）。有时候自动的内存管理会存在一些问题（比如一些bug或者垃圾收集器的一些限制等等），对于这些开发者必须能够理解从而能够合适地处理（或者使用最小的代价以及代码债务去绕过这个问题）。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="javascript" scheme="http://idiotsky.me/categories/javascript/"/>
-    
-    
-      <category term="javascript" scheme="http://idiotsky.me/tags/javascript/"/>
     
   </entry>
   
