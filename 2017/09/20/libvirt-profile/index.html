@@ -107,18 +107,18 @@
 <meta name="keywords" content="openstack,kvm,libvirt,虚拟化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Libvirt 虚拟化库剖析">
-<meta property="og:url" content="http://idiotsky.me/2017/09/20/libvirt-profile/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/09/20/libvirt-profile/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="openstack可以支持多个虚拟机监控程序（hypervisor），是利用libvirt库来实现的，所以，mark吧👿  概览讲到向外扩展计算（比如云计算），libvirt 可能是您从未听说过的最重要的库之一。libvirt 提供一种虚拟机监控程序不可知的 API 来安全管理运行于主机上的来宾操作系统。libvirt 本身 不是一种工具， 它是一种可以建立工具来管理来宾操作系统的 API。l">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images3/libvirt-profile-1.gif">
-<meta property="og:image" content="http://idiotsky.me/images3/libvirt-profile-2.gif">
-<meta property="og:image" content="http://idiotsky.me/images3/libvirt-profile-3.gif">
-<meta property="og:updated_time" content="2018-05-27T09:43:46.478Z">
+<meta property="og:image" content="http://idiotsky.top/images3/libvirt-profile-1.gif">
+<meta property="og:image" content="http://idiotsky.top/images3/libvirt-profile-2.gif">
+<meta property="og:image" content="http://idiotsky.top/images3/libvirt-profile-3.gif">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.538Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Libvirt 虚拟化库剖析">
 <meta name="twitter:description" content="openstack可以支持多个虚拟机监控程序（hypervisor），是利用libvirt库来实现的，所以，mark吧👿  概览讲到向外扩展计算（比如云计算），libvirt 可能是您从未听说过的最重要的库之一。libvirt 提供一种虚拟机监控程序不可知的 API 来安全管理运行于主机上的来宾操作系统。libvirt 本身 不是一种工具， 它是一种可以建立工具来管理来宾操作系统的 API。l">
-<meta name="twitter:image" content="http://idiotsky.me/images3/libvirt-profile-1.gif">
+<meta name="twitter:image" content="http://idiotsky.top/images3/libvirt-profile-1.gif">
 
 
 
@@ -147,7 +147,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/09/20/libvirt-profile/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/09/20/libvirt-profile/"/>
 
 
 
@@ -348,7 +348,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/20/libvirt-profile/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/20/libvirt-profile/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -444,14 +444,14 @@
 <a id="more"></a>
 <h1 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h1><p>首先让我们从用例模型视角来展开对 libvirt 的讨论，然后深入探究其架构和用途。libvirt 以一组 API 的形式存在，旨在供管理应用程序使用（见图 1 ）。libvirt 通过一种特定于虚拟机监控程序的机制与每个有效虚拟机监控程序进行通信，以完成 API 请求。文章后面我将探讨如何通过 QEMU 来实现该功能。</p>
 <p>图 1. libvirt 比较和用例模型</p>
-<p><a href="http://idiotsky.me/images3/libvirt-profile-1.gif"><img src="http://idiotsky.me/images3/libvirt-profile-1.gif" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/libvirt-profile-1.gif"><img src="http://idiotsky.top/images3/libvirt-profile-1.gif" alt=""></a></p>
 <p>图中还显示了 libvirt 所用术语对照。这些术语很重要，因为在对 API 命名时会用到它们。两个根本区别在于，libvirt 将物理主机称作节点，将来宾操作系统称作域。这里需要注意的是，libvirt（及其应用程序）在宿主 Linux 操作系统（域 0）中运行。</p>
 <h2 id="控制方式"><a href="#控制方式" class="headerlink" title="控制方式"></a>控制方式</h2><p>使用 libvirt，我们有两种不同的控制方式。第一种如 图 1 所示，其中管理应用程序和域位于同一节点上。 在本例中，管理应用程序通过 libvirt 工作，以控制本地域。当管理应用程序和域位于不同节点上时，便产生了另一种控制方式。在本例中需要进行远程通信（参见 图 2）。该模式使用一种运行于远程节点上、名为 libvirtd 的特殊守护进程。当在新节点上安装 libvirt 时该程序会自动启动，且可自动确定本地虚拟机监控程序并为其安装驱动程序（稍后讨论）。该管理应用程序通过一种通用协议从本地 libvirt 连接到远程 libvirtd。对于 QEMU，协议在 QEMU 监视器处结束。QEMU 包含一个监测控制台，它允许检查运行中的来宾操作系统并控制虚拟机（VM）各部分。</p>
 <p>图 2. 使用 libvirtd 控制远程虚拟机监控程序</p>
-<p><a href="http://idiotsky.me/images3/libvirt-profile-2.gif"><img src="http://idiotsky.me/images3/libvirt-profile-2.gif" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/libvirt-profile-2.gif"><img src="http://idiotsky.top/images3/libvirt-profile-2.gif" alt=""></a></p>
 <h2 id="虚拟机监控程序支持"><a href="#虚拟机监控程序支持" class="headerlink" title="虚拟机监控程序支持"></a>虚拟机监控程序支持</h2><p>为支持各种虚拟机监控程序的可扩展性，libvirt 实施一种基于驱动程序的架构，该架构允许一种通用的 API 以通用方式为大量潜在的虚拟机监控程序提供服务。这意味着，一些虚拟机监控程序的某些专业功能在 API 中不可见。另外，有些虚拟机监控程序可能不能实施所有 API 功能，因而在特定驱动程序内被定义为不受支持。图 3 展示了 libvirt API 与相关驱动程序的层次结构。这里也需要注意，libvirtd 提供从远程应用程序访问本地域的方式。</p>
 <p>图 3. 基于驱动程序的 libvirt 架构</p>
-<p><a href="http://idiotsky.me/images3/libvirt-profile-3.gif"><img src="http://idiotsky.me/images3/libvirt-profile-3.gif" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/libvirt-profile-3.gif"><img src="http://idiotsky.top/images3/libvirt-profile-3.gif" alt=""></a></p>
 <p>在撰写此文时，libvirt 为表 1 所列的虚拟机监控程序实现了驱动程序。随着新的虚拟机监控程序在开源社区出现，其他驱动程序无疑也将可用。</p>
 <p>表 1. libvirt 支持的虚拟机监控程序</p>
 <table>
@@ -662,7 +662,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -684,7 +684,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

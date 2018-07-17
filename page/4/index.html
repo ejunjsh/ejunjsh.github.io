@@ -106,7 +106,7 @@
 <meta name="description" content="code freak">
 <meta property="og:type" content="website">
 <meta property="og:title" content="IdiotSky">
-<meta property="og:url" content="http://idiotsky.me/page/4/index.html">
+<meta property="og:url" content="http://idiotsky.top/page/4/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="code freak">
 <meta property="og:locale" content="en">
@@ -141,7 +141,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/page/4/"/>
+  <link rel="canonical" href="http://idiotsky.top/page/4/"/>
 
 
 
@@ -344,7 +344,157 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/14/redis-linkedlist/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/15/redis-dict/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/15/redis-dict/" itemprop="url">redis数据结构-字典</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-15T00:59:31+08:00">
+                15 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>Redis 的数据库就是使用字典来作为底层实现的, 字典还是哈希键的底层实现之一<br>Redis 的字典使用哈希表作为底层实现， 一个哈希表里面可以有多个哈希表节点， 而每个哈希表节点就保存了字典中的一个键值对。</p>
+</blockquote>
+<h1 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h1><p>Redis 字典所使用的哈希表由 dict.h/dictht 结构定义：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">dictht</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表数组</span></span><br><span class="line">    dictEntry **table;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 哈希表大小掩码，用于计算索引值</span></span><br><span class="line">    <span class="comment">// 总是等于 size - 1</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> sizemask;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 该哈希表已有节点的数量</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> used;</span><br><span class="line"></span><br><span class="line">&#125; dictht;</span><br></pre></td></tr></table></figure></p>
+<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。<br>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。<br>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。<br>图 4-1 展示了一个大小为 4 的空哈希表 （没有包含任何键值对）。<br><a href="http://idiotsky.top/images/redis-dict-1.png"><img src="http://idiotsky.top/images/redis-dict-1.png" alt=""></a><br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/15/redis-dict/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/14/redis-linkedlist/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -440,7 +590,7 @@
 <p>列表键的底层就是一个链表</p>
 </blockquote>
 <h1 id="链表节点"><a href="#链表节点" class="headerlink" title="链表节点"></a>链表节点</h1><p>每个链表节点使用一个 adlist.h/listNode 结构来表示：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 前置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 后置节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点的值</span></span><br><span class="line">    <span class="keyword">void</span> *value;</span><br><span class="line"></span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure></p>
-<p>多个 listNode 可以通过 prev 和 next 指针组成双端链表， 如图 3-1 所示。<br><a href="http://idiotsky.me/images/redis-linkedlist-1.png"><img src="http://idiotsky.me/images/redis-linkedlist-1.png" alt=""></a><br>
+<p>多个 listNode 可以通过 prev 和 next 指针组成双端链表， 如图 3-1 所示。<br><a href="http://idiotsky.top/images/redis-linkedlist-1.png"><img src="http://idiotsky.top/images/redis-linkedlist-1.png" alt=""></a><br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/14/redis-linkedlist/#more" rel="contents">
@@ -494,7 +644,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/14/java-jit/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/14/java-jit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -642,7 +792,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/14/openstack-install-neutron-2/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/14/openstack-install-neutron-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -786,7 +936,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/13/kafka-design/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/13/kafka-design/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -934,7 +1084,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/13/openstack-install-neutron-1/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/13/openstack-install-neutron-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1078,7 +1228,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/13/redis-string/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/13/redis-string/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1178,7 +1328,7 @@
 <ul>
 <li>free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间。</li>
 <li>len 属性的值为 5 ， 表示这个 SDS 保存了一个五字节长的字符串。</li>
-<li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。<br><a href="http://idiotsky.me/images/redis-string-1.png"><img src="http://idiotsky.me/images/redis-string-1.png" alt=""></a><br>SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。</li>
+<li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。<br><a href="http://idiotsky.top/images/redis-string-1.png"><img src="http://idiotsky.top/images/redis-string-1.png" alt=""></a><br>SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。</li>
 </ul>
 <p>遵循空字符结尾这一惯例的好处是， SDS 可以直接重用一部分 C 字符串函数库里面的函数。</p>
 <p>举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s-&gt;buf);</span><br></pre></td></tr></table></figure></p>
@@ -1235,7 +1385,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/12/openstack-install-nova-2/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/12/openstack-install-nova-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1428,7 +1578,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/11/openstack-install-nova-1/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/11/openstack-install-nova-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1591,7 +1741,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/11/epoll-mechanism/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/11/epoll-mechanism/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -1732,168 +1882,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/10/openstack-install-glance/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/10/openstack-install-glance/" itemprop="url">openstack安装-glance</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-10T14:22:32+08:00">
-                10 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/openstack/" itemprop="url" rel="index">
-                    <span itemprop="name">openstack</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>glance提供镜像服务使用户能够发现，注册和检索虚拟机镜像。它提供了一个 REST API，可让您查询虚拟机镜像元数据并检索实际镜像。您可以存储镜像在各种位置（从简单的文件系统到像OpenStack Object Storage这样的对象存储系统）。<br>为了简单起见，这里只是教你如何配置镜像服务，并把镜像保存到controller节点的文件目录里面，此目录为/var/lib/glance/images/。<br>这一章还是在<code>controller</code>节点操作。。。</p>
-</blockquote>
-<h1 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h1><h2 id="创建数据库"><a href="#创建数据库" class="headerlink" title="创建数据库"></a>创建数据库</h2><ul>
-<li><p>用<code>root</code>用户权限执行<code>mysql</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mysql</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建<code>glance</code>数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; CREATE DATABASE glance;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>赋予适合的权限给<code>glance</code>数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;localhost&apos; \</span><br><span class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</span><br><span class="line">MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON glance.* TO &apos;glance&apos;@&apos;%&apos; \</span><br><span class="line">  IDENTIFIED BY &apos;GLANCE_DBPASS&apos;;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>替换一下<code>GLANCE_DBPASS</code>为一个合适的密码，后面会用到</p>
-<ul>
-<li>退出mysql
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/10/openstack-install-glance/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1944,7 +1932,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1966,7 +1954,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

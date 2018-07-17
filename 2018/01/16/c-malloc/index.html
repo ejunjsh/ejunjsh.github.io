@@ -107,22 +107,22 @@
 <meta name="keywords" content="c,malloc">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何实现一个malloc">
-<meta property="og:url" content="http://idiotsky.me/2018/01/16/c-malloc/index.html">
+<meta property="og:url" content="http://idiotsky.top/2018/01/16/c-malloc/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="这篇文章很好的总结了很多关于内存的知识，虽然它讲的只是一个c标准库的一个函数，mark之👿  任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-1.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-2.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-3.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-4.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-5.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-6.png">
-<meta property="og:image" content="http://idiotsky.me/images2/c-malloc-7.png">
-<meta property="og:updated_time" content="2018-06-27T12:59:11.699Z">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-1.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-2.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-3.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-4.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-5.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-6.png">
+<meta property="og:image" content="http://idiotsky.top/images2/c-malloc-7.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.538Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何实现一个malloc">
 <meta name="twitter:description" content="这篇文章很好的总结了很多关于内存的知识，虽然它讲的只是一个c标准库的一个函数，mark之👿  任何一个用过或学过C的人对malloc都不会陌生。大家都知道malloc可以分配一段连续的内存空间，并且在不再使用时可以通过free释放掉。但是，许多程序员对malloc背后的事情并不熟悉，许多人甚至把malloc当做操作系统所提供的系统调用或C的关键字。实际上，malloc只是C的标准库中提供的一个">
-<meta name="twitter:image" content="http://idiotsky.me/images2/c-malloc-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images2/c-malloc-1.png">
 
 
 
@@ -151,7 +151,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2018/01/16/c-malloc/"/>
+  <link rel="canonical" href="http://idiotsky.top/2018/01/16/c-malloc/"/>
 
 
 
@@ -352,7 +352,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/16/c-malloc/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/01/16/c-malloc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -464,13 +464,13 @@
 <p>这种虚拟地址空间的作用主要是简化程序的编写及方便操作系统对进程间内存的隔离管理，真实中的进程不太可能（也用不到）如此大的内存空间，实际能用到的内存取决于物理内存大小。</p>
 <p>由于在机器语言层面都是采用虚拟地址，当实际的机器码程序涉及到内存操作时，需要根据当前进程运行的实际上下文将虚拟地址转换为物理内存地址，才能实现对真实内存数据的操作。这个转换一般由一个叫<a href="http://en.wikipedia.org/wiki/Memory_management_unit" target="_blank" rel="noopener">MMU</a>（Memory Management Unit）的硬件完成。</p>
 <h3 id="页与地址构成"><a href="#页与地址构成" class="headerlink" title="页与地址构成"></a>页与地址构成</h3><p>在现代操作系统中，不论是虚拟内存还是物理内存，都不是以字节为单位进行管理的，而是以页（Page）为单位。一个内存页是一段固定大小的连续内存地址的总称，具体到Linux中，典型的内存页大小为4096Byte（4K）。</p>
-<p>所以内存地址可以分为页号和页内偏移量。下面以64位机器，4G物理内存，4K页大小为例，虚拟内存地址和物理内存地址的组成如下：<br><a href="http://idiotsky.me/images2/c-malloc-1.png"><img src="http://idiotsky.me/images2/c-malloc-1.png" alt=""></a></p>
+<p>所以内存地址可以分为页号和页内偏移量。下面以64位机器，4G物理内存，4K页大小为例，虚拟内存地址和物理内存地址的组成如下：<br><a href="http://idiotsky.top/images2/c-malloc-1.png"><img src="http://idiotsky.top/images2/c-malloc-1.png" alt=""></a></p>
 <p>上面是虚拟内存地址，下面是物理内存地址。由于页大小都是4K，所以页内便宜都是用低12位表示，而剩下的高地址表示页号。</p>
-<p>MMU映射单位并不是字节，而是页，这个映射通过查一个常驻内存的数据结构<a href="http://en.wikipedia.org/wiki/Page_table" target="_blank" rel="noopener">页表</a>来实现。现在计算机具体的内存地址映射比较复杂，为了加快速度会引入一系列缓存和优化，例如<a href="http://en.wikipedia.org/wiki/Translation_lookaside_buffer" target="_blank" rel="noopener">TLB</a>等机制。下面给出一个经过简化的内存地址翻译示意图，虽然经过了简化，但是基本原理与现代计算机真实的情况的一致的。<br><a href="http://idiotsky.me/images2/c-malloc-2.png"><img src="http://idiotsky.me/images2/c-malloc-2.png" alt=""></a></p>
-<h3 id="内存页与磁盘页"><a href="#内存页与磁盘页" class="headerlink" title="内存页与磁盘页"></a>内存页与磁盘页</h3><p>我们知道一般将内存看做磁盘的的缓存，有时MMU在工作时，会发现页表表明某个内存页不在物理内存中，此时会触发一个缺页异常（Page Fault），此时系统会到磁盘中相应的地方将磁盘页载入到内存中，然后重新执行由于缺页而失败的机器指令。关于这部分，因为可以看做对malloc实现是透明的，所以不再详细讲述，有兴趣的可以参考《深入理解计算机系统》相关章节。<br><a href="http://idiotsky.me/images2/c-malloc-3.png"><img src="http://idiotsky.me/images2/c-malloc-3.png" alt=""></a></p>
+<p>MMU映射单位并不是字节，而是页，这个映射通过查一个常驻内存的数据结构<a href="http://en.wikipedia.org/wiki/Page_table" target="_blank" rel="noopener">页表</a>来实现。现在计算机具体的内存地址映射比较复杂，为了加快速度会引入一系列缓存和优化，例如<a href="http://en.wikipedia.org/wiki/Translation_lookaside_buffer" target="_blank" rel="noopener">TLB</a>等机制。下面给出一个经过简化的内存地址翻译示意图，虽然经过了简化，但是基本原理与现代计算机真实的情况的一致的。<br><a href="http://idiotsky.top/images2/c-malloc-2.png"><img src="http://idiotsky.top/images2/c-malloc-2.png" alt=""></a></p>
+<h3 id="内存页与磁盘页"><a href="#内存页与磁盘页" class="headerlink" title="内存页与磁盘页"></a>内存页与磁盘页</h3><p>我们知道一般将内存看做磁盘的的缓存，有时MMU在工作时，会发现页表表明某个内存页不在物理内存中，此时会触发一个缺页异常（Page Fault），此时系统会到磁盘中相应的地方将磁盘页载入到内存中，然后重新执行由于缺页而失败的机器指令。关于这部分，因为可以看做对malloc实现是透明的，所以不再详细讲述，有兴趣的可以参考《深入理解计算机系统》相关章节。<br><a href="http://idiotsky.top/images2/c-malloc-3.png"><img src="http://idiotsky.top/images2/c-malloc-3.png" alt=""></a></p>
 <h2 id="Linux进程级内存管理"><a href="#Linux进程级内存管理" class="headerlink" title="Linux进程级内存管理"></a>Linux进程级内存管理</h2><h3 id="内存排布"><a href="#内存排布" class="headerlink" title="内存排布"></a>内存排布</h3><p>明白了虚拟内存和物理内存的关系及相关的映射机制，下面看一下具体在一个进程内是如何排布内存的。</p>
 <p>以Linux 64位系统为例。理论上，64bit内存地址可用空间为0x0000000000000000 ~ 0xFFFFFFFFFFFFFFFF，这是个相当庞大的空间，Linux实际上只用了其中一小部分（256T）。</p>
-<p>根据<a href="https://www.kernel.org/doc/Documentation/x86/x86_64/mm.txt" target="_blank" rel="noopener">Linux内核相关文档</a>描述，Linux64位操作系统仅使用低47位，高17位做扩展（只能是全0或全1）。所以，实际用到的地址为空间为0x0000000000000000 ~ 0x00007FFFFFFFFFFF和0xFFFF800000000000 ~ 0xFFFFFFFFFFFFFFFF，其中前面为用户空间（User Space），后者为内核空间（Kernel Space）。图示如下：<br><a href="http://idiotsky.me/images2/c-malloc-4.png"><img src="http://idiotsky.me/images2/c-malloc-4.png" alt=""></a></p>
+<p>根据<a href="https://www.kernel.org/doc/Documentation/x86/x86_64/mm.txt" target="_blank" rel="noopener">Linux内核相关文档</a>描述，Linux64位操作系统仅使用低47位，高17位做扩展（只能是全0或全1）。所以，实际用到的地址为空间为0x0000000000000000 ~ 0x00007FFFFFFFFFFF和0xFFFF800000000000 ~ 0xFFFFFFFFFFFFFFFF，其中前面为用户空间（User Space），后者为内核空间（Kernel Space）。图示如下：<br><a href="http://idiotsky.top/images2/c-malloc-4.png"><img src="http://idiotsky.top/images2/c-malloc-4.png" alt=""></a></p>
 <p>对用户来说，主要关注的空间是User Space。将User Space放大后，可以看到里面主要分为如下几段：</p>
 <ul>
 <li>Code：这是整个用户空间的最低地址部分，存放的是指令（也就是程序所编译成的可执行机器码）</li>
@@ -482,7 +482,7 @@
 </ul>
 <p>下面我们主要关注Heap区域的操作。对整个Linux内存排布有兴趣的同学可以参考其它资料。</p>
 <h3 id="Heap内存模型"><a href="#Heap内存模型" class="headerlink" title="Heap内存模型"></a>Heap内存模型</h3><p>一般来说，malloc所申请的内存主要从Heap区域分配（本文不考虑通过mmap申请大块内存的情况）。</p>
-<p>由上文知道，进程所面对的虚拟内存地址空间，只有按页映射到物理内存地址，才能真正使用。受物理存储容量限制，整个堆虚拟内存空间不可能全部映射到实际的物理内存。Linux对堆的管理示意如下：<br><a href="http://idiotsky.me/images2/c-malloc-5.png"><img src="http://idiotsky.me/images2/c-malloc-5.png" alt=""></a></p>
+<p>由上文知道，进程所面对的虚拟内存地址空间，只有按页映射到物理内存地址，才能真正使用。受物理存储容量限制，整个堆虚拟内存空间不可能全部映射到实际的物理内存。Linux对堆的管理示意如下：<br><a href="http://idiotsky.top/images2/c-malloc-5.png"><img src="http://idiotsky.top/images2/c-malloc-5.png" alt=""></a></p>
 <p>Linux维护一个break指针，这个指针指向堆空间的某个地址。从堆起始地址到break之间的地址空间为映射好的，可以供进程访问；而从break往上，是未映射的地址空间，如果访问这段空间则程序会报错。</p>
 <h3 id="brk与sbrk"><a href="#brk与sbrk" class="headerlink" title="brk与sbrk"></a>brk与sbrk</h3><p>由上文知道，要增加一个进程实际的可用堆大小，就需要将break指针向高地址移动。Linux通过brk和sbrk系统调用操作break指针。两个系统调用的原型如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">brk</span><span class="params">(<span class="keyword">void</span> *addr)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">sbrk</span><span class="params">(<span class="keyword">intptr_t</span> increment)</span></span>;</span><br></pre></td></tr></table></figure></p>
 <p>brk将break指针直接设置为某个地址，而sbrk将break从当前位置移动increment所指定的增量。brk在执行成功时返回0，否则返回-1并设置errno为ENOMEM；sbrk成功时返回break移动之前所指向的地址，否则返回(void *)-1。</p>
@@ -496,7 +496,7 @@
 <h2 id="正式实现"><a href="#正式实现" class="headerlink" title="正式实现"></a>正式实现</h2><p>下面严肃点讨论malloc的实现方案。</p>
 <h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>首先我们要确定所采用的数据结构。一个简单可行方案是将堆内存空间以块（Block）的形式组织起来，每个块由meta区和数据区组成，meta区记录数据块的元信息（数据区大小、空闲标志位、指针等等），数据区是真实分配的内存区域，并且数据区的第一个字节地址即为malloc返回的地址。</p>
 <p>可以用如下结构体定义一个block：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">s_block</span> *<span class="title">t_block</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">s_block</span> &#123;</span></span><br><span class="line">    <span class="keyword">size_t</span> size;  <span class="comment">/* 数据区大小 */</span></span><br><span class="line">    t_block next; <span class="comment">/* 指向下个块的指针 */</span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;     <span class="comment">/* 是否是空闲块 */</span></span><br><span class="line">    <span class="keyword">int</span> padding;  <span class="comment">/* 填充4字节，保证meta块长度为8的倍数 */</span></span><br><span class="line">    <span class="keyword">char</span> data[<span class="number">1</span>]  <span class="comment">/* 这是一个虚拟字段，表示数据块的第一个字节，长度不应计入meta */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-<p>由于我们只考虑64位机器，为了方便，我们在结构体最后填充一个int，使得结构体本身的长度为8的倍数，以便内存对齐。示意图如下：<br><a href="http://idiotsky.me/images2/c-malloc-6.png"><img src="http://idiotsky.me/images2/c-malloc-6.png" alt=""></a></p>
+<p>由于我们只考虑64位机器，为了方便，我们在结构体最后填充一个int，使得结构体本身的长度为8的倍数，以便内存对齐。示意图如下：<br><a href="http://idiotsky.top/images2/c-malloc-6.png"><img src="http://idiotsky.top/images2/c-malloc-6.png" alt=""></a></p>
 <h3 id="寻找合适的block"><a href="#寻找合适的block" class="headerlink" title="寻找合适的block"></a>寻找合适的block</h3><p>现在考虑如何在block链中查找合适的block。一般来说有两种查找算法：</p>
 <ul>
 <li><strong>First fit</strong>：从头开始，使用第一个数据区大小大于要求size的块所谓此次分配的块</li>
@@ -505,7 +505,7 @@
 <p>两种方法各有千秋，best fit具有较高的内存使用率（payload较高），而first fit具有更好的运行效率。这里我们采用first fit算法。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* First fit */</span></span><br><span class="line"><span class="function">t_block <span class="title">find_block</span><span class="params">(t_block *last, <span class="keyword">size_t</span> size)</span> </span>&#123;</span><br><span class="line">    t_block b = first_block;</span><br><span class="line">    <span class="keyword">while</span>(b &amp;&amp; !(b-&gt;<span class="built_in">free</span> &amp;&amp; b-&gt;size &gt;= size)) &#123;</span><br><span class="line">        *last = b;</span><br><span class="line">        b = b-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>find_block从frist_block开始，查找第一个符合要求的block并返回block起始地址，如果找不到这返回NULL。这里在遍历时会更新一个叫last的指针，这个指针始终指向当前遍历的block。这是为了如果找不到合适的block而开辟新block使用的，具体会在接下来的一节用到。</p>
 <h3 id="开辟新的block"><a href="#开辟新的block" class="headerlink" title="开辟新的block"></a>开辟新的block</h3><p>如果现有block都不能满足size的要求，则需要在链表最后开辟一个新的block。这里关键是如何只使用sbrk创建一个struct：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BLOCK_SIZE 24 <span class="comment">/* 由于存在虚拟的data字段，sizeof不能正确计算meta长度，这里手工设置 */</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function">t_block <span class="title">extend_heap</span><span class="params">(t_block last, <span class="keyword">size_t</span> s)</span> </span>&#123;</span><br><span class="line">    t_block b;</span><br><span class="line">    b = sbrk(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(sbrk(BLOCK_SIZE + s) == (<span class="keyword">void</span> *)<span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    b-&gt;size = s;</span><br><span class="line">    b-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span>(last)</span><br><span class="line">        last-&gt;next = b;</span><br><span class="line">    b-&gt;<span class="built_in">free</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="分裂block"><a href="#分裂block" class="headerlink" title="分裂block"></a>分裂block</h3><p>First fit有一个比较致命的缺点，就是可能会让很小的size占据很大的一块block，此时，为了提高payload，应该在剩余数据区足够大的情况下，将其分裂为一个新的block，示意如下：<br><a href="http://idiotsky.me/images2/c-malloc-7.png"><img src="http://idiotsky.me/images2/c-malloc-7.png" alt=""></a></p>
+<h3 id="分裂block"><a href="#分裂block" class="headerlink" title="分裂block"></a>分裂block</h3><p>First fit有一个比较致命的缺点，就是可能会让很小的size占据很大的一块block，此时，为了提高payload，应该在剩余数据区足够大的情况下，将其分裂为一个新的block，示意如下：<br><a href="http://idiotsky.top/images2/c-malloc-7.png"><img src="http://idiotsky.top/images2/c-malloc-7.png" alt=""></a></p>
 <p>实现代码：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">split_block</span><span class="params">(t_block b, <span class="keyword">size_t</span> s)</span> </span>&#123;</span><br><span class="line">    t_block <span class="keyword">new</span>;</span><br><span class="line">    <span class="keyword">new</span> = b-&gt;data + s;</span><br><span class="line">    <span class="keyword">new</span>-&gt;size = b-&gt;size - s - BLOCK_SIZE ;</span><br><span class="line">    <span class="keyword">new</span>-&gt;next = b-&gt;next;</span><br><span class="line">    <span class="keyword">new</span>-&gt;<span class="built_in">free</span> = <span class="number">1</span>;</span><br><span class="line">    b-&gt;size = s;</span><br><span class="line">    b-&gt;next = <span class="keyword">new</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="malloc的实现"><a href="#malloc的实现" class="headerlink" title="malloc的实现"></a>malloc的实现</h3><p>有了上面的代码，我们可以利用它们整合成一个简单但初步可用的malloc。注意首先我们要定义个block链表的头first_block，初始化为NULL；另外，我们需要剩余空间至少有BLOCK_SIZE + 8才执行分裂操作。</p>
 <p>由于我们希望malloc分配的数据区是按8字节对齐，所以在size不为8的倍数时，我们需要将size调整为大于size的最小的8的倍数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> align8(<span class="keyword">size_t</span> s) &#123;</span><br><span class="line">    <span class="keyword">if</span>(s &amp; <span class="number">0x7</span> == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    <span class="keyword">return</span> ((s &gt;&gt; <span class="number">3</span>) + <span class="number">1</span>) &lt;&lt; <span class="number">3</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BLOCK_SIZE 24</span></span><br><span class="line"><span class="keyword">void</span> *first_block=<span class="literal">NULL</span>;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/* other functions... */</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">malloc</span><span class="params">(<span class="keyword">size_t</span> size)</span> </span>&#123;</span><br><span class="line">    t_block b, last;</span><br><span class="line">    <span class="keyword">size_t</span> s;</span><br><span class="line">    <span class="comment">/* 对齐地址 */</span></span><br><span class="line">    s = align8(size);</span><br><span class="line">    <span class="keyword">if</span>(first_block) &#123;</span><br><span class="line">        <span class="comment">/* 查找合适的block */</span></span><br><span class="line">        last = first_block;</span><br><span class="line">        b = find_block(&amp;last, s);</span><br><span class="line">        <span class="keyword">if</span>(b) &#123;</span><br><span class="line">            <span class="comment">/* 如果可以，则分裂 */</span></span><br><span class="line">            <span class="keyword">if</span> ((b-&gt;size - s) &gt;= ( BLOCK_SIZE + <span class="number">8</span>))</span><br><span class="line">                split_block(b, s);</span><br><span class="line">            b-&gt;<span class="built_in">free</span> = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/* 没有合适的block，开辟一个新的 */</span></span><br><span class="line">            b = extend_heap(last, s);</span><br><span class="line">            <span class="keyword">if</span>(!b)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b = extend_heap(<span class="literal">NULL</span>, s);</span><br><span class="line">        <span class="keyword">if</span>(!b)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        first_block = b;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> b-&gt;data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -670,7 +670,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -692,7 +692,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

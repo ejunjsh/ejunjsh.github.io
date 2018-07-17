@@ -107,27 +107,27 @@
 <meta name="keywords" content="数据结构,redis,整数集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis数据结构-整数集合">
-<meta property="og:url" content="http://idiotsky.me/2017/09/17/redis-intset/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/09/17/redis-intset/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。  整数集合的实现整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。 每个 intset.">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-1.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-2.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-3.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-4.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-5.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-6.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-7.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-8.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-9.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-10.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-11.png">
-<meta property="og:image" content="http://idiotsky.me/images/redis-intset-12.png">
-<meta property="og:updated_time" content="2017-09-24T06:34:26.000Z">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-1.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-2.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-3.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-4.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-5.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-6.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-7.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-8.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-9.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-10.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-11.png">
+<meta property="og:image" content="http://idiotsky.top/images/redis-intset-12.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis数据结构-整数集合">
 <meta name="twitter:description" content="整数集合（intset）是集合键的底层实现之一： 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。  整数集合的实现整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。 每个 intset.">
-<meta name="twitter:image" content="http://idiotsky.me/images/redis-intset-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images/redis-intset-1.png">
 
 
 
@@ -156,7 +156,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/09/17/redis-intset/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/09/17/redis-intset/"/>
 
 
 
@@ -357,7 +357,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/17/redis-intset/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/17/redis-intset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -460,7 +460,7 @@
 <li>如果 encoding 属性的值为 INTSET_ENC_INT32 ， 那么 contents 就是一个 int32_t 类型的数组， 数组里的每个项都是一个 int32_t 类型的整数值 （最小值为 -2,147,483,648 ，最大值为 2,147,483,647 ）。</li>
 <li>如果 encoding 属性的值为 INTSET_ENC_INT64 ， 那么 contents 就是一个 int64_t 类型的数组， 数组里的每个项都是一个 int64_t 类型的整数值 （最小值为 -9,223,372,036,854,775,808 ，最大值为 9,223,372,036,854,775,807 ）。</li>
 </ul>
-<p>图 6-1 展示了一个整数集合示例：<br>encoding 属性的值为 INTSET_ENC_INT16 ， 表示整数集合的底层实现为 int16_t 类型的数组， 而集合保存的都是 int16_t 类型的整数值。<br>length 属性的值为 5 ， 表示整数集合包含五个元素。<br>contents 数组按从小到大的顺序保存着集合中的五个元素。<br>因为每个集合元素都是 int16_t 类型的整数值， 所以 contents 数组的大小等于 sizeof(int16_t) <em> 5 = 16 </em> 5 = 80 位。<br><a href="http://idiotsky.me/images/redis-intset-1.png"><img src="http://idiotsky.me/images/redis-intset-1.png" alt=""></a><br>图 6-2 展示了另一个整数集合示例：<br>encoding 属性的值为 INTSET_ENC_INT64 ， 表示整数集合的底层实现为 int64_t 类型的数组， 而数组中保存的都是 int64_t 类型的整数值。<br>length 属性的值为 4 ， 表示整数集合包含四个元素。<br>contents 数组按从小到大的顺序保存着集合中的四个元素。<br>因为每个集合元素都是 int64_t 类型的整数值， 所以 contents 数组的大小为 sizeof(int64_t) <em> 4 = 64 </em> 4 = 256 位。<br><a href="http://idiotsky.me/images/redis-intset-2.png"><img src="http://idiotsky.me/images/redis-intset-2.png" alt=""></a><br>虽然 contents 数组保存的四个整数值中， 只有 -2675256175807981027 是真正需要用 int64_t 类型来保存的， 而其他的 1 、 3 、 5 三个值都可以用 int16_t 类型来保存， 不过根据整数集合的升级规则， 当向一个底层为 int16_t 数组的整数集合添加一个 int64_t 类型的整数值时， 整数集合已有的所有元素都会被转换成 int64_t 类型， 所以 contents 数组保存的四个整数值都是 int64_t 类型的， 不仅仅是 -2675256175807981027 。</p>
+<p>图 6-1 展示了一个整数集合示例：<br>encoding 属性的值为 INTSET_ENC_INT16 ， 表示整数集合的底层实现为 int16_t 类型的数组， 而集合保存的都是 int16_t 类型的整数值。<br>length 属性的值为 5 ， 表示整数集合包含五个元素。<br>contents 数组按从小到大的顺序保存着集合中的五个元素。<br>因为每个集合元素都是 int16_t 类型的整数值， 所以 contents 数组的大小等于 sizeof(int16_t) <em> 5 = 16 </em> 5 = 80 位。<br><a href="http://idiotsky.top/images/redis-intset-1.png"><img src="http://idiotsky.top/images/redis-intset-1.png" alt=""></a><br>图 6-2 展示了另一个整数集合示例：<br>encoding 属性的值为 INTSET_ENC_INT64 ， 表示整数集合的底层实现为 int64_t 类型的数组， 而数组中保存的都是 int64_t 类型的整数值。<br>length 属性的值为 4 ， 表示整数集合包含四个元素。<br>contents 数组按从小到大的顺序保存着集合中的四个元素。<br>因为每个集合元素都是 int64_t 类型的整数值， 所以 contents 数组的大小为 sizeof(int64_t) <em> 4 = 64 </em> 4 = 256 位。<br><a href="http://idiotsky.top/images/redis-intset-2.png"><img src="http://idiotsky.top/images/redis-intset-2.png" alt=""></a><br>虽然 contents 数组保存的四个整数值中， 只有 -2675256175807981027 是真正需要用 int64_t 类型来保存的， 而其他的 1 、 3 、 5 三个值都可以用 int16_t 类型来保存， 不过根据整数集合的升级规则， 当向一个底层为 int16_t 数组的整数集合添加一个 int64_t 类型的整数值时， 整数集合已有的所有元素都会被转换成 int64_t 类型， 所以 contents 数组保存的四个整数值都是 int64_t 类型的， 不仅仅是 -2675256175807981027 。</p>
 <h1 id="升级"><a href="#升级" class="headerlink" title="升级"></a>升级</h1><p>每当我们要将一个新元素添加到整数集合里面， 并且新元素的类型比整数集合现有所有元素的类型都要长时， 整数集合需要先进行升级（upgrade）， 然后才能将新元素添加到整数集合里面。</p>
 <p>升级整数集合并添加新元素共分为三步进行：</p>
 <ol>
@@ -468,10 +468,10 @@
 <li>将底层数组现有的所有元素都转换成与新元素相同的类型， 并将类型转换后的元素放置到正确的位上， 而且在放置元素的过程中， 需要继续维持底层数组的有序性质不变。</li>
 <li>将新元素添加到底层数组里面。</li>
 </ol>
-<p>举个例子， 假设现在有一个 INTSET_ENC_INT16 编码的整数集合， 集合中包含三个 int16_t 类型的元素， 如图 6-3 所示。<br><a href="http://idiotsky.me/images/redis-intset-3.png"><img src="http://idiotsky.me/images/redis-intset-3.png" alt=""></a><br>因为每个元素都占用 16 位空间， 所以整数集合底层数组的大小为 3 * 16 = 48 位， 图 6-4 展示了整数集合的三个元素在这 48 位里的位置。<br><a href="http://idiotsky.me/images/redis-intset-4.png"><img src="http://idiotsky.me/images/redis-intset-4.png" alt=""></a><br>现在， 假设我们要将类型为 int32_t 的整数值 65535 添加到整数集合里面， 因为 65535 的类型 int32_t 比整数集合当前所有元素的类型都要长， 所以在将 65535 添加到整数集合之前， 程序需要先对整数集合进行升级。</p>
+<p>举个例子， 假设现在有一个 INTSET_ENC_INT16 编码的整数集合， 集合中包含三个 int16_t 类型的元素， 如图 6-3 所示。<br><a href="http://idiotsky.top/images/redis-intset-3.png"><img src="http://idiotsky.top/images/redis-intset-3.png" alt=""></a><br>因为每个元素都占用 16 位空间， 所以整数集合底层数组的大小为 3 * 16 = 48 位， 图 6-4 展示了整数集合的三个元素在这 48 位里的位置。<br><a href="http://idiotsky.top/images/redis-intset-4.png"><img src="http://idiotsky.top/images/redis-intset-4.png" alt=""></a><br>现在， 假设我们要将类型为 int32_t 的整数值 65535 添加到整数集合里面， 因为 65535 的类型 int32_t 比整数集合当前所有元素的类型都要长， 所以在将 65535 添加到整数集合之前， 程序需要先对整数集合进行升级。</p>
 <p>升级首先要做的是， 根据新类型的长度， 以及集合元素的数量（包括要添加的新元素在内）， 对底层数组进行空间重分配。</p>
-<p>整数集合目前有三个元素， 再加上新元素 65535 ， 整数集合需要分配四个元素的空间， 因为每个 int32_t 整数值需要占用 32 位空间， 所以在空间重分配之后， 底层数组的大小将是 32 * 4 = 128 位， 如图 6-5 所示。<br><a href="http://idiotsky.me/images/redis-intset-5.png"><img src="http://idiotsky.me/images/redis-intset-5.png" alt=""></a><br>虽然程序对底层数组进行了空间重分配， 但数组原有的三个元素 1 、 2 、 3 仍然是 int16_t 类型， 这些元素还保存在数组的前 48 位里面， 所以程序接下来要做的就是将这三个元素转换成 int32_t 类型， 并将转换后的元素放置到正确的位上面， 而且在放置元素的过程中， 需要维持底层数组的有序性质不变。</p>
-<p>首先， 因为元素 3 在 1 、 2 、 3 、 65535 四个元素中排名第三， 所以它将被移动到 contents 数组的索引 2 位置上， 也即是数组 64 位至 95 位的空间内， 如图 6-6 所示。<br><a href="http://idiotsky.me/images/redis-intset-6.png"><img src="http://idiotsky.me/images/redis-intset-6.png" alt=""></a><br>接着， 因为元素 2 在 1 、 2 、 3 、 65535 四个元素中排名第二， 所以它将被移动到 contents 数组的索引 1 位置上， 也即是数组的 32 位至 63 位的空间内， 如图 6-7 所示。<br><a href="http://idiotsky.me/images/redis-intset-7.png"><img src="http://idiotsky.me/images/redis-intset-7.png" alt=""></a><br>之后， 因为元素 1 在 1 、 2 、 3 、 65535 四个元素中排名第一， 所以它将被移动到 contents 数组的索引 0 位置上， 也即是数组的 0 位至 31 位的空间内， 如图 6-8 所示。<br><a href="http://idiotsky.me/images/redis-intset-8.png"><img src="http://idiotsky.me/images/redis-intset-8.png" alt=""></a><br>然后， 因为元素 65535 在 1 、 2 、 3 、 65535 四个元素中排名第四， 所以它将被添加到 contents 数组的索引 3 位置上， 也即是数组的 96 位至 127 位的空间内， 如图 6-9 所示。<br><a href="http://idiotsky.me/images/redis-intset-9.png"><img src="http://idiotsky.me/images/redis-intset-9.png" alt=""></a><br>最后， 程序将整数集合 encoding 属性的值从 INTSET_ENC_INT16 改为 INTSET_ENC_INT32 ， 并将 length 属性的值从 3 改为 4 ， 设置完成之后的整数集合如图 6-10 所示。<br><a href="http://idiotsky.me/images/redis-intset-10.png"><img src="http://idiotsky.me/images/redis-intset-10.png" alt=""></a><br>因为每次向整数集合添加新元素都可能会引起升级， 而每次升级都需要对底层数组中已有的所有元素进行类型转换， 所以向整数集合添加新元素的时间复杂度为 O(N) 。</p>
+<p>整数集合目前有三个元素， 再加上新元素 65535 ， 整数集合需要分配四个元素的空间， 因为每个 int32_t 整数值需要占用 32 位空间， 所以在空间重分配之后， 底层数组的大小将是 32 * 4 = 128 位， 如图 6-5 所示。<br><a href="http://idiotsky.top/images/redis-intset-5.png"><img src="http://idiotsky.top/images/redis-intset-5.png" alt=""></a><br>虽然程序对底层数组进行了空间重分配， 但数组原有的三个元素 1 、 2 、 3 仍然是 int16_t 类型， 这些元素还保存在数组的前 48 位里面， 所以程序接下来要做的就是将这三个元素转换成 int32_t 类型， 并将转换后的元素放置到正确的位上面， 而且在放置元素的过程中， 需要维持底层数组的有序性质不变。</p>
+<p>首先， 因为元素 3 在 1 、 2 、 3 、 65535 四个元素中排名第三， 所以它将被移动到 contents 数组的索引 2 位置上， 也即是数组 64 位至 95 位的空间内， 如图 6-6 所示。<br><a href="http://idiotsky.top/images/redis-intset-6.png"><img src="http://idiotsky.top/images/redis-intset-6.png" alt=""></a><br>接着， 因为元素 2 在 1 、 2 、 3 、 65535 四个元素中排名第二， 所以它将被移动到 contents 数组的索引 1 位置上， 也即是数组的 32 位至 63 位的空间内， 如图 6-7 所示。<br><a href="http://idiotsky.top/images/redis-intset-7.png"><img src="http://idiotsky.top/images/redis-intset-7.png" alt=""></a><br>之后， 因为元素 1 在 1 、 2 、 3 、 65535 四个元素中排名第一， 所以它将被移动到 contents 数组的索引 0 位置上， 也即是数组的 0 位至 31 位的空间内， 如图 6-8 所示。<br><a href="http://idiotsky.top/images/redis-intset-8.png"><img src="http://idiotsky.top/images/redis-intset-8.png" alt=""></a><br>然后， 因为元素 65535 在 1 、 2 、 3 、 65535 四个元素中排名第四， 所以它将被添加到 contents 数组的索引 3 位置上， 也即是数组的 96 位至 127 位的空间内， 如图 6-9 所示。<br><a href="http://idiotsky.top/images/redis-intset-9.png"><img src="http://idiotsky.top/images/redis-intset-9.png" alt=""></a><br>最后， 程序将整数集合 encoding 属性的值从 INTSET_ENC_INT16 改为 INTSET_ENC_INT32 ， 并将 length 属性的值从 3 改为 4 ， 设置完成之后的整数集合如图 6-10 所示。<br><a href="http://idiotsky.top/images/redis-intset-10.png"><img src="http://idiotsky.top/images/redis-intset-10.png" alt=""></a><br>因为每次向整数集合添加新元素都可能会引起升级， 而每次升级都需要对底层数组中已有的所有元素进行类型转换， 所以向整数集合添加新元素的时间复杂度为 O(N) 。</p>
 <p>其他类型的升级操作， 比如从 INTSET_ENC_INT16 编码升级为 INTSET_ENC_INT64 编码， 或者从 INTSET_ENC_INT32 编码升级为 INTSET_ENC_INT64 编码， 升级的过程都和上面展示的升级过程类似。</p>
 <blockquote>
 <p>升级之后新元素的摆放位置<br>因为引发升级的新元素的长度总是比整数集合现有所有元素的长度都大， 所以这个新元素的值要么就大于所有现有元素， 要么就小于所有现有元素：</p>
@@ -488,7 +488,7 @@
 <p>而整数集合现在的做法既可以让集合能同时保存三种不同类型的值， 又可以确保升级操作只会在有需要的时候进行， 这可以尽量节省内存。</p>
 <p>比如说， 如果我们一直只向整数集合添加 int16_t 类型的值， 那么整数集合的底层实现就会一直是 int16_t 类型的数组， 只有在我们要将 int32_t 类型或者 int64_t 类型的值添加到集合时， 程序才会对数组进行升级。</p>
 <h1 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h1><p>整数集合不支持降级操作， 一旦对数组进行了升级， 编码就会一直保持升级后的状态。</p>
-<p>举个例子， 对于图 6-11 所示的整数集合来说， 即使我们将集合里唯一一个真正需要使用 int64_t 类型来保存的元素 4294967295 删除了， 整数集合的编码仍然会维持 INTSET_ENC_INT64 ， 底层数组也仍然会是 int64_t 类型的， 如图 6-12 所示。<br><a href="http://idiotsky.me/images/redis-intset-11.png"><img src="http://idiotsky.me/images/redis-intset-11.png" alt=""></a><br><a href="http://idiotsky.me/images/redis-intset-12.png"><img src="http://idiotsky.me/images/redis-intset-12.png" alt=""></a></p>
+<p>举个例子， 对于图 6-11 所示的整数集合来说， 即使我们将集合里唯一一个真正需要使用 int64_t 类型来保存的元素 4294967295 删除了， 整数集合的编码仍然会维持 INTSET_ENC_INT64 ， 底层数组也仍然会是 int64_t 类型的， 如图 6-12 所示。<br><a href="http://idiotsky.top/images/redis-intset-11.png"><img src="http://idiotsky.top/images/redis-intset-11.png" alt=""></a><br><a href="http://idiotsky.top/images/redis-intset-12.png"><img src="http://idiotsky.top/images/redis-intset-12.png" alt=""></a></p>
 <h1 id="重点回顾"><a href="#重点回顾" class="headerlink" title="重点回顾"></a>重点回顾</h1><ul>
 <li>整数集合是集合键的底层实现之一。</li>
 <li>整数集合的底层实现为数组， 这个数组以有序、无重复的方式保存集合元素， 在有需要时， 程序会根据新添加元素的类型， 改变这个数组的类型。</li>
@@ -619,7 +619,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -641,7 +641,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

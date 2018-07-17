@@ -107,16 +107,16 @@
 <meta name="keywords" content="asm,nasm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="我的汇编学习之路（3）">
-<meta property="og:url" content="http://idiotsky.me/2016/05/14/asm-learning-road-3/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/05/14/asm-learning-road-3/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出） 我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/asm-learning-road-3-1.png">
-<meta property="og:updated_time" content="2017-10-17T13:51:26.958Z">
+<meta property="og:image" content="http://idiotsky.top/images1/asm-learning-road-3-1.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.526Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（3）">
 <meta name="twitter:description" content="栈是在内存中是一个特殊的区域,它的主要操作是lifo（后进先出） 我们有16个通用的寄存器，用来存储临时数据。它们分别是RAX, RBX, RCX, RDX, RDI, RSI, RBP, RSP 和 R8-R15。对于真实的应用程序来说，这16个寄存器太少了，所以我们用栈存储数据。另外，栈还有其他用法：当你调用一个函数，函数的返回地址拷贝到栈。当函数执行完后，地址从栈拷贝到命令计数器（RIP），">
-<meta name="twitter:image" content="http://idiotsky.me/images1/asm-learning-road-3-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/asm-learning-road-3-1.png">
 
 
 
@@ -145,7 +145,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/05/14/asm-learning-road-3/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/05/14/asm-learning-road-3/"/>
 
 
 
@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/14/asm-learning-road-3/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/05/14/asm-learning-road-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -456,7 +456,7 @@
 <li><code>pop 参数</code> - 拷贝栈地址指向位置的数据到参数。</li>
 </ul>
 <p>让我们看一个例子吧：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">global _start</span><br><span class="line"></span><br><span class="line">section .text</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">		mov rax, 1</span><br><span class="line">		mov rdx, 2</span><br><span class="line">		push rax</span><br><span class="line">		push rdx</span><br><span class="line"></span><br><span class="line">		mov rax, [rsp + 8]</span><br><span class="line"></span><br><span class="line">		;;</span><br><span class="line">		;; Do something</span><br><span class="line">		;;</span><br></pre></td></tr></table></figure></p>
-<p>这里我们能看到我们把1放到rax，2放到rdx，之后用这些寄存器依次放入到栈。栈是LIFO（后进先出）。所以这个栈或者应用程序将是下面这个结构：<br><a href="http://idiotsky.me/images1/asm-learning-road-3-1.png"><img src="http://idiotsky.me/images1/asm-learning-road-3-1.png" alt=""></a><br>然后我们从堆栈中复制具有地址rsp + 8的值。这意味着我们获取堆栈顶部的地址，加上8并将该地址的值复制到rax。之后rax值将为1。</p>
+<p>这里我们能看到我们把1放到rax，2放到rdx，之后用这些寄存器依次放入到栈。栈是LIFO（后进先出）。所以这个栈或者应用程序将是下面这个结构：<br><a href="http://idiotsky.top/images1/asm-learning-road-3-1.png"><img src="http://idiotsky.top/images1/asm-learning-road-3-1.png" alt=""></a><br>然后我们从堆栈中复制具有地址rsp + 8的值。这意味着我们获取堆栈顶部的地址，加上8并将该地址的值复制到rax。之后rax值将为1。</p>
 <h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><p>我们来看一个例子。我们将编写简单的程序，这将得到两个命令行参数。将得到两个参数总和并打印结果。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">section .data</span><br><span class="line">		SYS_WRITE equ 1</span><br><span class="line">		STD_IN    equ 1</span><br><span class="line">		SYS_EXIT  equ 60</span><br><span class="line">		EXIT_CODE equ 0</span><br><span class="line"></span><br><span class="line">		NEW_LINE   db 0xa</span><br><span class="line">		WRONG_ARGC db &quot;Must be two command line argument&quot;, 0xa</span><br></pre></td></tr></table></figure></p>
 <p>首先我们.data用一些值定义section。这里我们有四个常量用于linux系统调用，sys_write，sys_exit等等。还有两个字符串：第一个是新行符号，第二个是错误消息。</p>
 <p>我们来看看这个.text部分，它由程序代码组成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">section .text</span><br><span class="line">        global _start</span><br><span class="line"></span><br><span class="line">_start:</span><br><span class="line">		pop rcx</span><br><span class="line">		cmp rcx, 3</span><br><span class="line">		jne argcError</span><br><span class="line"></span><br><span class="line">		add rsp, 8</span><br><span class="line">		pop rsi</span><br><span class="line">		call str_to_int</span><br><span class="line"></span><br><span class="line">		mov r10, rax</span><br><span class="line">		pop rsi</span><br><span class="line">		call str_to_int</span><br><span class="line">		mov r11, rax</span><br><span class="line"></span><br><span class="line">		add r10, r11</span><br></pre></td></tr></table></figure></p>
@@ -592,7 +592,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -614,7 +614,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

@@ -107,17 +107,17 @@
 <meta name="keywords" content="java,nio">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java NIO浅析">
-<meta property="og:url" content="http://idiotsky.me/2017/05/14/java-nio/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/05/14/java-nio/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="NIO（Non-blocking I/O，在Java领域，也称为New I/O），是一种同步非阻塞的I/O模型，也是I/O多路复用的基础，已经被越来越多地应用到大型应用服务器，成为解决高并发与大量连接、I/O处理问题的有效方式。 那么NIO的本质是什么样的呢？它是怎样与事件模型结合来解放线程、提高系统吞吐的呢？ 本文会从传统的阻塞I/O和线程池模型面临的问题讲起，然后对比几种常见I/O模型，一步步">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/java-nio-1.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/java-nio.png">
-<meta property="og:updated_time" content="2017-09-28T17:10:27.549Z">
+<meta property="og:image" content="http://idiotsky.top/images1/java-nio-1.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/java-nio.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.533Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java NIO浅析">
 <meta name="twitter:description" content="NIO（Non-blocking I/O，在Java领域，也称为New I/O），是一种同步非阻塞的I/O模型，也是I/O多路复用的基础，已经被越来越多地应用到大型应用服务器，成为解决高并发与大量连接、I/O处理问题的有效方式。 那么NIO的本质是什么样的呢？它是怎样与事件模型结合来解放线程、提高系统吞吐的呢？ 本文会从传统的阻塞I/O和线程池模型面临的问题讲起，然后对比几种常见I/O模型，一步步">
-<meta name="twitter:image" content="http://idiotsky.me/images1/java-nio-1.jpg">
+<meta name="twitter:image" content="http://idiotsky.top/images1/java-nio-1.jpg">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/05/14/java-nio/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/05/14/java-nio/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/05/14/java-nio/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/05/14/java-nio/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -459,7 +459,7 @@
 <p>我们不管这些，抛开现象看本质，先分析下NIO是怎么工作的。</p>
 <h2 id="常见I-O模型对比"><a href="#常见I-O模型对比" class="headerlink" title="常见I/O模型对比"></a>常见I/O模型对比</h2><p>所有的系统I/O都分为两个阶段：等待就绪和操作。举例来说，读函数，分为等待系统可读和真正的读；同理，写函数分为等待网卡可以写和真正的写。</p>
 <p>需要说明的是等待就绪的阻塞是不使用CPU的，是在“空等”；而真正的读写操作的阻塞是使用CPU的，真正在”干活”，而且这个过程非常快，属于memory copy，带宽通常在1GB/s级别以上，可以理解为基本不耗时。</p>
-<p>下图是几种常见I/O模型的对比：<br><a href="http://idiotsky.me/images1/java-nio-1.jpg"><img src="http://idiotsky.me/images1/java-nio-1.jpg" alt=""></a></p>
+<p>下图是几种常见I/O模型的对比：<br><a href="http://idiotsky.top/images1/java-nio-1.jpg"><img src="http://idiotsky.top/images1/java-nio-1.jpg" alt=""></a></p>
 <p>以socket.read()为例子：</p>
 <p>传统的BIO里面socket.read()，如果TCP RecvBuffer里没有数据，函数会一直阻塞，直到收到数据，返回读到的数据。</p>
 <p>对于NIO，如果TCP RecvBuffer有数据，就把数据从网卡读到内存，并且返回给用户；反之则直接返回0，永远不会阻塞。</p>
@@ -487,7 +487,7 @@
 </ol>
 <p>Java的Selector对于Linux系统来说，有一个致命限制：同一个channel的select不能被并发的调用。因此，如果有多个I/O线程，必须保证：一个socket只能属于一个IoThread，而一个IoThread可以管理多个socket。</p>
 <p>另外连接的处理和读写的处理通常可以选择分开，这样对于海量连接的注册和读写就可以分发。虽然read()和write()是比较高效无阻塞的函数，但毕竟会占用CPU，如果面对更高的并发则无能为力。</p>
-<p><a href="http://idiotsky.me/images/java-nio.png"><img src="http://idiotsky.me/images1/java-nio.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images/java-nio.png"><img src="http://idiotsky.top/images1/java-nio.png" alt=""></a></p>
 <h1 id="NIO在客户端的魔力"><a href="#NIO在客户端的魔力" class="headerlink" title="NIO在客户端的魔力"></a>NIO在客户端的魔力</h1><p>通过上面的分析，可以看出NIO在服务端对于解放线程，优化I/O和处理海量连接方面，确实有自己的用武之地。那么在客户端上，NIO又有什么使用场景呢?</p>
 <p>常见的客户端BIO+连接池模型，可以建立n个连接，然后当某一个连接被I/O占用的时候，可以使用其他连接来提高性能。</p>
 <p>但多线程的模型面临和服务端相同的问题：如果指望增加连接数来提高性能，则连接数又受制于线程数、线程很贵、无法建立很多线程，则性能遇到瓶颈。</p>
@@ -690,7 +690,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -712,7 +712,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

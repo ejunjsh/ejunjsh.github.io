@@ -107,17 +107,17 @@
 <meta name="keywords" content="go">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go基础-nil">
-<meta property="og:url" content="http://idiotsky.me/2018/01/03/go-nil/index.html">
+<meta property="og:url" content="http://idiotsky.top/2018/01/03/go-nil/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="nil是什么 The “nil” identifier can be used as the “zero value” for interfaces, functions, pointers, maps, slices, and channels  这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images2/go-nil.png">
-<meta property="og:image" content="http://idiotsky.me/images2/go-nil-1.png">
-<meta property="og:updated_time" content="2018-01-06T06:43:45.350Z">
+<meta property="og:image" content="http://idiotsky.top/images2/go-nil.png">
+<meta property="og:image" content="http://idiotsky.top/images2/go-nil-1.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.534Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="go基础-nil">
 <meta name="twitter:description" content="nil是什么 The “nil” identifier can be used as the “zero value” for interfaces, functions, pointers, maps, slices, and channels  这是对nil的官方解释，意思就是说nil是接口，函数，指针，map，slice和管道的零值。零值，zero value，在Go语言中，如果你声明了一个">
-<meta name="twitter:image" content="http://idiotsky.me/images2/go-nil.png">
+<meta name="twitter:image" content="http://idiotsky.top/images2/go-nil.png">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2018/01/03/go-nil/"/>
+  <link rel="canonical" href="http://idiotsky.top/2018/01/03/go-nil/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/03/go-nil/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/01/03/go-nil/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -454,8 +454,8 @@
 <p>跟刚才的代码一对比是不是简洁了很多？对于nil指针，只需要在方法前面判断一下就ok了，无需重复判断。换成打印二叉树的值或者查找二叉树的某个值都是一样的：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span><span class="params">(t *tree)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> fmt.Sprint(t.l, t.v, t.r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// nil receivers are useful: Find</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">Find</span><span class="params">(v <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> t.v == v || t.l.Find(v) || t.r.Find(v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>所以如果不是很需要的话，不要用NewX()去初始化值，而是使用它们的默认值。</p>
 <h2 id="slices"><a href="#slices" class="headerlink" title="slices"></a>slices</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// nil slices</span></span><br><span class="line"><span class="keyword">var</span> s []slice</span><br><span class="line"><span class="built_in">len</span>(s)  <span class="comment">// 0</span></span><br><span class="line"><span class="built_in">cap</span>(s)  <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> s  <span class="comment">// iterates zero times</span></span><br><span class="line">s[i]  <span class="comment">// panic: index out of range</span></span><br></pre></td></tr></table></figure>
-<p>一个为nil的slice，除了不能索引外，其他的操作都是可以的，当你需要填充值的时候可以使用append函数，slice会自动进行扩充。那么为nil的slice的底层结构是怎样的呢？根据官方的文档，slice有三个元素，分别是长度、容量、指向数组的指针：<br><a href="http://idiotsky.me/images2/go-nil.png"><img src="http://idiotsky.me/images2/go-nil.png" alt=""></a></p>
-<p>当有元素的时候：<br><a href="http://idiotsky.me/images2/go-nil-1.png"><img src="http://idiotsky.me/images2/go-nil-1.png" alt=""></a></p>
+<p>一个为nil的slice，除了不能索引外，其他的操作都是可以的，当你需要填充值的时候可以使用append函数，slice会自动进行扩充。那么为nil的slice的底层结构是怎样的呢？根据官方的文档，slice有三个元素，分别是长度、容量、指向数组的指针：<br><a href="http://idiotsky.top/images2/go-nil.png"><img src="http://idiotsky.top/images2/go-nil.png" alt=""></a></p>
+<p>当有元素的时候：<br><a href="http://idiotsky.top/images2/go-nil-1.png"><img src="http://idiotsky.top/images2/go-nil-1.png" alt=""></a></p>
 <p>所以我们并不需要担心slice的大小，使用append的话slice会自动扩容。</p>
 <h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// nil maps</span></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[t]u</span><br><span class="line"><span class="built_in">len</span>(m)  <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> m <span class="comment">// iterates zero times</span></span><br><span class="line">v, ok := m[i] <span class="comment">// zero(u), false</span></span><br><span class="line">m[i] = x <span class="comment">// panic: assignment to entry in nil map</span></span><br></pre></td></tr></table></figure>
 <p>对于nil的map，我们可以简单把它看成是一个只读的map，不能进行写操作，否则就会panic。那么nil的map有什么用呢？看一下这个例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewGet</span><span class="params">(url <span class="keyword">string</span>, headers <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span> <span class="params">(*http.Request, error)</span></span> &#123;</span><br><span class="line">  req, err := http.NewRequest(http.MethodGet, url, <span class="literal">nil</span>)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> k, v := <span class="keyword">range</span> headers &#123;</span><br><span class="line">    req.Header.Set(k, v)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> req, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -592,7 +592,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -614,7 +614,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

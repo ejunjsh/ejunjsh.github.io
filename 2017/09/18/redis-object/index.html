@@ -107,30 +107,30 @@
 <meta name="keywords" content="数据结构,redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis数据结构-对象">
-<meta property="og:url" content="http://idiotsky.me/2017/09/18/redis-object/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/09/18/redis-object/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="前言在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。 Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。 通过">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-1.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-2.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-3.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-4.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-5.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-6.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-9.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-10.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-11.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-12.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-13.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-14.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-15.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-16.png">
-<meta property="og:image" content="http://idiotsky.me/images1/redis-object-17.png">
-<meta property="og:updated_time" content="2017-10-07T13:24:55.649Z">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-1.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-2.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-3.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-4.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-5.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-6.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-9.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-10.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-11.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-12.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-13.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-14.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-15.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-16.png">
+<meta property="og:image" content="http://idiotsky.top/images1/redis-object-17.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.531Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis数据结构-对象">
 <meta name="twitter:description" content="前言在前面的数个章节里， 我们陆续介绍了 Redis 用到的所有主要数据结构， 比如简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合， 等等。 Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个对象系统， 这个系统包含字符串对象、列表对象、哈希对象、集合对象和有序集合对象这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。 通过">
-<meta name="twitter:image" content="http://idiotsky.me/images1/redis-object-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/redis-object-1.png">
 
 
 
@@ -159,7 +159,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/09/18/redis-object/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/09/18/redis-object/"/>
 
 
 
@@ -360,7 +360,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/18/redis-object/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/18/redis-object/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -708,12 +708,12 @@
 <h1 id="字符串对象"><a href="#字符串对象" class="headerlink" title="字符串对象"></a>字符串对象</h1><p>字符串对象的编码可以是 int 、 raw 或者 embstr 。</p>
 <p>如果一个字符串对象保存的是整数值， 并且这个整数值可以用 long 类型来表示， 那么字符串对象会将整数值保存在字符串对象结构的 ptr 属性里面（将 void* 转换成 long ）， 并将字符串对象的编码设置为 int 。</p>
 <p>举个例子， 如果我们执行以下 SET 命令， 那么服务器将创建一个如图 8-1 所示的 int 编码的字符串对象作为 number 键的值：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SET number 10086</span></span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> OBJECT ENCODING number</span></span><br><span class="line">"int"</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images1/redis-object-1.png"><img src="http://idiotsky.me/images1/redis-object-1.png" alt=""></a><br>如果字符串对象保存的是一个字符串值， 并且这个字符串值的长度大于 39 字节， 那么字符串对象将使用一个简单动态字符串（SDS）来保存这个字符串值， 并将对象的编码设置为 raw 。</p>
+<p><a href="http://idiotsky.top/images1/redis-object-1.png"><img src="http://idiotsky.top/images1/redis-object-1.png" alt=""></a><br>如果字符串对象保存的是一个字符串值， 并且这个字符串值的长度大于 39 字节， 那么字符串对象将使用一个简单动态字符串（SDS）来保存这个字符串值， 并将对象的编码设置为 raw 。</p>
 <p>举个例子， 如果我们执行以下命令， 那么服务器将创建一个如图 8-2 所示的 raw 编码的字符串对象作为 story 键的值：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SET story <span class="string">"Long, long, long ago there lived a king ..."</span></span></span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> STRLEN story</span></span><br><span class="line">(integer) 43</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> OBJECT ENCODING story</span></span><br><span class="line">"raw"</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images1/redis-object-2.png"><img src="http://idiotsky.me/images1/redis-object-2.png" alt=""></a><br>如果字符串对象保存的是一个字符串值， 并且这个字符串值的长度小于等于 39 字节， 那么字符串对象将使用 embstr 编码的方式来保存这个字符串值。</p>
-<p>embstr 编码是专门用于保存短字符串的一种优化编码方式， 这种编码和 raw 编码一样， 都使用 redisObject 结构和 sdshdr 结构来表示字符串对象， 但 raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间， 空间中依次包含 redisObject 和 sdshdr 两个结构， 如图 8-3 所示。<br><a href="http://idiotsky.me/images1/redis-object-3.png"><img src="http://idiotsky.me/images1/redis-object-3.png" alt=""></a><br>embstr 编码的字符串对象在执行命令时， 产生的效果和 raw 编码的字符串对象执行命令时产生的效果是相同的， 但使用 embstr 编码的字符串对象来保存短字符串值有以下好处：</p>
+<p><a href="http://idiotsky.top/images1/redis-object-2.png"><img src="http://idiotsky.top/images1/redis-object-2.png" alt=""></a><br>如果字符串对象保存的是一个字符串值， 并且这个字符串值的长度小于等于 39 字节， 那么字符串对象将使用 embstr 编码的方式来保存这个字符串值。</p>
+<p>embstr 编码是专门用于保存短字符串的一种优化编码方式， 这种编码和 raw 编码一样， 都使用 redisObject 结构和 sdshdr 结构来表示字符串对象， 但 raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间， 空间中依次包含 redisObject 和 sdshdr 两个结构， 如图 8-3 所示。<br><a href="http://idiotsky.top/images1/redis-object-3.png"><img src="http://idiotsky.top/images1/redis-object-3.png" alt=""></a><br>embstr 编码的字符串对象在执行命令时， 产生的效果和 raw 编码的字符串对象执行命令时产生的效果是相同的， 但使用 embstr 编码的字符串对象来保存短字符串值有以下好处：</p>
 <p>embstr 编码将创建字符串对象所需的内存分配次数从 raw 编码的两次降低为一次。<br>释放 embstr 编码的字符串对象只需要调用一次内存释放函数， 而释放 raw 编码的字符串对象需要调用两次内存释放函数。<br>因为 embstr 编码的字符串对象的所有数据都保存在一块连续的内存里面， 所以这种编码的字符串对象比起 raw 编码的字符串对象能够更好地利用缓存带来的优势。<br>作为例子， 以下命令创建了一个 embstr 编码的字符串对象作为 msg 键的值， 值对象的样子如图 8-4 所示：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SET msg <span class="string">"hello"</span></span></span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> OBJECT ENCODING msg</span></span><br><span class="line">"embstr"</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images1/redis-object-4.png"><img src="http://idiotsky.me/images1/redis-object-4.png" alt=""></a><br>最后要说的是， 可以用 long double 类型表示的浮点数在 Redis 中也是作为字符串值来保存的： 如果我们要保存一个浮点数到字符串对象里面， 那么程序会先将这个浮点数转换成字符串值， 然后再保存起转换所得的字符串值。</p>
+<p><a href="http://idiotsky.top/images1/redis-object-4.png"><img src="http://idiotsky.top/images1/redis-object-4.png" alt=""></a><br>最后要说的是， 可以用 long double 类型表示的浮点数在 Redis 中也是作为字符串值来保存的： 如果我们要保存一个浮点数到字符串对象里面， 那么程序会先将这个浮点数转换成字符串值， 然后再保存起转换所得的字符串值。</p>
 <p>举个例子， 执行以下代码将创建一个包含 3.14 的字符串表示 “3.14” 的字符串对象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SET pi 3.14</span></span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> OBJECT ENCODING pi</span></span><br><span class="line">"embstr"</span><br></pre></td></tr></table></figure></p>
 <p>在有需要的时候， 程序会将保存在字符串对象里面的字符串值转换回浮点数值， 执行某些操作， 然后再将执行操作所得的浮点数值转换回字符串值， 并继续保存在字符串对象里面。</p>
 <p>举个例子， 如果我们执行以下代码的话：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> INCRBYFLOAT pi 2.0</span></span><br><span class="line">"5.14"</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> OBJECT ENCODING pi</span></span><br><span class="line">"embstr"</span><br></pre></td></tr></table></figure></p>
@@ -749,8 +749,8 @@
 <h1 id="列表对象"><a href="#列表对象" class="headerlink" title="列表对象"></a>列表对象</h1><p>列表对象的编码可以是 ziplist 或者 linkedlist 。</p>
 <p>ziplist 编码的列表对象使用压缩列表作为底层实现， 每个压缩列表节点（entry）保存了一个列表元素。</p>
 <p>举个例子， 如果我们执行以下 RPUSH 命令， 那么服务器将创建一个列表对象作为 numbers 键的值：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> RPUSH numbers 1 <span class="string">"three"</span> 5</span></span><br><span class="line">(integer) 3</span><br></pre></td></tr></table></figure></p>
-<p>如果 numbers 键的值对象使用的是 ziplist 编码， 这个这个值对象将会是图 8-5 所展示的样子。<br><a href="http://idiotsky.me/images1/redis-object-5.png"><img src="http://idiotsky.me/images1/redis-object-5.png" alt=""></a><br>另一方面， linkedlist 编码的列表对象使用双端链表作为底层实现， 每个双端链表节点（node）都保存了一个字符串对象， 而每个字符串对象都保存了一个列表元素。</p>
-<p>举个例子， 如果前面所说的 numbers 键创建的列表对象使用的不是 ziplist 编码， 而是 linkedlist 编码， 那么 numbers 键的值对象将是图 8-6 所示的样子。<br><a href="http://idiotsky.me/images1/redis-object-6.png"><img src="http://idiotsky.me/images1/redis-object-6.png" alt=""></a><br>注意， linkedlist 编码的列表对象在底层的双端链表结构中包含了多个字符串对象， 这种嵌套字符串对象的行为在稍后介绍的哈希对象、集合对象和有序集合对象中都会出现， 字符串对象是 Redis 五种类型的对象中唯一一种会被其他四种类型对象嵌套的对象。</p>
+<p>如果 numbers 键的值对象使用的是 ziplist 编码， 这个这个值对象将会是图 8-5 所展示的样子。<br><a href="http://idiotsky.top/images1/redis-object-5.png"><img src="http://idiotsky.top/images1/redis-object-5.png" alt=""></a><br>另一方面， linkedlist 编码的列表对象使用双端链表作为底层实现， 每个双端链表节点（node）都保存了一个字符串对象， 而每个字符串对象都保存了一个列表元素。</p>
+<p>举个例子， 如果前面所说的 numbers 键创建的列表对象使用的不是 ziplist 编码， 而是 linkedlist 编码， 那么 numbers 键的值对象将是图 8-6 所示的样子。<br><a href="http://idiotsky.top/images1/redis-object-6.png"><img src="http://idiotsky.top/images1/redis-object-6.png" alt=""></a><br>注意， linkedlist 编码的列表对象在底层的双端链表结构中包含了多个字符串对象， 这种嵌套字符串对象的行为在稍后介绍的哈希对象、集合对象和有序集合对象中都会出现， 字符串对象是 Redis 五种类型的对象中唯一一种会被其他四种类型对象嵌套的对象。</p>
 <h2 id="编码转换"><a href="#编码转换" class="headerlink" title="编码转换"></a>编码转换</h2><p>当列表对象可以同时满足以下两个条件时， 列表对象使用 ziplist 编码：</p>
 <ol>
 <li>列表对象保存的所有字符串元素的长度都小于 64 字节；</li>
@@ -770,13 +770,13 @@
 <li>先添加到哈希对象中的键值对会被放在压缩列表的表头方向， 而后来添加到哈希对象中的键值对会被放在压缩列表的表尾方向。</li>
 </ul>
 <p>举个例子， 如果我们执行以下 HSET 命令， 那么服务器将创建一个列表对象作为 profile 键的值：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> HSET profile name <span class="string">"Tom"</span></span></span><br><span class="line">(integer) 1</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> HSET profile age 25</span></span><br><span class="line">(integer) 1</span><br><span class="line"></span><br><span class="line"><span class="meta">redis&gt;</span><span class="bash"> HSET profile career <span class="string">"Programmer"</span></span></span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure></p>
-<p>如果 profile 键的值对象使用的是 ziplist 编码， 那么这个值对象将会是图 8-9 所示的样子， 其中对象所使用的压缩列表如图 8-10 所示。<br><a href="http://idiotsky.me/images1/redis-object-9.png"><img src="http://idiotsky.me/images1/redis-object-9.png" alt=""></a><br><a href="http://idiotsky.me/images1/redis-object-10.png"><img src="http://idiotsky.me/images1/redis-object-10.png" alt=""></a></p>
+<p>如果 profile 键的值对象使用的是 ziplist 编码， 那么这个值对象将会是图 8-9 所示的样子， 其中对象所使用的压缩列表如图 8-10 所示。<br><a href="http://idiotsky.top/images1/redis-object-9.png"><img src="http://idiotsky.top/images1/redis-object-9.png" alt=""></a><br><a href="http://idiotsky.top/images1/redis-object-10.png"><img src="http://idiotsky.top/images1/redis-object-10.png" alt=""></a></p>
 <p>另一方面， hashtable 编码的哈希对象使用字典作为底层实现， 哈希对象中的每个键值对都使用一个字典键值对来保存：</p>
 <ul>
 <li>字典的每个键都是一个字符串对象， 对象中保存了键值对的键；</li>
 <li>字典的每个值都是一个字符串对象， 对象中保存了键值对的值。</li>
 </ul>
-<p>举个例子， 如果前面 profile 键创建的不是 ziplist 编码的哈希对象， 而是 hashtable 编码的哈希对象， 那么这个哈希对象应该会是图 8-11 所示的样子。<br><a href="http://idiotsky.me/images1/redis-object-11.png"><img src="http://idiotsky.me/images1/redis-object-11.png" alt=""></a></p>
+<p>举个例子， 如果前面 profile 键创建的不是 ziplist 编码的哈希对象， 而是 hashtable 编码的哈希对象， 那么这个哈希对象应该会是图 8-11 所示的样子。<br><a href="http://idiotsky.top/images1/redis-object-11.png"><img src="http://idiotsky.top/images1/redis-object-11.png" alt=""></a></p>
 <h2 id="编码转换-1"><a href="#编码转换-1" class="headerlink" title="编码转换"></a>编码转换</h2><p>当哈希对象可以同时满足以下两个条件时， 哈希对象使用 ziplist 编码：</p>
 <ol>
 <li>哈希对象保存的所有键值对的键和值的字符串长度都小于 64 字节；</li>
@@ -793,9 +793,9 @@
 <h1 id="集合对象"><a href="#集合对象" class="headerlink" title="集合对象"></a>集合对象</h1><p>集合对象的编码可以是 intset 或者 hashtable 。</p>
 <p>intset 编码的集合对象使用整数集合作为底层实现， 集合对象包含的所有元素都被保存在整数集合里面。</p>
 <p>举个例子， 以下代码将创建一个如图 8-12 所示的 intset 编码集合对象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SADD numbers 1 3 5</span></span><br><span class="line">(integer) 3</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images1/redis-object-12.png"><img src="http://idiotsky.me/images1/redis-object-12.png" alt=""></a><br>另一方面， hashtable 编码的集合对象使用字典作为底层实现， 字典的每个键都是一个字符串对象， 每个字符串对象包含了一个集合元素， 而字典的值则全部被设置为 NULL 。</p>
+<p><a href="http://idiotsky.top/images1/redis-object-12.png"><img src="http://idiotsky.top/images1/redis-object-12.png" alt=""></a><br>另一方面， hashtable 编码的集合对象使用字典作为底层实现， 字典的每个键都是一个字符串对象， 每个字符串对象包含了一个集合元素， 而字典的值则全部被设置为 NULL 。</p>
 <p>举个例子， 以下代码将创建一个如图 8-13 所示的 hashtable 编码集合对象：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> SADD fruits <span class="string">"apple"</span> <span class="string">"banana"</span> <span class="string">"cherry"</span></span></span><br><span class="line">(integer) 3</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://idiotsky.me/images1/redis-object-13.png"><img src="http://idiotsky.me/images1/redis-object-13.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/redis-object-13.png"><img src="http://idiotsky.top/images1/redis-object-13.png" alt=""></a></p>
 <h2 id="编码的转换-1"><a href="#编码的转换-1" class="headerlink" title="编码的转换"></a>编码的转换</h2><p>当集合对象可以同时满足以下两个条件时， 对象使用 intset 编码：</p>
 <ol>
 <li>集合对象保存的所有元素都是整数值；</li>
@@ -814,7 +814,7 @@
 <p>ziplist 编码的有序集合对象使用压缩列表作为底层实现， 每个集合元素使用两个紧挨在一起的压缩列表节点来保存， 第一个节点保存元素的成员（member）， 而第二个元素则保存元素的分值（score）。</p>
 <p>压缩列表内的集合元素按分值从小到大进行排序， 分值较小的元素被放置在靠近表头的方向， 而分值较大的元素则被放置在靠近表尾的方向。</p>
 <p>举个例子， 如果我们执行以下 ZADD 命令， 那么服务器将创建一个有序集合对象作为 price 键的值：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">redis&gt;</span><span class="bash"> ZADD price 8.5 apple 5.0 banana 6.0 cherry</span></span><br><span class="line">(integer) 3</span><br></pre></td></tr></table></figure></p>
-<p>如果 price 键的值对象使用的是 ziplist 编码， 那么这个值对象将会是图 8-14 所示的样子， 而对象所使用的压缩列表则会是 8-15 所示的样子。<br><a href="http://idiotsky.me/images1/redis-object-14.png"><img src="http://idiotsky.me/images1/redis-object-14.png" alt=""></a><br><a href="http://idiotsky.me/images1/redis-object-15.png"><img src="http://idiotsky.me/images1/redis-object-15.png" alt=""></a><br>skiplist 编码的有序集合对象使用 zset 结构作为底层实现， 一个 zset 结构同时包含一个字典和一个跳跃表：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    zskiplist *zsl;</span><br><span class="line"></span><br><span class="line">    dict *dict;</span><br><span class="line"></span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure></p>
+<p>如果 price 键的值对象使用的是 ziplist 编码， 那么这个值对象将会是图 8-14 所示的样子， 而对象所使用的压缩列表则会是 8-15 所示的样子。<br><a href="http://idiotsky.top/images1/redis-object-14.png"><img src="http://idiotsky.top/images1/redis-object-14.png" alt=""></a><br><a href="http://idiotsky.top/images1/redis-object-15.png"><img src="http://idiotsky.top/images1/redis-object-15.png" alt=""></a><br>skiplist 编码的有序集合对象使用 zset 结构作为底层实现， 一个 zset 结构同时包含一个字典和一个跳跃表：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    zskiplist *zsl;</span><br><span class="line"></span><br><span class="line">    dict *dict;</span><br><span class="line"></span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure></p>
 <p>zset 结构中的 zsl 跳跃表按分值从小到大保存了所有集合元素， 每个跳跃表节点都保存了一个集合元素： 跳跃表节点的 object 属性保存了元素的成员， 而跳跃表节点的 score 属性则保存了元素的分值。 通过这个跳跃表， 程序可以对有序集合进行范围型操作， 比如 ZRANK 、 ZRANGE 等命令就是基于跳跃表 API 来实现的。</p>
 <p>除此之外， zset 结构中的 dict 字典为有序集合创建了一个从成员到分值的映射， 字典中的每个键值对都保存了一个集合元素： 字典的键保存了元素的成员， 而字典的值则保存了元素的分值。 通过这个字典， 程序可以用 O(1) 复杂度查找给定成员的分值， ZSCORE 命令就是根据这一特性实现的， 而很多其他有序集合命令都在实现的内部用到了这一特性。</p>
 <p>有序集合每个元素的成员都是一个字符串对象， 而每个元素的分值都是一个 double 类型的浮点数。 值得一提的是， 虽然 zset 结构同时使用跳跃表和字典来保存有序集合元素， 但这两种数据结构都会通过指针来共享相同元素的成员和分值， 所以同时使用跳跃表和字典来保存集合元素不会产生任何重复成员或者分值， 也不会因此而浪费额外的内存。</p>
@@ -830,7 +830,7 @@
 <blockquote>
 <p>因为以上原因， 为了让有序集合的查找和范围型操作都尽可能快地执行， Redis 选择了同时使用字典和跳跃表两种数据结构来实现有序集合。</p>
 </blockquote>
-<p>举个例子， 如果前面 price 键创建的不是 ziplist 编码的有序集合对象， 而是 skiplist 编码的有序集合对象， 那么这个有序集合对象将会是图 8-16 所示的样子， 而对象所使用的 zset 结构将会是图 8-17 所示的样子。<br><a href="http://idiotsky.me/images1/redis-object-16.png"><img src="http://idiotsky.me/images1/redis-object-16.png" alt=""></a><br><a href="http://idiotsky.me/images1/redis-object-17.png"><img src="http://idiotsky.me/images1/redis-object-17.png" alt=""></a></p>
+<p>举个例子， 如果前面 price 键创建的不是 ziplist 编码的有序集合对象， 而是 skiplist 编码的有序集合对象， 那么这个有序集合对象将会是图 8-16 所示的样子， 而对象所使用的 zset 结构将会是图 8-17 所示的样子。<br><a href="http://idiotsky.top/images1/redis-object-16.png"><img src="http://idiotsky.top/images1/redis-object-16.png" alt=""></a><br><a href="http://idiotsky.top/images1/redis-object-17.png"><img src="http://idiotsky.top/images1/redis-object-17.png" alt=""></a></p>
 <blockquote>
 <p><strong>注意</strong><br>为了展示方便， 图 8-17 在字典和跳跃表中重复展示了各个元素的成员和分值， 但在实际中， 字典和跳跃表会共享元素的成员和分值， 所以并不会造成任何数据重复， 也不会因此而浪费任何内存。</p>
 </blockquote>
@@ -972,7 +972,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -994,7 +994,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

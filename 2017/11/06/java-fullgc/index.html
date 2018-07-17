@@ -107,17 +107,17 @@
 <meta name="keywords" content="java,gc,jvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jvm full gc 解惑">
-<meta property="og:url" content="http://idiotsky.me/2017/11/06/java-fullgc/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/11/06/java-fullgc/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="一直以来，都觉得full gc就是对old区的gc，然后就打脸了。。。。  下面先引用R大的原文：  针对HotSpot VM的实现，它里面的GC其实准确分类只有两大种：  Partial GC：并不收集整个GC堆的模式 Young GC：只收集young gen的GC Old GC：只收集old gen的GC。只有CMS的concurrent collection是这个模式 Mixed GC：">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/java-fullgc-1.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/java-fullgc-2.jpg">
-<meta property="og:updated_time" content="2017-11-07T14:09:00.804Z">
+<meta property="og:image" content="http://idiotsky.top/images1/java-fullgc-1.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/java-fullgc-2.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.535Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jvm full gc 解惑">
 <meta name="twitter:description" content="一直以来，都觉得full gc就是对old区的gc，然后就打脸了。。。。  下面先引用R大的原文：  针对HotSpot VM的实现，它里面的GC其实准确分类只有两大种：  Partial GC：并不收集整个GC堆的模式 Young GC：只收集young gen的GC Old GC：只收集old gen的GC。只有CMS的concurrent collection是这个模式 Mixed GC：">
-<meta name="twitter:image" content="http://idiotsky.me/images1/java-fullgc-1.jpg">
+<meta name="twitter:image" content="http://idiotsky.top/images1/java-fullgc-1.jpg">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/11/06/java-fullgc/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/11/06/java-fullgc/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/11/06/java-fullgc/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/11/06/java-fullgc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -476,7 +476,7 @@
 </ol>
 <p>再引用下别的大牛的话：</p>
 <blockquote>
-<p>先看一下HotSpot VM的GC家族的组合示意图：<br><a href="http://idiotsky.me/images1/java-fullgc-1.jpg"><img src="http://idiotsky.me/images1/java-fullgc-1.jpg" alt=""></a><br>不同的GC组合套装之中，具备Full GC能力的大概有三种：</p>
+<p>先看一下HotSpot VM的GC家族的组合示意图：<br><a href="http://idiotsky.top/images1/java-fullgc-1.jpg"><img src="http://idiotsky.top/images1/java-fullgc-1.jpg" alt=""></a><br>不同的GC组合套装之中，具备Full GC能力的大概有三种：</p>
 <ol>
 <li>ParallelOld(PSMarkSweep)</li>
 <li>Serial Old(MarkSweep)</li>
@@ -484,7 +484,7 @@
 </ol>
 </blockquote>
 <blockquote>
-<p>暂不考虑G1，除了CMS具备在年老代进行Major GC之外，其他情况下年老代的GC都是由Full GC触发的。Full GC的收集范围包含整个Heap区域( Eden + S1 + S2 + Tenured)，它发生时Mutator停止工作——Stop The World。对于Serial Collector，它采用MSC(Mark-Sweep-Compact)的算法对全堆进行Full GC，在HotSpot VM的实现中，主要用MarkSweep这个类来实现；对于Parallel Collector而言，PSMarkSweep是多线程的MarkSweep，名不副实，这玩意儿其实是个实现了Lisp2的Mark-Compact GC算法。PSMarkSweep有个特殊的地方是如果配置了<strong>ScavengeBeforeFullGC</strong> 这个flag，则会在Full GC之前对年轻代进行一次Minor GC；其他情况根本不需要Full GC之前先执行Minor GC，Full GC会对年轻代发起GC。Full GC前后Heap的对比示意参见：<br><a href="http://idiotsky.me/images1/java-fullgc-2.jpg"><img src="http://idiotsky.me/images1/java-fullgc-2.jpg" alt=""></a></p>
+<p>暂不考虑G1，除了CMS具备在年老代进行Major GC之外，其他情况下年老代的GC都是由Full GC触发的。Full GC的收集范围包含整个Heap区域( Eden + S1 + S2 + Tenured)，它发生时Mutator停止工作——Stop The World。对于Serial Collector，它采用MSC(Mark-Sweep-Compact)的算法对全堆进行Full GC，在HotSpot VM的实现中，主要用MarkSweep这个类来实现；对于Parallel Collector而言，PSMarkSweep是多线程的MarkSweep，名不副实，这玩意儿其实是个实现了Lisp2的Mark-Compact GC算法。PSMarkSweep有个特殊的地方是如果配置了<strong>ScavengeBeforeFullGC</strong> 这个flag，则会在Full GC之前对年轻代进行一次Minor GC；其他情况根本不需要Full GC之前先执行Minor GC，Full GC会对年轻代发起GC。Full GC前后Heap的对比示意参见：<br><a href="http://idiotsky.top/images1/java-fullgc-2.jpg"><img src="http://idiotsky.top/images1/java-fullgc-2.jpg" alt=""></a></p>
 </blockquote>
 <blockquote>
 <p>可见，一般情况下，年轻代的存活对象都被Compact到了年老代，所以，你看到年轻代都被清空了；只有当年老代满了的时候，才会Compact到Eden区域。</p>
@@ -613,7 +613,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -635,7 +635,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

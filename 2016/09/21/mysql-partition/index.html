@@ -107,19 +107,19 @@
 <meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL分区和分表">
-<meta property="og:url" content="http://idiotsky.me/2016/09/21/mysql-partition/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/09/21/mysql-partition/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="概念 为什么要分表和分区？日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。 什么是分表？分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-1.png">
-<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-2.png">
-<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-3.png">
-<meta property="og:image" content="http://idiotsky.me/images/mysql-partition-4.png">
-<meta property="og:updated_time" content="2017-09-23T10:02:44.000Z">
+<meta property="og:image" content="http://idiotsky.top/images/mysql-partition-1.png">
+<meta property="og:image" content="http://idiotsky.top/images/mysql-partition-2.png">
+<meta property="og:image" content="http://idiotsky.top/images/mysql-partition-3.png">
+<meta property="og:image" content="http://idiotsky.top/images/mysql-partition-4.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL分区和分表">
 <meta name="twitter:description" content="概念 为什么要分表和分区？日常开发中我们经常会遇到大表的情况，所谓的大表是指存储了百万级乃至千万级条记录的表。这样的表过于庞大，导致数据库在查询和插入的时候耗时太长，性能低下，如果涉及联合查询的情况，性能会更加糟糕。分表和表分区的目的就是减少数据库的负担，提高数据库的效率，通常点来讲就是提高表的增删改查效率。 什么是分表？分表是将一个大表按照一定的规则分解成多张具有独立存储空间的实体表，我们可以称">
-<meta name="twitter:image" content="http://idiotsky.me/images/mysql-partition-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images/mysql-partition-1.png">
 
 
 
@@ -148,7 +148,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/09/21/mysql-partition/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/09/21/mysql-partition/"/>
 
 
 
@@ -349,7 +349,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/09/21/mysql-partition/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/09/21/mysql-partition/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -504,15 +504,15 @@
 <li>先在user1表中增加一条数据，然后再在user2表中增加一条数据，查看 alluser中的数据。<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user1(<span class="keyword">name</span>,sex) <span class="keyword">values</span> (<span class="string">'张三'</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user2(<span class="keyword">name</span>,sex) <span class="keyword">values</span> (<span class="string">'李四'</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> alluser;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p>发现是刚刚插入的数据如下：<br><a href="http://idiotsky.me/images/mysql-partition-1.png"><img src="http://idiotsky.me/images/mysql-partition-1.png" alt=""></a><br>这就出现了一个id重复，这就造成了当删除和修改的时候异常，解决办法是给 alluser的id赋唯一值。<br>我们解决方法是，重新建立一张表tb_ids(id int)，用来专门存一个id的，并插入一条初始数据，同时删除掉user1和user2中的数据。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_ids(<span class="keyword">id</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_ids <span class="keyword">values</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user1;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user2;</span><br></pre></td></tr></table></figure></p>
+<p>发现是刚刚插入的数据如下：<br><a href="http://idiotsky.top/images/mysql-partition-1.png"><img src="http://idiotsky.top/images/mysql-partition-1.png" alt=""></a><br>这就出现了一个id重复，这就造成了当删除和修改的时候异常，解决办法是给 alluser的id赋唯一值。<br>我们解决方法是，重新建立一张表tb_ids(id int)，用来专门存一个id的，并插入一条初始数据，同时删除掉user1和user2中的数据。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> tb_ids(<span class="keyword">id</span> <span class="built_in">int</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tb_ids <span class="keyword">values</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user1;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> user2;</span><br></pre></td></tr></table></figure></p>
 <p>然后在user1和user2表中建立一个触发器，触发器的功能是 当在user1或者user2表中增加一条记录时，取出tb_ids中的id值，赋给user1和user2的id，然后将tb_ids的id值加1，<br>触发器内容如下（将user1改为user2）：　　　<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER $$</span><br><span class="line">   <span class="keyword">CREATE</span> <span class="keyword">TRIGGER</span> tr_seq</span><br><span class="line">   <span class="keyword">BEFORE</span> <span class="keyword">INSERT</span> <span class="keyword">on</span> user1</span><br><span class="line">   <span class="keyword">FOR</span> <span class="keyword">EACH</span> <span class="keyword">ROW</span> <span class="keyword">BEGIN</span> </span><br><span class="line">      <span class="keyword">select</span> <span class="keyword">id</span>  <span class="keyword">into</span> @testid <span class="keyword">from</span> tb_ids <span class="keyword">limit</span> <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">update</span> tb_ids <span class="keyword">set</span> <span class="keyword">id</span> = @testid + <span class="number">1</span>;</span><br><span class="line">   <span class="keyword">set</span> new.id =  @testid;</span><br><span class="line">   <span class="keyword">END</span>$$</span><br><span class="line">   DELIMITER;</span><br></pre></td></tr></table></figure></p>
 <ol start="2">
 <li><p>在user1和user2表中分别增加一条数据，</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user1(<span class="keyword">name</span>,sex) <span class="keyword">values</span>(<span class="string">'王五'</span>,<span class="number">1</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user2(<span class="keyword">name</span>,sex) <span class="keyword">values</span>(<span class="string">'赵六'</span>,<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>查询user1和user2中的数据：<br><a href="http://idiotsky.me/images/mysql-partition-2.png"><img src="http://idiotsky.me/images/mysql-partition-2.png" alt=""></a><br><a href="http://idiotsky.me/images/mysql-partition-3.png"><img src="http://idiotsky.me/images/mysql-partition-3.png" alt=""></a></p>
+<li><p>查询user1和user2中的数据：<br><a href="http://idiotsky.top/images/mysql-partition-2.png"><img src="http://idiotsky.top/images/mysql-partition-2.png" alt=""></a><br><a href="http://idiotsky.top/images/mysql-partition-3.png"><img src="http://idiotsky.top/images/mysql-partition-3.png" alt=""></a></p>
 </li>
-<li>查询总表alluser中的数据，发现id没有重复的：<br><a href="http://idiotsky.me/images/mysql-partition-4.png"><img src="http://idiotsky.me/images/mysql-partition-4.png" alt=""></a></li>
+<li>查询总表alluser中的数据，发现id没有重复的：<br><a href="http://idiotsky.top/images/mysql-partition-4.png"><img src="http://idiotsky.top/images/mysql-partition-4.png" alt=""></a></li>
 </ol>
 
       
@@ -633,7 +633,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -655,7 +655,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

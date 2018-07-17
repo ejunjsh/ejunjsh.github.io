@@ -107,11 +107,11 @@
 <meta name="keywords" content="asm,nasm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="我的汇编学习之路（2）">
-<meta property="og:url" content="http://idiotsky.me/2016/05/13/asm-learning-road-2/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/05/13/asm-learning-road-2/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="对于不折不扣的汇编新手来说，第一部分中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。 术语和概念当我写了第一篇之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。 寄存器（Register）：寄存器是处理器内小容量的存储结构，处理器的主要功能是数据处理，处理器可以从内存中">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-10-17T14:04:50.392Z">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.524Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的汇编学习之路（2）">
 <meta name="twitter:description" content="对于不折不扣的汇编新手来说，第一部分中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。 术语和概念当我写了第一篇之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。 寄存器（Register）：寄存器是处理器内小容量的存储结构，处理器的主要功能是数据处理，处理器可以从内存中">
@@ -143,7 +143,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/05/13/asm-learning-road-2/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/05/13/asm-learning-road-2/"/>
 
 
 
@@ -344,7 +344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/05/13/asm-learning-road-2/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/05/13/asm-learning-road-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -433,8 +433,8 @@
       
 
       
-        <p>对于不折不扣的汇编新手来说，<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一部分</a>中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。</p>
-<h1 id="术语和概念"><a href="#术语和概念" class="headerlink" title="术语和概念"></a>术语和概念</h1><p>当我写了<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一篇</a>之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。</p>
+        <p>对于不折不扣的汇编新手来说，<a href="http://idiotsky.top/2016/05/12/asm-learning-road-1/">第一部分</a>中出现的很多概念可能不是很明白，于是我决定写更多有价值的文章。所以，让我们开始《我的汇编学习之路》的第二部分的学习。</p>
+<h1 id="术语和概念"><a href="#术语和概念" class="headerlink" title="术语和概念"></a>术语和概念</h1><p>当我写了<a href="http://idiotsky.top/2016/05/12/asm-learning-road-1/">第一篇</a>之后，我从不同的读者那获得很多反馈，第一篇中有些部分不明白，这就是本文以及接下来几篇从一些术语的描述开始的原因。</p>
 <p>寄存器（Register）：寄存器是处理器内小容量的存储结构，处理器的主要功能是数据处理，处理器可以从内存中获得数据，但这是一种低速的操作，这就是为什么处理器为什么要有自己数据存储结构，称为“寄存器”。</p>
 <p>L小端（Little-endian）：我们可以假设内存是一个大的数组，它包含一个字节一个字节的数。每个地址存储了内存“数组”中的一个元素，每个元素一个字节。举例来说，我们有 4 字节数：AA 56 AB FF，在小端模式下最低位存放在低地址上：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0 FF</span><br><span class="line">1 AB</span><br><span class="line">2 56</span><br><span class="line">3 AA</span><br></pre></td></tr></table></figure></p>
 <p>这里，0、1、2、3 是内存地址。</p>
@@ -499,7 +499,7 @@
 <h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>我们看个简单的例子：两个数相加，得到它们的和，然后与预定义的一个数进行比较，如果相等输出一些东西到屏幕上；如果不等退出。下面是例子的源代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">;initialised data section</span><br><span class="line">section .data</span><br><span class="line">    ; Define constants</span><br><span class="line">    num1:   equ 100</span><br><span class="line">    num2:   equ 50</span><br><span class="line">    ; initialize message</span><br><span class="line">    msg:    db &quot;Sum is correct&quot;,10</span><br><span class="line"> </span><br><span class="line">section .text</span><br><span class="line"> </span><br><span class="line">    global _start</span><br><span class="line"> </span><br><span class="line">;; entry point</span><br><span class="line">_start:</span><br><span class="line">    ; set num1&apos;s value to rax</span><br><span class="line">    mov rax, num1</span><br><span class="line">    ; set num2&apos;s value to rbx</span><br><span class="line">    mov rbx, num2</span><br><span class="line">    ; get sum of rax and rbx, and store it&apos;s value in rax</span><br><span class="line">    add rax, rbx</span><br><span class="line">    ; compare rax and 150</span><br><span class="line">    cmp rax, 150</span><br><span class="line">    ; go to .exit label if rax and 150 are not equal</span><br><span class="line">    jne .exit</span><br><span class="line">    ; go to .rightSum label if rax and 150 are equal</span><br><span class="line">    jmp .rightSum</span><br><span class="line"> </span><br><span class="line">; Print message that sum is correct</span><br><span class="line">.rightSum:</span><br><span class="line">    ;; write syscall</span><br><span class="line">    mov     rax, 1</span><br><span class="line">    ;; file descritor, standard output</span><br><span class="line">    mov     rdi, 1</span><br><span class="line">    ;; message address</span><br><span class="line">    mov     rsi, msg</span><br><span class="line">    ;; length of message</span><br><span class="line">    mov     rdx, 15</span><br><span class="line">    ;; call write syscall</span><br><span class="line">    syscall</span><br><span class="line">    ; exit from program</span><br><span class="line">    jmp .exit</span><br><span class="line"> </span><br><span class="line">; exit procedure</span><br><span class="line">.exit:</span><br><span class="line">    ; exit syscall</span><br><span class="line">    mov    rax, 60</span><br><span class="line">    ; exit code</span><br><span class="line">    mov    rdi, 0</span><br><span class="line">    ; call exit syscall</span><br><span class="line">    syscall</span><br></pre></td></tr></table></figure></p>
 <p>我们过一下这段代码。首先在数据段定义了三个数：num1、num2 和值为 “Sum is correctn” 的 msg。现在看到第 14 行，这是程序的入口的地方。我们将 num1 和 num2 的值放到通用寄存器 rax 和 rbx 中，使用 add 指令相加，在 add 指令执行完之后，rax 和 rbx 相加之和保存到 rax 中，即现在 num1 和 num2 的和存放在 rax 寄存器中。</p>
 <p>好了，我们让 num1 是 100，num2 是 50，之和是 150，用 cmp 指令比较。在比较完 rax 和 150 之后，检查比较的结果，如果 rax 和 150 不等，我们跳转到 .exit 处，如果相等，跳到 .rightSum 标签处。</p>
-<p>接着有两个标签：.exit 和 .rightSum。首先将 rax 设置为 60，这是 exit 系统调用号，以及将 rdi 设为 0，这是退出码。然后，.rightSUm 相当简单，只是打印出 Sum is corret，如果你不能理解怎么工作的，看看<a href="http://idiotsky.me/2016/05/12/asm-learning-road-1/">第一篇文章</a>。</p>
+<p>接着有两个标签：.exit 和 .rightSum。首先将 rax 设置为 60，这是 exit 系统调用号，以及将 rdi 设为 0，这是退出码。然后，.rightSUm 相当简单，只是打印出 Sum is corret，如果你不能理解怎么工作的，看看<a href="http://idiotsky.top/2016/05/12/asm-learning-road-1/">第一篇文章</a>。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这是 《我的汇编学习之路》 系列文章的第二篇，如果你有任何问题或建议，给我留言。</p>
 <p>参考 <a href="http://blog.jobbole.com/84815/" target="_blank" rel="noopener">http://blog.jobbole.com/84815/</a> 此链接翻译了 <a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">https://github.com/0xAX/asm</a> 的第二章<br>原作者源码 <a href="https://github.com/0xAX/asm" target="_blank" rel="noopener">https://github.com/0xAX/asm</a><br>已加入我的repo <a href="https://github.com/ejunjsh/asm-code" target="_blank" rel="noopener">https://github.com/ejunjsh/asm-code</a></p>
 
@@ -623,7 +623,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -645,7 +645,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

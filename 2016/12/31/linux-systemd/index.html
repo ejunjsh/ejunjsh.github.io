@@ -107,11 +107,11 @@
 <meta name="keywords" content="linux,systemd,systemctl,journalctl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux命令之systemd">
-<meta property="og:url" content="http://idiotsky.me/2016/12/31/linux-systemd/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/12/31/linux-systemd/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="systemd只是一组命令的名称，主要常用的是systemctl和journalctl。 UnitUnit是systemd管理的最小单元，所以必须要先讲这个。 Unit一共分成12种。  Service unit：系统服务 Target unit：多个 Unit 构成的一个组 Device Unit：硬件设备 Mount Unit：文件系统的挂载点 Automount Unit：自动挂载点 Pat">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-03T00:39:51.722Z">
+<meta property="og:updated_time" content="2018-07-17T10:57:55.105Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令之systemd">
 <meta name="twitter:description" content="systemd只是一组命令的名称，主要常用的是systemctl和journalctl。 UnitUnit是systemd管理的最小单元，所以必须要先讲这个。 Unit一共分成12种。  Service unit：系统服务 Target unit：多个 Unit 构成的一个组 Device Unit：硬件设备 Mount Unit：文件系统的挂载点 Automount Unit：自动挂载点 Pat">
@@ -143,7 +143,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/12/31/linux-systemd/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/12/31/linux-systemd/"/>
 
 
 
@@ -344,7 +344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/12/31/linux-systemd/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/12/31/linux-systemd/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -505,6 +505,15 @@
 <li>Condition…：当前 Unit 运行必须满足的条件，否则不会运行</li>
 <li>Assert…：当前 Unit 运行必须满足的条件，否则会报启动失败</li>
 </ul>
+<p>这里要说说启动顺序和依赖关系</p>
+<p>以<code>sshd.service</code>为例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description=OpenSSH server daemon</span><br><span class="line">Documentation=man:sshd(8) man:sshd_config(5)</span><br><span class="line">After=network.target sshd-keygen.service</span><br><span class="line">Wants=sshd-keygen.service</span><br></pre></td></tr></table></figure>
+<p><code>After</code>字段：表示如果<code>network.target</code>或<code>sshd-keygen.service</code>需要启动，那么<code>sshd.service</code>应该在它们之后启动。<br><code>Before</code>字段，定义<code>sshd.service</code>应该在哪些服务之前启动。</p>
+<p>注意，<code>After</code>和<code>Before</code>字段只涉及启动顺序，不涉及依赖关系。</p>
+<p>设置依赖关系，需要使用<code>Wants</code>字段和<code>Requires</code>字段。</p>
+<p><code>Wants</code>字段：表示<code></code>sshd.service<code>与</code>sshd-keygen.service<code>之间存在&quot;弱依赖&quot;关系，即如果</code>sshd-keygen.service<code>启动失败或停止运行，不影响</code>sshd.service`继续执行。</p>
+<p><code>Requires</code>字段则表示”强依赖”关系，即如果该服务启动失败或异常退出，那么<code>sshd.service</code>也必须退出。</p>
+<p>注意，<code>Wants</code>字段与<code>Requires</code>字段只涉及依赖关系，与启动顺序无关，默认情况下是同时启动的。</p>
 <p><code>[Install]</code>通常是配置文件的最后一个区块，用来定义如何启动，以及是否开机启动。它的主要字段如下。</p>
 <ul>
 <li>WantedBy：它的值是一个或多个 Target，当前 Unit 激活时（enable）符号链接会放入/etc/systemd/system目录下面以 Target 名 + .wants后缀构成的子目录中</li>
@@ -517,10 +526,10 @@
 <li>Type：定义启动时的进程行为。它有以下几种值。</li>
 <li>Type=simple：默认值，执行ExecStart指定的命令，启动主进程</li>
 <li>Type=forking：以 fork 方式从父进程创建子进程，创建后父进程会立即退出</li>
-<li>Type=oneshot：一次性进程，Systemd 会等当前服务退出，再继续往下执行</li>
-<li>Type=dbus：当前服务通过D-Bus启动</li>
-<li>Type=notify：当前服务启动完毕，会通知Systemd，再继续往下执行</li>
-<li>Type=idle：若有其他任务执行完毕，当前服务才会运行</li>
+<li>Type=oneshot：类似于simple，但只执行一次，Systemd 会等当前服务退出，再继续往下执行</li>
+<li>Type=dbus：类似于simple，但会等待 D-Bus 信号后启动</li>
+<li>Type=notify：类似于simple，启动结束后会发出通知信号，然后 Systemd 再启动其他服务</li>
+<li>Type=idle：类似于simple，但是要等到其他任务都执行完，才会启动该服务。一种使用场合是为让该服务的输出，不与其他服务的输出相混合</li>
 <li>ExecStart：启动当前服务的命令</li>
 <li>ExecStartPre：启动当前服务之前执行的命令</li>
 <li>ExecStartPost：启动当前服务之后执行的命令</li>
@@ -531,8 +540,41 @@
 <li>Restart：定义何种情况 Systemd 会自动重启当前服务，可能的值包括always（总是重启）、on-success、on-failure、on-abnormal、on-abort、on-watchdog</li>
 <li>TimeoutSec：定义 Systemd 停止当前服务之前等待的秒数</li>
 <li>Environment：指定环境变量</li>
+<li>EnvironmentFile：指定当前服务的环境参数文件。该文件内部的key=value键值对，可以用$key的形式，在当前配置文件中获取。</li>
+<li>RemainAfterExit: 设为yes，表示进程退出以后，服务仍然保持执行</li>
+<li>KillMode：定义 Systemd 如何停止服务。</li>
 </ul>
 <p>Unit 配置文件的完整字段清单，请参考<a href="https://www.freedesktop.org/software/systemd/man/systemd.unit.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<p>还是以<code>sshd.service</code>为例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">EnvironmentFile=/etc/sysconfig/sshd</span><br><span class="line">ExecStart=/usr/sbin/sshd -D $OPTIONS</span><br><span class="line">ExecReload=/bin/kill -HUP $MAINPID</span><br><span class="line">Type=simple</span><br><span class="line">KillMode=process</span><br><span class="line">Restart=on-failure</span><br><span class="line">RestartSec=42s</span><br></pre></td></tr></table></figure>
+<p>sshd 的环境参数文件是<code>/etc/sysconfig/sshd</code>。</p>
+<p>配置文件里面最重要的字段是<code>ExecStart</code>。</p>
+<p>启动sshd，执行的命令是<code>/usr/sbin/sshd -D $OPTIONS</code>，其中的变量<code>$OPTIONS</code>就来自EnvironmentFile字段指定的环境参数文件。</p>
+<p>请看下面的例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">ExecStart=/bin/echo execstart1</span><br><span class="line">ExecStart=</span><br><span class="line">ExecStart=/bin/echo execstart2</span><br><span class="line">ExecStartPost=/bin/echo post1</span><br><span class="line">ExecStartPost=/bin/echo post2</span><br></pre></td></tr></table></figure>
+<p>上面这个配置文件，第二行ExecStart设为空值，等于取消了第一行的设置，运行结果如下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">execstart2</span><br><span class="line">post1</span><br><span class="line">post2</span><br></pre></td></tr></table></figure>
+<p>所有的启动设置之前，都可以加上一个连词号（-），表示”抑制错误”，即发生错误的时候，不影响其他命令的执行。比如，<code>EnvironmentFile=-/etc/sysconfig/sshd</code>（注意等号后面的那个连词号），就表示即使<code>/etc/sysconfig/sshd</code>文件不存在，也不会抛出错误。</p>
+<p>上面sshd例子中，将<code>KillMode</code>设为<code>process</code>，表示只停止主进程，不停止任何sshd 子进程，即子进程打开的 SSH session 仍然保持连接。这个设置不太常见，但对 sshd 很重要，否则你停止服务的时候，会连自己打开的 SSH session 一起杀掉。</p>
+<p>KillMode字段可以设置的值如下。</p>
+<ul>
+<li>control-group（默认值）：当前控制组里面的所有子进程，都会被杀掉</li>
+<li>process：只杀主进程</li>
+<li>mixed：主进程将收到 SIGTERM 信号，子进程收到 SIGKILL 信号</li>
+<li>none：没有进程会被杀掉，只是执行服务的 stop 命令。</li>
+</ul>
+<p>上面的例子中，<code>Restart</code>设为<code>on-failure</code>，表示任何意外的失败，就将重启sshd。如果 sshd 正常停止（比如执行systemctl stop命令），它就不会重启。</p>
+<p>Restart字段可以设置的值如下。</p>
+<ul>
+<li>no（默认值）：退出后不会重启</li>
+<li>on-success：只有正常退出时（退出状态码为0），才会重启</li>
+<li>on-failure：非正常退出时（退出状态码非0），包括被信号终止和超时，才会重启</li>
+<li>on-abnormal：只有被信号终止和超时，才会重启</li>
+<li>on-abort：只有在收到没有捕捉到的信号终止时，才会重启</li>
+<li>on-watchdog：超时退出，才会重启</li>
+<li>always：不管是什么退出原因，总是重启</li>
+</ul>
+<p>对于守护进程，推荐设为<code>on-failure</code>。对于那些允许发生错误退出的服务，可以设为<code>on-abnormal</code>。</p>
 <h1 id="Target"><a href="#Target" class="headerlink" title="Target"></a>Target</h1><p>启动计算机的时候，需要启动大量的 Unit。如果每一次启动，都要一一写明本次启动需要哪些 Unit，显然非常不方便。Systemd 的解决方案就是 Target。</p>
 <p>简单说，Target 就是一个 Unit 组，包含许多相关的 Unit 。启动某个 Target 的时候，Systemd 就会启动里面所有的 Unit。从这个意义上说，Target 这个概念类似于”状态点”，启动某个 Target 就好比启动到某种状态。</p>
 <p>传统的<code>init</code>启动模式里面，有 RunLevel 的概念，跟 Target 的作用很类似。不同的是，RunLevel 是互斥的，不可能多个 RunLevel 同时启动，但是多个 Target 可以同时启动。</p>
@@ -541,7 +583,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Traditional runlevel      New target name     Symbolically linked to...</span><br><span class="line"></span><br><span class="line">Runlevel 0           |    runlevel0.target -&gt; poweroff.target</span><br><span class="line">Runlevel 1           |    runlevel1.target -&gt; rescue.target</span><br><span class="line">Runlevel 2           |    runlevel2.target -&gt; multi-user.target</span><br><span class="line">Runlevel 3           |    runlevel3.target -&gt; multi-user.target</span><br><span class="line">Runlevel 4           |    runlevel4.target -&gt; multi-user.target</span><br><span class="line">Runlevel 5           |    runlevel5.target -&gt; graphical.target</span><br><span class="line">Runlevel 6           |    runlevel6.target -&gt; reboot.target</span><br></pre></td></tr></table></figure>
 <p>它与<code>init</code>进程的主要差别如下。</p>
 <ol>
-<li>默认的 RunLevel（在<code>/etc/inittab</code>文件设置）现在被默认的 Target 取代，位置是<code>/etc/systemd/system/default.target</code>，通常符号链接到g<code>raphical.target</code>（图形界面）或者<code>multi-user.target</code>（多用户命令行）。</li>
+<li>默认的 RunLevel（在<code>/etc/inittab</code>文件设置）现在被默认的 Target 取代，位置是<code>/etc/systemd/system/default.target</code>，通常符号链接到<code>graphical.target</code>（图形界面）或者<code>multi-user.target</code>（多用户命令行）。</li>
 <li>启动脚本的位置，以前是<code>/etc/init.d</code>目录，符号链接到不同的 RunLevel 目录 （比如<code>/etc/rc3.d</code>、<code>/etc/rc5.d</code>等），现在则存放在<code>/lib/systemd/system</code>和<code>/etc/systemd/system</code>目录。</li>
 <li>配置文件的位置，以前<code>init</code>进程的配置文件是<code>/etc/inittab</code>，各种服务的配置文件存放在<code>/etc/sysconfig</code>目录。现在的配置文件主要存放在<code>/lib/systemd</code>目录，在<code>/etc/systemd</code>目录里面的修改可以覆盖原始设置。</li>
 </ol>
@@ -674,7 +716,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -696,7 +738,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

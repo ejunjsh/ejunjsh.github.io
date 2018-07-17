@@ -107,26 +107,26 @@
 <meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL优化原理">
-<meta property="og:url" content="http://idiotsky.me/2017/09/29/mysql-optimization-mechanism/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/09/29/mysql-optimization-mechanism/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="说起MySQL的查询优化，相信大家收藏了一堆奇技淫巧：不能使用SELECT *、不使用NULL字段、合理创建索引、为字段选择合适的数据类型….. 你是否真的理解这些优化技巧？是否理解其背后的工作原理？在实际场景下性能真有提升吗？我想未必。因而理解这些优化建议背后的原理就尤为重要，希望本文能让你重新审视这些优化建议，并在实际业务场景下合理的运用。 MySQL逻辑架构如果能在头脑中构建一幅MySQL各">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-2.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-3.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-4.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-5.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-6.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-7.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-8.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-9.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-10.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-11.jpg">
-<meta property="og:updated_time" content="2017-10-02T08:03:13.580Z">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-1.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-2.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-3.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-4.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-5.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-6.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-7.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-8.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-9.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-10.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-11.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL优化原理">
 <meta name="twitter:description" content="说起MySQL的查询优化，相信大家收藏了一堆奇技淫巧：不能使用SELECT *、不使用NULL字段、合理创建索引、为字段选择合适的数据类型….. 你是否真的理解这些优化技巧？是否理解其背后的工作原理？在实际场景下性能真有提升吗？我想未必。因而理解这些优化建议背后的原理就尤为重要，希望本文能让你重新审视这些优化建议，并在实际业务场景下合理的运用。 MySQL逻辑架构如果能在头脑中构建一幅MySQL各">
-<meta name="twitter:image" content="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg">
+<meta name="twitter:image" content="http://idiotsky.top/images1/mysql-optimization-mechanism-1.jpg">
 
 
 
@@ -155,7 +155,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/09/29/mysql-optimization-mechanism/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/09/29/mysql-optimization-mechanism/"/>
 
 
 
@@ -356,7 +356,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/09/29/mysql-optimization-mechanism/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/29/mysql-optimization-mechanism/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -446,11 +446,11 @@
 
       
         <p>说起MySQL的查询优化，相信大家收藏了一堆奇技淫巧：不能使用SELECT *、不使用NULL字段、合理创建索引、为字段选择合适的数据类型….. 你是否真的理解这些优化技巧？是否理解其背后的工作原理？在实际场景下性能真有提升吗？我想未必。因而理解这些优化建议背后的原理就尤为重要，希望本文能让你重新审视这些优化建议，并在实际业务场景下合理的运用。</p>
-<h1 id="MySQL逻辑架构"><a href="#MySQL逻辑架构" class="headerlink" title="MySQL逻辑架构"></a>MySQL逻辑架构</h1><p>如果能在头脑中构建一幅MySQL各组件之间如何协同工作的架构图，有助于深入理解MySQL服务器。下图展示了MySQL的逻辑架构图。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-1.jpg" alt=""></a><br><a id="more"></a><br>MySQL逻辑架构整体分为三层，最上层为客户端层，并非MySQL所独有，诸如：连接处理、授权认证、安全等功能均在这一层处理。</p>
+<h1 id="MySQL逻辑架构"><a href="#MySQL逻辑架构" class="headerlink" title="MySQL逻辑架构"></a>MySQL逻辑架构</h1><p>如果能在头脑中构建一幅MySQL各组件之间如何协同工作的架构图，有助于深入理解MySQL服务器。下图展示了MySQL的逻辑架构图。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-1.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-1.jpg" alt=""></a><br><a id="more"></a><br>MySQL逻辑架构整体分为三层，最上层为客户端层，并非MySQL所独有，诸如：连接处理、授权认证、安全等功能均在这一层处理。</p>
 <p>MySQL大多数核心服务均在中间这一层，包括查询解析、分析、优化、缓存、内置函数(比如：时间、数学、加密等函数)。所有的跨存储引擎的功能也在这一层实现：存储过程、触发器、视图等。</p>
 <p>最下层为存储引擎，其负责MySQL中的数据存储和提取。和Linux下的文件系统类似，每种存储引擎都有其优势和劣势。中间的服务层通过API与存储引擎通信，这些API接口屏蔽了不同存储引擎间的差异。</p>
 <h1 id="MySQL查询过程"><a href="#MySQL查询过程" class="headerlink" title="MySQL查询过程"></a>MySQL查询过程</h1><p>我们总是希望MySQL能够获得更高的查询性能，最好的办法是弄清楚MySQL是如何优化和执行查询的。一旦理解了这一点，就会发现：很多的查询优化工作实际上就是遵循一些原则让MySQL的优化器能够按照预想的合理方式运行而已。</p>
-<p>当向MySQL发送一个请求的时候，MySQL到底做了些什么呢？<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-2.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-2.jpg" alt=""></a></p>
+<p>当向MySQL发送一个请求的时候，MySQL到底做了些什么呢？<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-2.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-2.jpg" alt=""></a></p>
 <h2 id="客户端-服务端通信协议"><a href="#客户端-服务端通信协议" class="headerlink" title="客户端/服务端通信协议"></a>客户端/服务端通信协议</h2><p>MySQL客户端/服务端通信协议是“半双工”的：在任一时刻，要么是服务器向客户端发送数据，要么是客户端向服务器发送数据，这两个动作不能同时发生。一旦一端开始发送消息，另一端要接收完整个消息才能响应它，所以我们无法也无须将一个消息切成小块独立发送，也没有办法进行流量控制。</p>
 <p>客户端用一个单独的数据包将查询请求发送给服务器，所以当查询语句很长的时候，需要设置max_allowed_packet参数。但是需要注意的是，如果查询实在是太大，服务端会拒绝接收更多数据并抛出异常。</p>
 <p>与之相反的是，服务器响应给用户的数据通常会很多，由多个数据包组成。但是当服务器响应客户端请求时，客户端必须完整的接收整个返回结果，而不能简单的只取前面几条结果，然后让服务器停止发送。因而在实际开发中，尽量保持查询简单且只返回必需的数据，减小通信间数据包的大小和数量是一个非常好的习惯，这也是查询中尽量避免使用SELECT *以及加上LIMIT限制的原因之一。</p>
@@ -514,22 +514,22 @@
 <p>接下来将向你展示一系列创建高性能索引的策略，以及每条策略其背后的工作原理。但在此之前，先了解与索引相关的一些算法和数据结构，将有助于更好的理解后文的内容。</p>
 <h3 id="索引相关的数据结构和算法"><a href="#索引相关的数据结构和算法" class="headerlink" title="索引相关的数据结构和算法"></a>索引相关的数据结构和算法</h3><p>通常我们所说的索引是指B-Tree索引，它是目前关系型数据库中查找数据最为常用和有效的索引，大多数存储引擎都支持这种索引。使用B-Tree这个术语，是因为MySQL在CREATE TABLE或其它语句中使用了这个关键字，但实际上不同的存储引擎可能使用不同的数据结构，比如InnoDB就是使用的B+Tree。</p>
 <p>B+Tree中的B是指balance，意为平衡。需要注意的是，B+树索引并不能找到一个给定键值的具体行，它找到的只是被查找数据行所在的页，接着数据库会把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
-<p>在介绍B+Tree前，先了解一下二叉查找树，它是一种经典的数据结构，其左子树的值总是小于根的值，右子树的值总是大于根的值，如下图①。如果要在这课树中查找值为5的记录，其大致流程：先找到根，其值为6，大于5，所以查找左子树，找到3，而5大于3，接着找3的右子树，总共找了3次。同样的方法，如果查找值为8的记录，也需要查找3次。所以二叉查找树的平均查找次数为(3 + 3 + 3 + 2 + 2 + 1) / 6 = 2.3次，而顺序查找的话，查找值为2的记录，仅需要1次，但查找值为8的记录则需要6次，所以顺序查找的平均查找次数为：(1 + 2 + 3 + 4 + 5 + 6) / 6 = 3.3次，因此大多数情况下二叉查找树的平均查找速度比顺序查找要快。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-3.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-3.jpg" alt=""></a></p>
+<p>在介绍B+Tree前，先了解一下二叉查找树，它是一种经典的数据结构，其左子树的值总是小于根的值，右子树的值总是大于根的值，如下图①。如果要在这课树中查找值为5的记录，其大致流程：先找到根，其值为6，大于5，所以查找左子树，找到3，而5大于3，接着找3的右子树，总共找了3次。同样的方法，如果查找值为8的记录，也需要查找3次。所以二叉查找树的平均查找次数为(3 + 3 + 3 + 2 + 2 + 1) / 6 = 2.3次，而顺序查找的话，查找值为2的记录，仅需要1次，但查找值为8的记录则需要6次，所以顺序查找的平均查找次数为：(1 + 2 + 3 + 4 + 5 + 6) / 6 = 3.3次，因此大多数情况下二叉查找树的平均查找速度比顺序查找要快。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-3.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-3.jpg" alt=""></a></p>
 <p>由于二叉查找树可以任意构造，同样的值，可以构造出如图②的二叉查找树，显然这棵二叉树的查询效率和顺序查找差不多。若想二叉查找数的查询性能最高，需要这棵二叉查找树是平衡的，也即平衡二叉树（AVL树）。</p>
-<p>平衡二叉树首先需要符合二叉查找树的定义，其次必须满足任何节点的两个子树的高度差不能大于1。显然图②不满足平衡二叉树的定义，而图①是一课平衡二叉树。平衡二叉树的查找性能是比较高的（性能最好的是最优二叉树），查询性能越好，维护的成本就越大。比如图①的平衡二叉树，当用户需要插入一个新的值9的节点时，就需要做出如下变动。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-4.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-4.jpg" alt=""></a></p>
+<p>平衡二叉树首先需要符合二叉查找树的定义，其次必须满足任何节点的两个子树的高度差不能大于1。显然图②不满足平衡二叉树的定义，而图①是一课平衡二叉树。平衡二叉树的查找性能是比较高的（性能最好的是最优二叉树），查询性能越好，维护的成本就越大。比如图①的平衡二叉树，当用户需要插入一个新的值9的节点时，就需要做出如下变动。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-4.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-4.jpg" alt=""></a></p>
 <p>通过一次左旋操作就将插入后的树重新变为平衡二叉树是最简单的情况了，实际应用场景中可能需要旋转多次。至此我们可以考虑一个问题，平衡二叉树的查找效率还不错，实现也非常简单，相应的维护成本还能接受，为什么MySQL索引不直接使用平衡二叉树？</p>
 <p>随着数据库中数据的增加，索引本身大小随之增加，不可能全部存储在内存中，因此索引往往以索引文件的形式存储的磁盘上。这样的话，索引查找过程中就要产生磁盘I/O消耗，相对于内存存取，I/O存取的消耗要高几个数量级。可以想象一下一棵几百万节点的二叉树的深度是多少？如果将这么大深度的一颗二叉树放磁盘上，每读取一个节点，需要一次磁盘的I/O读取，整个查找的耗时显然是不能够接受的。那么如何减少查找过程中的I/O存取次数？</p>
-<p>一种行之有效的解决方法是减少树的深度，将二叉树变为m叉树（多路搜索树），而B+Tree就是一种多路搜索树。理解B+Tree时，只需要理解其最重要的两个特征即可：第一，所有的关键字（可以理解为数据）都存储在叶子节点（Leaf Page），非叶子节点（Index Page）并不存储真正的数据，所有记录节点都是按键值大小顺序存放在同一层叶子节点上。其次，所有的叶子节点由指针连接。如下图为高度为2的简化了的B+Tree。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-5.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-5.jpg" alt=""></a></p>
+<p>一种行之有效的解决方法是减少树的深度，将二叉树变为m叉树（多路搜索树），而B+Tree就是一种多路搜索树。理解B+Tree时，只需要理解其最重要的两个特征即可：第一，所有的关键字（可以理解为数据）都存储在叶子节点（Leaf Page），非叶子节点（Index Page）并不存储真正的数据，所有记录节点都是按键值大小顺序存放在同一层叶子节点上。其次，所有的叶子节点由指针连接。如下图为高度为2的简化了的B+Tree。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-5.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-5.jpg" alt=""></a></p>
 <p>怎么理解这两个特征？MySQL将每个节点的大小设置为一个页的整数倍（原因下文会介绍），也就是在节点空间大小一定的情况下，每个节点可以存储更多的内结点，这样每个结点能索引的范围更大更精确。所有的叶子节点使用指针链接的好处是可以进行区间访问，比如上图中，如果查找大于20而小于30的记录，只需要找到节点20，就可以遍历指针依次找到25、30。如果没有链接指针的话，就无法进行区间查找。这也是MySQL使用B+Tree作为索引存储结构的重要原因。</p>
 <p>MySQL为何将节点大小设置为页的整数倍，这就需要理解磁盘的存储原理。磁盘本身存取就比主存慢很多，在加上机械运动损耗（特别是普通的机械硬盘），磁盘的存取速度往往是主存的几百万分之一，为了尽量减少磁盘I/O，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存，预读的长度一般为页的整数倍。</p>
 <p>“页是计算机管理存储器的逻辑块，硬件及OS往往将主存和磁盘存储区分割为连续的大小相等的块，每个存储块称为一页（许多OS中，页的大小通常为4K）。主存和磁盘以页为单位交换数据。当程序要读取的数据不在主存中时，会触发一个缺页异常，此时系统会向磁盘发出读盘信号，磁盘会找到数据的起始位置并向后连续读取一页或几页载入内存中，然后一起返回，程序继续运行。”</p>
 <p>MySQL巧妙利用了磁盘预读原理，将一个节点的大小设为等于一个页，这样每个节点只需要一次I/O就可以完全载入。为了达到这个目的，每次新建节点时，直接申请一个页的空间，这样就保证一个节点物理上也存储在一个页里，加之计算机存储分配都是按页对齐的，就实现了读取一个节点只需一次I/O。假设B+Tree的高度为h，一次检索最多需要h-1I/O（根节点常驻内存），复杂度$O(h) = O(log_{M}N)$。实际应用场景中，M通常较大，常常超过100，因此树的高度一般都比较小，通常不超过3。</p>
 <p>最后简单了解下B+Tree节点的操作，在整体上对索引的维护有一个大概的了解，虽然索引可以大大提高查询效率，但维护索引仍要花费很大的代价，因此合理的创建索引也就尤为重要。</p>
 <p>仍以上面的树为例，我们假设每个节点只能存储4个内节点。首先要插入第一个节点28，如下图所示。</p>
-<p><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-6.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-6.jpg" alt=""></a><br>接着插入下一个节点70，在Index Page中查询后得知应该插入到50 - 70之间的叶子节点，但叶子节点已满，这时候就需要进行也分裂的操作，当前的叶子节点起点为50，所以根据中间值来拆分叶子节点，如下图所示。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-7.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-7.jpg" alt=""></a><br>最后插入一个节点95，这时候Index Page和Leaf Page都满了，就需要做两次拆分，如下图所示。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-8.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-8.jpg" alt=""></a><br>拆分后最终形成了这样一颗树。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-9.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-9.jpg" alt=""></a><br>B+Tree为了保持平衡，对于新插入的值需要做大量的拆分页操作，而页的拆分需要I/O操作，为了尽可能的减少页的拆分操作，B+Tree也提供了类似于平衡二叉树的旋转功能。当Leaf Page已满但其左右兄弟节点没有满的情况下，B+Tree并不急于去做拆分操作，而是将记录移到当前所在页的兄弟节点上。通常情况下，左兄弟会被先检查用来做旋转操作。就比如上面第二个示例，当插入70的时候，并不会去做页拆分，而是左旋操作。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-10.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-10.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-6.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-6.jpg" alt=""></a><br>接着插入下一个节点70，在Index Page中查询后得知应该插入到50 - 70之间的叶子节点，但叶子节点已满，这时候就需要进行也分裂的操作，当前的叶子节点起点为50，所以根据中间值来拆分叶子节点，如下图所示。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-7.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-7.jpg" alt=""></a><br>最后插入一个节点95，这时候Index Page和Leaf Page都满了，就需要做两次拆分，如下图所示。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-8.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-8.jpg" alt=""></a><br>拆分后最终形成了这样一颗树。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-9.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-9.jpg" alt=""></a><br>B+Tree为了保持平衡，对于新插入的值需要做大量的拆分页操作，而页的拆分需要I/O操作，为了尽可能的减少页的拆分操作，B+Tree也提供了类似于平衡二叉树的旋转功能。当Leaf Page已满但其左右兄弟节点没有满的情况下，B+Tree并不急于去做拆分操作，而是将记录移到当前所在页的兄弟节点上。通常情况下，左兄弟会被先检查用来做旋转操作。就比如上面第二个示例，当插入70的时候，并不会去做页拆分，而是左旋操作。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-10.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-10.jpg" alt=""></a></p>
 <p>通过旋转操作可以最大限度的减少页分裂，从而减少索引维护过程中的磁盘的I/O操作，也提高索引维护效率。需要注意的是，删除节点跟插入节点类似，仍然需要旋转和拆分操作，这里就不再说明。</p>
 <h3 id="高性能策略"><a href="#高性能策略" class="headerlink" title="高性能策略"></a>高性能策略</h3><p>通过上文，相信你对B+Tree的数据结构已经有了大致的了解，但MySQL中索引是如何组织数据的存储呢？以一个简单的示例来说明，假如有如下数据表：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> People(</span><br><span class="line">last_name <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="literal">null</span>,</span><br><span class="line">first_name <span class="built_in">varchar</span>(<span class="number">50</span>) <span class="keyword">not</span> <span class="literal">null</span>,</span><br><span class="line">dob <span class="built_in">date</span> <span class="keyword">not</span> <span class="literal">null</span>,</span><br><span class="line">gender enum(<span class="string">`m`</span>,<span class="string">`f`</span>) <span class="keyword">not</span> <span class="literal">null</span>,</span><br><span class="line"><span class="keyword">key</span>(last_name,first_name,dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
-<p>对于表中每一行数据，索引中包含了last_name、first_name、dob列的值，下图展示了索引是如何组织数据存储的。<br><a href="http://idiotsky.me/images1/mysql-optimization-mechanism-11.jpg"><img src="http://idiotsky.me/images1/mysql-optimization-mechanism-11.jpg" alt=""></a></p>
+<p>对于表中每一行数据，索引中包含了last_name、first_name、dob列的值，下图展示了索引是如何组织数据存储的。<br><a href="http://idiotsky.top/images1/mysql-optimization-mechanism-11.jpg"><img src="http://idiotsky.top/images1/mysql-optimization-mechanism-11.jpg" alt=""></a></p>
 <p>可以看到，索引首先根据第一个字段来排列顺序，当名字相同时，则根据第三个字段，即出生日期来排序，正是因为这个原因，才有了索引的“最左原则”。</p>
 <h4 id="MySQL不会使用索引的情况：非独立的列"><a href="#MySQL不会使用索引的情况：非独立的列" class="headerlink" title="MySQL不会使用索引的情况：非独立的列"></a>MySQL不会使用索引的情况：非独立的列</h4><p>“独立的列”是指索引列不能是表达式的一部分，也不能是函数的参数。比如：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">where</span> <span class="keyword">id</span> + <span class="number">1</span> = <span class="number">5</span></span><br></pre></td></tr></table></figure></p>
 <p>我们很容易看出其等价于 id = 4，但是MySQL无法自动解析这个表达式，使用函数是同样的道理。</p>
@@ -710,7 +710,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -732,7 +732,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

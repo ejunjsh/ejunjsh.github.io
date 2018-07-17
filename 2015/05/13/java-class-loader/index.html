@@ -107,16 +107,16 @@
 <meta name="keywords" content="java,jvm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java类加载机制">
-<meta property="og:url" content="http://idiotsky.me/2015/05/13/java-class-loader/index.html">
+<meta property="og:url" content="http://idiotsky.top/2015/05/13/java-class-loader/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="代码先用代码开个头先 爷爷类123456789package com.sky.code.classloader;public class Grandfather&amp;#123;    static    &amp;#123;        System.out.println(&quot;Grandfather&quot;);    &amp;#125;&amp;#125; 爸爸类12345678910111213141516package c">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/java-class-loader-1.png">
-<meta property="og:updated_time" content="2017-10-31T16:59:39.435Z">
+<meta property="og:image" content="http://idiotsky.top/images1/java-class-loader-1.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java类加载机制">
 <meta name="twitter:description" content="代码先用代码开个头先 爷爷类123456789package com.sky.code.classloader;public class Grandfather&amp;#123;    static    &amp;#123;        System.out.println(&quot;Grandfather&quot;);    &amp;#125;&amp;#125; 爸爸类12345678910111213141516package c">
-<meta name="twitter:image" content="http://idiotsky.me/images1/java-class-loader-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/java-class-loader-1.png">
 
 
 
@@ -145,7 +145,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2015/05/13/java-class-loader/"/>
+  <link rel="canonical" href="http://idiotsky.top/2015/05/13/java-class-loader/"/>
 
 
 
@@ -346,7 +346,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2015/05/13/java-class-loader/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2015/05/13/java-class-loader/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -442,7 +442,7 @@
 <p>main<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.code.classloader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestStatic</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        System.out.println(Child.value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>执行结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Grandfather</span><br><span class="line">Father init!</span><br><span class="line">123</span><br></pre></td></tr></table></figure></p>
 <p>为什么没有输出 Child init。解释一下：对于静态字段，只有直接定义这个字段的类才会被初始化，因此通过其子类来引用父类中定义的静态字段，只会触发父类的初始化而不会触发子类的初始化。<br>上面就牵涉到了虚拟机类加载机制。如果有兴趣，可以继续看下去。<br><a id="more"></a></p>
-<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载（Loading）、验证（Verification）、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段。其中准备、验证、解析3个部分统称为连接（Linking）。如图所示。<br><a href="http://idiotsky.me/images1/java-class-loader-1.png"><img src="http://idiotsky.me/images1/java-class-loader-1.png" alt=""></a></p>
+<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><p>类从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期包括：加载（Loading）、验证（Verification）、准备(Preparation)、解析(Resolution)、初始化(Initialization)、使用(Using)和卸载(Unloading)7个阶段。其中准备、验证、解析3个部分统称为连接（Linking）。如图所示。<br><a href="http://idiotsky.top/images1/java-class-loader-1.png"><img src="http://idiotsky.top/images1/java-class-loader-1.png" alt=""></a></p>
 <p>加载、验证、准备、初始化和卸载这5个阶段的顺序是确定的，类的加载过程必须按照这种顺序按部就班地开始，而解析阶段则不一定：它在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定（也称为动态绑定或晚期绑定）。以下陈述的内容都已HotSpot为基准。</p>
 <h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>在加载阶段（可以参考java.lang.ClassLoader的loadClass()方法），虚拟机需要完成以下3件事情：</p>
 <ol>
@@ -610,7 +610,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -632,7 +632,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

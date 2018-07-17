@@ -107,11 +107,11 @@
 <meta name="keywords" content="java,数据结构,linkedlist">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java数据结构-linkedlist">
-<meta property="og:url" content="http://idiotsky.me/2017/07/16/java-linkedlist/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/07/16/java-linkedlist/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="LinkedList简介 LinkedList 是一个继承于AbstractSequentialList的双向链表。它也可以被当作堆栈、队列或双端队列进行操作。 LinkedList 实现 List 接口，能对它进行队列操作。 LinkedList 实现 Deque 接口，即能将LinkedList当作双端队列使用。 LinkedList 实现了Cloneable接口，即覆盖了函数clone()，">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-10-04T16:47:27.149Z">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.533Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java数据结构-linkedlist">
 <meta name="twitter:description" content="LinkedList简介 LinkedList 是一个继承于AbstractSequentialList的双向链表。它也可以被当作堆栈、队列或双端队列进行操作。 LinkedList 实现 List 接口，能对它进行队列操作。 LinkedList 实现 Deque 接口，即能将LinkedList当作双端队列使用。 LinkedList 实现了Cloneable接口，即覆盖了函数clone()，">
@@ -143,7 +143,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/07/16/java-linkedlist/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/07/16/java-linkedlist/"/>
 
 
 
@@ -344,7 +344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/07/16/java-linkedlist/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/07/16/java-linkedlist/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -479,7 +479,7 @@
 <h1 id="clear方法"><a href="#clear方法" class="headerlink" title="clear方法"></a>clear方法</h1><p>将所有链表元素置空，然后将链表长度修改成0，修改次数加1<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="comment">// Clearing all of the links between nodes is "unnecessary", but:  </span></span><br><span class="line">    <span class="comment">// - helps a generational GC if the discarded nodes inhabit  </span></span><br><span class="line">    <span class="comment">//   more than one generation  </span></span><br><span class="line">    <span class="comment">// - is sure to free memory even if there is a reachable Iterator  </span></span><br><span class="line">    <span class="keyword">for</span> (Node&lt;E&gt; x = first; x != <span class="keyword">null</span>; ) &#123;  </span><br><span class="line">        Node&lt;E&gt; next = x.next;  </span><br><span class="line">        x.item = <span class="keyword">null</span>;  </span><br><span class="line">        x.next = <span class="keyword">null</span>;  </span><br><span class="line">        x.prev = <span class="keyword">null</span>;  </span><br><span class="line">        x = next;  </span><br><span class="line">    &#125;  </span><br><span class="line">    first = last = <span class="keyword">null</span>;  </span><br><span class="line">    size = <span class="number">0</span>;  </span><br><span class="line">    modCount++;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h1 id="push和pop方法"><a href="#push和pop方法" class="headerlink" title="push和pop方法"></a>push和pop方法</h1><p>push其实就是调用addFirst(e)方法，pop调用的就是removeFirst()方法。</p>
 <h1 id="toArray方法"><a href="#toArray方法" class="headerlink" title="toArray方法"></a>toArray方法</h1><p>创建一个Object的数组对象，然后将所有的节点都添加到Object对象中，返回Object数组对象。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object[] toArray() &#123;  </span><br><span class="line">    Object[] result = <span class="keyword">new</span> Object[size];  </span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;  </span><br><span class="line">    <span class="keyword">for</span> (Node&lt;E&gt; x = first; x != <span class="keyword">null</span>; x = x.next)  </span><br><span class="line">        result[i++] = x.item;  </span><br><span class="line">    <span class="keyword">return</span> result;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="listIterator方法"><a href="#listIterator方法" class="headerlink" title="listIterator方法"></a>listIterator方法</h1><p>这个方法返回的是一个内部类ListIterator，用户可以使用这个内部类变量遍历当前的链表元素，但是由于LinkedList也是非线程安全的类，所以和上一篇文章中的<a href="http://idiotsky.me/2017/07/16/java-arraylist/">java数据结构-arraylist</a>  Iterator一样，多线程下面使用，也可能会产生多线程修改的异常。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ListIterator&lt;E&gt; <span class="title">listIterator</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;  </span><br><span class="line">    checkPositionIndex(index);  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ListItr(index);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="listIterator方法"><a href="#listIterator方法" class="headerlink" title="listIterator方法"></a>listIterator方法</h1><p>这个方法返回的是一个内部类ListIterator，用户可以使用这个内部类变量遍历当前的链表元素，但是由于LinkedList也是非线程安全的类，所以和上一篇文章中的<a href="http://idiotsky.top/2017/07/16/java-arraylist/">java数据结构-arraylist</a>  Iterator一样，多线程下面使用，也可能会产生多线程修改的异常。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ListIterator&lt;E&gt; <span class="title">listIterator</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;  </span><br><span class="line">    checkPositionIndex(index);  </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ListItr(index);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>用<a href="http://calvin1978.blogcn.com/articles/collection.html" target="_blank" rel="noopener">关于Java集合的小抄</a>里面的关于linkedlist作为总结吧。</p>
 <blockquote>
 <p>以双向链表实现。链表无容量限制，但双向链表本身使用了更多空间，每插入一个元素都要构造一个额外的Node对象，也需要额外的链表指针操作。</p>
@@ -616,7 +616,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -638,7 +638,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

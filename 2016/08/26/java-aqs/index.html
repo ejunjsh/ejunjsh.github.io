@@ -107,17 +107,17 @@
 <meta name="keywords" content="java,多线程,AQS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java的AQS详解">
-<meta property="og:url" content="http://idiotsky.me/2016/08/26/java-aqs/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/08/26/java-aqs/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="概括谈到并发，不得不谈ReentrantLock；而谈到ReentrantLock，不得不谈AbstractQueuedSynchronized（AQS）！ 类如其名，抽象的队列式的同步器，AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如常用的ReentrantLock/Semaphore/CountDownLatch…。 框架">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/java-aqs-1.png">
-<meta property="og:image" content="http://idiotsky.me/images1/java-aqs-2.png">
-<meta property="og:updated_time" content="2017-11-17T14:23:40.001Z">
+<meta property="og:image" content="http://idiotsky.top/images1/java-aqs-1.png">
+<meta property="og:image" content="http://idiotsky.top/images1/java-aqs-2.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.531Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java的AQS详解">
 <meta name="twitter:description" content="概括谈到并发，不得不谈ReentrantLock；而谈到ReentrantLock，不得不谈AbstractQueuedSynchronized（AQS）！ 类如其名，抽象的队列式的同步器，AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如常用的ReentrantLock/Semaphore/CountDownLatch…。 框架">
-<meta name="twitter:image" content="http://idiotsky.me/images1/java-aqs-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/java-aqs-1.png">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/08/26/java-aqs/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/08/26/java-aqs/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/26/java-aqs/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/08/26/java-aqs/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -438,7 +438,7 @@
       
         <h1 id="概括"><a href="#概括" class="headerlink" title="概括"></a>概括</h1><p>谈到并发，不得不谈ReentrantLock；而谈到ReentrantLock，不得不谈AbstractQueuedSynchronized（AQS）！</p>
 <p>类如其名，抽象的队列式的同步器，AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如常用的ReentrantLock/Semaphore/CountDownLatch…。</p>
-<h1 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h1><p><a href="http://idiotsky.me/images1/java-aqs-1.png"><img src="http://idiotsky.me/images1/java-aqs-1.png" alt=""></a></p>
+<h1 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h1><p><a href="http://idiotsky.top/images1/java-aqs-1.png"><img src="http://idiotsky.top/images1/java-aqs-1.png" alt=""></a></p>
 <a id="more"></a>
 <p>它维护了一个volatile int state（代表共享资源）和一个FIFO线程等待队列（多线程争用资源被阻塞时会进入此队列）。这里volatile是核心关键词，具体volatile的语义，在此不述。state的访问方式有三种:</p>
 <ul>
@@ -495,7 +495,7 @@
 <li>acquireQueued()使线程在等待队列中休息，有机会时（轮到自己，会被unpark()）会去尝试获取资源。获取到资源后才返回。如果在整个等待过程中被中断过，则返回true，否则返回false。</li>
 <li>如果线程在等待过程中被中断过，它是不响应的。只是获取资源后才再进行自我中断selfInterrupt()，将中断补上。</li>
 </ol>
-<p>由于此函数是重中之重，我再用流程图总结一下：<br><a href="http://idiotsky.me/images1/java-aqs-2.png"><img src="http://idiotsky.me/images1/java-aqs-2.png" alt=""></a></p>
+<p>由于此函数是重中之重，我再用流程图总结一下：<br><a href="http://idiotsky.top/images1/java-aqs-2.png"><img src="http://idiotsky.top/images1/java-aqs-2.png" alt=""></a></p>
 <p>至此，acquire()的流程终于算是告一段落了。这也就是ReentrantLock.lock()的流程，不信你去看其lock()源码吧，整个函数就是一条acquire(1)！！</p>
 <h2 id="release-int"><a href="#release-int" class="headerlink" title="release(int)"></a>release(int)</h2><p>上一小节已经把acquire()说完了，这一小节就来讲讲它的反操作release()吧。此方法是独占模式下线程释放共享资源的顶层入口。它会释放指定量的资源，如果彻底释放了（即state=0）,它会唤醒等待队列里的其他线程来获取资源。这也正是unlock()的语义，当然不仅仅只限于unlock()。下面是release()的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">release</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (tryRelease(arg)) &#123;</span><br><span class="line">        Node h = head;<span class="comment">//找到头结点</span></span><br><span class="line">        <span class="keyword">if</span> (h != <span class="keyword">null</span> &amp;&amp; h.waitStatus != <span class="number">0</span>)</span><br><span class="line">            unparkSuccessor(h);<span class="comment">//唤醒等待队列里的下一个线程</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>逻辑并不复杂。它调用tryRelease()来释放资源。有一点需要注意的是，它是根据tryRelease()的返回值来判断该线程是否已经完成释放掉资源了！所以自定义同步器在设计tryRelease()的时候要明确这一点！！</p>
@@ -660,7 +660,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -682,7 +682,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

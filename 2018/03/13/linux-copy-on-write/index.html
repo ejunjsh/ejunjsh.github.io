@@ -107,18 +107,18 @@
 <meta name="keywords" content="linux,linux内核">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux的写时复制">
-<meta property="og:url" content="http://idiotsky.me/2018/03/13/linux-copy-on-write/index.html">
+<meta property="og:url" content="http://idiotsky.top/2018/03/13/linux-copy-on-write/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="前面一篇文章又给自己挖坑，所以必须再mark一篇，这篇文章很好的说了关于写时复制的原理。  当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-1.png">
-<meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-3.jpg">
-<meta property="og:image" content="http://idiotsky.me/images2/linux-copy-on-write-2.png">
-<meta property="og:updated_time" content="2018-03-13T15:44:27.929Z">
+<meta property="og:image" content="http://idiotsky.top/images2/linux-copy-on-write-1.png">
+<meta property="og:image" content="http://idiotsky.top/images2/linux-copy-on-write-3.jpg">
+<meta property="og:image" content="http://idiotsky.top/images2/linux-copy-on-write-2.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.529Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux的写时复制">
 <meta name="twitter:description" content="前面一篇文章又给自己挖坑，所以必须再mark一篇，这篇文章很好的说了关于写时复制的原理。  当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所">
-<meta name="twitter:image" content="http://idiotsky.me/images2/linux-copy-on-write-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images2/linux-copy-on-write-1.png">
 
 
 
@@ -147,7 +147,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2018/03/13/linux-copy-on-write/"/>
+  <link rel="canonical" href="http://idiotsky.top/2018/03/13/linux-copy-on-write/"/>
 
 
 
@@ -348,7 +348,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/03/13/linux-copy-on-write/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/03/13/linux-copy-on-write/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -442,13 +442,13 @@
 </blockquote>
 <p>当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所以为子进程复制父进程的物理内存内容是一件徒劳无功的事情。</p>
 <p>所以Linux的做法就是：父子进程共用同一物理内存。如下图：</p>
-<p><a href="http://idiotsky.me/images2/linux-copy-on-write-1.png"><img src="http://idiotsky.me/images2/linux-copy-on-write-1.png" alt=""></a><br><a id="more"></a></p>
+<p><a href="http://idiotsky.top/images2/linux-copy-on-write-1.png"><img src="http://idiotsky.top/images2/linux-copy-on-write-1.png" alt=""></a><br><a id="more"></a></p>
 <p>但操作系统的要求是：进程之间的内存应该要独立，就是读写A进程的内存空间不应该影响B进程的内存内容。读操作是不会改变内存中的内容，所以对于读操作来说，共享物理内存是安全的。但是对于写操作就不一样，如果父子进程共用了相同的物理内存，那么对子进程的内存进行写操作同时会影响到父进程，所以违反了操作系统的要求。</p>
 <p>Linux的解决方案是：把共用的物理内存设置为只读，因为读操作不会改变内存的内容，所以对于父子进程都是允许的。而当父子进程其中一个进行写操作时，因为内存被设置为只读，所以CPU会触发 “page fault” 的错误，从而调用内核的<code>do_page_fault()</code>函数。而<code>do_page_fault()</code>函数又会调用<code>do_wp_page()</code>函数去进行复制父进程内存的内容。</p>
 <p><code>do_wp_page()</code>函数先进行一些安全监测，然后调用<code>__do_wp_page()</code>函数做最后的复制操作。去掉一些监测后，<code>__do_wp_page()</code>函数的代码如下图：</p>
-<p><a href="http://idiotsky.me/images2/linux-copy-on-write-3.jpg"><img src="http://idiotsky.me/images2/linux-copy-on-write-3.jpg" alt=""></a> </p>
+<p><a href="http://idiotsky.top/images2/linux-copy-on-write-3.jpg"><img src="http://idiotsky.top/images2/linux-copy-on-write-3.jpg" alt=""></a> </p>
 <p><code>__do_wp_page()</code>首先会申请一块新的物理内存，然后复制旧的物理内存页的内容到新的物理内存也中，然后设置虚拟内存与物理内存的映射关系。最后把父子进程的物理内存设置可读写，这样父子进程相同的虚拟内存都指向不同的物理内存，所以达到进程之间内存隔离的目的。如下图：</p>
-<p><a href="http://idiotsky.me/images2/linux-copy-on-write-2.png"><img src="http://idiotsky.me/images2/linux-copy-on-write-2.png" alt=""></a> </p>
+<p><a href="http://idiotsky.top/images2/linux-copy-on-write-2.png"><img src="http://idiotsky.top/images2/linux-copy-on-write-2.png" alt=""></a> </p>
 
       
     </div>
@@ -561,7 +561,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -583,7 +583,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

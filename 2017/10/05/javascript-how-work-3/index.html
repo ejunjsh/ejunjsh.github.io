@@ -107,22 +107,22 @@
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript是如何工作的(三)">
-<meta property="og:url" content="http://idiotsky.me/2017/10/05/javascript-how-work-3/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/10/05/javascript-how-work-3/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。 这个系列的第一篇博客专注于介绍对于引擎，运行时以及调用栈的概述。第二篇博客近距离地检测了Google V8 引擎的内部并且提供了一些如何写出更好的JavaScript代码的建议。 在第三篇博客中，我们将会讨论另外一">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-1.png">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-2.png">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-3.png">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-4.png">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-5.gif">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-6.png">
-<meta property="og:image" content="http://idiotsky.me/images1/javascript-how-work-3-7.jpg">
-<meta property="og:updated_time" content="2017-10-07T13:22:50.983Z">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-1.png">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-2.png">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-3.png">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-4.png">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-5.gif">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-6.png">
+<meta property="og:image" content="http://idiotsky.top/images1/javascript-how-work-3-7.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.530Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript是如何工作的(三)">
 <meta name="twitter:description" content="几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。 这个系列的第一篇博客专注于介绍对于引擎，运行时以及调用栈的概述。第二篇博客近距离地检测了Google V8 引擎的内部并且提供了一些如何写出更好的JavaScript代码的建议。 在第三篇博客中，我们将会讨论另外一">
-<meta name="twitter:image" content="http://idiotsky.me/images1/javascript-how-work-3-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/javascript-how-work-3-1.png">
 
 
 
@@ -151,7 +151,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/10/05/javascript-how-work-3/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/10/05/javascript-how-work-3/"/>
 
 
 
@@ -352,7 +352,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/10/05/javascript-how-work-3/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/10/05/javascript-how-work-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -442,20 +442,20 @@
 
       
         <p>几个礼拜之前我们开始一系列对于JavaScript以及其本质工作原理的深入挖掘：我们认为通过了解JavaScript的构建方式以及它们是如何共同合作的，你就能够写出更好的代码以及应用。</p>
-<p>这个系列的第一篇博客专注于介绍<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">对于引擎，运行时以及调用栈的概述</a>。<a href="http://idiotsky.me/2017/08/26/javascript-how-work-2/">第二篇博客近距离地检测了Google V8 引擎的内部</a>并且提供了一些如何写出更好的JavaScript代码的建议。</p>
+<p>这个系列的第一篇博客专注于介绍<a href="http://idiotsky.top/2017/08/26/javascript-how-work/">对于引擎，运行时以及调用栈的概述</a>。<a href="http://idiotsky.top/2017/08/26/javascript-how-work-2/">第二篇博客近距离地检测了Google V8 引擎的内部</a>并且提供了一些如何写出更好的JavaScript代码的建议。</p>
 <p>在第三篇博客中，我们将会讨论另外一个关键的话题。这个话题由于随着编程语言的逐渐成熟和复杂化，越来越被开发者所忽视，这个话题就是在日常工作中使用到的——内存管理。</p>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>语言，比如C，具有低层次的内存管理方法，比如<code>malloc()</code>以及<code>free()</code>。开发者利用这些方法精确地为操作系统分配以及释放内存。</p>
 <p>同时，JavaScript会在创建一些变量（对象，字符串等等）的时候分配内存，并且会在这些不被使用之后“自动地”释放这些内存，这个过程被称为<em>垃圾收集</em>。这个看起来“自动化的”特性其实就是产生误解的原因，并且给JavaScript（以及其他高层次语言）开发者一个假象，他们不需要关心内存管理。<strong>大错特错。</strong></p>
 <p>即使是使用高层次语言，开发者应该对于内存管理有一定的理解（或者最基本的理解）。有时候自动的内存管理会存在一些问题（比如一些bug或者垃圾收集器的一些限制等等），对于这些开发者必须能够理解从而能够合适地处理（或者使用最小的代价以及代码债务去绕过这个问题）。<br><a id="more"></a></p>
 <h1 id="内存生命周期"><a href="#内存生命周期" class="headerlink" title="内存生命周期"></a>内存生命周期</h1><p>不管你在使用什么编程语言，内存的生命周期基本上都是一样的：</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-1.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-1.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/javascript-how-work-3-1.png"><img src="http://idiotsky.top/images1/javascript-how-work-3-1.png" alt=""></a></p>
 <p>下面是对于周期中每一步所发生的情况的概述：</p>
 <ul>
 <li><strong>分配内存</strong>——操作系统为你的程序分配内存并且允许其使用。在低层次语言中（比如C），这正是开发者应该处理的操作。在高层次的语言，然而，就由语言帮你实现了。</li>
 <li><strong>使用内存</strong>——当你的程序确实在使用之前分配的内存的阶段。当你在使用你代码里面分配的变量的时候会发生<strong>读</strong>以及<strong>写</strong>操作。</li>
 <li><strong>释放内存</strong>——这个阶段就是释放你不再需要的内存，从而这些内存被释放并且能够再次被使用。和<strong>分配内存</strong>操作一样，这在低层次的语言也是开发者需要明确的操作。</li>
 </ul>
-<p>对于调用栈以及内存堆有一个快速的概念认识，你可以阅读我们<a href="http://idiotsky.me/2017/08/26/javascript-how-work/">关于这个话题的第一篇博客</a>。</p>
+<p>对于调用栈以及内存堆有一个快速的概念认识，你可以阅读我们<a href="http://idiotsky.top/2017/08/26/javascript-how-work/">关于这个话题的第一篇博客</a>。</p>
 <h2 id="什么是内存？"><a href="#什么是内存？" class="headerlink" title="什么是内存？"></a>什么是内存？</h2><p>在我们讲述JavaScript内存之前，我们将简要地讨论一下内存是什么以及它们是如何在 nutshell 中工作的。</p>
 <p>在硬件层次上，计算机内存由大量的 <a href="https://en.wikipedia.org/wiki/Flip-flop_%28electronics%29" target="_blank" rel="noopener">寄存器</a> 组成。每一个寄存器都包含一些晶体管并且能够存储一比特。单独的寄存器可以通过<strong>独特的标识符</strong>去访问，因此我们能够读取以及重写它们。因此，从概念上来说，我们可以认为我们的整个计算机内存就是一个我们能够读写的大型比特数组。</p>
 <p>因为作为人类，我们不擅长直接基于比特进行思考以及算术，我们将它们组织成大规模群组，它们在一起可以代表一个数字。8个比特称为一个字节。除了字节，还有词（有时候是16比特，有时候是32比特）。</p>
@@ -474,11 +474,11 @@
 </blockquote>
 <p>编译器将会插入能够与操作系统交互的代码，从而在栈上获取你需要存储变量需要的字节数。</p>
 <p>在上述的例子中，编译器知道每一个变量的准确的内存地址。事实上，无论我们何时写变量 n ，这都会在内部转化为类似于“内存地址 4127963”的东西。</p>
-<p>注意如果我们希望在这访问 x[4] 我们将会需要访问和 m 相关联的数据。这是因为我们在访问数组里面并不存在的元素——它比数组实际分配的最后一个元素 x[3] 要多4个字节，并且最后可能是阅读（或者重写）一些 m 的比特。这将很可能给程序的其他部分带来一些不良的后果。<br><a href="http://idiotsky.me/images1/javascript-how-work-3-2.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-2.png" alt=""></a></p>
+<p>注意如果我们希望在这访问 x[4] 我们将会需要访问和 m 相关联的数据。这是因为我们在访问数组里面并不存在的元素——它比数组实际分配的最后一个元素 x[3] 要多4个字节，并且最后可能是阅读（或者重写）一些 m 的比特。这将很可能给程序的其他部分带来一些不良的后果。<br><a href="http://idiotsky.top/images1/javascript-how-work-3-2.png"><img src="http://idiotsky.top/images1/javascript-how-work-3-2.png" alt=""></a></p>
 <p>当函数调用其它函数的时候，当它被调用的时候都会获取它自己的堆栈块。它在那保存了它所有的局部变量，但是还会有一个程序计数器记录它执行的位置。当这个函数执行完毕，它的内存块就可以再次用于其他目的。</p>
 <h2 id="动态分配"><a href="#动态分配" class="headerlink" title="动态分配"></a>动态分配</h2><p>不幸的是，当我们在编译的时候不知道变量需要多少内存的话事情可能就不那么简单。假设我们想做下面的事情：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">int</span> n = readInput(); <span class="comment">// reads input from the user</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">// create an array with "n" elements</span></span><br></pre></td></tr></table></figure></p>
 <p>在此，在编译阶段中，编译器就没有办法知道数组需要多少内存，因为它取决于用户的输入。</p>
-<p>因此，它就不能够为栈上的变量分配空间。相反，我们的程序需要明确地询问操作运行时需要的空间数量。这个内存是从<strong>堆空间</strong>中分配出来的。动态内存和静态内存分配的区别总结如下表格：<br><a href="http://idiotsky.me/images1/javascript-how-work-3-3.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-3.png" alt=""></a></p>
+<p>因此，它就不能够为栈上的变量分配空间。相反，我们的程序需要明确地询问操作运行时需要的空间数量。这个内存是从<strong>堆空间</strong>中分配出来的。动态内存和静态内存分配的区别总结如下表格：<br><a href="http://idiotsky.top/images1/javascript-how-work-3-3.png"><img src="http://idiotsky.top/images1/javascript-how-work-3-3.png" alt=""></a></p>
 <p>为了深入地理解动态内存分配是如何工作的，我们需要花费更多的时间在<strong>指针</strong>，这个可能有点偏离这篇博客的话题。如果你感兴趣了解更多，在评论里面告诉我，我将会在后续的博客中挖掘更多的细节。</p>
 <h2 id="JavaScript中的分配"><a href="#JavaScript中的分配" class="headerlink" title="JavaScript中的分配"></a>JavaScript中的分配</h2><p>现在我们将解释JavaScript中的第一步（分配内存）。</p>
 <p>JavaScript 将开发者从内存分配的处理中解放出来——JavaScript自身可以利用声明变量来完成这些任务。</p>
@@ -506,7 +506,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> o1 = &#123;</span><br><span class="line">  o2: &#123;</span><br><span class="line">    x: <span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2 objects are created. </span></span><br><span class="line"><span class="comment">// 'o2' is referenced by 'o1' object as one of its properties.</span></span><br><span class="line"><span class="comment">// None can be garbage-collected</span></span><br><span class="line"><span class="keyword">var</span> o3 = o1; <span class="comment">// the 'o3' variable is the second thing that </span></span><br><span class="line">            <span class="comment">// has a reference to the object pointed by 'o1'. </span></span><br><span class="line">o1 = <span class="number">1</span>;      <span class="comment">// now, the object that was originally in 'o1' has a         </span></span><br><span class="line">            <span class="comment">// single reference, embodied by the 'o3' variable</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> o4 = o3.o2; <span class="comment">// reference to 'o2' property of the object.</span></span><br><span class="line">                <span class="comment">// This object has now 2 references: one as</span></span><br><span class="line">                <span class="comment">// a property. </span></span><br><span class="line">                <span class="comment">// The other as the 'o4' variable</span></span><br><span class="line"></span><br><span class="line">o3 = <span class="string">'374'</span>; <span class="comment">// The object that was originally in 'o1' has now zero</span></span><br><span class="line">            <span class="comment">// references to it. </span></span><br><span class="line">            <span class="comment">// It can be garbage-collected.</span></span><br><span class="line">            <span class="comment">// However, what was its 'o2' property is still</span></span><br><span class="line">            <span class="comment">// referenced by the 'o4' variable, so it cannot be</span></span><br><span class="line">            <span class="comment">// freed.</span></span><br><span class="line"></span><br><span class="line">o4 = <span class="literal">null</span>; <span class="comment">// what was the 'o2' property of the object originally in</span></span><br><span class="line">           <span class="comment">// 'o1' has zero references to it. </span></span><br><span class="line">           <span class="comment">// It can be garbage collected.</span></span><br></pre></td></tr></table></figure>
 <h2 id="循环在产生问题"><a href="#循环在产生问题" class="headerlink" title="循环在产生问题"></a>循环在产生问题</h2><p>当遇到循环的时候就会有一个限制。在下面的实例之中，创建两个对象，并且互相引用，因此就会产生一个循环。当函数调用结束之后它们会走出作用域之外，因此它们就没什么用并且可以被释放。但是，基于引用计数的算法认为这两个对象都会被至少引用一次，所以它俩都不会被垃圾收集器收集。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> o1 = &#123;&#125;;</span><br><span class="line">  <span class="keyword">var</span> o2 = &#123;&#125;;</span><br><span class="line">  o1.p = o2; <span class="comment">// o1 references o2</span></span><br><span class="line">  o2.p = o1; <span class="comment">// o2 references o1. This creates a cycle.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">f();</span><br></pre></td></tr></table></figure>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-4.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-4.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/javascript-how-work-3-4.png"><img src="http://idiotsky.top/images1/javascript-how-work-3-4.png" alt=""></a></p>
 <h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>为了决定哪个对象是需要的，算法会决定是否这个对象是可访问的。</p>
 <p>这个算法由以下步骤组成：</p>
 <ol>
@@ -514,12 +514,12 @@
 <li>所有的root都会被监测并且被标志成活跃的（比如不是垃圾）。所有的子代也会递归地被监测。所有能够由root访问的一切都不会被认为是垃圾。</li>
 <li>所有不再被标志成活跃的内存块都被认为是垃圾。这个收集器现在就可以释放这些内存并将它们返还给操作系统。</li>
 </ol>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-5.gif"><img src="http://idiotsky.me/images1/javascript-how-work-3-5.gif" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/javascript-how-work-3-5.gif"><img src="http://idiotsky.top/images1/javascript-how-work-3-5.gif" alt=""></a></p>
 <p>这个算法要优于之前的因为“一个具有0引用的对象”可以让一个对象不能够再被访问。但是相反的却不一定成立，比如我们遇到循环的时候。</p>
 <p>在2012年，所有的现代浏览器都使用标记-清除垃圾收集器。过去几年，JavaScript垃圾收集（代数/增量/并行/并行垃圾收集）领域的所有改进都是对该算法（标记和扫描）的实现进行了改进，但并没有对垃圾收集算法本身的改进， 其目标是确定一个对象是否可达。</p>
 <p><a href="https://en.wikipedia.org/wiki/Tracing_garbage_collection" target="_blank" rel="noopener">在这篇文章中</a>，你可以得到更多关于垃圾收集追踪并且也覆盖到了关于标记-清除算法的优化。</p>
 <h2 id="循环不再是一个问题"><a href="#循环不再是一个问题" class="headerlink" title="循环不再是一个问题"></a>循环不再是一个问题</h2><p>在上述的第一个例子中，在函数调用返回之后，这两个对象不能够被全局对象所访问。因此，垃圾收集器就会发现它们不能够被访问了。</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-6.png"><img src="http://idiotsky.me/images1/javascript-how-work-3-6.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/javascript-how-work-3-6.png"><img src="http://idiotsky.top/images1/javascript-how-work-3-6.png" alt=""></a></p>
 <p>即使在这两个对象之间存在着引用，它们再也不能从root访问了。</p>
 <h2 id="列举垃圾收集器的直观行为"><a href="#列举垃圾收集器的直观行为" class="headerlink" title="列举垃圾收集器的直观行为"></a>列举垃圾收集器的直观行为</h2><p>虽然垃圾收集器很方便，但它们自己也有自己的代价。 其中一个是非确定论。 换句话说，GC是不可预测的。 你不能真正地告诉你什么时候会收集。 这意味着在某些情况下，程序会使用实际需要的更多内存。 在其他情况下，特别敏感的应用程序可能会引起短暂暂停。 虽然非确定性意味着在执行集合时无法确定，但大多数GC实现共享在分配期间执行收集遍历的常见模式。 如果没有执行分配，大多数GC保持空闲状态。 考虑以下情况：</p>
 <ol>
@@ -529,7 +529,7 @@
 </ol>
 <p>在这种情况下，大多数GC不会再运行收集处理。换句话说，即使存在对于收集器来说不可访问的引用，它们也不会被收集器所认领。严格意义来说这并不是泄露，但是依然会导致比平常更多的内存使用。</p>
 <h1 id="什么是内存泄露？"><a href="#什么是内存泄露？" class="headerlink" title="什么是内存泄露？"></a>什么是内存泄露？</h1><p>实质上，内存泄漏可以被定义为应用程序不再需要的内存，但是由于某些原因不会返回到操作系统或可用内存池。</p>
-<p><a href="http://idiotsky.me/images1/javascript-how-work-3-7.jpg"><img src="http://idiotsky.me/images1/javascript-how-work-3-7.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/javascript-how-work-3-7.jpg"><img src="http://idiotsky.top/images1/javascript-how-work-3-7.jpg" alt=""></a></p>
 <p>编程语言有支持管理内存的不同方法。 然而，某块内存是否被使用实际上是一个<a href="ttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management#Release_when_the_memory_is_not_needed_anymore" target="_blank" rel="noopener">不可判定的问题</a>。 换句话说，只有开发人员可以清楚一个内存是否可以返回到操作系统。</p>
 <p>某些编程语言提供了帮助开发者执行此操作的功能。其他的则期望开发人员能够完全明确何时使用一块内存。 维基百科有关于<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="noopener">手动</a>和<a href="https://en.wikipedia.org/wiki/Manual_memory_management" target="_blank" rel="noopener">自动</a>内存管理的好文章。</p>
 <h2 id="四种常见的JavaScript泄露"><a href="#四种常见的JavaScript泄露" class="headerlink" title="四种常见的JavaScript泄露"></a>四种常见的JavaScript泄露</h2><h3 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h3><p>JavaScript 使用一种有趣的方式处理未声明的变量：一个未声明变量的引用会在<em>全局</em>对象内部产生一个新的变量。在浏览器的情况，这个全局变量就会是window。换句话说：</p>
@@ -683,7 +683,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -705,7 +705,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

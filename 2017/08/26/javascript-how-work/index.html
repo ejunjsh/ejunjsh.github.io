@@ -107,22 +107,22 @@
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript是如何工作的(一)">
-<meta property="og:url" content="http://idiotsky.me/2017/08/26/javascript-how-work/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/08/26/javascript-how-work/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="简评：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-1.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-3.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-4.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-5.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-6.jpg">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-1.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-3.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-4.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-5.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-6.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.526Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript是如何工作的(一)">
 <meta name="twitter:description" content="简评：JavaScript 是越来越受欢迎了，很多团队都在采用这些语言工作。前端、后端、嵌入式设备等等，都可以看见它的身影。虽然我们知其然，但又知其所以然吗？">
-<meta name="twitter:image" content="http://idiotsky.me/images/js-how-work.png">
+<meta name="twitter:image" content="http://idiotsky.top/images/js-how-work.png">
 
 
 
@@ -151,7 +151,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/08/26/javascript-how-work/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/08/26/javascript-how-work/"/>
 
 
 
@@ -352,7 +352,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/26/javascript-how-work/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/08/26/javascript-how-work/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -446,22 +446,22 @@
 </blockquote>
 <a id="more"></a>
 <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>大家应该都知道 JavaScript 是单线程的，以及听过 V8 引擎的概念。<br>这篇文章将会介绍这些概念，并解释 JavaScript 是如何运行的。通过了解这些细节，开发者能更好地编写代码，正确利用其提供的 API。</p>
-<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="http://idiotsky.me/images/js-how-work.png"><img src="http://idiotsky.me/images/js-how-work.png" alt=""></a></p>
+<h1 id="JavaScript-引擎"><a href="#JavaScript-引擎" class="headerlink" title="JavaScript 引擎"></a>JavaScript 引擎</h1><p>比较流行的一个 JavaScript 引擎示例就是 Google 的 V8 引擎。下图是 V8 引擎在 Chrome 和 Node.js 中使用的一个简化视图：<br><a href="http://idiotsky.top/images/js-how-work.png"><img src="http://idiotsky.top/images/js-how-work.png" alt=""></a></p>
 <p>引擎主要由两个组件组成：</p>
 <ul>
 <li>内存堆（Memory Heap ）：这是内存分配的地方</li>
 <li>调用堆栈（Call Stack）：这是程序运行时函数的调用过程</li>
 </ul>
-<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="http://idiotsky.me/images/js-how-work-1.png"><img src="http://idiotsky.me/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p>在浏览器中，例如「setTimeout」这样的 API 已经有很多开发者在用了，然后引擎并没有提供这些 API，所以它们从哪里来的呢？<br>实际情况是这样的：<br><a href="http://idiotsky.top/images/js-how-work-1.png"><img src="http://idiotsky.top/images/js-how-work-1.png" alt=""></a><br>所以，除了引擎之外，还有浏览器提供的 Web API（像 DOM、AJAX、setTimeout 等等）。另外，还有事件循环（event loop）和回调队列（callback queue）。</p>
 <h1 id="调用堆栈（Call-Stack）"><a href="#调用堆栈（Call-Stack）" class="headerlink" title="调用堆栈（Call Stack）"></a>调用堆栈（Call Stack）</h1><p>JavaScript 是单线程语言，这意味着它只有一个单一的调用堆栈。因此，它每次只能做一件事。</p>
 <p>调用堆栈是一个数据结构，按调用顺序保存所有在运行期被调用的方法。既然是个栈，那么它就满足先入后出的特性。</p>
 <p>我们来看一个例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">printSquare</span>(<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> s = multiply(x, x);</span><br><span class="line">    <span class="built_in">console</span>.log(s);</span><br><span class="line">&#125;</span><br><span class="line">printSquare(<span class="number">5</span>);</span><br></pre></td></tr></table></figure></p>
-<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="http://idiotsky.me/images/js-how-work-2.png"><img src="http://idiotsky.me/images/js-how-work-2.png" alt=""></a></p>
+<p>当引擎开始执行这段代码时，调用堆栈将为空。然后，就会有以下步骤：<br><a href="http://idiotsky.top/images/js-how-work-2.png"><img src="http://idiotsky.top/images/js-how-work-2.png" alt=""></a></p>
 <p>调用堆栈中的每个条目称为堆栈帧（Stack Frame）。当异常发生时，它基本上是调用堆栈的状态。再看看下面这段代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'SessionStack will help you resolve crashes :)'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bar</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    bar();</span><br><span class="line">&#125;</span><br><span class="line">start();</span><br></pre></td></tr></table></figure></p>
-<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="http://idiotsky.me/images/js-how-work-3.png"><img src="http://idiotsky.me/images/js-how-work-3.png" alt=""></a></p>
+<p>如果这是在 Chrome 中执行（假设此代码位于一个名为 foo.js 的文件中），则会产生这种情况：<br><a href="http://idiotsky.top/images/js-how-work-3.png"><img src="http://idiotsky.top/images/js-how-work-3.png" alt=""></a></p>
 <p>当你达到最大调用堆栈时，会容易发生这种情况，特别是在没有测试代码时随意使用递归。<br>看看这个示例代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    foo();</span><br><span class="line">&#125;</span><br><span class="line">foo();</span><br></pre></td></tr></table></figure></p>
-<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="http://idiotsky.me/images/js-how-work-4.png"><img src="http://idiotsky.me/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="http://idiotsky.me/images/js-how-work-5.png"><img src="http://idiotsky.me/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
-<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="http://idiotsky.me/images/js-how-work-6.jpg"><img src="http://idiotsky.me/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
+<p>代码执行时，首先调用函数「foo」。然而，这是递归函数，调用自身的同时又没有设置终止条件，所以每一次执行，相同的函数都会被添加进堆栈中，看起来就是这样：<br><a href="http://idiotsky.top/images/js-how-work-4.png"><img src="http://idiotsky.top/images/js-how-work-4.png" alt=""></a><br>某些时候，调用堆栈中的函数调用次数超过了调用堆栈的实际大小，那么浏览器就会抛出一个错误，看起来像这样：<br><a href="http://idiotsky.top/images/js-how-work-5.png"><img src="http://idiotsky.top/images/js-how-work-5.png" alt=""></a><br>单线程上编写代码相对多线程来说会简单得多，你不必考虑死锁这样的复杂场景。但单线程也有许多限制，由于 JavaScript 有调用堆栈，当执行代码需要耗费大量时间时是怎样的呢？</p>
+<h1 id="并发和事件循环"><a href="#并发和事件循环" class="headerlink" title="并发和事件循环"></a>并发和事件循环</h1><p>当你在调用堆栈中进行函数调用，有时候需要大量时间才能进行处理。例如在浏览器中使用JavaScript 进行一些复杂的图像转换。在这个过程中又发生了什么？<br>这个问题的产生是因为，虽然调用堆栈具有执行的功能，但浏览器本身是无法渲染也不能运行其他任何代码，它被卡住了。当你想执行一套流畅的 UI 时，就会产生这样的问题。大多数浏览器通过抛出异常处理错误，询问用户是否要终止网页：<br><a href="http://idiotsky.top/images/js-how-work-6.jpg"><img src="http://idiotsky.top/images/js-how-work-6.jpg" alt=""></a><br>这个用户体验很糟糕。那么如何解决呢？答案是异步回调（asynchronous callbacks）。这是后话，下次再讲。</p>
 <p>翻译和参考 <a href="https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf" target="_blank" rel="noopener">https://blog.sessionstack.com/how-does-javascript-actually-work-part-1-b0bacc073cf</a></p>
 
       
@@ -582,7 +582,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -604,7 +604,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

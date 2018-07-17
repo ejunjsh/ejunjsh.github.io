@@ -107,22 +107,22 @@
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript是如何工作的(二)">
-<meta property="og:url" content="http://idiotsky.me/2017/08/26/javascript-how-work-2/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/08/26/javascript-how-work-2/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-1.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-2.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-3.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-4.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-5.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-6.png">
-<meta property="og:image" content="http://idiotsky.me/images/js-how-work-2-7.png">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-1.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-2.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-3.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-4.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-5.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-6.png">
+<meta property="og:image" content="http://idiotsky.top/images/js-how-work-2-7.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.529Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript是如何工作的(二)">
 <meta name="twitter:description" content="几个星期前，我们开始了一个系列，目标是深入理解javascript和它怎么工作的：通过这些我们可以更容易的写出好代码和apps。  系列的第一篇主要是提供一个关于引擎，运行时和调用栈的概括。这篇文章将深入到Google V8 javascript 引擎。同时，还提供一些快速的意见令你能够写出好的javascript代码。">
-<meta name="twitter:image" content="http://idiotsky.me/images/js-how-work-2-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images/js-how-work-2-1.png">
 
 
 
@@ -151,7 +151,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/08/26/javascript-how-work-2/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/08/26/javascript-how-work-2/"/>
 
 
 
@@ -352,7 +352,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/08/26/javascript-how-work-2/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/08/26/javascript-how-work-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -457,7 +457,7 @@
 <li><a href="https://en.wikipedia.org/wiki/Nashorn_%28JavaScript_engine%29" target="_blank" rel="noopener">Nashorn</a> -  OpenJDK的开源一部分, 由Oracle Java 语言和工具组开发</li>
 <li><a href="https://en.wikipedia.org/wiki/JerryScript" target="_blank" rel="noopener">JerryScript</a> — 一个轻量级引擎.</li>
 </ul>
-<h1 id="为什么要创造一个V8引擎？"><a href="#为什么要创造一个V8引擎？" class="headerlink" title="为什么要创造一个V8引擎？"></a>为什么要创造一个V8引擎？</h1><p>V8引擎由Google创建并开源，c++编写。用于Google的Chrome浏览器。不像其他引擎，V8还是流行的Node.js的运行时引擎。<br><a href="http://idiotsky.me/images/js-how-work-2-1.png"><img src="http://idiotsky.me/images/js-how-work-2-1.png" alt=""></a><br>V8是第一个为了性能提升的浏览器引擎。为了达到更好的性能，相比于使用解释器，V8更倾向于使用编译器编译javascript代码成更高效的机器码。它像其他现代化javascript引擎如SpiderMonkey或者Rhino (Mozilla)一样，使用<strong>JIT(Just-In-Time)</strong>编译器在执行阶段编译代码，唯一不同的是，V8不会生成字节码或任意中间代码。</p>
+<h1 id="为什么要创造一个V8引擎？"><a href="#为什么要创造一个V8引擎？" class="headerlink" title="为什么要创造一个V8引擎？"></a>为什么要创造一个V8引擎？</h1><p>V8引擎由Google创建并开源，c++编写。用于Google的Chrome浏览器。不像其他引擎，V8还是流行的Node.js的运行时引擎。<br><a href="http://idiotsky.top/images/js-how-work-2-1.png"><img src="http://idiotsky.top/images/js-how-work-2-1.png" alt=""></a><br>V8是第一个为了性能提升的浏览器引擎。为了达到更好的性能，相比于使用解释器，V8更倾向于使用编译器编译javascript代码成更高效的机器码。它像其他现代化javascript引擎如SpiderMonkey或者Rhino (Mozilla)一样，使用<strong>JIT(Just-In-Time)</strong>编译器在执行阶段编译代码，唯一不同的是，V8不会生成字节码或任意中间代码。</p>
 <h1 id="V8曾经有两个编译器"><a href="#V8曾经有两个编译器" class="headerlink" title="V8曾经有两个编译器"></a>V8曾经有两个编译器</h1><p>在5.9版本发布（今年早些时候）之前，V8曾经有两个编译器：</p>
 <ul>
 <li>full-codegen — 一个简单快速的编译器，用来生成简单，相对慢的机器码。</li>
@@ -473,16 +473,16 @@
 <p>当开始执行javascript代码，V8运用<strong>full-codegen</strong>来直接翻译解析过的javascript代码为机器码，这个过程没有任何中间转换，所以执行机器码<strong>非常快</strong>.由于没有用到任何中间的字节码，所以就没有需要解释器的必要了。</p>
 <p>当你的代码运行一段时间后，剖析器线程就能收集到足够的数据来确定哪些方法应该被优化。</p>
 <p>接下来，<strong>Crankshaft</strong> 优化编译器开始运行在其他线程。它翻译javascript抽象语法树到一个高级别的<a href="https://en.wikipedia.org/wiki/Static_single_assignment_form" target="_blank" rel="noopener">静态单赋值(SSA)</a> 形态,又叫<strong>Hydrogen(氢？)</strong>。然后优化这个Hydrogen图。大部分的优化都在这个层次上完成。</p>
-<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="http://idiotsky.me/images/js-how-work-2-2.png"><img src="http://idiotsky.me/images/js-how-work-2-2.png" alt=""></a></p>
+<h1 id="内联（inlining）"><a href="#内联（inlining）" class="headerlink" title="内联（inlining）"></a>内联（inlining）</h1><p>首个优化方法就是内联，它会提前尽可能的内联更多的代码。内联是一个替换代码的一个过程，用方法体替换到调用的地方（其实就是方法展开）。这样一步简单的优化可以令接下来的优化更有意义。<br><a href="http://idiotsky.top/images/js-how-work-2-2.png"><img src="http://idiotsky.top/images/js-how-work-2-2.png" alt=""></a></p>
 <h1 id="隐藏类-Hidden-class"><a href="#隐藏类-Hidden-class" class="headerlink" title="隐藏类(Hidden class)"></a>隐藏类(Hidden class)</h1><p>javascript是一种基于原型的语言：没有类和对象是通过克隆进程创建的(机翻😁)。javascript也是一种动态语言，他能够随意的添加和删除一个对象的属性，即使这个对象已经实例化了。<br>大部分javascript解释器使用类字典的结构(基于<a href="http://en.wikipedia.org/wiki/Hash_function" target="_blank" rel="noopener">哈希函数</a>)来存储对象属性值在内存的位置。相比非动态语言如java和c#，这种结构使得取值是种计算昂贵的操作。对java来说，在编译之前就已经确定对象的属性，运行时也不能随意添加和删除属性的（当然，c#支持<a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/dynamic" target="_blank" rel="noopener">动态类型</a>,那就在其他话题里了）。所以，属性的值（或者属性的指针）可以存储在一个连续的缓存里面，属性之间的位移更是固定的，而且位移的长度可以容易的基于属性类型来确定。这些对于javascript来说是不可能的，因为javascript的类型可以在运行时改变。<br>由于这种字典的取地址方式是不高效的，所以V8用了一个不同的方法来取代：隐藏类(Hidden class)。隐藏类的运作方式跟java的固定对象布局类似，除了它们是在运行时创建的。下面举个栗子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.x = x;</span><br><span class="line">    <span class="keyword">this</span>.y = y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</span><br></pre></td></tr></table></figure></p>
-<p>一旦<code>new Point(1, 2)</code>被调用，V8将创建一个<code>C0</code>的隐藏类。<br><a href="http://idiotsky.me/images/js-how-work-2-3.png"><img src="http://idiotsky.me/images/js-how-work-2-3.png" alt=""></a><br>由于<code>Point</code>没有属性定义,所以<code>C0</code>是空的。</p>
-<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code>。<code>C1</code>描述了x的内存的位置（相对于对象指针），在这个情况下，x的位置存在<a href="http://en.wikipedia.org/wiki/Offset_%28computer_science%29" target="_blank" rel="noopener">位移</a>0上，这代表了<code>point</code>对象是一个连续的内存，它的第一个位移对应的是属性x。同时V8也用“类转换”更新了<code>C0</code>，表明了如果一个属性x加到<code>point</code>对象，隐藏类就应该要从<code>C0</code>转换到<code>C1</code>。所以现在<code>point</code>对象的隐藏类为<code>C1</code>。<br><a href="http://idiotsky.me/images/js-how-work-2-4.png"><img src="http://idiotsky.me/images/js-how-work-2-4.png" alt=""></a><br><small><em>每一次一个新的属性加到一个对象，一条转换的路径更新到旧的隐藏类并指向新的隐藏类。隐藏类转换是很重要的，因为同样方式创建的对象都共享同一个隐藏类。如果两个对象共享一个隐藏类，同时相同的属性加到这个两个对象的话，那么转换将保证这两个对象还是共享同一个新的隐藏类，而且共享同一个隐藏类有益于优化代码。</em></small></p>
-<p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="http://idiotsky.me/images/js-how-work-2-5.png"><img src="http://idiotsky.me/images/js-how-work-2-5.png" alt=""></a></p>
+<p>一旦<code>new Point(1, 2)</code>被调用，V8将创建一个<code>C0</code>的隐藏类。<br><a href="http://idiotsky.top/images/js-how-work-2-3.png"><img src="http://idiotsky.top/images/js-how-work-2-3.png" alt=""></a><br>由于<code>Point</code>没有属性定义,所以<code>C0</code>是空的。</p>
+<p>一旦<code>this.x = x</code>(在<code>Point</code>函数)被执行，V8将创建一个基于<code>C0</code>的隐藏类<code>C1</code>。<code>C1</code>描述了x的内存的位置（相对于对象指针），在这个情况下，x的位置存在<a href="http://en.wikipedia.org/wiki/Offset_%28computer_science%29" target="_blank" rel="noopener">位移</a>0上，这代表了<code>point</code>对象是一个连续的内存，它的第一个位移对应的是属性x。同时V8也用“类转换”更新了<code>C0</code>，表明了如果一个属性x加到<code>point</code>对象，隐藏类就应该要从<code>C0</code>转换到<code>C1</code>。所以现在<code>point</code>对象的隐藏类为<code>C1</code>。<br><a href="http://idiotsky.top/images/js-how-work-2-4.png"><img src="http://idiotsky.top/images/js-how-work-2-4.png" alt=""></a><br><small><em>每一次一个新的属性加到一个对象，一条转换的路径更新到旧的隐藏类并指向新的隐藏类。隐藏类转换是很重要的，因为同样方式创建的对象都共享同一个隐藏类。如果两个对象共享一个隐藏类，同时相同的属性加到这个两个对象的话，那么转换将保证这两个对象还是共享同一个新的隐藏类，而且共享同一个隐藏类有益于优化代码。</em></small></p>
+<p>当<code>this.y = y</code>被执行，一个新的隐藏类<code>C1</code>被创建，同时一个类转换加到<code>C1</code>上面，表明了如果一个属性y加到一个<code>point</code>对象（已经有x属性的），就要把隐藏类转换成<code>C2</code>。现在<code>point</code>对象的隐藏类就是<code>C2</code>了。<br><a href="http://idiotsky.top/images/js-how-work-2-5.png"><img src="http://idiotsky.top/images/js-how-work-2-5.png" alt=""></a></p>
 <p>隐藏类的转换依赖于属性的加入顺序。看一下下面的代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Point</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.x = x;</span><br><span class="line">    <span class="keyword">this</span>.y = y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> p1 = <span class="keyword">new</span> Point(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">p1.a = <span class="number">5</span>;</span><br><span class="line">p1.b = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">var</span> p2 = <span class="keyword">new</span> Point(<span class="number">3</span>, <span class="number">4</span>);</span><br><span class="line">p2.b = <span class="number">7</span>;</span><br><span class="line">p2.a = <span class="number">8</span>;</span><br></pre></td></tr></table></figure></p>
 <p>现在你肯定会认为p1和p2都是共享同一个隐藏类和转换路径，其实不然。对于p1，第一个属性是a再到b，而p2的话是先b在到a，所以p1和p2是分别两个不同的隐藏类和不同的两条转换路径。<strong>所以，对于动态属性最好是用相同的顺序加入到对象里面，这样有利于隐藏类的重用。</strong></p>
 <h1 id="内联缓存-Inline-caching"><a href="#内联缓存-Inline-caching" class="headerlink" title="内联缓存(Inline caching)"></a>内联缓存(Inline caching)</h1><p>V8利用内联缓存技术来优化动态类型语言。内联缓存依赖于观察哪些方法在哪些相同的对象类型被重复调用。更深的介绍可以看<a href="https://github.com/sq/JSIL/wiki/Optimizing-dynamic-JavaScript-with-inline-caches" target="_blank" rel="noopener">这里</a><br>我们用更通用的概念来说说内联缓存（如果你没时间去看上面的介绍的链接的话。）<br>所以，内联缓存是怎么工作的呢？V8维护一个对象类型的缓存，当一个对象做为参数传递到一个函数调用中，那V8会缓存这个对象，并假设这个对象会在未来会再一次作为参数传递到一个函数调用中。如果V8的这个假设是正确的话，在下次传递对象到一个方法调用的时候，就会绕过查找类型对象的属性的过程，直接使用之前查找隐藏类所储存的信息。</p>
 <p>所以隐藏类和内联缓存是怎么样关联起来的呢？无论一个指定对象方法什么时候被执行，V8引擎都会去查找那个对象的隐藏类去决定指定属性的访问位移。在两次成功调用相同隐藏类的相同方法后，V8就会忽略隐藏类的查找并简单的用属性位移和这个对象指针相加来确定地址。对于未来的那个方法的调用，V8都假设这个对象的隐藏类都没有改变，直接使用之前查找后对象内存的位移来访问属性，这样大大增加执行速度。</p>
-<p>相同类型的对象共享相同隐藏类是很重要的，原因是内存缓存。如果你创建两个相同类型的对象，但它们的隐藏类不同（前面例子有提到），V8将没办法用到内联缓存，因为尽管类型相同，但是它们对应的隐藏类分配的属性位移是不同的。<br><a href="http://idiotsky.me/images/js-how-work-2-6.png"><img src="http://idiotsky.me/images/js-how-work-2-6.png" alt=""></a><br><small><em>这两个对象基本上是一样的，但是a和b属性是用不同的顺序创建的。</em></small></p>
+<p>相同类型的对象共享相同隐藏类是很重要的，原因是内存缓存。如果你创建两个相同类型的对象，但它们的隐藏类不同（前面例子有提到），V8将没办法用到内联缓存，因为尽管类型相同，但是它们对应的隐藏类分配的属性位移是不同的。<br><a href="http://idiotsky.top/images/js-how-work-2-6.png"><img src="http://idiotsky.top/images/js-how-work-2-6.png" alt=""></a><br><small><em>这两个对象基本上是一样的，但是a和b属性是用不同的顺序创建的。</em></small></p>
 <h1 id="编译机器码"><a href="#编译机器码" class="headerlink" title="编译机器码"></a>编译机器码</h1><p>一旦Hydrogen图被优化，Crankshaft降低它为一个低级别的表述，称为Lithium。大多数Lithium实现是架构指定的。注册器分配发生在这个级别。</p>
 <p>最后，Lithium被编译为机器码。有一些编译发生在OSR:栈中替换。在我们编译和优化一个明显长时间运行的方法时，我们有可能已经运行了这个方法了。V8不会忘了这个方法重新运行一个优化的版本的方法，而是转换所有的上下文（栈，注册器），这样就可以在执行中切换到优化版本。这是一个复杂的任务，记得在其他优化里，V8已经一开始就内联代码了。V8不是唯一有这能力的引擎。</p>
 <p>这里有个保障是，一旦引擎的假设不成立的话，会把优化过的代码回滚回之前未优化的代码。这个保障称之为去优化（deoptimization）</p>
@@ -491,7 +491,7 @@
 <p>新的执行管道由V8解释器<a href="https://github.com/v8/v8/wiki/Interpreter" target="_blank" rel="noopener">Ignition</a>和V8最新优化编译器<a href="https://github.com/v8/v8/wiki/TurboFan" target="_blank" rel="noopener">TurboFan</a> 组成。</p>
 <p>你可以在<a href="https://v8project.blogspot.bg/2017/05/launching-ignition-and-turbofan.html" target="_blank" rel="noopener">这里</a>查阅来自V8团队的博客文章.</p>
 <p>自从5.9版本的V8发布，full-codegen和Crankshaft（这两个技术从2010就开始服务V8了）不再被V8用来执行javascript，当V8团队要跟上新的javascript语言特性的步伐和这些特性更需要优化的支持。</p>
-<p>这就意味着V8总体来讲将是一个更简单和更容易维护的架构。<br><a href="http://idiotsky.me/images/js-how-work-2-7.png"><img src="http://idiotsky.me/images/js-how-work-2-7.png" alt=""></a><br><small><em>在网页和Node.js的性能改进</em></small></p>
+<p>这就意味着V8总体来讲将是一个更简单和更容易维护的架构。<br><a href="http://idiotsky.top/images/js-how-work-2-7.png"><img src="http://idiotsky.top/images/js-how-work-2-7.png" alt=""></a><br><small><em>在网页和Node.js的性能改进</em></small></p>
 <p>这些改进只是个开始。新的Ignition和TurboFan为更长远的优化铺平了道路，并在这几年提升javascript的性能和缩小Node.js和Chrome的差距。</p>
 <h1 id="怎么写出最好的javascript代码"><a href="#怎么写出最好的javascript代码" class="headerlink" title="怎么写出最好的javascript代码"></a>怎么写出最好的javascript代码</h1><p>最后，这里有些建议帮助你们写出更优更好的javascript。我想，当你看到这里，你心里已经有所感悟了，但是，我还是总结下吧：</p>
 <ol>
@@ -621,7 +621,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -643,7 +643,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

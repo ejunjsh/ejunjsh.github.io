@@ -107,17 +107,17 @@
 <meta name="keywords" content="java,nio,buffer,channel">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NIO之Channel、Buffer">
-<meta property="og:url" content="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/index.html">
+<meta property="og:url" content="http://idiotsky.top/2016/08/22/java-nio-channel-buffer/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer.png">
-<meta property="og:image" content="http://idiotsky.me/images3/java-nio-channel-buffer-1.png">
-<meta property="og:updated_time" content="2018-04-12T13:59:55.356Z">
+<meta property="og:image" content="http://idiotsky.top/images3/java-nio-channel-buffer.png">
+<meta property="og:image" content="http://idiotsky.top/images3/java-nio-channel-buffer-1.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.526Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NIO之Channel、Buffer">
 <meta name="twitter:description" content="Buffer一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。1、mark：初始值为-1，用于备份当前的position;2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式">
-<meta name="twitter:image" content="http://idiotsky.me/images3/java-nio-channel-buffer.png">
+<meta name="twitter:image" content="http://idiotsky.top/images3/java-nio-channel-buffer.png">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/"/>
+  <link rel="canonical" href="http://idiotsky.top/2016/08/22/java-nio-channel-buffer/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2016/08/22/java-nio-channel-buffer/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/08/22/java-nio-channel-buffer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -437,7 +437,7 @@
 
       
         <h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>一块缓存区，内部使用字节数组存储数据，并维护几个特殊变量，实现数据的反复利用。<br>1、mark：初始值为-1，用于备份当前的position;<br>2、position：初始值为0，position表示当前可以写入或读取数据的位置，当写入或读取一个数据后，position向前移动到下一个位置；<br>3、limit：写模式下，limit表示最多能往Buffer里写多少数据，等于capacity值；读模式下，limit表示最多可以读取多少数据。<br>4、capacity：缓存数组大小</p>
-<p><a href="http://idiotsky.me/images3/java-nio-channel-buffer.png"><img src="http://idiotsky.me/images3/java-nio-channel-buffer.png" alt=""></a><br><a id="more"></a></p>
+<p><a href="http://idiotsky.top/images3/java-nio-channel-buffer.png"><img src="http://idiotsky.top/images3/java-nio-channel-buffer.png" alt=""></a><br><a id="more"></a></p>
 <p>mark()：把当前的position赋值给mark<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">mark</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mark = position;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>reset()：把mark值还原给position<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">reset</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = mark;</span><br><span class="line">    <span class="keyword">if</span> (m &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InvalidMarkException();</span><br><span class="line">    position = m;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>clear()：一旦读完Buffer中的数据，需要让Buffer准备好再次被写入，clear会恢复状态值，但不会擦除数据。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Buffer <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    position = <span class="number">0</span>;</span><br><span class="line">    limit = capacity;</span><br><span class="line">    mark = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -454,7 +454,7 @@
 <li>ShortBuffer</li>
 <li>MappedByteBuffer</li>
 </ul>
-<p><a href="http://idiotsky.me/images3/java-nio-channel-buffer-1.png"><img src="http://idiotsky.me/images3/java-nio-channel-buffer-1.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/java-nio-channel-buffer-1.png"><img src="http://idiotsky.top/images3/java-nio-channel-buffer-1.png" alt=""></a></p>
 <h1 id="ByteBuffer"><a href="#ByteBuffer" class="headerlink" title="ByteBuffer"></a>ByteBuffer</h1><p>ByteBuffer的实现类包括”HeapByteBuffer”和”DirectByteBuffer”两种。</p>
 <h2 id="HeapByteBuffer"><a href="#HeapByteBuffer" class="headerlink" title="HeapByteBuffer"></a>HeapByteBuffer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ByteBuffer <span class="title">allocate</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (capacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> HeapByteBuffer(capacity, capacity);</span><br><span class="line">&#125;</span><br><span class="line">HeapByteBuffer(<span class="keyword">int</span> cap, <span class="keyword">int</span> lim) &#123;  </span><br><span class="line">    <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, lim, cap, <span class="keyword">new</span> <span class="keyword">byte</span>[cap], <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>HeapByteBuffer通过初始化字节数组hd，在虚拟机堆上申请内存空间。</p>
@@ -617,7 +617,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -639,7 +639,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

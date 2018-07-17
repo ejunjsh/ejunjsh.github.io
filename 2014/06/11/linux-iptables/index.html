@@ -107,19 +107,19 @@
 <meta name="keywords" content="linux,iptables">
 <meta property="og:type" content="article">
 <meta property="og:title" content="linux iptables详解">
-<meta property="og:url" content="http://idiotsky.me/2014/06/11/linux-iptables/index.html">
+<meta property="og:url" content="http://idiotsky.top/2014/06/11/linux-iptables/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="iptables简介netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案，完成封包过滤、封包重定向和网络地址转换（NAT）等功能。 iptables基础规则（rules）其实就是网络管理员预定义的条件，规则一般的定义为“如果数据包头符合这样的条件，就这样处理这个数">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-1.png">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-2.png">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-3.jpg">
-<meta property="og:image" content="http://idiotsky.me/images1/linux-iptables-4.jpg">
-<meta property="og:updated_time" content="2017-12-19T14:36:47.524Z">
+<meta property="og:image" content="http://idiotsky.top/images1/linux-iptables-1.png">
+<meta property="og:image" content="http://idiotsky.top/images1/linux-iptables-2.png">
+<meta property="og:image" content="http://idiotsky.top/images1/linux-iptables-3.jpg">
+<meta property="og:image" content="http://idiotsky.top/images1/linux-iptables-4.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.528Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux iptables详解">
 <meta name="twitter:description" content="iptables简介netfilter/iptables（简称为iptables）组成Linux平台下的包过滤防火墙，与大多数的Linux软件一样，这个包过滤防火墙是免费的，它可以代替昂贵的商业防火墙解决方案，完成封包过滤、封包重定向和网络地址转换（NAT）等功能。 iptables基础规则（rules）其实就是网络管理员预定义的条件，规则一般的定义为“如果数据包头符合这样的条件，就这样处理这个数">
-<meta name="twitter:image" content="http://idiotsky.me/images1/linux-iptables-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images1/linux-iptables-1.png">
 
 
 
@@ -148,7 +148,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2014/06/11/linux-iptables/"/>
+  <link rel="canonical" href="http://idiotsky.top/2014/06/11/linux-iptables/"/>
 
 
 
@@ -349,7 +349,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2014/06/11/linux-iptables/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2014/06/11/linux-iptables/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -444,11 +444,11 @@
 <h1 id="iptables传输数据包的过程"><a href="#iptables传输数据包的过程" class="headerlink" title="iptables传输数据包的过程"></a>iptables传输数据包的过程</h1><ol>
 <li>当一个数据包进入网卡时，它首先进入PREROUTING链，内核根据数据包目的IP判断是否需要转送出去。 </li>
 <li>如果数据包就是进入本机的，它就会沿着图向下移动，到达INPUT链。数据包到了INPUT链后，任何进程都会收到它。本机上运行的程序可以发送数据包，这些数据包会经过OUTPUT链，然后到达POSTROUTING链输出。 </li>
-<li>如果数据包是要转发出去的，且内核允许转发，数据包就会如图所示向右移动，经过FORWARD链，然后到达POSTROUTING链输出。<br><a href="http://idiotsky.me/images1/linux-iptables-1.png"><img src="http://idiotsky.me/images1/linux-iptables-1.png" alt=""></a></li>
+<li>如果数据包是要转发出去的，且内核允许转发，数据包就会如图所示向右移动，经过FORWARD链，然后到达POSTROUTING链输出。<br><a href="http://idiotsky.top/images1/linux-iptables-1.png"><img src="http://idiotsky.top/images1/linux-iptables-1.png" alt=""></a></li>
 </ol>
 <h1 id="iptables的规则表和链"><a href="#iptables的规则表和链" class="headerlink" title="iptables的规则表和链"></a>iptables的规则表和链</h1><p>表（tables）提供特定的功能，iptables内置了4个表，即filter表、nat表、mangle表和raw表，分别用于实现包过滤，网络地址转换、包重构(修改)和数据跟踪处理。</p>
 <p>链（chains）是数据包传播的路径，每一条链其实就是众多规则中的一个检查清单，每一条链中可以有一 条或数条规则。当一个数据包到达一个链时，iptables就会从链中第一条规则开始检查，看该数据包是否满足规则所定义的条件。如果满足，系统就会根据 该条规则所定义的方法处理该数据包；否则iptables将继续检查下一条规则，如果该数据包不符合链中任一条规则，iptables就会根据该链预先定 义的默认策略来处理数据包。</p>
-<p>Iptables采用“表”和“链”的分层结构。在REHL4中是三张表五个链。现在REHL5成了四张表五个链了，不过多出来的那个表用的也不太多，所以基本还是和以前一样。下面罗列一下这四张表和五个链。注意一定要明白这些表和链的关系及作用。<br><a href="http://idiotsky.me/images1/linux-iptables-2.png"><img src="http://idiotsky.me/images1/linux-iptables-2.png" alt=""></a></p>
+<p>Iptables采用“表”和“链”的分层结构。在REHL4中是三张表五个链。现在REHL5成了四张表五个链了，不过多出来的那个表用的也不太多，所以基本还是和以前一样。下面罗列一下这四张表和五个链。注意一定要明白这些表和链的关系及作用。<br><a href="http://idiotsky.top/images1/linux-iptables-2.png"><img src="http://idiotsky.top/images1/linux-iptables-2.png" alt=""></a></p>
 <h2 id="规则表"><a href="#规则表" class="headerlink" title="规则表"></a>规则表</h2><ol>
 <li>filter表——三个链：INPUT、FORWARD、OUTPUT<br>作用：过滤数据包  内核模块：iptables_filter.</li>
 <li>Nat表——三个链：PREROUTING、POSTROUTING、OUTPUT<br>作用：用于网络地址转换（IP、端口） 内核模块：iptable_nat</li>
@@ -465,8 +465,8 @@
 <h2 id="规则表之间的优先顺序"><a href="#规则表之间的优先顺序" class="headerlink" title="规则表之间的优先顺序"></a>规则表之间的优先顺序</h2><p>Raw——mangle——nat——filter<br>规则链之间的优先顺序（分三种情况）：<br><strong>第一种情况：入站数据流向</strong><br>从外界到达防火墙的数据包，先被PREROUTING规则链处理（是否修改数据包地址等），之后会进行路由选择（判断该数据包应该发往何处），如果数据包 的目标主机是防火墙本机（比如说Internet用户访问防火墙主机中的web服务器的数据包），那么内核将其传给INPUT链进行处理（决定是否允许通 过等），通过以后再交给系统上层的应用程序（比如Apache服务器）进行响应。</p>
 <p><strong>第二冲情况：转发数据流向</strong><br>来自外界的数据包到达防火墙后，首先被PREROUTING规则链处理，之后会进行路由选择，如果数据包的目标地址是其它外部地址（比如局域网用户通过网 关访问QQ站点的数据包），则内核将其传递给FORWARD链进行处理（是否转发或拦截），然后再交给POSTROUTING规则链（是否修改数据包的地 址等）进行处理。</p>
 <p><strong>第三种情况：出站数据流向</strong><br>防火墙本机向外部地址发送的数据包（比如在防火墙主机中测试公网DNS服务器时），首先被OUTPUT规则链处理，之后进行路由选择，然后传递给POSTROUTING规则链（是否修改数据包的地址等）进行处理。</p>
-<h1 id="管理和设置iptables规则"><a href="#管理和设置iptables规则" class="headerlink" title="管理和设置iptables规则"></a>管理和设置iptables规则</h1><p><a href="http://idiotsky.me/images1/linux-iptables-3.jpg"><img src="http://idiotsky.me/images1/linux-iptables-3.jpg" alt=""></a></p>
-<p><a href="http://idiotsky.me/images1/linux-iptables-4.jpg"><img src="http://idiotsky.me/images1/linux-iptables-4.jpg" alt=""></a></p>
+<h1 id="管理和设置iptables规则"><a href="#管理和设置iptables规则" class="headerlink" title="管理和设置iptables规则"></a>管理和设置iptables规则</h1><p><a href="http://idiotsky.top/images1/linux-iptables-3.jpg"><img src="http://idiotsky.top/images1/linux-iptables-3.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images1/linux-iptables-4.jpg"><img src="http://idiotsky.top/images1/linux-iptables-4.jpg" alt=""></a></p>
 <h2 id="iptables的基本语法格式"><a href="#iptables的基本语法格式" class="headerlink" title="iptables的基本语法格式"></a>iptables的基本语法格式</h2><p>iptables [-t 表名] 命令选项 ［链名］ ［条件匹配］ ［-j 目标动作或跳转］<br>说明：表名、链名用于指定 iptables命令所操作的表和链，命令选项用于指定管理iptables规则的方式（比如：插入、增加、删除、查看等；条件匹配用于指定对符合什么样 条件的数据包进行处理；目标动作或跳转用于指定数据包的处理方式（比如允许通过、拒绝、丢弃、跳转（Jump）给其它链处理。</p>
 <h2 id="iptables命令的管理控制选项"><a href="#iptables命令的管理控制选项" class="headerlink" title="iptables命令的管理控制选项"></a>iptables命令的管理控制选项</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">-A 在指定链的末尾添加（append）一条新的规则</span><br><span class="line">-D  删除（delete）指定链中的某一条规则，可以按规则序号和内容删除</span><br><span class="line">-I  在指定链中插入（insert）一条新的规则，默认在第一行添加</span><br><span class="line">-R  修改、替换（replace）指定链中的某一条规则，可以按规则序号和内容替换</span><br><span class="line">-L  列出（list）指定链中所有的规则进行查看</span><br><span class="line">-E  重命名用户定义的链，不改变链本身</span><br><span class="line">-F  清空（flush）</span><br><span class="line">-N  新建（new-chain）一条用户自己定义的规则链</span><br><span class="line">-X  删除指定表中用户自定义的规则链（delete-chain）</span><br><span class="line">-P  设置指定链的默认策略（policy）</span><br><span class="line">-Z 将所有表的所有链的字节和数据包计数器清零</span><br><span class="line">-n  使用数字形式（numeric）显示输出结果</span><br><span class="line">-v  查看规则表详细信息（verbose）的信息</span><br><span class="line">-V  查看版本(version)</span><br><span class="line">-h  获取帮助（help）</span><br></pre></td></tr></table></figure>
 <h2 id="防火墙处理数据包的四种方式"><a href="#防火墙处理数据包的四种方式" class="headerlink" title="防火墙处理数据包的四种方式"></a>防火墙处理数据包的四种方式</h2><p>ACCEPT 允许数据包通过<br>DROP 直接丢弃数据包，不给任何回应信息<br>REJECT 拒绝数据包通过，必要时会给数据发送端一个响应的信息。<br>LOG在/var/log/messages文件中记录日志信息，然后将数据包传递给下一条规则</p>
@@ -650,7 +650,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -672,7 +672,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

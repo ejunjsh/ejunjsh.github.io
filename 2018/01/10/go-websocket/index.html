@@ -107,17 +107,17 @@
 <meta name="keywords" content="go,websocket">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用go小试websocket">
-<meta property="og:url" content="http://idiotsky.me/2018/01/10/go-websocket/index.html">
+<meta property="og:url" content="http://idiotsky.top/2018/01/10/go-websocket/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="什么是websocket初次接触 WebSocket 的人，都会问同样的问题：我们已经有了 HTTP 协议，为什么还需要另一个协议？它能带来什么好处？答案很简单，因为 HTTP 协议有一个缺陷：通信只能由客户端发起。 举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。这种单向请求的特点，注定了如果服务器有连续的状态变化">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images2/go-websocket-1.png">
-<meta property="og:image" content="http://idiotsky.me/images2/go-websocket-2.jpg">
-<meta property="og:updated_time" content="2018-01-10T14:02:38.116Z">
+<meta property="og:image" content="http://idiotsky.top/images2/go-websocket-1.png">
+<meta property="og:image" content="http://idiotsky.top/images2/go-websocket-2.jpg">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用go小试websocket">
 <meta name="twitter:description" content="什么是websocket初次接触 WebSocket 的人，都会问同样的问题：我们已经有了 HTTP 协议，为什么还需要另一个协议？它能带来什么好处？答案很简单，因为 HTTP 协议有一个缺陷：通信只能由客户端发起。 举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。这种单向请求的特点，注定了如果服务器有连续的状态变化">
-<meta name="twitter:image" content="http://idiotsky.me/images2/go-websocket-1.png">
+<meta name="twitter:image" content="http://idiotsky.top/images2/go-websocket-1.png">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2018/01/10/go-websocket/"/>
+  <link rel="canonical" href="http://idiotsky.top/2018/01/10/go-websocket/"/>
 
 
 
@@ -347,7 +347,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2018/01/10/go-websocket/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/01/10/go-websocket/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -440,7 +440,7 @@
 <p>举例来说，我们想了解今天的天气，只能是客户端向服务器发出请求，服务器返回查询结果。HTTP 协议做不到服务器主动向客户端推送信息。<br>这种单向请求的特点，注定了如果服务器有连续的状态变化，客户端要获知就非常麻烦。我们只能使用”轮询”：每隔一段时候，就发出一个询问，了解服务器有没有新的信息。最典型的场景就是聊天室。</p>
 <p>轮询的效率低，非常浪费资源（因为必须不停连接，或者 HTTP 连接始终打开）。因此，工程师们一直在思考，有没有更好的方法。WebSocket 就是这样发明的。</p>
 <p>WebSocket 协议在2008年诞生，2011年成为国际标准。所有浏览器都已经支持了。</p>
-<p>它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于<a href="https://en.wikipedia.org/wiki/Push_technology" target="_blank" rel="noopener">服务器推送</a>技术的一种。<br><a href="http://idiotsky.me/images2/go-websocket-1.png"><img src="http://idiotsky.me/images2/go-websocket-1.png" alt=""></a></p>
+<p>它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于<a href="https://en.wikipedia.org/wiki/Push_technology" target="_blank" rel="noopener">服务器推送</a>技术的一种。<br><a href="http://idiotsky.top/images2/go-websocket-1.png"><img src="http://idiotsky.top/images2/go-websocket-1.png" alt=""></a></p>
 <a id="more"></a>
 <p>其他特点包括：</p>
 <ol>
@@ -452,7 +452,7 @@
 <li>协议标识符是ws（如果加密，则为wss），服务器网址就是 URL。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ws://example.com:80/some/path</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<p><a href="http://idiotsky.me/images2/go-websocket-2.jpg"><img src="http://idiotsky.me/images2/go-websocket-2.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images2/go-websocket-2.jpg"><img src="http://idiotsky.top/images2/go-websocket-2.jpg" alt=""></a></p>
 <h1 id="小试"><a href="#小试" class="headerlink" title="小试"></a>小试</h1><p>用一个echo的例子来试一下websocket</p>
 <h2 id="客户端实现"><a href="#客户端实现" class="headerlink" title="客户端实现"></a>客户端实现</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE HTML&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">        var ws;</span></span><br><span class="line"><span class="undefined">        function connect() &#123;</span></span><br><span class="line"><span class="undefined">            ws= new WebSocket("ws://localhost:8080/echo");</span></span><br><span class="line"><span class="undefined">            ws.onopen = function()</span></span><br><span class="line"><span class="undefined">            &#123;</span></span><br><span class="line"><span class="undefined">                alert("connection is successful");</span></span><br><span class="line"><span class="undefined">            &#125;;</span></span><br><span class="line"><span class="undefined">            ws.onmessage = function (e)</span></span><br><span class="line"><span class="undefined">            &#123;</span></span><br><span class="line"><span class="undefined">                var msg = e.data;</span></span><br><span class="line"><span class="undefined">                var li=document.createElement("li");</span></span><br><span class="line"><span class="undefined">                li.innerText=msg;</span></span><br><span class="line"><span class="undefined">                document.getElementsByTagName("ul")[0].appendChild(li);</span></span><br><span class="line"><span class="undefined">            &#125;;</span></span><br><span class="line"><span class="undefined">            ws.onclose = function()</span></span><br><span class="line"><span class="undefined">            &#123;</span></span><br><span class="line"><span class="undefined">                // websocket is closed.</span></span><br><span class="line"><span class="undefined">                alert("Connection is closed...");</span></span><br><span class="line"><span class="undefined">            &#125;;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">        function send() &#123;</span></span><br><span class="line"><span class="undefined">            if(ws)&#123;</span></span><br><span class="line"><span class="undefined">                var msg=document.getElementById("txt").value;</span></span><br><span class="line"><span class="undefined">                ws.send(msg);</span></span><br><span class="line"><span class="undefined">                return;</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">            alert("connect first!!!");</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"javascript:connect()"</span>&gt;</span>connect<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">textarea</span> <span class="attr">id</span>=<span class="string">"txt"</span> <span class="attr">style</span>=<span class="string">"width: 100%"</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"sendBtn"</span> <span class="attr">onclick</span>=<span class="string">"send()"</span>&gt;</span>send<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>代码很简单，就是用<code>new WebSocket(&quot;ws://localhost:8080/echo&quot;)</code>初始化websocket，然后注册相关事件，就可以完成一个简单websocket客户端了。</p>
@@ -581,7 +581,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -603,7 +603,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

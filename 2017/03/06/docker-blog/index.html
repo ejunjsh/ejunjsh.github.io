@@ -106,14 +106,14 @@
 <meta name="keywords" content="docker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一张图理解docker的命令">
-<meta property="og:url" content="http://idiotsky.me/2017/03/06/docker-blog/index.html">
+<meta property="og:url" content="http://idiotsky.top/2017/03/06/docker-blog/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="http://idiotsky.me/images/docker-blog.png">
-<meta property="og:updated_time" content="2017-09-19T17:05:02.000Z">
+<meta property="og:image" content="http://idiotsky.top/images/docker-blog.png">
+<meta property="og:updated_time" content="2018-07-17T11:39:16.535Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="一张图理解docker的命令">
-<meta name="twitter:image" content="http://idiotsky.me/images/docker-blog.png">
+<meta name="twitter:image" content="http://idiotsky.top/images/docker-blog.png">
 
 
 
@@ -142,7 +142,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.me/2017/03/06/docker-blog/"/>
+  <link rel="canonical" href="http://idiotsky.top/2017/03/06/docker-blog/"/>
 
 
 
@@ -343,7 +343,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.me/2017/03/06/docker-blog/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/03/06/docker-blog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -432,7 +432,7 @@
       
 
       
-        <p><a href="http://idiotsky.me/images/docker-blog.png"><img src="http://idiotsky.me/images/docker-blog.png" alt=""></a><br><a id="more"></a></p>
+        <p><a href="http://idiotsky.top/images/docker-blog.png"><img src="http://idiotsky.top/images/docker-blog.png" alt=""></a><br><a id="more"></a></p>
 <h1 id="docker-run-–rm"><a href="#docker-run-–rm" class="headerlink" title="docker run –rm"></a>docker run –rm</h1><p>加<code>--rm</code> 参数用来运行一次性的容器最好，用完就会把容器删掉，免得手动清理没用的容器的,相当于容器结束时执行<code>docker rm -v</code><br>显然，<code>--rm</code>选项不能与<code>-d</code>同时使用，即只能自动清理foreground容器，不能自动清理detached容器<br>注意，<code>--rm</code>选项也会清理容器的匿名data volumes。</p>
 <h1 id="Dockerfile里面的VOLUME和命令选项-v"><a href="#Dockerfile里面的VOLUME和命令选项-v" class="headerlink" title="Dockerfile里面的VOLUME和命令选项-v"></a>Dockerfile里面的VOLUME和命令选项-v</h1><p>以下引用<a href="https://segmentfault.com/q/1010000004107293" target="_blank" rel="noopener">https://segmentfault.com/q/1010000004107293</a><br>VOLUME并非只是声明，它会把指定路径重新加载一遍，我通过inspect容器也发现了这一点。<br>这是在Dockerfile指定了VOLUME，并没有指定-v，查看容器的Mounts信息：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">"Mounts": [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"Name"</span>: <span class="string">"b3e2dcacd3f9f40b43ccd5773d45ca74f0f49b02d3da17749cb378ff9f59bb67"</span>,</span><br><span class="line">            <span class="attr">"Source"</span>: <span class="string">"/var/lib/docker/volumes/b3e2dcacd3f9f40b43ccd5773d45ca74f0f49b02d3da17749cb378ff9f59bb67/_data"</span>,</span><br><span class="line">            <span class="attr">"Destination"</span>: <span class="string">"/etc"</span>,</span><br><span class="line">            <span class="attr">"Driver"</span>: <span class="string">"local"</span>,</span><br><span class="line">            <span class="attr">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="attr">"RW"</span>: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br></pre></td></tr></table></figure></p>
 <p>这是在上一个的基础上，指定了-v，查看容器的Mounts信息：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">"Mounts": [</span><br><span class="line">       &#123;</span><br><span class="line">           <span class="attr">"Source"</span>: <span class="string">"/etc"</span>,</span><br><span class="line">           <span class="attr">"Destination"</span>: <span class="string">"/etc"</span>,</span><br><span class="line">           <span class="attr">"Mode"</span>: <span class="string">""</span>,</span><br><span class="line">           <span class="attr">"RW"</span>: <span class="literal">true</span></span><br><span class="line">       &#125;</span><br><span class="line">   ],</span><br></pre></td></tr></table></figure></p>
@@ -570,7 +570,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">143</span>
+                <span class="site-state-item-count">145</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -592,7 +592,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">138</span>
+                <span class="site-state-item-count">140</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
