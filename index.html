@@ -436,7 +436,10 @@
 
       
         
-          <h1 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h1><p><a href="http://idiotsky.top/images3/kafka-1.jpg"><img src="http://idiotsky.top/images3/kafka-1.jpg" alt=""></a></p>
+          <blockquote>
+<p>玩了很久的kafka，现在总结下吧，当然通过别人的文章来总结还是事半功倍的👿</p>
+</blockquote>
+<h1 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h1><p><a href="http://idiotsky.top/images3/kafka-1.jpg"><img src="http://idiotsky.top/images3/kafka-1.jpg" alt=""></a></p>
 <p>如上图，一个kafka架构包括若干个Producer（服务器日志、业务数据、web前端产生的page view等），若干个Broker（kafka支持水平扩展，一般broker数量越多集群的吞吐量越大），若干个consumer group，一个Zookeeper集群（kafka通过Zookeeper管理集群配置、选举leader、consumer group发生变化时进行rebalance）。</p>
           <!--noindex-->
           <div class="post-button text-center">

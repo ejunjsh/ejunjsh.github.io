@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-07-22T07:44:12.991Z</updated>
+  <updated>2018-07-22T07:46:06.542Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,9 +20,12 @@
     <link href="http://idiotsky.top/2018/07/22/kafka-summary/"/>
     <id>http://idiotsky.top/2018/07/22/kafka-summary/</id>
     <published>2018-07-22T13:38:51.000Z</published>
-    <updated>2018-07-22T07:44:12.991Z</updated>
+    <updated>2018-07-22T07:46:06.542Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h1><p><a href="http://idiotsky.top/images3/kafka-1.jpg"><img src="http://idiotsky.top/images3/kafka-1.jpg" alt=""></a></p>
+    <content type="html"><![CDATA[<blockquote>
+<p>玩了很久的kafka，现在总结下吧，当然通过别人的文章来总结还是事半功倍的👿</p>
+</blockquote>
+<h1 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h1><p><a href="http://idiotsky.top/images3/kafka-1.jpg"><img src="http://idiotsky.top/images3/kafka-1.jpg" alt=""></a></p>
 <p>如上图，一个kafka架构包括若干个Producer（服务器日志、业务数据、web前端产生的page view等），若干个Broker（kafka支持水平扩展，一般broker数量越多集群的吞吐量越大），若干个consumer group，一个Zookeeper集群（kafka通过Zookeeper管理集群配置、选举leader、consumer group发生变化时进行rebalance）。</p>
 <a id="more"></a>
 <h1 id="名称解释"><a href="#名称解释" class="headerlink" title="名称解释"></a>名称解释</h1><ul>
@@ -74,7 +77,10 @@
     
     <summary type="html">
     
-      &lt;h1 id=&quot;架构图&quot;&gt;&lt;a href=&quot;#架构图&quot; class=&quot;headerlink&quot; title=&quot;架构图&quot;&gt;&lt;/a&gt;架构图&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://idiotsky.top/images3/kafka-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.top/images3/kafka-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+      &lt;blockquote&gt;
+&lt;p&gt;玩了很久的kafka，现在总结下吧，当然通过别人的文章来总结还是事半功倍的👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;架构图&quot;&gt;&lt;a href=&quot;#架构图&quot; class=&quot;headerlink&quot; title=&quot;架构图&quot;&gt;&lt;/a&gt;架构图&lt;/h1&gt;&lt;p&gt;&lt;a href=&quot;http://idiotsky.top/images3/kafka-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.top/images3/kafka-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;如上图，一个kafka架构包括若干个Producer（服务器日志、业务数据、web前端产生的page view等），若干个Broker（kafka支持水平扩展，一般broker数量越多集群的吞吐量越大），若干个consumer group，一个Zookeeper集群（kafka通过Zookeeper管理集群配置、选举leader、consumer group发生变化时进行rebalance）。&lt;/p&gt;
     
     </summary>
