@@ -344,6 +344,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/07/22/kafka-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/22/kafka-summary/" itemprop="url">kafka总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-22T21:38:51+08:00">
+                22 Jul 18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h1><p><a href="http://idiotsky.top/images3/kafka-1.jpg"><img src="http://idiotsky.top/images3/kafka-1.jpg" alt=""></a></p>
+<p>如上图，一个kafka架构包括若干个Producer（服务器日志、业务数据、web前端产生的page view等），若干个Broker（kafka支持水平扩展，一般broker数量越多集群的吞吐量越大），若干个consumer group，一个Zookeeper集群（kafka通过Zookeeper管理集群配置、选举leader、consumer group发生变化时进行rebalance）。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/07/22/kafka-summary/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/07/17/java-javap-final/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -437,7 +584,7 @@
       
         
           <blockquote>
-<p>一直很好奇<code>final</code>的类字段在class文件是怎么表示的，所以用javap看看怎么回事</p>
+<p>一直很好奇<code>final</code>的类字段在class文件是怎么表示的，所以用javap看看怎么回事,也顺便复习下字节码指令👿</p>
 </blockquote>
 <h1 id="没有final修饰的类的静态字段"><a href="#没有final修饰的类的静态字段" class="headerlink" title="没有final修饰的类的静态字段"></a>没有<code>final</code>修饰的类的静态字段</h1><p>定义一个类</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> String str=<span class="string">"严"</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1668,157 +1815,6 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/03/04/b-tree/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/02/26/go-goroutine/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/26/go-goroutine/" itemprop="url">深入go之goroutine</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-26T19:56:31+08:00">
-                26 Feb 18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。</p>
-</blockquote>
-<h1 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h1><p>协程(coroutine)其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面执行的，线程的调度由内核触发，所以函数在执行过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控制调度，在任何时候调度协程的执行。函数在执行时，内核调度会陷入内核并保存当前线程的栈和上下文，然后恢复之前被停止线程继续执行，代价比较高。而协程的调度，不用陷入内核，用户线程只是保存当前协程的栈和上下文，恢复之前的被停止协程继续执行。</p>
-<p>还有种说法是说函数是协程的一种特例。因为函数只有在return语句才会返回，而协程可以在任何时刻返回。</p>
-<p>协程很早就提出来了，可是在现在才火起来吧，大概由于某种语言（lua）的广泛使用吧。而go更是把协程用到底，基本可以理解go的所有代码都跑在协程下，并用goroutine来代表它自己的协程。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/26/go-goroutine/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>

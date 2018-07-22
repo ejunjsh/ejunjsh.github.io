@@ -103,18 +103,18 @@
 
 
 
-<meta name="description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        System.out.printl">
+<meta name="description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事,也顺便复习下字节码指令👿  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        Sys">
 <meta name="keywords" content="java,javap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用javap看一下final是什么">
 <meta property="og:url" content="http://idiotsky.top/2018/07/17/java-javap-final/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        System.out.printl">
+<meta property="og:description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事,也顺便复习下字节码指令👿  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        Sys">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-07-20T12:41:56.810Z">
+<meta property="og:updated_time" content="2018-07-22T05:12:32.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用javap看一下final是什么">
-<meta name="twitter:description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        System.out.printl">
+<meta name="twitter:description" content="一直很好奇final的类字段在class文件是怎么表示的，所以用javap看看怎么回事,也顺便复习下字节码指令👿  没有final修饰的类的静态字段定义一个类 1234567public class test&amp;#123;  public static String str=&quot;严&quot;;  public static void main(String[] args)&amp;#123;        Sys">
 
 
 
@@ -434,7 +434,7 @@
 
       
         <blockquote>
-<p>一直很好奇<code>final</code>的类字段在class文件是怎么表示的，所以用javap看看怎么回事</p>
+<p>一直很好奇<code>final</code>的类字段在class文件是怎么表示的，所以用javap看看怎么回事,也顺便复习下字节码指令👿</p>
 </blockquote>
 <h1 id="没有final修饰的类的静态字段"><a href="#没有final修饰的类的静态字段" class="headerlink" title="没有final修饰的类的静态字段"></a>没有<code>final</code>修饰的类的静态字段</h1><p>定义一个类</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test</span></span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> String str=<span class="string">"严"</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        System.out.println(str);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -521,6 +521,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/22/kafka-summary/" rel="prev" title="kafka总结">
+                kafka总结 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
