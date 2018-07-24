@@ -116,7 +116,7 @@
 <meta property="og:image" content="http://idiotsky.top/images3/kafka-3.png">
 <meta property="og:image" content="http://idiotsky.top/images3/kafka-4.png">
 <meta property="og:image" content="http://idiotsky.top/images3/kafka-5.png">
-<meta property="og:updated_time" content="2018-07-22T07:46:06.542Z">
+<meta property="og:updated_time" content="2018-07-22T07:50:29.168Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka总结">
 <meta name="twitter:description" content="玩了很久的kafka，现在总结下吧，当然通过别人的文章来总结还是事半功倍的👿  架构图 如上图，一个kafka架构包括若干个Producer（服务器日志、业务数据、web前端产生的page view等），若干个Broker（kafka支持水平扩展，一般broker数量越多集群的吞吐量越大），若干个consumer group，一个Zookeeper集群（kafka通过Zookeeper管理集群">
@@ -460,8 +460,8 @@
 <p>每个消费者唯一保存的元数据是offset值，这个位置完全为消费者控制，因此消费者可以采用任何顺序来消费记录，如下图</p>
 <p><a href="http://idiotsky.top/images3/kafka-4.png"><img src="http://idiotsky.top/images3/kafka-4.png" alt=""></a></p>
 <p>kafka中只能保证partition中记录是有序的，而不保证topic中不同partition的顺序</p>
-<h2 id="Consumer-group-amp-consumer"><a href="#Consumer-group-amp-consumer" class="headerlink" title="Consumer group &amp; consumer"></a>Consumer group &amp; consumer</h2><p>一个消费组由一个或多个消费者实例组成，便于扩容与容</p>
-<p>错。kafka是发布与订阅模式，这个订阅者是消费组，而不是消费者实例。每一条消息只会被同一个消费组里的一个消费者实例消费，不同的消费组可以同时消费同一条消息，如下图</p>
+<h2 id="Consumer-group-amp-consumer"><a href="#Consumer-group-amp-consumer" class="headerlink" title="Consumer group &amp; consumer"></a>Consumer group &amp; consumer</h2><p>一个消费组由一个或多个消费者实例组成，便于扩容与容错。</p>
+<p>kafka是发布与订阅模式，这个订阅者是消费组，而不是消费者实例。每一条消息只会被同一个消费组里的一个消费者实例消费，不同的消费组可以同时消费同一条消息，如下图</p>
 <p><a href="http://idiotsky.top/images3/kafka-5.png"><img src="http://idiotsky.top/images3/kafka-5.png" alt=""></a></p>
 <p>为了实现传统的消息队列中消息只被消费一次的语义，kafka保证同一个消费组里只有一个消费者会消费一条消息，kafka还允许不同的消费组同时消费一条消息，这一特性可以为消息的多元化处理提供了支持，kafka的设计理念之一就是同时提供离线处理和实时处理，因此，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作的消费者实例在不同consumer group 即可</p>
 <h2 id="Consumer-Rebalance"><a href="#Consumer-Rebalance" class="headerlink" title="Consumer Rebalance"></a>Consumer Rebalance</h2><p>kafka保证了同一个消费组中只有一个消费者实例会消费某条消息，实际上，kafka保证的是稳定状态下每一个消费者实例只会消费一个或多个特定partition数据，而某个partition的数据只会被某一特定的consumer实例消费，这样设计的劣势是无法让同一个消费组里的consumer均匀消费，优势是每个consumer不用跟大量的broker通信，减少通信开销，也降低了分配难度。而且，同一个partition数据是有序的，保证了有序被消费。根据consumer group中的consumer数量和partition数量，可以分为以下3种情况：</p>
@@ -531,6 +531,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/24/paxos-example/" rel="prev" title="Paxos示例">
+                Paxos示例 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -607,7 +611,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">145</span>
+                <span class="site-state-item-count">147</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -629,7 +633,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-count">142</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

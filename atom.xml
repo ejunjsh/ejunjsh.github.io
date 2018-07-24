@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-07-22T07:46:06.542Z</updated>
+  <updated>2018-07-24T13:46:18.579Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -16,11 +16,114 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>一个很好理解raft的动画演示</title>
+    <link href="http://idiotsky.top/2018/07/24/understanding-raft/"/>
+    <id>http://idiotsky.top/2018/07/24/understanding-raft/</id>
+    <published>2018-07-24T13:23:16.000Z</published>
+    <updated>2018-07-24T13:46:18.579Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>很好理解的动画，一看就懂了👿</p>
+</blockquote>
+<iframe src="http://idiotsky.top/raft/raft/index.html" style="width:100%;height:700px;border-width: 0px;"><br></iframe>
+
+<a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;很好理解的动画，一看就懂了👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;iframe src=&quot;http://idiotsky.top/raft/raft/index.html&quot; style=&quot;width:100%;height:700px;border-width: 0px;&quot;&gt;&lt;br&gt;&lt;/iframe&gt;
+    
+    </summary>
+    
+      <category term="分布式" scheme="http://idiotsky.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+      <category term="raft" scheme="http://idiotsky.top/tags/raft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Paxos示例</title>
+    <link href="http://idiotsky.top/2018/07/24/paxos-example/"/>
+    <id>http://idiotsky.top/2018/07/24/paxos-example/</id>
+    <published>2018-07-24T12:11:55.000Z</published>
+    <updated>2018-07-24T13:19:10.365Z</updated>
+    
+    <content type="html"><![CDATA[<p>这篇文章通过一个有效的例子描述了一个名为Paxos 的分布式一致性算法。</p>
+<p>分布式一致性算法用于使一组计算机能够就单个值达成一致，例如通常使用两阶段或三阶段提交做出的提交或回滚决策。只要选择一个值，算法的其他值就没有关系了。</p>
+<p>在分布式系统中，这很难，因为机器之间的消息可能会丢失或无限期延迟，或者机器本身可能会发生故障。</p>
+<p>Paxos保证节点只会选择单个值（意味着它保证安全），但不保证在大多数节点不可用时能不能去到值</p>
+<a id="more"></a>
+<h1 id="一般的做法"><a href="#一般的做法" class="headerlink" title="一般的做法"></a>一般的做法</h1><p>一个Paxos的节点可以采取任何或所有三个角色：<code>proposer</code>，<code>acceptor</code>和<code>learner</code>。</p>
+<p>一个<code>proposer</code>提议一个值是需要同意才行的，它发一个包含值的提议给所有的<code>acceptor</code>，<code>acceptor</code>决定是否同意这个值。</p>
+<p>每个<code>acceptor</code>独立选择一个值–它可能收到多个来自不同<code>proposer</code>的提议–并将其决定发送给<code>learner</code>，以确定是否已接受任何值。</p>
+<p>对于Paxos接受的值，大多数<code>acceptor</code>必须选择相同的值。实际上，单个节点可以承担许多或所有这些角色，但在本节的示例中，每个角色都在一个单独的节点上运行，如下所示。</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/0.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/0.png" alt=""></a></p>
+<center>图1：基本Paxos架构。一些<code>proposer</code>向<code>acceptor</code>提出建议。当<code>acceptor</code>接受一个值时，它会将结果发送给<code>learner</code>节点。<br></center>
+
+<h1 id="Paxos示例"><a href="#Paxos示例" class="headerlink" title="Paxos示例"></a>Paxos示例</h1><p>在标准的Paxos算法中，<code>proposer</code>向<code>acceptor</code>发送两种类型的消息：<strong>准备</strong>和<strong>接受</strong>请求。</p>
+<p>在该算法的第一阶段，<code>proposer</code>向每个<code>acceptor</code>发送包含建议值v和提议号n的准备请求。</p>
+<p>对于其他<code>proposer</code>的提案号，每个<code>proposer</code>的提议号必须是正数的，单调递增的，唯一的，自然的数字。</p>
+<p>在下面说明的示例中，有两个<code>proposer</code>，两个都提出准备请求。来自<code>proposer A</code>的请求和来自<code>proposer B</code>的请求首先到达<code>acceptor X</code>和<code>acceptor Y</code>，而来自<code>proposer B</code>的请求首先到达<code>acceptor Z</code>。</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/2.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/2.png" alt=""></a></p>
+<center>图2：proposer A和B各自向每个接受者发送准备请求。在这个例子中，proposer A的请求首先到达接acceptor X和Y，而proposer B的请求首先到达acceptor Z.</center>
+
+<p>如果接收准备请求的<code>acceptor</code>没有看到另一个提议，则<code>acceptor</code>以准备响应作出响应，该准备响应承诺永远不接受具有较低提议编号的另一提议。</p>
+<p>这在下面的图3中说明，其显示了每个接受者对他们收到的第一个准备请求的响应。</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/3.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/3.png" alt=""></a></p>
+<center>图3：每个<code>acceptor</code>响应它收到的第一个准备请求消息。</center>
+
+<p>最终，<code>acceptor Z</code>接收<code>proposer A</code>的请求，<code>acceptor X</code>和<code>acceptor Y</code>接收<code>proposer B</code>的请求。</p>
+<p>如果<code>acceptor</code>已经看到具有更高提议号的请求，则忽略准备请求，<code>proposer A</code>对<code>acceptor Z</code>的请求就是这种情况。</p>
+<p>如果<code>acceptor</code>没有看到更高编号的请求，它再次承诺忽略具有较低提议编号的任何请求，并发回其已接受的编号最高的提议以及该提议的值。</p>
+<p><code>proposer B</code>对<code>acceptor X</code>和<code>acceptor Y</code>的请求就是这种情况，如下图所示：</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/4.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/4.png" alt=""></a></p>
+<center>图4：acceptor Z忽略了proposer A的请求，因为它已经看到了更高编号的提议（4&gt; 2）。acceptor X和Y用他们先前确认的最高请求来响应proposer B的请求，并承诺忽略任何编号较低的提议。</center>
+
+<p>一旦<code>proposer</code>收到大多数<code>acceptor</code>的准备响应，它就可以发出接受请求。</p>
+<p>由于<code>proposer A</code>仅收到表明没有先前提案<code>[no previous]</code>的响应，因此它向<code>acceptor</code>发送与初始提案相同的提议编号和值的接受请求（n = 2，v = 8）。</p>
+<p>然而，这些请求被每一个<code>acceptor</code>忽略，因为<code>acceptor</code>都承诺不接受的提议号低于请求4（响应准备请求给<code>proposer B</code>）。</p>
+<p><code>proposer B</code>向每个<code>acceptor</code>发送包含其先前使用的提议号（n = 4）的接受请求，并且这个接受请求还包含了在其收到的准备响应消息中与最高提议号相关联的值（v = 8）。</p>
+<p>请注意，这不是<code>proposer B</code>最初提出的值，而是它看到的准备响应消息中的最高值。</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/5.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/5.png" alt=""></a></p>
+<center>图5，<code>proposer B</code>发送一个接受请求给每个<code>acceptor</code>,这个请求包含了它之前的提议号(4)和它从[n=2,v=8]中看到的值（8）</center>
+
+<p>如果<code>acceptor</code>收到的接受请求的提议号大于或等于之前它保证的，那么它接受并向每个<code>learner</code>节点发送通知。</p>
+<p>当<code>learner</code>发现大多数`acceptor已接受某个值时，Paxos算法会选择这个值，如下所示：</p>
+<p><a href="https://angus.nyc/wp-content/uploads/2012/06/6.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/6.png" alt=""></a></p>
+<p>一旦Paxos选择了一个值，与其他<code>proposer</code>的进一步沟通就无法改变这个值。</p>
+<p>如果另一个<code>proposer</code>（<code>proposer C</code>）发送的提议号比之前看到的提议号更高，并且具有不同的值（例如，n = 6，v = 7），则每个<code>acceptor</code>都会使用之前的最高提议号进行响应（n = 4，v = 8）。</p>
+<p>这要求<code>proposer C</code>发送包含[n = 6，v = 8] 的接受请求，该请求仅确认已经选择的值。此外，如果一些少<code>acceptor</code>还没有选择一个价值，这个过程可以确保他们最终就同一价值达成共识。</p>
+<p>Lamport和Baker等人在论文中讨论了对标准Paxos算法的各种效率改进。例如，如果<code>proposer</code>知道它是第一个建议值的话，则准备请求不再是必须的了。</p>
+<p>因为这种请求的提议编号为0，如果收到任何更高编号的请求的话，这种请求就会被忽略的。</p>
+<p>翻译 <a href="https://angus.nyc/2012/paxos-by-example/" target="_blank" rel="noopener">https://angus.nyc/2012/paxos-by-example/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这篇文章通过一个有效的例子描述了一个名为Paxos 的分布式一致性算法。&lt;/p&gt;
+&lt;p&gt;分布式一致性算法用于使一组计算机能够就单个值达成一致，例如通常使用两阶段或三阶段提交做出的提交或回滚决策。只要选择一个值，算法的其他值就没有关系了。&lt;/p&gt;
+&lt;p&gt;在分布式系统中，这很难，因为机器之间的消息可能会丢失或无限期延迟，或者机器本身可能会发生故障。&lt;/p&gt;
+&lt;p&gt;Paxos保证节点只会选择单个值（意味着它保证安全），但不保证在大多数节点不可用时能不能去到值&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="分布式" scheme="http://idiotsky.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+      <category term="Paxos" scheme="http://idiotsky.top/tags/Paxos/"/>
+    
+  </entry>
+  
+  <entry>
     <title>kafka总结</title>
     <link href="http://idiotsky.top/2018/07/22/kafka-summary/"/>
     <id>http://idiotsky.top/2018/07/22/kafka-summary/</id>
     <published>2018-07-22T13:38:51.000Z</published>
-    <updated>2018-07-22T07:46:06.542Z</updated>
+    <updated>2018-07-22T07:50:29.168Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>玩了很久的kafka，现在总结下吧，当然通过别人的文章来总结还是事半功倍的👿</p>
@@ -43,8 +146,8 @@
 <p>每个消费者唯一保存的元数据是offset值，这个位置完全为消费者控制，因此消费者可以采用任何顺序来消费记录，如下图</p>
 <p><a href="http://idiotsky.top/images3/kafka-4.png"><img src="http://idiotsky.top/images3/kafka-4.png" alt=""></a></p>
 <p>kafka中只能保证partition中记录是有序的，而不保证topic中不同partition的顺序</p>
-<h2 id="Consumer-group-amp-consumer"><a href="#Consumer-group-amp-consumer" class="headerlink" title="Consumer group &amp; consumer"></a>Consumer group &amp; consumer</h2><p>一个消费组由一个或多个消费者实例组成，便于扩容与容</p>
-<p>错。kafka是发布与订阅模式，这个订阅者是消费组，而不是消费者实例。每一条消息只会被同一个消费组里的一个消费者实例消费，不同的消费组可以同时消费同一条消息，如下图</p>
+<h2 id="Consumer-group-amp-consumer"><a href="#Consumer-group-amp-consumer" class="headerlink" title="Consumer group &amp; consumer"></a>Consumer group &amp; consumer</h2><p>一个消费组由一个或多个消费者实例组成，便于扩容与容错。</p>
+<p>kafka是发布与订阅模式，这个订阅者是消费组，而不是消费者实例。每一条消息只会被同一个消费组里的一个消费者实例消费，不同的消费组可以同时消费同一条消息，如下图</p>
 <p><a href="http://idiotsky.top/images3/kafka-5.png"><img src="http://idiotsky.top/images3/kafka-5.png" alt=""></a></p>
 <p>为了实现传统的消息队列中消息只被消费一次的语义，kafka保证同一个消费组里只有一个消费者会消费一条消息，kafka还允许不同的消费组同时消费一条消息，这一特性可以为消息的多元化处理提供了支持，kafka的设计理念之一就是同时提供离线处理和实时处理，因此，可以使用Storm这种实时流处理系统对消息进行实时在线处理，同时使用Hadoop这种批处理系统进行离线处理，还可以同时将数据实时备份到另一个数据中心，只需要保证这三个操作的消费者实例在不同consumer group 即可</p>
 <h2 id="Consumer-Rebalance"><a href="#Consumer-Rebalance" class="headerlink" title="Consumer Rebalance"></a>Consumer Rebalance</h2><p>kafka保证了同一个消费组中只有一个消费者实例会消费某条消息，实际上，kafka保证的是稳定状态下每一个消费者实例只会消费一个或多个特定partition数据，而某个partition的数据只会被某一特定的consumer实例消费，这样设计的劣势是无法让同一个消费组里的consumer均匀消费，优势是每个consumer不用跟大量的broker通信，减少通信开销，也降低了分配难度。而且，同一个partition数据是有序的，保证了有序被消费。根据consumer group中的consumer数量和partition数量，可以分为以下3种情况：</p>
@@ -174,7 +277,7 @@
     <link href="http://idiotsky.top/2018/06/27/distributed-transaction/"/>
     <id>http://idiotsky.top/2018/06/27/distributed-transaction/</id>
     <published>2018-06-27T12:53:24.000Z</published>
-    <updated>2018-07-17T11:39:16.529Z</updated>
+    <updated>2018-07-24T13:16:27.191Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>👿mark之</p>
@@ -309,7 +412,7 @@
     
     </summary>
     
-      <category term="分布式事务" scheme="http://idiotsky.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
+      <category term="分布式" scheme="http://idiotsky.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
     
     
       <category term="分布式事务" scheme="http://idiotsky.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/"/>
@@ -2908,210 +3011,6 @@
     
     
       <category term="mysql" scheme="http://idiotsky.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>jvm full gc 解惑</title>
-    <link href="http://idiotsky.top/2017/11/06/java-fullgc/"/>
-    <id>http://idiotsky.top/2017/11/06/java-fullgc/</id>
-    <published>2017-11-06T10:03:15.000Z</published>
-    <updated>2018-07-17T11:39:16.535Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>一直以来，都觉得full gc就是对old区的gc，然后就打脸了。。。。</p>
-</blockquote>
-<p>下面先引用R大的原文：</p>
-<blockquote>
-<p>针对HotSpot VM的实现，它里面的GC其实准确分类只有两大种：</p>
-<ul>
-<li>Partial GC：并不收集整个GC堆的模式<ul>
-<li>Young GC：只收集young gen的GC</li>
-<li>Old GC：只收集old gen的GC。只有CMS的concurrent collection是这个模式</li>
-<li>Mixed GC：收集整个young gen以及部分old gen的GC。只有G1有这个模式</li>
-</ul>
-</li>
-<li>Full GC：收集整个堆，包括young gen、old gen、perm gen（如果存在的话）等所有部分的模式。</li>
-</ul>
-</blockquote>
-<a id="more"></a>
-<blockquote>
-<p>Major GC通常是跟full GC是等价的，收集整个GC堆。但因为HotSpot VM发展了这么多年，外界对各种名词的解读已经完全混乱了，当有人说“major GC”的时候一定要问清楚他想要指的是上面的full GC还是old GC。</p>
-</blockquote>
-<blockquote>
-<p>最简单的分代式GC策略，按HotSpot VM的serial GC的实现来看，触发条件是：</p>
-<ul>
-<li>young GC：当young gen中的eden区分配满的时候触发。注意young GC中有部分存活对象会晋升到old gen，所以young GC后old gen的占用量通常会有所升高。</li>
-<li>full GC：当准备要触发一次young GC时，如果发现统计数据说之前young GC的平均晋升大小比目前old gen剩余的空间大，则不会触发young GC而是转为触发full GC（因为HotSpot VM的GC里，除了CMS的concurrent collection之外，其它能收集old gen的GC都会同时收集整个GC堆，包括young gen，所以不需要事先触发一次单独的young GC）；或者，如果有perm gen的话，要在perm gen分配空间但已经没有足够空间时，也要触发一次full GC；或者System.gc()、heap dump带GC，默认也是触发full GC。</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>HotSpot VM里其它非并发GC的触发条件复杂一些，不过大致的原理与上面说的其实一样。当然也总有例外。Parallel Scavenge（-XX:+UseParallelGC）框架下，默认是在要触发full GC前先执行一次young GC，并且两次GC之间能让应用程序稍微运行一小下，以期降低full GC的暂停时间（因为young GC会尽量清理了young gen的死对象，减少了full GC的工作量）。控制这个行为的VM参数是-XX:+ScavengeBeforeFullGC。这是HotSpot VM里的奇葩嗯。</p>
-</blockquote>
-<blockquote>
-<p>并发GC的触发条件就不太一样。以CMS GC为例，它主要是定时去检查old gen的使用量，当使用量超过了触发比例就会启动一次CMS GC，对old gen做并发收集。</p>
-</blockquote>
-<p>总结一下：</p>
-<ol>
-<li>full gc 是全区回收(打脸)</li>
-<li>full gc 之前不会触发young gc（一般情况）</li>
-</ol>
-<p>再引用下别的大牛的话：</p>
-<blockquote>
-<p>先看一下HotSpot VM的GC家族的组合示意图：<br><a href="http://idiotsky.top/images1/java-fullgc-1.jpg"><img src="http://idiotsky.top/images1/java-fullgc-1.jpg" alt=""></a><br>不同的GC组合套装之中，具备Full GC能力的大概有三种：</p>
-<ol>
-<li>ParallelOld(PSMarkSweep)</li>
-<li>Serial Old(MarkSweep)</li>
-<li>“?”所代表的G1</li>
-</ol>
-</blockquote>
-<blockquote>
-<p>暂不考虑G1，除了CMS具备在年老代进行Major GC之外，其他情况下年老代的GC都是由Full GC触发的。Full GC的收集范围包含整个Heap区域( Eden + S1 + S2 + Tenured)，它发生时Mutator停止工作——Stop The World。对于Serial Collector，它采用MSC(Mark-Sweep-Compact)的算法对全堆进行Full GC，在HotSpot VM的实现中，主要用MarkSweep这个类来实现；对于Parallel Collector而言，PSMarkSweep是多线程的MarkSweep，名不副实，这玩意儿其实是个实现了Lisp2的Mark-Compact GC算法。PSMarkSweep有个特殊的地方是如果配置了<strong>ScavengeBeforeFullGC</strong> 这个flag，则会在Full GC之前对年轻代进行一次Minor GC；其他情况根本不需要Full GC之前先执行Minor GC，Full GC会对年轻代发起GC。Full GC前后Heap的对比示意参见：<br><a href="http://idiotsky.top/images1/java-fullgc-2.jpg"><img src="http://idiotsky.top/images1/java-fullgc-2.jpg" alt=""></a></p>
-</blockquote>
-<blockquote>
-<p>可见，一般情况下，年轻代的存活对象都被Compact到了年老代，所以，你看到年轻代都被清空了；只有当年老代满了的时候，才会Compact到Eden区域。</p>
-</blockquote>
-<blockquote>
-<p>对于Concurrent Collector，CMS在Remark Phase，可以通过设置 <strong>CMSScavengeBeforeRemark</strong> 在remark之前先行YGC，这给了CMS在Major GC时触发Minor GC的机会，但这个Flag默认是false；当CMS发生 <strong>Concurrent Mode Failure</strong> 时，CMS会退化为Serial Old GC，从而采用与Serial Collector相同的算法进行Full GC。CMS发生 <strong>Concurrent Mode Failure</strong> 的原因：1. 因为是并发收集，所以Mutator仍可能在不断占用年老代的空间，当然还包括这一趟无法收集的Float Garbage会占用内存空间，如果年老代空间被占满但并发收集还未结束，就会发生并发模式失败；2. 因为CMS采用的是Mark Sweep算法，本身内存碎片化无法解决，很可能发生大对象分配时没有连续空间，或者本身剩余空间不够大对象分配时，也会发生并发模式失败。</p>
-</blockquote>
-<p>再总结下:</p>
-<ol>
-<li>Serial Old 做full gc 时候不会执行young gc，而 ParallelOld 会根据 <strong>ScavengeBeforeFullGC</strong> 来决定是否在full gc前执行一次young gc</li>
-<li>CMS 有自己的major gc，单独执行old区的gc，但是如果 <strong>Concurrent Mode Failure</strong> 的话，就还是老老实实做Serial Old的full gc吧。</li>
-<li>CMS 的 <strong>CMSScavengeBeforeRemark</strong> 标记决定了是否在remark阶段之前执行一次young gc（网上说这个标记还能解决跨代引用问题），</li>
-</ol>
-<p>参考 <a href="https://www.zhihu.com/question/62604570" target="_blank" rel="noopener">https://www.zhihu.com/question/62604570</a><br>参考 <a href="https://www.zhihu.com/question/41922036" target="_blank" rel="noopener">https://www.zhihu.com/question/41922036</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;一直以来，都觉得full gc就是对old区的gc，然后就打脸了。。。。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;下面先引用R大的原文：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;针对HotSpot VM的实现，它里面的GC其实准确分类只有两大种：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Partial GC：并不收集整个GC堆的模式&lt;ul&gt;
-&lt;li&gt;Young GC：只收集young gen的GC&lt;/li&gt;
-&lt;li&gt;Old GC：只收集old gen的GC。只有CMS的concurrent collection是这个模式&lt;/li&gt;
-&lt;li&gt;Mixed GC：收集整个young gen以及部分old gen的GC。只有G1有这个模式&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Full GC：收集整个堆，包括young gen、old gen、perm gen（如果存在的话）等所有部分的模式。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-    
-    </summary>
-    
-      <category term="java" scheme="http://idiotsky.top/categories/java/"/>
-    
-    
-      <category term="java" scheme="http://idiotsky.top/tags/java/"/>
-    
-      <category term="gc" scheme="http://idiotsky.top/tags/gc/"/>
-    
-      <category term="jvm" scheme="http://idiotsky.top/tags/jvm/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Git先生的故事</title>
-    <link href="http://idiotsky.top/2017/11/05/git-story/"/>
-    <id>http://idiotsky.top/2017/11/05/git-story/</id>
-    <published>2017-11-05T14:44:05.000Z</published>
-    <updated>2018-07-17T11:39:16.529Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>很有意思的通俗的总结了git。👿</p>
-</blockquote>
-<p>Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。</p>
-<h1 id="初次见面"><a href="#初次见面" class="headerlink" title="初次见面"></a>初次见面</h1><p>老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用<code>git init</code> 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。</p>
-<p>让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。<br><a href="http://idiotsky.top/images1/git-story-1.jpg"><img src="http://idiotsky.top/images1/git-story-1.jpg" alt=""></a></p>
-<p>下面我们来解释下，这几个区域的作用：<br>Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。</p>
-<p>Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。<code>git add</code> 就是把修改搬到摄影棚，<code>git commit</code>就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。</p>
-<p>Repository：Git先生办公室的某个区域，专门用来存储照片用的。</p>
-<p>Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。<br><a id="more"></a></p>
-<h1 id="Go-to-work"><a href="#Go-to-work" class="headerlink" title="Go to work"></a>Go to work</h1><p>一切准备妥当后，Git先生马上就投入到了紧张的工作当中。老板首先就迫不及待的在地皮上上种了一朵花，然后马上命令Git来拍照留念。<br><a href="http://idiotsky.top/images1/git-story-2.jpg"><img src="http://idiotsky.top/images1/git-story-2.jpg" alt=""></a><br>当然结果是失败的，Git也很苦恼，自己已经把所有流程和老板说过一遍了，但老板还是会鲁莽行事。然后Git先生又向老板耐心的解释了一下针对Git目录下某个修改的4种状态。</p>
-<blockquote>
-<p>Untracked/Tracked<br>Not Staged/Staged<br>比如你新建一个文件，它的状态就是 Untracked 的，你不能对 Untracked 的文件进行任何Git操作，除了先使用<code>git add</code> 让它先变为Tracked 状态。一个文件被Track后，以后的修改如果未用<code>git add</code>，那这个修改就叫Not Staged，需要add后，让它变为Staged才能进行Commit。</p>
-</blockquote>
-<p>老板按照Git先生的说法又执行了一遍，这次他成功了。Git又向老板说，你可以用<code>git log</code>来查看我已经拍过的照片。</p>
-<p>老板学会这招后，又给这块地皮创建了树、草，并且也都分别让Git先生拍了照片保存。</p>
-<p><code>git log</code>后我们看到了这三张照片，如果要查看详情还可以使用<code>git log -p</code>。<br><a href="http://idiotsky.top/images1/git-story-3.jpg"><img src="http://idiotsky.top/images1/git-story-3.jpg" alt=""></a></p>
-<blockquote>
-<p>导演注：Commit的id为对当前文件夹内容做SHA-1得来。</p>
-</blockquote>
-<h1 id="上点儿色吧"><a href="#上点儿色吧" class="headerlink" title="上点儿色吧"></a>上点儿色吧</h1><p>老板想把树涂成红色的，再给树取个名字叫big tree。他记得Git先生告诉过他可以用<code>git diff</code>来查看自己所做的改动<br><a href="http://idiotsky.top/images1/git-story-4.jpg"><img src="http://idiotsky.top/images1/git-story-4.jpg" alt=""></a><br>看到了自己的修改后，老板满意的点点头，然后用<code>git add .</code>把它们都丢进了摄影棚。过后就出去忙其他事情了，回来后他发现自己忘记离开前做了啥事情了。此时他再用<code>git diff</code>查看，发现里面空空如也。老板愤怒的叫来了Git先生问他是咋回事。Git先生友善的解释了原因。</p>
-<p>“<code>git diff</code>显示了您当前修改和我办公室中所记录的最新一张照片之间的差异，但是您已经把这些改动都挪到我的摄影棚里了，git diff就没法查看了，如果您想看我摄影棚里摆了哪些东西。你可以使用<code>git diff --staged/cached</code>哦”</p>
-<p>老板按照Git先生所说，果然看到了他以前的修改记录。</p>
-<blockquote>
-<p>导演注：stage相关的命令一般都与Staging Area相关，git add 也可以写成 git stage，这两个命令是一样的。</p>
-</blockquote>
-<p>不过当老板看到他把树设成了红色，觉得不合理，想放弃这次修改。他要如何去做呢？</p>
-<p><code>git reset &lt;file&gt;</code> 把这个文件的修改从Staging Area中去除<br><code>git checkout -- &lt;file&gt;</code> 放弃工作区文件的修改</p>
-<blockquote>
-<p>导演注：这里使用 <code>git checkout &lt;file&gt;</code> 也行，之所以使用–，因为该命令与切换分支的命令一样，万一这个文件名和某个分支名重名，则<code>git checkout &lt;file&gt;</code>就变成切换分支了。</p>
-</blockquote>
-<p>老板不禁感叹，幸好自己没有进行commit。Git先生告诉老板说，即使你commit了，也不用怕，我也有几种解决方案。<br>一，放弃整张照片<br><code>git reset HEAD~1</code> HEAD表示指向最新那张照片的指针，～1表示要想起回退一张，此时我们有三种回退方式可选<code>--soft</code>表示只删除照片，照片的修改恢复到Staging Area中,<code>--mixed</code>不但删除照片，也不恢复Staging Area中的状态（不加选项时就为此中方法）,<code>--hard</code>不但删除照片，而且连工作区域的修改也被回退掉</p>
-<p>二，我们再产生一张想放弃的照片的反修改的照片<br><code>git revert &lt;commit-id&gt;</code> 产生此commit的反修改，并提交此处commit-id不必是最新一次，可以是任意处的。<br>第一种方案适用于，你的commit还未push到云端的场景，第二种，如果你的修改已经push到云端，那么为了尊重历史记录，最好就是生成一个方向修改来回退错误部分，让其他人知道历史。</p>
-<blockquote>
-<p>导演注：HEAD指针记录了正在操作的节点的commit id，每个分支都有属于自己的HEAD指针，并且只有一个</p>
-</blockquote>
-<h1 id="拨弄你的指针"><a href="#拨弄你的指针" class="headerlink" title="拨弄你的指针"></a>拨弄你的指针</h1><p>老板经过上次的事件，发现自己可能会因为一时冲动做出一些错误的决定。就问Git先生是否有办法把自己所有操作行为都记录下来，而且还允许自己撤销任何一种错误的操作。Git先生向老板解释说：所有对HEAD指针的操作都会被记录下来。</p>
-<p>可以用<code>git reflog</code>查看到老板的所有HEAD操作<br><a href="http://idiotsky.top/images1/git-story-5.jpg"><img src="http://idiotsky.top/images1/git-story-5.jpg" alt=""></a><br>最上面，我们可以看到是老板彻底回退了给树添加名字和颜色修改，执行了<code>git reset --hard HEAD~1</code>，而如果老板突然又后悔了，想恢复添加名字和颜色的修改。那么我们就可以通过执行<code>git reset --hard HEAD@{1}</code>来把操作回退到<code>HEAD@{1}</code>时，也就是加入名字和颜色那次commit。</p>
-<blockquote>
-<p>这里的reset也有三个选项，<code>--soft</code>，<code>--mixed</code>，<code>--hard</code>，因为这里执行的是恢复操作，所以这三个选项在这里的作用也需要反过来理解，hard自不用说，就是完全恢复到某个操作时的状态，而soft表示，虽然把HEAD指针拨到了某个操作时的状态，但在staging area中会产生可以让恢复后的状态重新修改回来的修改，就像物质与反物质那样。mixed同理。</p>
-</blockquote>
-<p>以上可能难以理解，这里我们再举个应用场景来说明下：<br>我们知道<code>git revert</code>每次只能回退某个commit，那我们如何同时revert掉多个commit呢。针对这种场景我们就可以进行以下操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//拨动HEAD指针到5add0e9</span><br><span class="line">git reset --hard 5add0e9 </span><br><span class="line">//恢复到以前的commit处信息，并且在staging area生成了中反修改</span><br><span class="line">git reset --soft HEAD@&#123;1&#125; </span><br><span class="line">// 注意此处用了--soft</span><br><span class="line">git commit -m &apos;revert to 5add0e9&apos;</span><br></pre></td></tr></table></figure></p>
-<h1 id="多干点事"><a href="#多干点事" class="headerlink" title="多干点事"></a>多干点事</h1><p>老板：地皮准备好了， 我们既要种花，种草，还要盖个楼房啥的，种花要花几天功夫，种草好又得花几天。这几样事咱能不能一起干呢？干完了，分别拍个照片再合一块岂不美哉。</p>
-<p>Git先生：老板英明，针对这种情况我也早有准备。</p>
-<p><code>git branch &lt;branch-name&gt;</code> 创建一个分支，不加<code>&lt;branch-name&gt;</code>则为列出当前所有分支<code>git branch -d &lt;branch-name&gt;</code>删除分支 -D 为强制删除分支<code>git checkout &lt;branch-name&gt;</code> 切换到该分支下<code>git merge &lt;branch-name&gt;</code> 合并<code>&lt;branch-name&gt;</code>分支内容到本分支下</p>
-<blockquote>
-<p>针对老板说的这种情况，我们只需要创建如下分支。然后分别在flower里种花，grass中种草，building中盖楼，最后在master分支中把完成的照片merge过来就行。<br>➜ GitTestRepo git:(master) git branch flower<br>➜ GitTestRepo git:(master) git branch grass<br>➜ GitTestRepo git:(master) git branch building<br>➜ GitTestRepo git:(master) git branch<br>building<br>flower<br>grass<br>* master</p>
-</blockquote>
-<blockquote>
-<p>导演注：分支前加*号的为当前工作分支</p>
-</blockquote>
-<h1 id="合作共赢"><a href="#合作共赢" class="headerlink" title="合作共赢"></a>合作共赢</h1><p>Git先生：报告老板，您这块地皮很大，要是只有我们开发，那得花上很久时间，何不把它开放出去，让其他老板们一起进来把这块蛋糕做大呢。</p>
-<p>老板：好主意，我们要怎么做呢？</p>
-<p>Git先生：一切交给我，不过因为地皮开放出去后，涉及到多方共同开发。有些注意事项还希望老板能听我说道说道，否则危害甚大。</p>
-<p>老板：请讲请讲！</p>
-<p>如我们第一张图所示，我们可以利用git push来把自己所有的照片上传到云端，让其他人也可以参与进来开发。既然是云端，那么首先我们就需要指明下这个云端地皮的地址是哪里。</p>
-<p><code>git remote add origin https://github.com/CPPAlien/GitTestRepo.git</code>//这里一般用origin，当然你可以换成其他任何名，你也可以添加多个remote地址git remote -v 可以用来查看所有云端地址信息<br><code>git push -u &lt;remote&gt; &lt;branch&gt; git push --set-upstream &lt;remote&gt; &lt;branch&gt;</code>用这两个命令来指明某个分支所对应到的remote地址。如果不指定，你在执行git push时需要明确写出remote和branch。<br><a href="http://idiotsky.top/images1/git-story-6.jpg"><img src="http://idiotsky.top/images1/git-story-6.jpg" alt=""></a></p>
-<p>因为是多人合作，所以就有可能别人在云端先与你提交了一些修改，而此时就需要进行git pull操作，把别人的修改拉取下来合并到本地。但直接git pull行为是不太安全的，因为它会直接产生merge行为，可能会导致你本地数据错乱。所以我们一般用git fetch，正确流程如下</p>
-<p><code>git fetch origin master</code>//获取origin上的master分支，会在本地自动创建一个的origin/master的临时分支。<br><code>git log -p master..origin/master</code>//比较本地的master分支和远端的master分支，看下差别。<br><code>git merge origin/master</code> 或 <code>git rebase origin/master</code> //如果差别是在自己的认知范围，那么就进行合并操作，这样本地的master分支就与云端保持一致了。如果本地有未push的commit，则会产生Merge的commit行为。Merge的过程中有可能因为多人对同一个文件的修改而造成冲突。<br><code>git mergetool</code>//打开merge工具，merge完后保存，然后手动提交merge后的结果。完成上述操作后，就可以把自己本地的commit提交到云端了。</p>
-<blockquote>
-<p>导演注：git merge 和 git rebase的区别，rebase是找到两者共同的commit处，把它者的修改接上去，然后再把自己的修改接在它者的修改后面，不会产生merge行为。看历史图时也不会像merge那样有分叉。</p>
-</blockquote>
-<p>从以下执行rebase后的提示，也可知二三</p>
-<blockquote>
-<p>➜ GitTest git:(master) git rebase origin/masterFirst<br>rewinding head to replay your work on top of it…Fast-forwarded master to origin/master.</p>
-</blockquote>
-<h1 id="其他小技巧"><a href="#其他小技巧" class="headerlink" title="其他小技巧"></a>其他小技巧</h1><p><code>git cherry-pick &lt;commit-id&gt;</code><br>老板如果想把其他分支上的一些照片拣过来使用，可以使用此命令。如果该照片与本分支无冲突，则直接会在本分支上加上一条commit，如果有冲突，则需要解决冲突后重新提交。<br><code>git stash/ git stash pop</code><br>如果老板当前有些工作没有commit。但有些云端的commit或者其他分支的commit是自己后续开发所要依赖的，那就可以使用git stash把当前未提交的修改放入到缓存栈，等合并操作完成后，再用git stash pop，把修改再加回来，你可以用git stash list查看当前的缓存栈。</p>
-<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>Git和Mercurial 都是在2005年时出现，分别由Linus和Matt主导开发。而两者的出现也源于一个共同的事件，2005年初BitKeeper宣布向开源社区收费。Mercurial在英语中有反复无常的意思，而Git也可以翻译成无用之人，Matt直接说他取名Mercurial的用意就是讽刺BitKeeper的开发者。</p>
-<p>from <a href="https://www.toutiao.com/i6484504341452440077/" target="_blank" rel="noopener">https://www.toutiao.com/i6484504341452440077/</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;很有意思的通俗的总结了git。👿&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Git先生是一位很出名的摄影专家，他的主要职责是用它强大的拍摄技术帮我们共享成果，共创未来。为此它准备了许许多多的工具来实现这样的目标。下面我们就来看看Git先生的工作场所，和他为我们的一些痛点带来了哪些解决方案吧。&lt;/p&gt;
-&lt;h1 id=&quot;初次见面&quot;&gt;&lt;a href=&quot;#初次见面&quot; class=&quot;headerlink&quot; title=&quot;初次见面&quot;&gt;&lt;/a&gt;初次见面&lt;/h1&gt;&lt;p&gt;老板（用户自己）新买了一块地皮（创建了一个目录），想聘请Git先生到此开设一个工作室来加快这个地皮的建设工作。老板用&lt;code&gt;git init&lt;/code&gt; 招来了Git先生，Git先生在该目录下生成一个.git目录，用来作为自己的办公室，办公室用来记录自己的工作日志和成果。&lt;/p&gt;
-&lt;p&gt;让我们来从空中俯瞰下这块新的地皮，和Git先生为它所设计的蓝图吧。&lt;br&gt;&lt;a href=&quot;http://idiotsky.top/images1/git-story-1.jpg&quot;&gt;&lt;img src=&quot;http://idiotsky.top/images1/git-story-1.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;下面我们来解释下，这几个区域的作用：&lt;br&gt;Working Directory：Git先生的老板所买下的地皮，这个是实实在在物理层面的地皮，我们可以在上面种些花花草草，建点高楼大厦啥的。&lt;/p&gt;
-&lt;p&gt;Staging Area：Git先生摄影棚所在地，位置位于Git先生的办公室。每当老板完成了某件名垂青史的伟事，他就会命令Git先生把自己这个阶段所干的事情一五一十的搬到摄影棚拍照记录下来。&lt;code&gt;git add&lt;/code&gt; 就是把修改搬到摄影棚，&lt;code&gt;git commit&lt;/code&gt;就是命令Git先生拍照，而拍完照后，摄影棚马上会被打扫干净。&lt;/p&gt;
-&lt;p&gt;Repository：Git先生办公室的某个区域，专门用来存储照片用的。&lt;/p&gt;
-&lt;p&gt;Remote：这是一块云端区域，Git先生会在工作完一段时间后，就把自己的作品上传上去。这样做，一方面是用来保存自己的作品，以备意外发生，另一方面也是提供给其他有兴趣的老板们一起做这个项目。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="git" scheme="http://idiotsky.top/categories/git/"/>
-    
-    
-      <category term="git" scheme="http://idiotsky.top/tags/git/"/>
     
   </entry>
   
