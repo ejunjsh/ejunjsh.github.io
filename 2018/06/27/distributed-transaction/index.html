@@ -122,7 +122,9 @@
 <meta property="og:image" content="http://idiotsky.top/images3/dt-9.jpg">
 <meta property="og:image" content="http://idiotsky.top/images3/dt-10.jpg">
 <meta property="og:image" content="http://idiotsky.top/images3/dt-11.jpg">
-<meta property="og:updated_time" content="2018-07-24T13:16:27.191Z">
+<meta property="og:image" content="http://idiotsky.top/images3/dt-12.png">
+<meta property="og:image" content="http://idiotsky.top/images3/dt-13.png">
+<meta property="og:updated_time" content="2018-07-26T01:29:54.426Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式事务概述">
 <meta name="twitter:description" content="👿mark之  分布式事务是企业集成中的一个技术难点，也是每一个分布式系统架构中都会涉及到的一个东西，特别是在这几年越来越火的微服务架构中，几乎可以说是无法避免，本文就围绕分布式事务各方面与大家进行介绍。 事务什么是事务数据库事务（简称：事务，Transaction）是指数据库执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。 事务拥有以下四个特性，习惯上被称为ACID特性：  原子性">
@@ -557,8 +559,29 @@
 <p>TCC 模型通过 2PC 原子提交协议保证分布式事务的的原子性，把资源层的隔离性上升到业务层，交给业务逻辑来实现。TCC 的每个操作对于资源层来说，就是单个本地事务的使用，操作结束则本地事务结束，规避了资源层在 2PC 和 2PL 下对资源占用导致的性能低下问题。</p>
 <p>同时，TCC 模型也可以根据业务需要，做一些定制化的功能，比如交易异步化实现削峰填谷等。</p>
 <p>但是，业务接入 TCC 模型需要拆分业务逻辑成两个阶段，并实现 Try、Confirm、Cancel 三个接口，定制化程度高，开发成本高。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文首先介绍了典型的分布式事务的架构场景。分布式事务刚开始是为解决单服务多数据库资源的场景而诞生的。随着技术的发展，特别是 SOA 分布式应用架构以及微服务时代的到来，服务变成了基本业务单元。因此，又产生了跨服务的分布式事务需求。然后从 XA 和 TCC 两种常用的分布式事务模型入手，介绍了其实现机制，着重分析了各模型是如何实现分布式事务 ACID 特性的。</p>
-<p>ref <a href="https://zhuanlan.zhihu.com/p/38388143" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38388143</a></p>
+<h1 id="其他解决方案"><a href="#其他解决方案" class="headerlink" title="其他解决方案"></a>其他解决方案</h1><h2 id="本地消息表（异步确保）"><a href="#本地消息表（异步确保）" class="headerlink" title="本地消息表（异步确保）"></a>本地消息表（异步确保）</h2><p>本地消息表这种实现方式应该是业界使用最多的，其核心思想是将分布式事务拆分成本地事务进行处理，这种思路是来源于ebay。我们可以从下面的流程图中看出其中的一些细节：</p>
+<p><a href="http://idiotsky.top/images3/dt-12.png"><img src="http://idiotsky.top/images3/dt-12.png" alt=""></a></p>
+<p>基本思路就是：</p>
+<p>消息生产方，需要额外建一个消息表，并记录消息发送状态。消息表和业务数据要在一个事务里提交，也就是说他们要在一个数据库里面。然后消息会经过MQ发送到消息的消费方。如果消息发送失败，会进行重试发送。</p>
+<p>消息消费方，需要处理这个消息，并完成自己的业务逻辑。此时如果本地事务处理成功，表明已经处理成功了，如果处理失败，那么就会重试执行。如果是业务上面的失败，可以给生产方发送一个业务补偿消息，通知生产方进行回滚等操作。</p>
+<p>生产方和消费方定时扫描本地消息表，把还没处理完成的消息或者失败的消息再发送一遍。如果有靠谱的自动对账补账逻辑，这种方案还是非常实用的。</p>
+<p>这种方案遵循BASE理论，采用的是最终一致性，笔者认为是这几种方案里面比较适合实际业务场景的，即不会出现像2PC那样复杂的实现(当调用链很长的时候，2PC的可用性是非常低的)，也不会像TCC那样可能出现确认或者回滚不了的情况。</p>
+<ul>
+<li>优点： 一种非常经典的实现，避免了分布式事务，实现了最终一致性。</li>
+<li>缺点： 消息表会耦合到业务系统中，如果没有封装好的解决方案，会有很多杂活需要处理。</li>
+</ul>
+<h2 id="MQ-事务消息"><a href="#MQ-事务消息" class="headerlink" title="MQ 事务消息"></a>MQ 事务消息</h2><p>有一些第三方的MQ是支持事务消息的，比如RocketMQ，他们支持事务消息的方式也是类似于采用的二阶段提交，但是市面上一些主流的MQ都是不支持事务消息的，比如 RabbitMQ 和 Kafka 都不支持。</p>
+<p>以阿里的 RocketMQ 中间件为例，其思路大致为：</p>
+<p>第一阶段Prepared消息，会拿到消息的地址。<br>第二阶段执行本地事务，第三阶段通过第一阶段拿到的地址去访问消息，并修改状态。</p>
+<p>也就是说在业务方法内要向消息队列提交两次请求，一次发送消息和一次确认消息。如果确认消息发送失败了RocketMQ会定期扫描消息集群中的事务消息，这时候发现了Prepared消息，它会向消息发送者确认，所以生产方需要实现一个check接口，RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。</p>
+<p><a href="http://idiotsky.top/images3/dt-13.png"><img src="http://idiotsky.top/images3/dt-13.png" alt=""></a></p>
+<ul>
+<li>优点： 实现了最终一致性，不需要依赖本地数据库事务。</li>
+<li>缺点： 实现难度大，主流MQ不支持，RocketMQ事务消息部分代码也未开源。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文首先介绍了典型的分布式事务的架构场景。分布式事务刚开始是为解决单服务多数据库资源的场景而诞生的。随着技术的发展，特别是 SOA 分布式应用架构以及微服务时代的到来，服务变成了基本业务单元。因此，又产生了跨服务的分布式事务需求。然后从 XA 和 TCC 两种常用的分布式事务模型入手，介绍了其实现机制，着重分析了各模型是如何实现分布式事务 ACID 特性的。还讲解了现实中常用的两种分布式事务的解决方案：本地消息表和MQ 事务消息</p>
+<p>参考</p>
+<p><a href="https://zhuanlan.zhihu.com/p/38388143" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38388143</a><br><a href="https://www.cnblogs.com/savorboard/p/distributed-system-transaction-consistency.html" target="_blank" rel="noopener">https://www.cnblogs.com/savorboard/p/distributed-system-transaction-consistency.html</a></p>
 
       
     </div>
@@ -788,7 +811,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#事务"><span class="nav-number">1.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是事务"><span class="nav-number">1.1.</span> <span class="nav-text">什么是事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地事务"><span class="nav-number">1.2.</span> <span class="nav-text">本地事务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式事务应用架构"><span class="nav-number">2.</span> <span class="nav-text">分布式事务应用架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见分布式事务模型-ACID-实现分析"><span class="nav-number">3.</span> <span class="nav-text">常见分布式事务模型 ACID 实现分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#X-Open-XA-协议"><span class="nav-number">3.1.</span> <span class="nav-text">X/Open XA 协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-number">3.1.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离性"><span class="nav-number">3.1.2.</span> <span class="nav-text">隔离性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性"><span class="nav-number">3.1.3.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">3.1.4.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCC-模型"><span class="nav-number">3.2.</span> <span class="nav-text">TCC 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离性-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">隔离性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#事务"><span class="nav-number">1.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是事务"><span class="nav-number">1.1.</span> <span class="nav-text">什么是事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地事务"><span class="nav-number">1.2.</span> <span class="nav-text">本地事务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式事务应用架构"><span class="nav-number">2.</span> <span class="nav-text">分布式事务应用架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见分布式事务模型-ACID-实现分析"><span class="nav-number">3.</span> <span class="nav-text">常见分布式事务模型 ACID 实现分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#X-Open-XA-协议"><span class="nav-number">3.1.</span> <span class="nav-text">X/Open XA 协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性"><span class="nav-number">3.1.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离性"><span class="nav-number">3.1.2.</span> <span class="nav-text">隔离性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性"><span class="nav-number">3.1.3.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">3.1.4.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCC-模型"><span class="nav-number">3.2.</span> <span class="nav-text">TCC 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子性-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">原子性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离性-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">隔离性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他解决方案"><span class="nav-number">4.</span> <span class="nav-text">其他解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#本地消息表（异步确保）"><span class="nav-number">4.1.</span> <span class="nav-text">本地消息表（异步确保）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MQ-事务消息"><span class="nav-number">4.2.</span> <span class="nav-text">MQ 事务消息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

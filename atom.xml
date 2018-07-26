@@ -50,7 +50,7 @@
     <link href="http://idiotsky.top/2018/07/24/paxos-example/"/>
     <id>http://idiotsky.top/2018/07/24/paxos-example/</id>
     <published>2018-07-24T12:11:55.000Z</published>
-    <updated>2018-07-24T13:19:10.365Z</updated>
+    <updated>2018-07-26T01:25:04.105Z</updated>
     
     <content type="html"><![CDATA[<p>这篇文章通过一个有效的例子描述了一个名为Paxos 的分布式一致性算法。</p>
 <p>分布式一致性算法用于使一组计算机能够就单个值达成一致，例如通常使用两阶段或三阶段提交做出的提交或回滚决策。只要选择一个值，算法的其他值就没有关系了。</p>
@@ -61,26 +61,26 @@
 <p>一个<code>proposer</code>提议一个值是需要同意才行的，它发一个包含值的提议给所有的<code>acceptor</code>，<code>acceptor</code>决定是否同意这个值。</p>
 <p>每个<code>acceptor</code>独立选择一个值–它可能收到多个来自不同<code>proposer</code>的提议–并将其决定发送给<code>learner</code>，以确定是否已接受任何值。</p>
 <p>对于Paxos接受的值，大多数<code>acceptor</code>必须选择相同的值。实际上，单个节点可以承担许多或所有这些角色，但在本节的示例中，每个角色都在一个单独的节点上运行，如下所示。</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/0.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/0.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example.png"><img src="http://idiotsky.top/images3/paxos-example.png" alt=""></a></p>
 <center>图1：基本Paxos架构。一些<code>proposer</code>向<code>acceptor</code>提出建议。当<code>acceptor</code>接受一个值时，它会将结果发送给<code>learner</code>节点。<br></center>
 
 <h1 id="Paxos示例"><a href="#Paxos示例" class="headerlink" title="Paxos示例"></a>Paxos示例</h1><p>在标准的Paxos算法中，<code>proposer</code>向<code>acceptor</code>发送两种类型的消息：<strong>准备</strong>和<strong>接受</strong>请求。</p>
 <p>在该算法的第一阶段，<code>proposer</code>向每个<code>acceptor</code>发送包含建议值v和提议号n的准备请求。</p>
 <p>对于其他<code>proposer</code>的提案号，每个<code>proposer</code>的提议号必须是正数的，单调递增的，唯一的，自然的数字。</p>
 <p>在下面说明的示例中，有两个<code>proposer</code>，两个都提出准备请求。来自<code>proposer A</code>的请求和来自<code>proposer B</code>的请求首先到达<code>acceptor X</code>和<code>acceptor Y</code>，而来自<code>proposer B</code>的请求首先到达<code>acceptor Z</code>。</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/2.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/2.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example-1.png"><img src="http://idiotsky.top/images3/paxos-example-1.png" alt=""></a></p>
 <center>图2：proposer A和B各自向每个接受者发送准备请求。在这个例子中，proposer A的请求首先到达接acceptor X和Y，而proposer B的请求首先到达acceptor Z.</center>
 
 <p>如果接收准备请求的<code>acceptor</code>没有看到另一个提议，则<code>acceptor</code>以准备响应作出响应，该准备响应承诺永远不接受具有较低提议编号的另一提议。</p>
 <p>这在下面的图3中说明，其显示了每个接受者对他们收到的第一个准备请求的响应。</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/3.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/3.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example-2.png"><img src="http://idiotsky.top/images3/paxos-example-2.png" alt=""></a></p>
 <center>图3：每个<code>acceptor</code>响应它收到的第一个准备请求消息。</center>
 
 <p>最终，<code>acceptor Z</code>接收<code>proposer A</code>的请求，<code>acceptor X</code>和<code>acceptor Y</code>接收<code>proposer B</code>的请求。</p>
 <p>如果<code>acceptor</code>已经看到具有更高提议号的请求，则忽略准备请求，<code>proposer A</code>对<code>acceptor Z</code>的请求就是这种情况。</p>
 <p>如果<code>acceptor</code>没有看到更高编号的请求，它再次承诺忽略具有较低提议编号的任何请求，并发回其已接受的编号最高的提议以及该提议的值。</p>
 <p><code>proposer B</code>对<code>acceptor X</code>和<code>acceptor Y</code>的请求就是这种情况，如下图所示：</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/4.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/4.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example-3.png"><img src="http://idiotsky.top/images3/paxos-example-3.png" alt=""></a></p>
 <center>图4：acceptor Z忽略了proposer A的请求，因为它已经看到了更高编号的提议（4&gt; 2）。acceptor X和Y用他们先前确认的最高请求来响应proposer B的请求，并承诺忽略任何编号较低的提议。</center>
 
 <p>一旦<code>proposer</code>收到大多数<code>acceptor</code>的准备响应，它就可以发出接受请求。</p>
@@ -88,12 +88,12 @@
 <p>然而，这些请求被每一个<code>acceptor</code>忽略，因为<code>acceptor</code>都承诺不接受的提议号低于请求4（响应准备请求给<code>proposer B</code>）。</p>
 <p><code>proposer B</code>向每个<code>acceptor</code>发送包含其先前使用的提议号（n = 4）的接受请求，并且这个接受请求还包含了在其收到的准备响应消息中与最高提议号相关联的值（v = 8）。</p>
 <p>请注意，这不是<code>proposer B</code>最初提出的值，而是它看到的准备响应消息中的最高值。</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/5.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/5.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example-4.png"><img src="http://idiotsky.top/images3/paxos-example-4.png" alt=""></a></p>
 <center>图5，<code>proposer B</code>发送一个接受请求给每个<code>acceptor</code>,这个请求包含了它之前的提议号(4)和它从[n=2,v=8]中看到的值（8）</center>
 
 <p>如果<code>acceptor</code>收到的接受请求的提议号大于或等于之前它保证的，那么它接受并向每个<code>learner</code>节点发送通知。</p>
 <p>当<code>learner</code>发现大多数`acceptor已接受某个值时，Paxos算法会选择这个值，如下所示：</p>
-<p><a href="https://angus.nyc/wp-content/uploads/2012/06/6.png" target="_blank" rel="noopener"><img src="https://angus.nyc/wp-content/uploads/2012/06/6.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/paxos-example-5.png"><img src="http://idiotsky.top/images3/paxos-example-5.png" alt=""></a></p>
 <p>一旦Paxos选择了一个值，与其他<code>proposer</code>的进一步沟通就无法改变这个值。</p>
 <p>如果另一个<code>proposer</code>（<code>proposer C</code>）发送的提议号比之前看到的提议号更高，并且具有不同的值（例如，n = 6，v = 7），则每个<code>acceptor</code>都会使用之前的最高提议号进行响应（n = 4，v = 8）。</p>
 <p>这要求<code>proposer C</code>发送包含[n = 6，v = 8] 的接受请求，该请求仅确认已经选择的值。此外，如果一些少<code>acceptor</code>还没有选择一个价值，这个过程可以确保他们最终就同一价值达成共识。</p>
@@ -277,7 +277,7 @@
     <link href="http://idiotsky.top/2018/06/27/distributed-transaction/"/>
     <id>http://idiotsky.top/2018/06/27/distributed-transaction/</id>
     <published>2018-06-27T12:53:24.000Z</published>
-    <updated>2018-07-24T13:16:27.191Z</updated>
+    <updated>2018-07-26T01:29:54.426Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>👿mark之</p>
@@ -391,8 +391,29 @@
 <p>TCC 模型通过 2PC 原子提交协议保证分布式事务的的原子性，把资源层的隔离性上升到业务层，交给业务逻辑来实现。TCC 的每个操作对于资源层来说，就是单个本地事务的使用，操作结束则本地事务结束，规避了资源层在 2PC 和 2PL 下对资源占用导致的性能低下问题。</p>
 <p>同时，TCC 模型也可以根据业务需要，做一些定制化的功能，比如交易异步化实现削峰填谷等。</p>
 <p>但是，业务接入 TCC 模型需要拆分业务逻辑成两个阶段，并实现 Try、Confirm、Cancel 三个接口，定制化程度高，开发成本高。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文首先介绍了典型的分布式事务的架构场景。分布式事务刚开始是为解决单服务多数据库资源的场景而诞生的。随着技术的发展，特别是 SOA 分布式应用架构以及微服务时代的到来，服务变成了基本业务单元。因此，又产生了跨服务的分布式事务需求。然后从 XA 和 TCC 两种常用的分布式事务模型入手，介绍了其实现机制，着重分析了各模型是如何实现分布式事务 ACID 特性的。</p>
-<p>ref <a href="https://zhuanlan.zhihu.com/p/38388143" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38388143</a></p>
+<h1 id="其他解决方案"><a href="#其他解决方案" class="headerlink" title="其他解决方案"></a>其他解决方案</h1><h2 id="本地消息表（异步确保）"><a href="#本地消息表（异步确保）" class="headerlink" title="本地消息表（异步确保）"></a>本地消息表（异步确保）</h2><p>本地消息表这种实现方式应该是业界使用最多的，其核心思想是将分布式事务拆分成本地事务进行处理，这种思路是来源于ebay。我们可以从下面的流程图中看出其中的一些细节：</p>
+<p><a href="http://idiotsky.top/images3/dt-12.png"><img src="http://idiotsky.top/images3/dt-12.png" alt=""></a></p>
+<p>基本思路就是：</p>
+<p>消息生产方，需要额外建一个消息表，并记录消息发送状态。消息表和业务数据要在一个事务里提交，也就是说他们要在一个数据库里面。然后消息会经过MQ发送到消息的消费方。如果消息发送失败，会进行重试发送。</p>
+<p>消息消费方，需要处理这个消息，并完成自己的业务逻辑。此时如果本地事务处理成功，表明已经处理成功了，如果处理失败，那么就会重试执行。如果是业务上面的失败，可以给生产方发送一个业务补偿消息，通知生产方进行回滚等操作。</p>
+<p>生产方和消费方定时扫描本地消息表，把还没处理完成的消息或者失败的消息再发送一遍。如果有靠谱的自动对账补账逻辑，这种方案还是非常实用的。</p>
+<p>这种方案遵循BASE理论，采用的是最终一致性，笔者认为是这几种方案里面比较适合实际业务场景的，即不会出现像2PC那样复杂的实现(当调用链很长的时候，2PC的可用性是非常低的)，也不会像TCC那样可能出现确认或者回滚不了的情况。</p>
+<ul>
+<li>优点： 一种非常经典的实现，避免了分布式事务，实现了最终一致性。</li>
+<li>缺点： 消息表会耦合到业务系统中，如果没有封装好的解决方案，会有很多杂活需要处理。</li>
+</ul>
+<h2 id="MQ-事务消息"><a href="#MQ-事务消息" class="headerlink" title="MQ 事务消息"></a>MQ 事务消息</h2><p>有一些第三方的MQ是支持事务消息的，比如RocketMQ，他们支持事务消息的方式也是类似于采用的二阶段提交，但是市面上一些主流的MQ都是不支持事务消息的，比如 RabbitMQ 和 Kafka 都不支持。</p>
+<p>以阿里的 RocketMQ 中间件为例，其思路大致为：</p>
+<p>第一阶段Prepared消息，会拿到消息的地址。<br>第二阶段执行本地事务，第三阶段通过第一阶段拿到的地址去访问消息，并修改状态。</p>
+<p>也就是说在业务方法内要向消息队列提交两次请求，一次发送消息和一次确认消息。如果确认消息发送失败了RocketMQ会定期扫描消息集群中的事务消息，这时候发现了Prepared消息，它会向消息发送者确认，所以生产方需要实现一个check接口，RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。</p>
+<p><a href="http://idiotsky.top/images3/dt-13.png"><img src="http://idiotsky.top/images3/dt-13.png" alt=""></a></p>
+<ul>
+<li>优点： 实现了最终一致性，不需要依赖本地数据库事务。</li>
+<li>缺点： 实现难度大，主流MQ不支持，RocketMQ事务消息部分代码也未开源。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文首先介绍了典型的分布式事务的架构场景。分布式事务刚开始是为解决单服务多数据库资源的场景而诞生的。随着技术的发展，特别是 SOA 分布式应用架构以及微服务时代的到来，服务变成了基本业务单元。因此，又产生了跨服务的分布式事务需求。然后从 XA 和 TCC 两种常用的分布式事务模型入手，介绍了其实现机制，着重分析了各模型是如何实现分布式事务 ACID 特性的。还讲解了现实中常用的两种分布式事务的解决方案：本地消息表和MQ 事务消息</p>
+<p>参考</p>
+<p><a href="https://zhuanlan.zhihu.com/p/38388143" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/38388143</a><br><a href="https://www.cnblogs.com/savorboard/p/distributed-system-transaction-consistency.html" target="_blank" rel="noopener">https://www.cnblogs.com/savorboard/p/distributed-system-transaction-consistency.html</a></p>
 ]]></content>
     
     <summary type="html">
