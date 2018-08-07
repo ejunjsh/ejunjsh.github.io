@@ -111,12 +111,12 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="tcpdump采用命令行方式对接口的数据包进行筛选抓取，其丰富特性表现在灵活的表达式上。 不带任何选项的tcpdump，默认会抓取第一个网络接口，且只有将tcpdump进程终止才会停止抓包。 例如： 1$ tcpdump -nn -i eth0 icmp 下面是详细的tcpdump用法。 tcpdump选项它的命令格式为： tcpdump [ -DenNqvX ] [ -c count ] [ -">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https://images2018.cnblogs.com/blog/733013/201806/733013-20180621121410609-1741572810.png">
-<meta property="og:updated_time" content="2018-07-17T10:57:55.106Z">
+<meta property="og:image" content="http://idiotsky.top/images3/tcpdump.png">
+<meta property="og:updated_time" content="2018-07-31T23:54:40.835Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令-tcpdump">
 <meta name="twitter:description" content="tcpdump采用命令行方式对接口的数据包进行筛选抓取，其丰富特性表现在灵活的表达式上。 不带任何选项的tcpdump，默认会抓取第一个网络接口，且只有将tcpdump进程终止才会停止抓包。 例如： 1$ tcpdump -nn -i eth0 icmp 下面是详细的tcpdump用法。 tcpdump选项它的命令格式为： tcpdump [ -DenNqvX ] [ -c count ] [ -">
-<meta name="twitter:image" content="https://images2018.cnblogs.com/blog/733013/201806/733013-20180621121410609-1741572810.png">
+<meta name="twitter:image" content="http://idiotsky.top/images3/tcpdump.png">
 
 
 
@@ -458,7 +458,7 @@
 <p>(3).proto：通过给定协议限定匹配的数据包类型。</p>
 <p>常用的协议有tcp/udp/arp/ip/ether/icmp等，若未给定协议类型，则匹配所有可能的类型。例如”tcp port 21”，”udp portrange 7000-7009”。</p>
 <p>所以，一个基本的表达式单元格式为”proto dir type ID”</p>
-<p><a href="https://images2018.cnblogs.com/blog/733013/201806/733013-20180621121410609-1741572810.png" target="_blank" rel="noopener"><img src="https://images2018.cnblogs.com/blog/733013/201806/733013-20180621121410609-1741572810.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/tcpdump.png"><img src="http://idiotsky.top/images3/tcpdump.png" alt=""></a></p>
 <p>除了使用修饰符和ID组成的表达式单元，还有关键字表达式单元：gateway，broadcast，less，greater以及算术表达式。</p>
 <p>表达式单元之间可以使用操作符” and / &amp;&amp; / or / || / not / ! “进行连接，从而组成复杂的条件表达式。如”host foo and not port ftp and not port ftp-data”，这表示筛选的数据包要满足”主机为foo且端口不是ftp(端口21)和ftp-data(端口20)的包”，常用端口和名字的对应关系可在linux系统中的/etc/service文件中找到。</p>
 <p>另外，同样的修饰符可省略，如”tcp dst port ftp or ftp-data or domain”与”tcp dst port ftp or tcp dst port ftp-data or tcp dst port domain”意义相同，都表示包的协议为tcp且目的端口为ftp或ftp-data或domain(端口53)。</p>
@@ -622,7 +622,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">147</span>
+                <span class="site-state-item-count">149</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -644,7 +644,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">142</span>
+                <span class="site-state-item-count">144</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
