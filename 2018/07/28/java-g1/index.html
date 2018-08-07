@@ -130,7 +130,7 @@
 <meta property="og:image" content="http://idiotsky.top/images3/G1-17.png">
 <meta property="og:image" content="http://idiotsky.top/images3/G1-18.png">
 <meta property="og:image" content="http://idiotsky.top/images3/G1-19.png">
-<meta property="og:updated_time" content="2018-08-07T13:05:55.167Z">
+<meta property="og:updated_time" content="2018-08-07T13:10:02.954Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java垃圾收集器G1入门">
 <meta name="twitter:description" content="G1垃圾收集器Garbage-First（G1）收集器是一种服务器式垃圾收集器，适用于具有大容量存储器的多处理器机器。它以高概率满足垃圾收集（GC）暂停时间目标，同时实现高吞吐量。Oracle JDK 7 Update 4及更高版本完全支持G1垃圾收集器。G1收集器专为以下应用而设计：  可以与CMS收集器等应用程序线程同时运行。 紧凑的自由空间，没有长时间的GC引起的暂停时间 需要更可预测的GC">
@@ -577,11 +577,31 @@
 </thead>
 <tbody>
 <tr>
-<td></td>
+<td>(1)初始标记(stop the world事件)</td>
+<td>这是一个stop the world事件，使用G1回收器，背负着一个常规的年轻代收集。标记那些有引用到年老代的对象的survivor区(根区)</td>
+</tr>
+<tr>
+<td>(2)根区扫描</td>
+<td>为到年老代的引用扫描survivor区,这个发生在应用继续运行时。这个阶段在年轻代收集前必须完成</td>
+</tr>
+<tr>
+<td>(3)并发标记</td>
+<td>遍历整个堆寻找活跃对象，这个发生在应用运行时，这个阶段可以被年轻代垃圾回收打断。</td>
+</tr>
+<tr>
+<td>(4)重新标记(stop the world事件)</td>
+<td>完全标记堆中的活跃对象，使用一个叫作snapshot-at-the-beginning(SATB)的比CMS收集器的更快的算法</td>
+</tr>
+<tr>
+<td>(5)清理(stop the world事件和并发)</td>
+<td>在活跃对象上执行审计操作和释放区域空间(stop the world)；净化已记忆集合(stop the world)；重置空间区域和返回它们到空闲列表(并发)</td>
+</tr>
+<tr>
+<td>(*)复制(stop the world事件)</td>
+<td>这些是stop the world暂停为了疏散或者复制活跃对象到新的未使用的区域。这个可以由被记录为[GC Pause (young)]的年轻代区域或者被记录为[GC Pause (mixed)]年轻代和年老代区域完成</td>
 </tr>
 </tbody>
 </table>
-<p>(1)初始标记(stop the world事件)    这是一个stop the world事件，使用G1回收器，背负着一个常规的年轻代收集。标记那些有引用到年老代的对象的survivor区(根区)<br>(2)根区扫描    为到年老代的引用扫描survivor区,这个发生在应用继续运行时。这个阶段在年轻代收集前必须完成<br>(3)并发标记    遍历整个堆寻找活跃对象，这个发生在应用运行时，这个阶段可以被年轻代垃圾回收打断。<br>(4)重新标记(stop the world事件)    完全标记堆中的活跃对象，使用一个叫作snapshot-at-the-beginning(SATB)的比CMS收集器的更快的算法<br>(5)清理(stop the world事件和并发)    在活跃对象上执行审计操作和释放区域空间(stop the world)；净化已记忆集合(stop the world)；重置空间区域和返回它们到空闲列表(并发)<br>(*)复制(stop the world事件)|    这些是stop the world暂停为了疏散或者复制活跃对象到新的未使用的区域。这个可以由被记录为[GC Pause (young)]的年轻代区域或者被记录为[GC Pause (mixed)]年轻代和年老代区域完成</p>
 <h2 id="循序渐进G1年老代垃圾回收"><a href="#循序渐进G1年老代垃圾回收" class="headerlink" title="循序渐进G1年老代垃圾回收"></a>循序渐进G1年老代垃圾回收</h2><p>记住已被定义的阶段，让我们来看一下G1收集器是如何作用于年老代的。</p>
 <h3 id="初始标记阶段"><a href="#初始标记阶段" class="headerlink" title="初始标记阶段"></a>初始标记阶段</h3><p>年轻代垃圾收集肩负着活跃对象初始标记的任务。在日志文件中被标为GC pause (young)(inital-mark) 。</p>
 <p><a href="http://idiotsky.top/images3/G1-15.png"><img src="http://idiotsky.top/images3/G1-15.png" alt=""></a></p>
