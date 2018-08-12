@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="go,goroutine,协程,并发,并行,多线程," />
+  <meta name="keywords" content="go,多线程,goroutine,协程,并发,并行," />
 
 
 
@@ -104,19 +104,20 @@
 
 
 <meta name="description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程(coroutine)其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面执行的，线程的调度由内核触发，所以函数在执行过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控">
-<meta name="keywords" content="go,goroutine,协程,并发,并行,多线程">
+<meta name="keywords" content="go,多线程,goroutine,协程,并发,并行">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入go之goroutine">
-<meta property="og:url" content="http://idiotsky.top/2018/02/26/go-goroutine/index.html">
+<meta property="og:url" content="http://idiotsky.top/2018/08/12/go-goroutine/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程(coroutine)其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面执行的，线程的调度由内核触发，所以函数在执行过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.top/images2/go-goroutine.jpg">
 <meta property="og:image" content="http://idiotsky.top/images2/go-goroutine-1.jpg">
 <meta property="og:image" content="http://idiotsky.top/images2/go-goroutine-2.jpg">
+<meta property="og:image" content="http://idiotsky.top/images2/go-goroutine-5.png">
 <meta property="og:image" content="http://idiotsky.top/images2/go-goroutine-3.jpg">
 <meta property="og:image" content="http://idiotsky.top/images2/go-goroutine-4.jpg">
-<meta property="og:updated_time" content="2018-07-17T11:39:16.525Z">
+<meta property="og:updated_time" content="2018-08-12T13:25:03.801Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入go之goroutine">
 <meta name="twitter:description" content="goroutine是go的核心，没有goroutine，go就没什么意思了👿。goroutine离不开协程，线程和并发，所以下面会说说相关的内容。  协程协程(coroutine)其实就是一个函数，方法或者例程（routine）。一般情况下函数都是在用户线程下面执行的，线程的调度由内核触发，所以函数在执行过程中，用户线程没办法控制函数的执行调度，只能任由内核主宰。协程就不同，它可以由用户线程控">
@@ -149,7 +150,7 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.top/2018/02/26/go-goroutine/"/>
+  <link rel="canonical" href="http://idiotsky.top/2018/08/12/go-goroutine/"/>
 
 
 
@@ -350,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/02/26/go-goroutine/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/08/12/go-goroutine/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -379,8 +380,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-26T19:56:31+08:00">
-                26 Feb 18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-12T19:56:31+08:00">
+                12 Aug 18
               </time>
             
 
@@ -498,12 +499,15 @@
 <h1 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h1><p>goroutine的调度可以理解为多线程调度协程（goroutine）。所以这里调度会有三个角色：线程，调度器，协程。它们分别用M,P,G来表示吧。</p>
 <p><a href="http://idiotsky.top/images2/go-goroutine-1.jpg"><img src="http://idiotsky.top/images2/go-goroutine-1.jpg" alt=""></a></p>
 <ul>
-<li>M代表系统线程，也就是前面说的普通线程。</li>
-<li>P代表调度器，我们可以把它当做单线程的本地调度器。（注：GOMAXPROCS环境变量代表的个数是P的个数，推荐值为CPU的核心数）</li>
-<li>G代表goroutine，它包含了SP、PC寄存器，以及其它调度相关信息。</li>
+<li>G: 表示goroutine，存储了goroutine的执行stack信息、goroutine状态以及goroutine的任务函数等；另外G对象是可以重用的。</li>
+<li>P: 表示逻辑processor，P的数量决定了系统内最大可并行的G的数量（前提：系统的物理cpu核数&gt;=P的数量，GOMAXPROCS环境变量代表的个数是P的个数，推荐值为CPU的核心数）；P的最大作用还是其拥有的各种G对象队列、链表、一些cache和状态。</li>
+<li>M: M代表着真正的执行计算资源。在绑定有效的p后，进入schedule循环；而schedule循环的机制大致是从各种队列、p的本地队列中获取G，切换到G的执行栈上并执行G的函数，调用goexit做清理工作并回到m，如此反复。M并不保留G状态，这是G可以跨M调度的基础。</li>
 </ul>
+<p><strong>下面是G、P、M定义的代码片段：</strong><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//src/runtime/runtime2.go</span></span><br><span class="line"><span class="keyword">type</span> g <span class="keyword">struct</span> &#123;</span><br><span class="line">        stack      stack   <span class="comment">// offset known to runtime/cgo</span></span><br><span class="line">        sched     gobuf</span><br><span class="line">        goid        <span class="keyword">int64</span></span><br><span class="line">        gopc       <span class="keyword">uintptr</span> <span class="comment">// pc of go statement that created this goroutine</span></span><br><span class="line">        startpc    <span class="keyword">uintptr</span> <span class="comment">// pc of goroutine function</span></span><br><span class="line">        ... ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> p <span class="keyword">struct</span> &#123;</span><br><span class="line">    lock mutex</span><br><span class="line"></span><br><span class="line">    id          <span class="keyword">int32</span></span><br><span class="line">    status      <span class="keyword">uint32</span> <span class="comment">// one of pidle/prunning/...</span></span><br><span class="line"></span><br><span class="line">    mcache      *mcache</span><br><span class="line">    racectx     <span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Queue of runnable goroutines. Accessed without lock.</span></span><br><span class="line">    runqhead <span class="keyword">uint32</span></span><br><span class="line">    runqtail <span class="keyword">uint32</span></span><br><span class="line">    runq     [<span class="number">256</span>]guintptr</span><br><span class="line"></span><br><span class="line">    runnext guintptr</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Available G's (status == Gdead)</span></span><br><span class="line">    gfree    *g</span><br><span class="line">    gfreecnt <span class="keyword">int32</span></span><br><span class="line"></span><br><span class="line">  ... ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> m <span class="keyword">struct</span> &#123;</span><br><span class="line">    g0      *g     <span class="comment">// goroutine with scheduling stack</span></span><br><span class="line">    mstartfn      <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    <span class="title">curg</span>          *<span class="title">g</span>       // <span class="title">current</span> <span class="title">running</span> <span class="title">goroutine</span></span></span><br><span class="line"><span class="function"> .... ..</span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure></p>
 <p><a href="http://idiotsky.top/images2/go-goroutine-2.jpg"><img src="http://idiotsky.top/images2/go-goroutine-2.jpg" alt=""></a></p>
 <p>上图是2个M（线程），每个线程对应一个处理器（P），M是必须关联P才能执行协程（G）的。图中蓝G代表的是运行中的goroutine，灰G表示的待执行的Goroutine，待执行的Goroutine存储在 P 中的一个局部队列中，此时P执行Goroutine会这个队列中取，不用加锁，提高了并发度。（Go1.0版本中，调度器取Goroutine是去一个全局队列中取，需要加锁，线程会经常阻塞等待锁）</p>
+<p>下面更加清晰说明整个结构</p>
+<p><a href="http://idiotsky.top/images2/go-goroutine-5.png"><img src="http://idiotsky.top/images2/go-goroutine-5.png" alt=""></a></p>
 <p><strong>如果其中一个G执行的时候，发生了系统调用，阻塞了怎么办？</strong></p>
 <p><a href="http://idiotsky.top/images2/go-goroutine-3.jpg"><img src="http://idiotsky.top/images2/go-goroutine-3.jpg" alt=""></a></p>
 <p>上图左边，G0中陷入系统调用，导致M0阻塞。</p>
@@ -514,13 +518,29 @@
 <p><strong>当P局部队列不均衡时怎么处理？如果有多个P，其中一个P的局部队列Goroutine执行完了。</strong></p>
 <p><a href="http://idiotsky.top/images2/go-goroutine-4.jpg"><img src="http://idiotsky.top/images2/go-goroutine-4.jpg" alt=""></a></p>
 <p>如果一个P局部队列为空，那么它尝试从全局队列中取Goroutine，如全局队列为空，则会随机从其它P的局部队列中“挪”一半Goroutine到自己的队列当中， 以保证所有的M都是有任务执行的，间接做到负载均衡（可以参考go源码的findrunnable()函数 ）</p>
-<p><strong>最后一个问题，关于抢占。如果一个P连续执行长时间，没有切换G，怎么处理？</strong></p>
-<p>虽然协程强调的是协作式调度，但是如果其中一个协程不够“合作”，不主动让出控制权，那么会导致这个线程一直被占用，降低并发度。Go中有相应的处理方案~</p>
-<p>首先，Go 在启动时会创建一个系统线程，这个系统线程会监控所有Goroutine的状态。它是通过遍历所有的P，如果P连续长时间执行，就会被抢占。表现为改P对应当前执行的G会被移除，放置到全局Goroutine队列中，然后P去捞新的G来执行。</p>
-<blockquote>
-<p>to be continue….</p>
-</blockquote>
-<p>ref<br><a href="https://zhuanlan.zhihu.com/p/32497435" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/32497435</a></p>
+<p><strong>channel阻塞怎么办</strong></p>
+<p>如果G被阻塞在某个channel操作上时，G会被放置到某个wait队列中，而M会尝试运行下一个runnable的G；如果此时没有runnable的G供m运行，那么m将解绑P，并进入sleep状态。当channel操作完成，在wait队列中的G会被唤醒，标记为runnable，放入到某P的队列中，绑定一个M继续执行。</p>
+<p><strong>网络I/O和文件I/O怎么办</strong></p>
+<p>Go runtime已经实现了<a href="http://morsmachine.dk/netpoller" target="_blank" rel="noopener">netpoller</a>，这使得即便G发起网络I/O操作也不会导致M被阻塞（仅阻塞G），从而不会导致大量M被创建出来。但是对于regular file的I/O操作一旦阻塞，那么M将进入sleep状态，等待I/O返回后被唤醒；这种情况下P将与sleep的M分离，再选择一个idle的M。如果此时没有idle的M，则会新创建一个M，这就是为何大量I/O操作导致大量Thread被创建的原因。</p>
+<p><strong>遇到锁怎么办</strong></p>
+<p>go的锁不是系统级别的MUTEX锁，而是轻量级的CAS锁，所以抢锁失败不会阻塞M，而是阻塞G(阻塞之前还自旋一下看看能不能再抢到锁)，然后这个G就会被正常的调度出去，在某个时刻又调度回来继续抢锁。</p>
+<p><strong>如果一个P连续执行长时间，没有切换G，怎么处理？</strong></p>
+<p>和操作系统按时间片调度线程不同，Go并没有时间片的概念。如果某个G没有进行system call调用、没有进行I/O操作、没有阻塞在一个channel操作上，那么m是如何让G停下来并调度下一个runnable G的呢？答案是：<strong>G是被抢占调度的</strong>。</p>
+<p>除非极端的无限循环或死循环，否则只要G调用函数，Go runtime就有抢占G的机会。Go程序启动时，runtime会去启动一个名为sysmon的m(一般称为监控线程)，该m无需绑定p即可运行，该m在整个Go程序的运行过程中至关重要：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//$GOROOT/src/runtime/proc.go</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// The main goroutine.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">     ... ...</span><br><span class="line">    systemstack(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        newm(sysmon, <span class="literal">nil</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    .... ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Always runs without a P, so write barriers are not allowed.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//go:nowritebarrierrec</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sysmon</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// If a heap span goes unused for 5 minutes after a garbage collection,</span></span><br><span class="line">    <span class="comment">// we hand it back to the operating system.</span></span><br><span class="line">    scavengelimit := <span class="keyword">int64</span>(<span class="number">5</span> * <span class="number">60</span> * <span class="number">1e9</span>)</span><br><span class="line">    ... ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>  .... &#123;</span><br><span class="line">        ... ...</span><br><span class="line">        <span class="comment">// retake P's blocked in syscalls</span></span><br><span class="line">        <span class="comment">// and preempt long running G's</span></span><br><span class="line">        <span class="keyword">if</span> retake(now) != <span class="number">0</span> &#123;</span><br><span class="line">            idle = <span class="number">0</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            idle++</span><br><span class="line">        &#125;</span><br><span class="line">       ... ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sysmon每20us~10ms启动一次，按照《Go语言学习笔记》中的总结，sysmon主要完成如下工作：</p>
+<ul>
+<li>释放闲置超过5分钟的span物理内存；</li>
+<li>如果超过2分钟没有垃圾回收，强制执行；</li>
+<li>将长时间未处理的netpoll结果添加到任务队列；</li>
+<li>向长时间运行的G任务发出抢占调度；</li>
+<li>收回因syscall长时间阻塞的P；</li>
+</ul>
+<p>我们看到sysmon将“向长时间运行的G任务发出抢占调度”，这个事情由retake实施：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// forcePreemptNS is the time slice given to a G before it is</span></span><br><span class="line"><span class="comment">// preempted.</span></span><br><span class="line"><span class="keyword">const</span> forcePreemptNS = <span class="number">10</span> * <span class="number">1000</span> * <span class="number">1000</span> <span class="comment">// 10ms</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">retake</span><span class="params">(now <span class="keyword">int64</span>)</span> <span class="title">uint32</span></span> &#123;</span><br><span class="line">          ... ...</span><br><span class="line">           <span class="comment">// Preempt G if it's running for too long.</span></span><br><span class="line">            t := <span class="keyword">int64</span>(_p_.schedtick)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">int64</span>(pd.schedtick) != t &#123;</span><br><span class="line">                pd.schedtick = <span class="keyword">uint32</span>(t)</span><br><span class="line">                pd.schedwhen = now</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> pd.schedwhen+forcePreemptNS &gt; now &#123;</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125;</span><br><span class="line">            preemptone(_p_)</span><br><span class="line">         ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出，如果一个G任务运行10ms，sysmon就会认为其运行时间太久而发出抢占式调度的请求。一旦G的抢占标志位被设为true，那么待这个G下一次调用函数或方法时，runtime便可以将G抢占，并移出运行状态，放入P中局部队列中，等待下一次被调度。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://zhuanlan.zhihu.com/p/32497435" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/32497435</a></p>
+<p><a href="https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/" target="_blank" rel="noopener">https://tonybai.com/2017/06/23/an-intro-about-goroutine-scheduler/</a></p>
 
       
     </div>
@@ -540,6 +560,8 @@
           
             <a href="/tags/go/" rel="tag"># go</a>
           
+            <a href="/tags/多线程/" rel="tag"># 多线程</a>
+          
             <a href="/tags/goroutine/" rel="tag"># goroutine</a>
           
             <a href="/tags/协程/" rel="tag"># 协程</a>
@@ -547,8 +569,6 @@
             <a href="/tags/并发/" rel="tag"># 并发</a>
           
             <a href="/tags/并行/" rel="tag"># 并行</a>
-          
-            <a href="/tags/多线程/" rel="tag"># 多线程</a>
           
         </div>
       
@@ -561,8 +581,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/01/26/linux-ip/" rel="next" title="linux的12个ip命令范例">
-                <i class="fa fa-chevron-left"></i> linux的12个ip命令范例
+              <a href="/2018/08/08/mysql-dirty-read/" rel="next" title="mysql 幻读实验">
+                <i class="fa fa-chevron-left"></i> mysql 幻读实验
               </a>
             
           </div>
@@ -570,10 +590,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/03/04/b-tree/" rel="prev" title="MySQL索引背后的数据结构及算法原理">
-                MySQL索引背后的数据结构及算法原理 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -760,7 +776,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程-vs-线程"><span class="nav-number">2.</span> <span class="nav-text">协程 vs 线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#要协程何用？"><span class="nav-number">3.</span> <span class="nav-text">要协程何用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发-VS-并行"><span class="nav-number">4.</span> <span class="nav-text">并发 VS 并行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调度"><span class="nav-number">5.</span> <span class="nav-text">调度</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协程-vs-线程"><span class="nav-number">2.</span> <span class="nav-text">协程 vs 线程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#要协程何用？"><span class="nav-number">3.</span> <span class="nav-text">要协程何用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#并发-VS-并行"><span class="nav-number">4.</span> <span class="nav-text">并发 VS 并行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调度"><span class="nav-number">5.</span> <span class="nav-text">调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
