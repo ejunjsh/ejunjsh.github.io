@@ -661,7 +661,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/07/28/java-g1/" itemprop="url">java垃圾收集器G1入门</a></h1>
+                <a class="post-title-link" href="/2018/07/28/java-g1/" itemprop="url">深入理解Java G1垃圾收集器</a></h1>
         
 
         <div class="post-meta">
@@ -734,17 +734,18 @@
 
       
         
-          <h1 id="G1垃圾收集器"><a href="#G1垃圾收集器" class="headerlink" title="G1垃圾收集器"></a>G1垃圾收集器</h1><p>Garbage-First（G1）收集器是一种服务器式垃圾收集器，适用于具有大容量存储器的多处理器机器。它以高概率满足垃圾收集（GC）暂停时间目标，同时实现高吞吐量。Oracle JDK 7 Update 4及更高版本完全支持G1垃圾收集器。G1收集器专为以下应用而设计：</p>
+          <blockquote>
+<p>此文章除了说g1,还顺带总结了一些其他概念，mark之👿</p>
+</blockquote>
+<p>本文首先简单介绍了垃圾收集的常见方式，然后再分析了G1收集器的收集原理，相比其他垃圾收集器的优势，最后给出了一些调优实践。</p>
+<h1 id="什么是垃圾回收"><a href="#什么是垃圾回收" class="headerlink" title="什么是垃圾回收"></a>什么是垃圾回收</h1><p>首先，在了解G1之前，我们需要清楚的知道，垃圾回收是什么？简单的说垃圾回收就是回收内存中不再使用的对象。</p>
+<p>垃圾回收的基本步骤</p>
+<p>回收的步骤有2步：</p>
 <ul>
-<li>可以与CMS收集器等应用程序线程同时运行。</li>
-<li>紧凑的自由空间，没有长时间的GC引起的暂停时间</li>
-<li>需要更可预测的GC暂停持续时间。</li>
-<li>不想牺牲很多吞吐量性能。</li>
-<li>不需要更大的Java堆。</li>
+<li>查找内存中不再使用的对象</li>
+<li>释放这些对象占用的内存</li>
 </ul>
-<p>G1计划作为Concurrent Mark-Sweep Collector（CMS）的长期替代品。将G1与CMS进行比较，存在差异，使G1成为更好的解决方案。一个区别是G1是压缩收集器。G1足够紧凑以完全避免使用细粒度的自由列表进行分配，而是依赖于区域。这大大简化了收集器的部分，并且主要消除了潜在的碎片问题。此外，G1提供比CMS收集器更可预测的垃圾收集暂停，并允许用户指定所需的暂停目标。</p>
-<h2 id="G1操作概览"><a href="#G1操作概览" class="headerlink" title="G1操作概览"></a>G1操作概览</h2><p>旧的垃圾收集器（串行，并行，CMS）都将堆构建为三个部分：年轻代，年老代和固定大小的永久代。</p>
-<p><a href="http://idiotsky.top/images3/G1-1.png"><img src="http://idiotsky.top/images3/G1-1.png" alt=""></a></p>
+<p><strong>查找内存中不再使用的对象</strong><br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/07/28/java-g1/#more" rel="contents">
