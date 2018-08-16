@@ -436,14 +436,15 @@
 
       
         
-          <blockquote>
-<p>初稿。。。待改。。。</p>
-</blockquote>
-<p>EPOLL事件有两种模型：</p>
-<ul>
-<li>Edge Triggered (ET) 边缘触发只有数据到来,才触发,不管缓存区中是否还有数据。</li>
-<li>Level Triggered (LT) 水平触发只要有数据都会触发。</li>
-</ul>
+          <h1 id="ET"><a href="#ET" class="headerlink" title="ET"></a>ET</h1><p>Edge Triggered (ET) 边缘触发只有数据到来,才触发,不管缓存区中是否还有数据。</p>
+<p>LT(level triggered)是缺省的工作方式，并且同时支持block(阻塞)和no-block(非阻塞) socket.在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。传统的select/poll都是这种模型的代表．</p>
+<p>优点：当进行socket通信的时候，保证了数据的完整输出，进行IO操作的时候，如果还有数据，就会一直的通知你。</p>
+<p>缺点：由于只要还有数据，内核就会不停的从内核空间转到用户空间，所有占用了大量内核资源，试想一下当有大量数据到来的时候，每次读取一个字节，这样就会不停的进行切换。内核资源的浪费严重。效率来讲也是很低的。</p>
+<h1 id="LT"><a href="#LT" class="headerlink" title="LT"></a>LT</h1><p>Level Triggered (LT) 水平触发只要有数据都会触发。</p>
+<p>ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知。请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核不会发送更多的通知(only once).</p>
+<p>优点：每次内核只会通知一次，大大减少了内核资源的浪费，提高效率。</p>
+<p>缺点：不能保证数据的完整。不能及时的取出所有的数据。</p>
+<p>应用场景： 处理大数据。使用non-block(非阻塞)模式的socket。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/08/14/epoll-et-lt/#more" rel="contents">
