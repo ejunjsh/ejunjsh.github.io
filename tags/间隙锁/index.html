@@ -85,7 +85,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="悲观锁,乐观锁,sql," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -103,18 +103,16 @@
 
 
 
-<meta name="description" content="悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。">
-<meta name="keywords" content="悲观锁,乐观锁,sql">
-<meta property="og:type" content="article">
-<meta property="og:title" content="一分钟教你知道乐观锁和悲观锁的区别">
-<meta property="og:url" content="http://idiotsky.top/2014/01/27/sql-pessimistic-optimistic-lock/index.html">
+<meta name="description" content="code freak">
+<meta property="og:type" content="website">
+<meta property="og:title" content="IdiotSky">
+<meta property="og:url" content="http://idiotsky.top/tags/间隙锁/index.html">
 <meta property="og:site_name" content="IdiotSky">
-<meta property="og:description" content="悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。">
+<meta property="og:description" content="code freak">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-08-27T10:15:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一分钟教你知道乐观锁和悲观锁的区别">
-<meta name="twitter:description" content="悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。">
+<meta name="twitter:title" content="IdiotSky">
+<meta name="twitter:description" content="code freak">
 
 
 
@@ -143,13 +141,13 @@
 
 
 
-  <link rel="canonical" href="http://idiotsky.top/2014/01/27/sql-pessimistic-optimistic-lock/"/>
+  <link rel="canonical" href="http://idiotsky.top/tags/间隙锁/"/>
 
 
 
 
 
-  <title>一分钟教你知道乐观锁和悲观锁的区别 | IdiotSky</title>
+  <title>Tag: 间隙锁 | IdiotSky</title>
   
 
 
@@ -178,7 +176,7 @@
     
   
 
-  <div class="container sidebar-position-right page-post-detail ">
+  <div class="container sidebar-position-right  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -330,178 +328,54 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block tag">
 
-  
+    <div id="posts" class="posts-collapse">
+      <div class="collection-title">
+        <h1>间隙锁<small>Tag</small>
+        </h1>
+      </div>
 
-  
-  
-  
+      
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2014/01/27/sql-pessimistic-optimistic-lock/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
+            <a class="post-title-link" href="/2018/09/10/mysql-lock/" itemprop="url">
+              
+                <span itemprop="name">MySql中的锁机制</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">一分钟教你知道乐观锁和悲观锁的区别</h1>
-        
+      </h2>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-01-27T17:51:52+08:00">
-                27 Jan 14
-              </time>
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2018-09-10T17:51:52+08:00"
+              content="10 Sep 18" >
+          09-10
+        </time>
+      </div>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/sql/" itemprop="url" rel="index">
-                    <span itemprop="name">sql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>悲观锁(Pessimistic Lock), 顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会block直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。<br><a id="more"></a></p>
-<p>乐观锁(Optimistic Lock), 顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库如果提供类似于write_condition机制的其实都是提供的乐观锁。</p>
-
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/悲观锁/" rel="tag"># 悲观锁</a>
-          
-            <a href="/tags/乐观锁/" rel="tag"># 乐观锁</a>
-          
-            <a href="/tags/sql/" rel="tag"># sql</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2014/01/11/jquery-on/" rel="next" title="关于jQuery新的事件绑定机制on()的使用技巧">
-                <i class="fa fa-chevron-left"></i> 关于jQuery新的事件绑定机制on()的使用技巧
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2014/02/05/jquery-extend/" rel="prev" title="jQuery.extend 函数详解">
-                jQuery.extend 函数详解 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
       
     </div>
+
   </div>
+  
+  
+  
+
+  
 
 
           </div>
@@ -509,10 +383,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-  </div>
-
 
         </div>
         
@@ -549,7 +419,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">151</span>
+                <span class="site-state-item-count">152</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -560,7 +430,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -571,7 +441,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">144</span>
+                <span class="site-state-item-count">147</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -783,10 +653,10 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-
+  
 
   
 
