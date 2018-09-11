@@ -111,10 +111,12 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="乐观锁与悲观锁 乐观锁：每次读数据的时候都认为其他人不会修改，所以不会上锁，而是在更新的时候去判断在此期间有没有其他人更新了数据，可以使用版本号机制。在数据库中可以通过为数据表增加一个版本号字段实现。读取数据时将版本号一同读出，数据每次更新时对版本号加一。当我们更新的时候，判断数据库表对应记录的当前版本号与第一次取出来的版本号值进行比对，如果值相等，则予以更新，否则认为是过期数据。乐观锁适用于多读">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-09-10T12:33:47.456Z">
+<meta property="og:image" content="http://idiotsky.top/images3/mysql-lock.png">
+<meta property="og:updated_time" content="2018-09-11T15:26:07.796Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySql中的锁机制">
 <meta name="twitter:description" content="乐观锁与悲观锁 乐观锁：每次读数据的时候都认为其他人不会修改，所以不会上锁，而是在更新的时候去判断在此期间有没有其他人更新了数据，可以使用版本号机制。在数据库中可以通过为数据表增加一个版本号字段实现。读取数据时将版本号一同读出，数据每次更新时对版本号加一。当我们更新的时候，判断数据库表对应记录的当前版本号与第一次取出来的版本号值进行比对，如果值相等，则予以更新，否则认为是过期数据。乐观锁适用于多读">
+<meta name="twitter:image" content="http://idiotsky.top/images3/mysql-lock.png">
 
 
 
@@ -477,33 +479,65 @@
 <li>存在条件：1、 互斥条件：一个资源每次只能被一个事务使用。2、 请求与保持条件：一个事务因请求资源而阻塞时，对已获得的资源保持不放。3、不剥夺条件：已获得的资源，在末使用完之前不能强行剥夺。4、循环等待条件：形成一种头尾相接的循环等待关系</li>
 <li>解除正在死锁的状态：撤销其中一个事务</li>
 </ul>
-<h1 id="MVCC-多版本并发控制"><a href="#MVCC-多版本并发控制" class="headerlink" title="MVCC(多版本并发控制)"></a>MVCC(多版本并发控制)</h1><blockquote>
-<p>MVCC使得InnoDB更好的实现事务隔离级别中的REPEATABLE READ</p>
-</blockquote>
-<ul>
-<li>它使得InnoDB不再单纯的使用行锁来进行数据库的并发控制，取而代之的是把数据库的行锁与行的多个版本结合起来，只需要很小的开销,就可以实现非锁定读，从而大大提高数据库系统的并发性能。</li>
-<li>实现：InnoDB实现MVCC的方法是它为每一行存储三个额外的隐藏字段<ul>
-<li>DB_TRX_ID：一个6byte的标识，每处理一个事务，其值自动+1 ，可以通过语句“show engine innodb status”来查找</li>
-<li>DB_ROLL_PTR: 大小是7byte,指向写到rollback segment（回滚段）的一条undo log记录 </li>
-<li>DB_ROW_ID: 大小是6byte,该值随新行插入单调增加。</li>
-</ul>
-</li>
-<li>SELECT：返回的行数据需要满足的条件：<ul>
-<li>数据行的创建版本号必须小于等于事务的版本</li>
-<li>行的删除版本号(行中的特殊位被设置为将其标记为已删除)一定是未定义的或者大于当前事务的版本号，确定了当前事务开始之前行没有被删除。</li>
-</ul>
-</li>
-<li>INSERT：InnoDB为每个新增行记录当前系统版本号作为创建版本号。</li>
-<li>DELETE：InnoDB为每个删除行的记录当前系统版本号作为行的删除版本号。</li>
-<li>UPDATE：InnoDB复制了一条数据。这条数据的版本号使用了系统版本号。它也把系统版本号作为老数据的删除号。</li>
-<li>说明：这里的读是不加锁的select等，MVCC实现可重复读使用的是读取undo中的已经提交的数据，是非阻塞的。insert操作时”创建时间”=DB_ROW_ID，这时”删除时间”是未定义的；update时，复制新增行的”创建时间”=DB_ROW_ID，删除时间未定义，旧数据行”创建时间”不变，删除时间=该事务的DB_ROW_ID；delete操作，相应数据行的”创建时间”不变，删除时间=该事务的DB_ROW_ID；</li>
-</ul>
 <h1 id="间隙锁-Next-Key锁"><a href="#间隙锁-Next-Key锁" class="headerlink" title="间隙锁(Next-Key锁)"></a>间隙锁(Next-Key锁)</h1><blockquote>
 <p>间隙锁使得InnoDB解决幻读问题，加上MVCC使得InnoDB的RR隔离级别实现了串行化级别的效果，并且保留了比较好的并发性能。</p>
 </blockquote>
 <p>定义：当我们用范围条件检索数据时请求共享或排他锁时，InnoDB会给符合条件的已有数据的索引加锁；对于键值在条件范围内但并不存在的记录，叫做间隙(GAP)，InnoDB也会对这个”间隙”加锁，这种锁机制就是间隙锁。</p>
 <p>例如：book表中存在bookId 1-80，90-99的记录。SELECT * FROM book WHERE bookId &lt; 100 FOR UPDATE。InnoDB不仅会对bookId值为1-80，90-99的记录加锁，也会对bookId在81-89之间(这些记录并不存在)的间隙加锁。这样就能避免事务隔离级别可重复读下的幻读。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://juejin.im/post/5b9332685188255c432279aa" target="_blank" rel="noopener">https://juejin.im/post/5b9332685188255c432279aa</a></p>
+<h1 id="MVCC-多版本并发控制"><a href="#MVCC-多版本并发控制" class="headerlink" title="MVCC(多版本并发控制)"></a>MVCC(多版本并发控制)</h1><blockquote>
+<p>MVCC (Multiversion Concurrency Control)，即多版本并发控制技术,它使得大部分支持行锁的事务引擎，不再单纯的使用行锁来进行数据库的并发控制，取而代之的是把数据库的行锁与行的多个版本结合起来，只需要很小的开销,就可以实现非锁定读，从而大大提高数据库系统的并发性能</p>
+</blockquote>
+<h2 id="MVCC实现原理"><a href="#MVCC实现原理" class="headerlink" title="MVCC实现原理"></a>MVCC实现原理</h2><p>innodb MVCC主要是为Repeatable-Read事务隔离级别做的。在此隔离级别下，A、B客户端所示的数据相互隔离，互相更新不可见</p>
+<p>了解innodb的行结构、Read-View的结构对于理解innodb mvcc的实现由重要意义</p>
+<p>innodb存储的最基本row中包含一些额外的存储信息 DATA_TRX_ID，DATA_ROLL_PTR，DB_ROW_ID，DELETE BIT</p>
+<ul>
+<li>6字节的DATA_TRX_ID 标记了最新更新这条行记录的transaction id，每处理一个事务，其值自动+1</li>
+<li>7字节的DATA_ROLL_PTR 指向当前记录项的rollback segment的undo log记录，找之前版本的数据就是通过这个指</li>
+<li>6字节的DB_ROW_ID，当由innodb自动产生聚集索引时，聚集索引包括这个DB_ROW_ID的值，否则聚集索引中不包括这个值.，这个用于索引当中</li>
+<li>DELETE BIT位用于标识该记录是否被删除，这里的不是真正的删除数据，而是标志出来的删除。真正意义的删除是在commit的时候</li>
+</ul>
+<p><a href="http://idiotsky.top/images3/mysql-lock.png"><img src="http://idiotsky.top/images3/mysql-lock.png" alt=""></a></p>
+<p>具体的执行过程</p>
+<p>begin-&gt;用排他锁锁定该行-&gt;记录redo log-&gt;记录undo log-&gt;修改当前行的值，写事务编号，回滚指针指向undo log中的修改前的行</p>
+<p>上述过程确切地说是描述了UPDATE的事务过程，其实undo log分insert和update undo log，因为insert时，原始的数据并不存在，所以回滚时把insert undo log丢弃即可，而update undo log则必须遵守上述过程</p>
+<p>下面分别以 <strong>select</strong>、<strong>delete</strong>、 <strong>insert</strong>、 <strong>update</strong>语句来说明</p>
+<p><strong>SELECT</strong></p>
+<p>Innodb检查每行数据，确保他们符合两个标准：</p>
+<p>1.InnoDB只查找版本早于当前事务版本的数据行(也就是数据行的版本必须小于等于事务的版本)，这确保当前事务读取的行都是事务之前已经存在的，或者是由当前事务创建或修改的行<br>2.行的删除操作的版本一定是未定义的或者大于当前事务的版本号，确定了当前事务开始之前，行没有被删除</p>
+<p>符合了以上两点则返回查询结果。</p>
+<p><strong>INSERT</strong></p>
+<p>InnoDB为每个新增行记录当前系统版本号作为创建ID。</p>
+<p><strong>DELETE</strong></p>
+<p>InnoDB为每个删除行的记录当前系统版本号作为行的删除ID。</p>
+<p><strong>UPDATE</strong></p>
+<p>InnoDB复制了一行。这个新行的版本号使用了系统版本号。它也把系统版本号作为了删除行的版本。</p>
+<p><strong>说明</strong></p>
+<p>insert操作时 “创建时间”=DB_ROW_ID，这时，“删除时间 ”是未定义的；</p>
+<p>update时，复制新增行的“创建时间”=DB_ROW_ID，删除时间未定义，旧数据行“创建时间”不变，删除时间=该事务的DB_ROW_ID；</p>
+<p>delete操作，相应数据行的“创建时间”不变，删除时间=该事务的DB_ROW_ID；</p>
+<p>select操作对两者都不修改，只读相应的数据</p>
+<h2 id="对于MVCC的总结"><a href="#对于MVCC的总结" class="headerlink" title="对于MVCC的总结"></a>对于MVCC的总结</h2><p>上述更新前建立undo log，根据各种策略读取时非阻塞就是MVCC，undo log中的行就是MVCC中的多版本，这个可能与我们所理解的MVCC有较大的出入，一般我们认为MVCC有下面几个特点：</p>
+<ul>
+<li>每行数据都存在一个版本，每次数据更新时都更新该版本</li>
+<li>修改时Copy出当前版本随意修改，各个事务之间无干扰</li>
+<li>保存时比较版本号，如果成功（commit），则覆盖原记录；失败则放弃copy（rollback）</li>
+</ul>
+<p>就是每行都有版本号，保存时根据版本号决定是否成功，听起来含有乐观锁的味道，而Innodb的实现方式是：</p>
+<ul>
+<li>事务以排他锁的形式修改原始数据</li>
+<li>把修改前的数据存放于undo log，通过回滚指针与主数据关联</li>
+<li>修改成功（commit）啥都不做，失败则恢复undo log中的数据（rollback）</li>
+</ul>
+<p>二者最本质的区别是，当修改数据时是否要排他锁定，如果锁定了还算不算是MVCC？ </p>
+<p>Innodb的实现真算不上MVCC，因为并没有实现核心的多版本共存，undo log中的内容只是串行化的结果，记录了多个事务的过程，不属于多版本共存。但理想的MVCC是难以实现的，当事务仅修改一行记录使用理想的MVCC模式是没有问题的，可以通过比较版本号进行回滚；但当事务影响到多行数据时，理想的MVCC据无能为力了。</p>
+<p>比如，如果Transaciton1执行理想的MVCC，修改Row1成功，而修改Row2失败，此时需要回滚Row1，但因为Row1没有被锁定，其数据可能又被Transaction2所修改，如果此时回滚Row1的内容，则会破坏Transaction2的修改结果，导致Transaction2违反ACID。</p>
+<p>理想MVCC难以实现的根本原因在于企图通过乐观锁代替二段提交。修改两行数据，但为了保证其一致性，与修改两个分布式系统中的数据并无区别，而二提交是目前这种场景保证一致性的唯一手段。二段提交的本质是锁定，乐观锁的本质是消除锁定，二者矛盾，故理想的MVCC难以真正在实际中被应用，Innodb只是借了MVCC这个名字，提供了读的非阻塞而已。</p>
+<h2 id="快照读和当前读"><a href="#快照读和当前读" class="headerlink" title="快照读和当前读"></a>快照读和当前读</h2><p>在一个支持MVCC并发控制的系统中，哪些读操作是快照读？哪些操作又是当前读呢？以MySQL InnoDB为例：</p>
+<p>快照读：简单的select操作，属于快照读，不加锁。(当然，也有例外，下面会分析)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from table where ?;</span><br></pre></td></tr></table></figure>
+<p>当前读：特殊的读操作，插入/更新/删除操作，属于当前读，需要加锁。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select * from table where ? lock in share mode;</span><br><span class="line">select * from table where ? for update;</span><br><span class="line">insert into table values (…);</span><br><span class="line">update table set ? where ?;</span><br><span class="line">delete from table where ?;</span><br></pre></td></tr></table></figure></p>
+<p>所有以上的语句，都属于当前读，读取记录的最新版本。并且，读取之后，还需要保证其他并发事务不能修改当前记录，对读取记录加锁。其中，除了第一条语句，对读取记录加S锁 (共享锁)外，其他的操作，都加的是X锁 (排它锁)。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://juejin.im/post/5b9332685188255c432279aa" target="_blank" rel="noopener">https://juejin.im/post/5b9332685188255c432279aa</a><br><a href="https://www.cnblogs.com/chenpingzhao/p/5041968.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenpingzhao/p/5041968.html</a><br><a href="https://www.cnblogs.com/chenpingzhao/p/5065316.html" target="_blank" rel="noopener">https://www.cnblogs.com/chenpingzhao/p/5065316.html</a></p>
 
       
     </div>
@@ -745,7 +779,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">1.</span> <span class="nav-text">乐观锁与悲观锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#共享锁与排他锁"><span class="nav-number">2.</span> <span class="nav-text">共享锁与排他锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#行锁与表锁"><span class="nav-number">3.</span> <span class="nav-text">行锁与表锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#意向锁-InnoDB特有"><span class="nav-number">4.</span> <span class="nav-text">意向锁(InnoDB特有)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#各种锁之间的共存情况"><span class="nav-number">5.</span> <span class="nav-text">各种锁之间的共存情况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#死锁"><span class="nav-number">6.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVCC-多版本并发控制"><span class="nav-number">7.</span> <span class="nav-text">MVCC(多版本并发控制)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#间隙锁-Next-Key锁"><span class="nav-number">8.</span> <span class="nav-text">间隙锁(Next-Key锁)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">1.</span> <span class="nav-text">乐观锁与悲观锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#共享锁与排他锁"><span class="nav-number">2.</span> <span class="nav-text">共享锁与排他锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#行锁与表锁"><span class="nav-number">3.</span> <span class="nav-text">行锁与表锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#意向锁-InnoDB特有"><span class="nav-number">4.</span> <span class="nav-text">意向锁(InnoDB特有)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#各种锁之间的共存情况"><span class="nav-number">5.</span> <span class="nav-text">各种锁之间的共存情况</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#死锁"><span class="nav-number">6.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#间隙锁-Next-Key锁"><span class="nav-number">7.</span> <span class="nav-text">间隙锁(Next-Key锁)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVCC-多版本并发控制"><span class="nav-number">8.</span> <span class="nav-text">MVCC(多版本并发控制)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MVCC实现原理"><span class="nav-number">8.1.</span> <span class="nav-text">MVCC实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对于MVCC的总结"><span class="nav-number">8.2.</span> <span class="nav-text">对于MVCC的总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快照读和当前读"><span class="nav-number">8.3.</span> <span class="nav-text">快照读和当前读</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
