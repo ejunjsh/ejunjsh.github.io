@@ -344,7 +344,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/09/10/tcmalloc/">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/09/17/tcmalloc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ejunjsh">
@@ -363,7 +363,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/10/tcmalloc/" itemprop="url">Untitled</a></h1>
+                <a class="post-title-link" href="/2018/09/17/tcmalloc/" itemprop="url">tcmalloc 理解</a></h1>
         
 
         <div class="post-meta">
@@ -375,8 +375,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-10T19:54:03+08:00">
-                10 Sep 18
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-09-17T22:56:41+08:00">
+                17 Sep 18
               </time>
             
 
@@ -385,6 +385,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -1241,7 +1263,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/07/28/java-concurrenthashmap/" itemprop="url">java concurrenthashmap解析</a></h1>
+                <a class="post-title-link" href="/2018/07/28/java-concurrenthashmap/" itemprop="url">java ConcurrentHashMap解析</a></h1>
         
 
         <div class="post-meta">
@@ -1317,6 +1339,9 @@
           <blockquote>
 <p>只剩下这个没有mark了，偏偏这时候，面试被问到，悲剧了😢</p>
 </blockquote>
+<h1 id="jdk6和jdk7中的实现"><a href="#jdk6和jdk7中的实现" class="headerlink" title="jdk6和jdk7中的实现"></a>jdk6和jdk7中的实现</h1><h2 id="设计思路"><a href="#设计思路" class="headerlink" title="设计思路"></a>设计思路</h2><p>ConcurrentHashMap采用了分段锁的设计，只有在同一个分段内才存在竞态关系，不同的分段锁之间没有锁竞争。相比于对整个Map加锁的设计，分段锁大大的提高了高并发环境下的处理能力。但同时，由于不是对整个Map加锁，导致一些需要扫描整个Map的方法（如size(), containsValue()）需要使用特殊的实现，另外一些方法（如clear()）甚至放弃了对一致性的要求（ConcurrentHashMap是弱一致性的）。</p>
+<p>ConcurrentHashMap中的分段锁称为Segment，它即类似于HashMap的结构，即内部拥有一个Entry数组，数组中的每个元素又是一个链表；同时又是一个ReentrantLock（Segment继承了ReentrantLock）。ConcurrentHashMap中的HashEntry相对于HashMap中的Entry有一定的差异性：HashEntry中的value以及next都被volatile修饰，这样在多线程读写过程中能够保持它们的可见性，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">HashEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">        <span class="keyword">final</span> K key;</span><br><span class="line">        <span class="keyword">volatile</span> V value;</span><br><span class="line">        <span class="keyword">volatile</span> HashEntry&lt;K,V&gt; next;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/07/28/java-concurrenthashmap/#more" rel="contents">
@@ -1465,6 +1490,7 @@
           <blockquote>
 <p>很好理解的动画，一看就懂了👿</p>
 </blockquote>
+<iframe src="http://idiotsky.top/raft/raft/index.html" style="width:100%;height:700px;border-width: 0px;"><br></iframe>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/07/24/understanding-raft/#more" rel="contents">
@@ -1876,7 +1902,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">147</span>
+                <span class="site-state-item-count">148</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
