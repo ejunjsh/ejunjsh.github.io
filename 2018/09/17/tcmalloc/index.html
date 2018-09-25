@@ -106,7 +106,7 @@
 <meta name="description" content="动机TCMalloc比glibc 2.3 malloc（作为一个名为ptmalloc2的独立库提供）和我测试的其他malloc更快。ptmalloc2在2.8 GHz P4上执行malloc/free操作对（对于小对象）需要大约300纳秒。对于相同的操作对，TCMalloc实现大约需要50纳秒。速度对于malloc实现很重要，因为如果malloc不够快，应用程序编写者倾向于在malloc之上编写自">
 <meta name="keywords" content="tcmalloc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="TCMalloc：Thread-Caching Malloc">
+<meta property="og:title" content="TCMalloc：Thread-Caching（线程缓存） Malloc">
 <meta property="og:url" content="http://idiotsky.top/2018/09/17/tcmalloc/index.html">
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="动机TCMalloc比glibc 2.3 malloc（作为一个名为ptmalloc2的独立库提供）和我测试的其他malloc更快。ptmalloc2在2.8 GHz P4上执行malloc/free操作对（对于小对象）需要大约300纳秒。对于相同的操作对，TCMalloc实现大约需要50纳秒。速度对于malloc实现很重要，因为如果malloc不够快，应用程序编写者倾向于在malloc之上编写自">
@@ -115,9 +115,9 @@
 <meta property="og:image" content="http://idiotsky.top/images3/tcmalloc-2.gif">
 <meta property="og:image" content="http://idiotsky.top/images3/tcmalloc-3.gif">
 <meta property="og:image" content="http://idiotsky.top/images3/tcmalloc-4.gif">
-<meta property="og:updated_time" content="2018-09-24T14:15:16.125Z">
+<meta property="og:updated_time" content="2018-09-25T13:54:57.968Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="TCMalloc：Thread-Caching Malloc">
+<meta name="twitter:title" content="TCMalloc：Thread-Caching（线程缓存） Malloc">
 <meta name="twitter:description" content="动机TCMalloc比glibc 2.3 malloc（作为一个名为ptmalloc2的独立库提供）和我测试的其他malloc更快。ptmalloc2在2.8 GHz P4上执行malloc/free操作对（对于小对象）需要大约300纳秒。对于相同的操作对，TCMalloc实现大约需要50纳秒。速度对于malloc实现很重要，因为如果malloc不够快，应用程序编写者倾向于在malloc之上编写自">
 <meta name="twitter:image" content="http://idiotsky.top/images3/tcmalloc-1.gif">
 
@@ -154,7 +154,7 @@
 
 
 
-  <title>TCMalloc：Thread-Caching Malloc | IdiotSky</title>
+  <title>TCMalloc：Thread-Caching（线程缓存） Malloc | IdiotSky</title>
   
 
 
@@ -366,7 +366,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">TCMalloc：Thread-Caching Malloc</h1>
+          <h1 class="post-title" itemprop="name headline">TCMalloc：Thread-Caching（线程缓存） Malloc</h1>
         
 
         <div class="post-meta">
@@ -465,10 +465,13 @@
 <p>32位地址空间可以容纳2 ^ 20个4K页面，因此这个中央阵列占用4MB空间，这似乎是可以接受的。在64位计算机上，我们使用3层基数树(radix tree)而不是数组来从页码映射到相应的Span指针。</p>
 <h1 id="释放"><a href="#释放" class="headerlink" title="释放"></a>释放</h1><p>当一个对象被释放时，我们计算其页码并在central数组中查找它以找到相应的span对象。span告诉我们对象是否很小，如果对象很小，span告诉我们对象的size-class。如果对象很小，我们将它插入当前线程的线程缓存中的相应空闲列表中。如果线程缓存现在超过预定大小（默认为2MB），我们运行垃圾收集器，将未使用的对象从线程缓存移动到central空闲列表中。</p>
 <p>如果对象很大，则span告诉我们对象覆盖的页范围。假设这个范围是[p,q]。我们还为span查找页p-1和页q+1。如果这些相邻span中的任何一个是空闲的，我们将它们与[p,q]的span合并 。生成的span将插入页堆中的相应空闲列表中。</p>
-<blockquote>
-<p>to be continue</p>
-</blockquote>
-<p>翻译 <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_blank" rel="noopener">http://goog-perftools.sourceforge.net/doc/tcmalloc.html</a></p>
+<h1 id="小对象的central空闲列表"><a href="#小对象的central空闲列表" class="headerlink" title="小对象的central空闲列表"></a>小对象的central空闲列表</h1><p>如前所述，我们为每个size-class保留一个central空闲列表。每个central空闲列表都被组织为一个两级数据结构：一组span，以及每个span的空闲对象的链表。</p>
+<p>从central空闲列表分配对象,是通过从某个span的链表中删除第一个条目。（如果所有span都有空链表，则首先从central页堆分配适当大小的span。）</p>
+<p>将对象返回到central空闲列表，是通过将对象添加到其包含span的链表。如果链表长度现在等于span中的小对象总数，则此span现在完全空闲并返回到页堆。</p>
+<h1 id="线程缓存的垃圾回收"><a href="#线程缓存的垃圾回收" class="headerlink" title="线程缓存的垃圾回收"></a>线程缓存的垃圾回收</h1><p>当缓存中所有对象的组合大小超过2MB时，将对线程缓存进行垃圾收集。随着线程数量的增加，垃圾收集阈值会自动降低，这样我们就不会在具有大量线程的程序中浪费过多的内存。</p>
+<p>我们遍历缓存中的所有空闲列表，并将一些对象从空闲列表移动到相应的central列表。</p>
+<p>从空闲列表移动的对象数量是使用每个列表的低水位标记L决定的。 L记录自上次垃圾回收以来列表的最小长度。请注意，我们可以通过L最后一个垃圾收集中的对象缩短列表，而无需对central表进行任何额外访问。我们使用此历史记录作为将来访问的预测器，并将L/2对象从线程缓存空闲列表移动到相应的central空闲列表。该算法具有良好的属性，如果线程停止使用特定大小，则该大小的所有对象将快速从线程高速缓存移动到central空闲列表，其他线程可以使用它们。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>翻译 <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_blank" rel="noopener">http://goog-perftools.sourceforge.net/doc/tcmalloc.html</a></p>
 
       
     </div>
@@ -694,7 +697,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动机"><span class="nav-number">1.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用法"><span class="nav-number">2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概观"><span class="nav-number">3.</span> <span class="nav-text">概观</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小对象分配"><span class="nav-number">4.</span> <span class="nav-text">小对象分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大对象分配"><span class="nav-number">5.</span> <span class="nav-text">大对象分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spans（跨度）"><span class="nav-number">6.</span> <span class="nav-text">Spans（跨度）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#释放"><span class="nav-number">7.</span> <span class="nav-text">释放</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#动机"><span class="nav-number">1.</span> <span class="nav-text">动机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用法"><span class="nav-number">2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#概观"><span class="nav-number">3.</span> <span class="nav-text">概观</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小对象分配"><span class="nav-number">4.</span> <span class="nav-text">小对象分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#大对象分配"><span class="nav-number">5.</span> <span class="nav-text">大对象分配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spans（跨度）"><span class="nav-number">6.</span> <span class="nav-text">Spans（跨度）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#释放"><span class="nav-number">7.</span> <span class="nav-text">释放</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小对象的central空闲列表"><span class="nav-number">8.</span> <span class="nav-text">小对象的central空闲列表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程缓存的垃圾回收"><span class="nav-number">9.</span> <span class="nav-text">线程缓存的垃圾回收</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">10.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>

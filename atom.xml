@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-09-24T14:15:16.125Z</updated>
+  <updated>2018-09-25T13:54:57.968Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>TCMalloc：Thread-Caching Malloc</title>
+    <title>TCMalloc：Thread-Caching（线程缓存） Malloc</title>
     <link href="http://idiotsky.top/2018/09/17/tcmalloc/"/>
     <id>http://idiotsky.top/2018/09/17/tcmalloc/</id>
     <published>2018-09-17T14:56:41.000Z</published>
-    <updated>2018-09-24T14:15:16.125Z</updated>
+    <updated>2018-09-25T13:54:57.968Z</updated>
     
     <content type="html"><![CDATA[<h1 id="动机"><a href="#动机" class="headerlink" title="动机"></a>动机</h1><p>TCMalloc比glibc 2.3 malloc（作为一个名为ptmalloc2的独立库提供）和我测试的其他malloc更快。ptmalloc2在2.8 GHz P4上执行malloc/free操作对（对于小对象）需要大约300纳秒。对于相同的操作对，TCMalloc实现大约需要50纳秒。速度对于malloc实现很重要，因为如果malloc不够快，应用程序编写者倾向于在malloc之上编写自己的自定义空闲列表。这可能导致额外的复杂性和更多的内存使用，除非应用程序编写者非常小心地适当调整空闲列表的大小并从空闲列表中清除空闲对象</p>
 <p>TCMalloc还减少了多线程程序的锁争用。对于小型对象，几乎没有争用。对于大型对象，TCMalloc尝试使用细粒度和高效的自旋锁。ptmalloc2还通过使用每线程arena来减少锁争用，但是ptmalloc2使用每线程arena存在很大问题。在ptmalloc2中，内存永远不会从一个arena转移到另一个arena。这可能导致大量浪费的空间。例如，在一个Google应用程序中，第一阶段将为其数据结构分配大约300MB的内存。当第一阶段结束时，第二阶段将在同一地址空间中开始。如果第二阶段被指定为与第一阶段使用的arena不同的arena，此阶段不会重用第一阶段之后剩余的任何内存，并会向地址空间添加另外300MB。在其他应用中也注意到类似的内存爆炸问题。</p>
@@ -49,10 +49,13 @@
 <p>32位地址空间可以容纳2 ^ 20个4K页面，因此这个中央阵列占用4MB空间，这似乎是可以接受的。在64位计算机上，我们使用3层基数树(radix tree)而不是数组来从页码映射到相应的Span指针。</p>
 <h1 id="释放"><a href="#释放" class="headerlink" title="释放"></a>释放</h1><p>当一个对象被释放时，我们计算其页码并在central数组中查找它以找到相应的span对象。span告诉我们对象是否很小，如果对象很小，span告诉我们对象的size-class。如果对象很小，我们将它插入当前线程的线程缓存中的相应空闲列表中。如果线程缓存现在超过预定大小（默认为2MB），我们运行垃圾收集器，将未使用的对象从线程缓存移动到central空闲列表中。</p>
 <p>如果对象很大，则span告诉我们对象覆盖的页范围。假设这个范围是[p,q]。我们还为span查找页p-1和页q+1。如果这些相邻span中的任何一个是空闲的，我们将它们与[p,q]的span合并 。生成的span将插入页堆中的相应空闲列表中。</p>
-<blockquote>
-<p>to be continue</p>
-</blockquote>
-<p>翻译 <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_blank" rel="noopener">http://goog-perftools.sourceforge.net/doc/tcmalloc.html</a></p>
+<h1 id="小对象的central空闲列表"><a href="#小对象的central空闲列表" class="headerlink" title="小对象的central空闲列表"></a>小对象的central空闲列表</h1><p>如前所述，我们为每个size-class保留一个central空闲列表。每个central空闲列表都被组织为一个两级数据结构：一组span，以及每个span的空闲对象的链表。</p>
+<p>从central空闲列表分配对象,是通过从某个span的链表中删除第一个条目。（如果所有span都有空链表，则首先从central页堆分配适当大小的span。）</p>
+<p>将对象返回到central空闲列表，是通过将对象添加到其包含span的链表。如果链表长度现在等于span中的小对象总数，则此span现在完全空闲并返回到页堆。</p>
+<h1 id="线程缓存的垃圾回收"><a href="#线程缓存的垃圾回收" class="headerlink" title="线程缓存的垃圾回收"></a>线程缓存的垃圾回收</h1><p>当缓存中所有对象的组合大小超过2MB时，将对线程缓存进行垃圾收集。随着线程数量的增加，垃圾收集阈值会自动降低，这样我们就不会在具有大量线程的程序中浪费过多的内存。</p>
+<p>我们遍历缓存中的所有空闲列表，并将一些对象从空闲列表移动到相应的central列表。</p>
+<p>从空闲列表移动的对象数量是使用每个列表的低水位标记L决定的。 L记录自上次垃圾回收以来列表的最小长度。请注意，我们可以通过L最后一个垃圾收集中的对象缩短列表，而无需对central表进行任何额外访问。我们使用此历史记录作为将来访问的预测器，并将L/2对象从线程缓存空闲列表移动到相应的central空闲列表。该算法具有良好的属性，如果线程停止使用特定大小，则该大小的所有对象将快速从线程高速缓存移动到central空闲列表，其他线程可以使用它们。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>翻译 <a href="http://goog-perftools.sourceforge.net/doc/tcmalloc.html" target="_blank" rel="noopener">http://goog-perftools.sourceforge.net/doc/tcmalloc.html</a></p>
 ]]></content>
     
     <summary type="html">
@@ -272,9 +275,9 @@
       <category term="c" scheme="http://idiotsky.top/categories/c/"/>
     
     
-      <category term="c" scheme="http://idiotsky.top/tags/c/"/>
-    
       <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
+    
+      <category term="c" scheme="http://idiotsky.top/tags/c/"/>
     
   </entry>
   
@@ -2228,9 +2231,9 @@
     
       <category term="linux" scheme="http://idiotsky.top/tags/linux/"/>
     
-      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
-    
       <category term="nio" scheme="http://idiotsky.top/tags/nio/"/>
+    
+      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
     
       <category term="select" scheme="http://idiotsky.top/tags/select/"/>
     
