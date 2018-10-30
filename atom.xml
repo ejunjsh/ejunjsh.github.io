@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-10-29T14:22:36.965Z</updated>
+  <updated>2018-10-30T15:08:17.267Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.top/2018/10/24/docker-summary/"/>
     <id>http://idiotsky.top/2018/10/24/docker-summary/</id>
     <published>2018-10-24T14:50:22.000Z</published>
-    <updated>2018-10-29T14:22:36.965Z</updated>
+    <updated>2018-10-30T15:08:17.267Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>不想分几章了，所以很长很长👿</p>
@@ -112,10 +112,26 @@
 </table>
 <p>Linux namespace 的概念说简单也简单说复杂也复杂。简单来说，我们只要知道，处于某个 namespace 中的进程，能看到独立的它自己的隔离的某些特定系统资源；复杂来说，可以去看看 Linux 内核中实现 namespace 的原理，网络上也有大量的文档供参考，这里不再赘述。</p>
 <h1 id="Docker-容器使用-linux-namespace-做运行环境隔离"><a href="#Docker-容器使用-linux-namespace-做运行环境隔离" class="headerlink" title="Docker 容器使用 linux namespace 做运行环境隔离"></a>Docker 容器使用 linux namespace 做运行环境隔离</h1><p>当 Docker 创建一个容器时，它会创建新的以上六种 namespace 的实例，然后把容器中的所有进程放到这些 namespace 之中，使得Docker 容器中的进程只能看到隔离的系统资源。 </p>
+<h2 id="PID-namespace"><a href="#PID-namespace" class="headerlink" title="PID namespace"></a>PID namespace</h2><p>我们能看到同一个进程，在容器内外的 PID 是不同的：</p>
+<ul>
+<li>在容器内 PID 是 1，PPID 是 0。</li>
+<li>在容器外 PID 是 2198， PPID 是 2179 即 docker-containerd-shim 进程.</li>
+</ul>
+<p>关于 containerd，containerd-shim 和 container 的关系，<a href="https://github.com/crosbymichael/dockercon-2016/blob/master/Creating%20Containerd.pdf" target="_blank" rel="noopener">文章</a> 中的下图可以说明：</p>
+<p><a href="http://idiotsky.top/images3/docker-summary-3.jpg"><img src="http://idiotsky.top/images3/docker-summary-3.jpg" alt=""></a></p>
+<ul>
+<li>Docker 引擎管理着镜像，然后移交给 containerd 运行，containerd 再使用 runC 运行容器。</li>
+<li>Containerd 是一个简单的守护进程，它可以使用 runC 管理容器，使用 gRPC 暴露容器的其他功能。它管理容器的开始，停止，暂停和销毁。由于容器运行时是孤立的引擎，引擎最终能够启动和升级而无需重新启动容器。</li>
+<li>runC是一个轻量级的工具，它是用来运行容器的，只用来做这一件事，并且这一件事要做好。runC基本上是一个小命令行工具且它可以不用通过Docker引擎，直接就可以使用容器。</li>
+</ul>
+<p>因此，容器中的主应用在 host 上的父进程是 containerd-shim，是它通过工具 runC 来启动这些进程的。</p>
+<p>这也能看出来，pid namespace 通过将 host 上 PID 映射为容器内的 PID， 使得容器内的进程看起来有个独立的 PID 空间。</p>
+<h2 id="UTS-namespace"><a href="#UTS-namespace" class="headerlink" title="UTS namespace"></a>UTS namespace</h2><p>类似地，容器可以有自己的 hostname 和 domainname：</p>
 <blockquote>
 <p>to be continue …</p>
 </blockquote>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cnblogs.com/sammyliu/p/5875470.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5875470.html</a></p>
+<p><a href="http://www.cnblogs.com/sammyliu/p/5878973.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5878973.html</a></p>
 ]]></content>
     
     <summary type="html">

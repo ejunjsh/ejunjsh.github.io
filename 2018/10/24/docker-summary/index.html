@@ -114,7 +114,8 @@
 <meta property="og:image" content="http://idiotsky.top/images3/docker-summary-1.jpg">
 <meta property="og:image" content="http://idiotsky.top/images3/docker-summary-2.jpg">
 <meta property="og:image" content="http://idiotsky.top/images3/docker-summary-3.jpg">
-<meta property="og:updated_time" content="2018-10-29T14:22:36.965Z">
+<meta property="og:image" content="http://idiotsky.top/images3/docker-summary-3.jpg">
+<meta property="og:updated_time" content="2018-10-30T15:08:17.267Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker总结">
 <meta name="twitter:description" content="不想分几章了，所以很长很长👿  docker 容器的状态机 一个容器在某个时刻可能处于以下几种状态之一：  created：已经被创建 （使用 docker ps -a 命令可以列出）但是还没有被启动 （使用 docker ps 命令还无法列出） running：运行中 paused：容器的进程被暂停了 restarting：容器的进程正在重启过程中 exited：上图中的 stopped 状">
@@ -527,10 +528,26 @@
 </table>
 <p>Linux namespace 的概念说简单也简单说复杂也复杂。简单来说，我们只要知道，处于某个 namespace 中的进程，能看到独立的它自己的隔离的某些特定系统资源；复杂来说，可以去看看 Linux 内核中实现 namespace 的原理，网络上也有大量的文档供参考，这里不再赘述。</p>
 <h1 id="Docker-容器使用-linux-namespace-做运行环境隔离"><a href="#Docker-容器使用-linux-namespace-做运行环境隔离" class="headerlink" title="Docker 容器使用 linux namespace 做运行环境隔离"></a>Docker 容器使用 linux namespace 做运行环境隔离</h1><p>当 Docker 创建一个容器时，它会创建新的以上六种 namespace 的实例，然后把容器中的所有进程放到这些 namespace 之中，使得Docker 容器中的进程只能看到隔离的系统资源。 </p>
+<h2 id="PID-namespace"><a href="#PID-namespace" class="headerlink" title="PID namespace"></a>PID namespace</h2><p>我们能看到同一个进程，在容器内外的 PID 是不同的：</p>
+<ul>
+<li>在容器内 PID 是 1，PPID 是 0。</li>
+<li>在容器外 PID 是 2198， PPID 是 2179 即 docker-containerd-shim 进程.</li>
+</ul>
+<p>关于 containerd，containerd-shim 和 container 的关系，<a href="https://github.com/crosbymichael/dockercon-2016/blob/master/Creating%20Containerd.pdf" target="_blank" rel="noopener">文章</a> 中的下图可以说明：</p>
+<p><a href="http://idiotsky.top/images3/docker-summary-3.jpg"><img src="http://idiotsky.top/images3/docker-summary-3.jpg" alt=""></a></p>
+<ul>
+<li>Docker 引擎管理着镜像，然后移交给 containerd 运行，containerd 再使用 runC 运行容器。</li>
+<li>Containerd 是一个简单的守护进程，它可以使用 runC 管理容器，使用 gRPC 暴露容器的其他功能。它管理容器的开始，停止，暂停和销毁。由于容器运行时是孤立的引擎，引擎最终能够启动和升级而无需重新启动容器。</li>
+<li>runC是一个轻量级的工具，它是用来运行容器的，只用来做这一件事，并且这一件事要做好。runC基本上是一个小命令行工具且它可以不用通过Docker引擎，直接就可以使用容器。</li>
+</ul>
+<p>因此，容器中的主应用在 host 上的父进程是 containerd-shim，是它通过工具 runC 来启动这些进程的。</p>
+<p>这也能看出来，pid namespace 通过将 host 上 PID 映射为容器内的 PID， 使得容器内的进程看起来有个独立的 PID 空间。</p>
+<h2 id="UTS-namespace"><a href="#UTS-namespace" class="headerlink" title="UTS namespace"></a>UTS namespace</h2><p>类似地，容器可以有自己的 hostname 和 domainname：</p>
 <blockquote>
 <p>to be continue …</p>
 </blockquote>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cnblogs.com/sammyliu/p/5875470.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5875470.html</a></p>
+<p><a href="http://www.cnblogs.com/sammyliu/p/5878973.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5878973.html</a></p>
 
       
     </div>
@@ -756,7 +773,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-容器的状态机"><span class="nav-number">1.</span> <span class="nav-text">docker 容器的状态机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-命令概述"><span class="nav-number">2.</span> <span class="nav-text">Docker 命令概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Doker-平台的基本构成"><span class="nav-number">3.</span> <span class="nav-text">Doker 平台的基本构成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-镜像分层-COW-和-镜像大小（size）"><span class="nav-number">4.</span> <span class="nav-text">Docker 镜像分层,COW 和 镜像大小（size）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像分层和容器层"><span class="nav-number">4.1.</span> <span class="nav-text">镜像分层和容器层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#COW-和镜像大小"><span class="nav-number">4.2.</span> <span class="nav-text">COW 和镜像大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用容器需要避免的一些做法"><span class="nav-number">4.3.</span> <span class="nav-text">使用容器需要避免的一些做法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-namespace-的概念"><span class="nav-number">5.</span> <span class="nav-text">Linux namespace 的概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-容器使用-linux-namespace-做运行环境隔离"><span class="nav-number">6.</span> <span class="nav-text">Docker 容器使用 linux namespace 做运行环境隔离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#docker-容器的状态机"><span class="nav-number">1.</span> <span class="nav-text">docker 容器的状态机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-命令概述"><span class="nav-number">2.</span> <span class="nav-text">Docker 命令概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Doker-平台的基本构成"><span class="nav-number">3.</span> <span class="nav-text">Doker 平台的基本构成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-镜像分层-COW-和-镜像大小（size）"><span class="nav-number">4.</span> <span class="nav-text">Docker 镜像分层,COW 和 镜像大小（size）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#镜像分层和容器层"><span class="nav-number">4.1.</span> <span class="nav-text">镜像分层和容器层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#COW-和镜像大小"><span class="nav-number">4.2.</span> <span class="nav-text">COW 和镜像大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用容器需要避免的一些做法"><span class="nav-number">4.3.</span> <span class="nav-text">使用容器需要避免的一些做法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-namespace-的概念"><span class="nav-number">5.</span> <span class="nav-text">Linux namespace 的概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-容器使用-linux-namespace-做运行环境隔离"><span class="nav-number">6.</span> <span class="nav-text">Docker 容器使用 linux namespace 做运行环境隔离</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PID-namespace"><span class="nav-number">6.1.</span> <span class="nav-text">PID namespace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UTS-namespace"><span class="nav-number">6.2.</span> <span class="nav-text">UTS namespace</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
