@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-11-01T13:15:03.750Z</updated>
+  <updated>2018-11-02T15:24:30.916Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.top/2018/10/24/docker-summary/"/>
     <id>http://idiotsky.top/2018/10/24/docker-summary/</id>
     <published>2018-10-24T14:50:22.000Z</published>
-    <updated>2018-11-01T13:15:03.750Z</updated>
+    <updated>2018-11-02T15:24:30.916Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>不想分几章了，所以很长很长👿</p>
@@ -197,11 +197,26 @@
 </ul>
 <p>默认的话，在 Ubuntu 系统中，你可能看不到 net_cls 和 net_prio 目录，它们需要你手工做 mount：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/sys/fs/cgroup# modprobe cls_cgroup</span><br><span class="line">root@devstack:/sys/fs/cgroup# mkdir net_cls</span><br><span class="line">root@devstack:/sys/fs/cgroup# mount -t cgroup -o net_cls none net_cls</span><br><span class="line"></span><br><span class="line">root@devstack:/sys/fs/cgroup# modprobe netprio_cgroup</span><br><span class="line">root@devstack:/sys/fs/cgroup# mkdir net_prio</span><br><span class="line">root@devstack:/sys/fs/cgroup# mount -t cgroup -o net_prio none net_prio</span><br><span class="line"></span><br><span class="line">root@devstack:/sys/fs/cgroup# ls net_prio/cgroup.clone_children  cgroup.procs          net_prio.ifpriomap  notify_on_release  tasks</span><br><span class="line">cgroup.event_control   cgroup.sane_behavior  net_prio.prioidx    release_agent</span><br><span class="line">root@devstack:/sys/fs/cgroup# ls net_cls/</span><br><span class="line">cgroup.clone_children  cgroup.event_control  cgroup.procs  cgroup.sane_behavior  net_cls.classid  notify_on_release  release_agent  tasks</span><br></pre></td></tr></table></figure>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="通过-cgroups-限制进程的-CPU"><a href="#通过-cgroups-限制进程的-CPU" class="headerlink" title="通过 cgroups 限制进程的 CPU"></a>通过 cgroups 限制进程的 CPU</h3><p>写一段最简单的 C 程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(;;) i++;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译，运行，发现它占用的 CPU 几乎到了 100%：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line">2204 root      20   0    4188    356    276 R 99.6  0.0   0:46.03 hello</span><br></pre></td></tr></table></figure>
+<p>接下来我们做如下操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/home/sammy/c# mkdir /sys/fs/cgroup/cpu/hello</span><br><span class="line">root@devstack:/home/sammy/c# cd /sys/fs/cgroup/cpu/hello</span><br><span class="line">root@devstack:/sys/fs/cgroup/cpu/hello# ls</span><br><span class="line">cgroup.clone_children  cgroup.procs       cpu.cfs_quota_us  cpu.stat           tasks</span><br><span class="line">cgroup.event_control   cpu.cfs_period_us  cpu.shares        notify_on_release</span><br><span class="line">root@devstack:/sys/fs/cgroup/cpu/hello# cat cpu.cfs_quota_us</span><br><span class="line">-1</span><br><span class="line">root@devstack:/sys/fs/cgroup/cpu/hello# echo 20000 &gt; cpu.cfs_quota_us</span><br><span class="line">root@devstack:/sys/fs/cgroup/cpu/hello# cat cpu.cfs_quota_us</span><br><span class="line">20000</span><br><span class="line">root@devstack:/sys/fs/cgroup/cpu/hello# echo 2428 &gt; tasks</span><br></pre></td></tr></table></figure>
+<p>然后再来看看这个进程的 CPU 占用情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line">2428 root      20   0    4188    356    276 R 19.9  0.0   0:46.03 hello</span><br></pre></td></tr></table></figure>
+<p>它占用的 CPU 几乎就是 20%，也就是我们预设的阈值。这说明我们通过上面的步骤，成功地将这个进程运行所占用的 CPU 资源限制在某个阈值之内了。</p>
+<p>如果此时再启动另一个 hello 进程并将其 id 加入 tasks 文件，则两个进程会共享设定的 CPU 限制：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND</span><br><span class="line"> 2428 root      20   0    4188    356    276 R 10.0  0.0 285:39.54 hello</span><br><span class="line">12526 root      20   0    4188    356    276 R 10.0  0.0   0:25.09 hello</span><br></pre></td></tr></table></figure>
+<h3 id="通过-cgroups-限制进程的-Memory"><a href="#通过-cgroups-限制进程的-Memory" class="headerlink" title="通过 cgroups 限制进程的 Memory"></a>通过 cgroups 限制进程的 Memory</h3><p>同样地，我们针对它占用的内存做如下操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/sys/fs/cgroup/memory# mkdir hello</span><br><span class="line">root@devstack:/sys/fs/cgroup/memory# cd hello/</span><br><span class="line">root@devstack:/sys/fs/cgroup/memory/hello# cat memory.limit_in_bytes</span><br><span class="line">18446744073709551615</span><br><span class="line">root@devstack:/sys/fs/cgroup/memory/hello# echo 64k &gt; memory.limit_in_bytes</span><br><span class="line">root@devstack:/sys/fs/cgroup/memory/hello# echo 2428 &gt; tasks</span><br><span class="line">root@devstack:/sys/fs/cgroup/memory/hello#</span><br></pre></td></tr></table></figure>
+<p>上面的步骤会把进程 2428 说占用的内存阈值设置为 64K。超过的话，它会被杀掉。</p>
 <blockquote>
 <p>to be continue …</p>
 </blockquote>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cnblogs.com/sammyliu/p/5875470.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5875470.html</a></p>
 <p><a href="http://www.cnblogs.com/sammyliu/p/5878973.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5878973.html</a></p>
+<p><a href="http://www.cnblogs.com/sammyliu/p/5886833.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5886833.html</a></p>
 ]]></content>
     
     <summary type="html">
