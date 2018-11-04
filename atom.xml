@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-11-03T13:35:49.087Z</updated>
+  <updated>2018-11-04T07:23:38.199Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.top/2018/10/24/docker-summary/"/>
     <id>http://idiotsky.top/2018/10/24/docker-summary/</id>
     <published>2018-10-24T14:50:22.000Z</published>
-    <updated>2018-11-03T13:35:49.087Z</updated>
+    <updated>2018-11-04T07:23:38.199Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>不想分几章了，所以很长很长👿</p>
@@ -244,6 +244,22 @@
 <li>cgroup 只能限制 CPU 的使用，而不能保证CPU的使用。也就是说， 使用 cpuset-cpus，可以让容器在指定的CPU或者核上运行，但是不能确保它独占这些CPU；cpu-shares 是个相对值，只有在CPU不够用的时候才其作用。也就是说，当CPU够用的时候，每个容器会分到足够的CPU；不够用的时候，会按照指定的比重在多个容器之间分配CPU。</li>
 <li>对内存来说，cgroups 可以限制容器最多使用的内存。使用 -m 参数可以设置最多可以使用的内存。</li>
 </ol>
+<h1 id="Docker-网络概况"><a href="#Docker-网络概况" class="headerlink" title="Docker 网络概况"></a>Docker 网络概况</h1><p>用一张图来说明 Docker 网络的基本概况：</p>
+<p><a href="http://idiotsky.top/images3/docker-summary-5.jpg"><img src="http://idiotsky.top/images3/docker-summary-5.jpg" alt=""></a></p>
+<h1 id="四种单节点网络模式"><a href="#四种单节点网络模式" class="headerlink" title="四种单节点网络模式"></a>四种单节点网络模式</h1><h2 id="bridge-模式"><a href="#bridge-模式" class="headerlink" title="bridge 模式"></a>bridge 模式</h2><p>Docker 容器默认使用 bridge 模式的网络。其特点如下：</p>
+<ul>
+<li>使用一个 linux bridge，默认为 docker0</li>
+<li>使用 veth 对，一头在容器的网络 namespace 中，一头在 docker0 上</li>
+<li>该模式下Docker Container不具有一个公有IP，因为宿主机的IP地址与veth pair的 IP地址不在同一个网段内</li>
+<li>Docker采用 NAT 方式，将容器内部的服务监听的端口与宿主机的某一个端口port 进行“绑定”，使得宿主机以外的世界可以主动将网络报文发送至容器内部</li>
+<li>外界访问容器内的服务时，需要访问宿主机的 IP 以及宿主机的端口 port</li>
+<li>NAT 模式由于是在三层网络上的实现手段，故肯定会影响网络的传输效率。</li>
+<li>容器拥有独立、隔离的网络栈；让容器和宿主机以外的世界通过NAT建立通信</li>
+</ul>
+<p>iptables 的 SNTA 规则，使得从容器离开去外界的网络包的源 IP 地址被转换为 Docker 主机的IP地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Chain POSTROUTING (policy ACCEPT)</span><br><span class="line">target     prot opt source               destination</span><br><span class="line">MASQUERADE  all  --  172.17.0.0/16        0.0.0.0/0</span><br><span class="line">MASQUERADE  all  --  172.18.0.0/16        0.0.0.0/0</span><br></pre></td></tr></table></figure>
+<p>示意图：</p>
+<p><a href="http://idiotsky.top/images3/docker-summary-6.jpg"><img src="http://idiotsky.top/images3/docker-summary-6.jpg" alt=""></a></p>
 <blockquote>
 <p>to be continue …</p>
 </blockquote>
