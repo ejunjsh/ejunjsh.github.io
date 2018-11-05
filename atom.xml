@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-11-04T09:22:17.973Z</updated>
+  <updated>2018-11-05T14:39:03.802Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.top/2018/10/24/docker-summary/"/>
     <id>http://idiotsky.top/2018/10/24/docker-summary/</id>
     <published>2018-10-24T14:50:22.000Z</published>
-    <updated>2018-11-04T09:22:17.973Z</updated>
+    <updated>2018-11-05T14:39:03.802Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>不想分几章了，所以很长很长👿</p>
@@ -112,6 +112,10 @@
 </table>
 <p>Linux namespace 的概念说简单也简单说复杂也复杂。简单来说，我们只要知道，处于某个 namespace 中的进程，能看到独立的它自己的隔离的某些特定系统资源；复杂来说，可以去看看 Linux 内核中实现 namespace 的原理，网络上也有大量的文档供参考，这里不再赘述。</p>
 <h1 id="Docker-容器使用-linux-namespace-做运行环境隔离"><a href="#Docker-容器使用-linux-namespace-做运行环境隔离" class="headerlink" title="Docker 容器使用 linux namespace 做运行环境隔离"></a>Docker 容器使用 linux namespace 做运行环境隔离</h1><p>当 Docker 创建一个容器时，它会创建新的以上六种 namespace 的实例，然后把容器中的所有进程放到这些 namespace 之中，使得Docker 容器中的进程只能看到隔离的系统资源。 </p>
+<h2 id="Mount-Namespace"><a href="#Mount-Namespace" class="headerlink" title="Mount Namespace"></a>Mount Namespace</h2><p>Mount namespace用来隔离文件系统的挂载点, 使得不同的mount namespace拥有自己独立的挂载点信息，不同的namespace之间不会相互影响，这对于构建用户或者容器自己的文件系统目录非常有用。</p>
+<p>当前进程所在mount namespace里的所有挂载信息可以在/proc/[pid]/mounts、/proc/[pid]/mountinfo和/proc/[pid]/mountstats里面找到。</p>
+<p>Mount namespaces是第一个被加入Linux的namespace，由于当时没想到还会引入其它的namespace，所以取名为CLONE_NEWNS，而没有叫CLONE_NEWMOUNT。</p>
+<p>每个mount namespace都拥有一份自己的挂载点列表，当用clone或者unshare函数创建新的mount namespace时，新创建的namespace将拷贝一份老namespace里的挂载点列表，但从这之后，他们就没有关系了，通过mount和umount增加和删除各自namespace里面的挂载点都不会相互影响。</p>
 <h2 id="PID-namespace"><a href="#PID-namespace" class="headerlink" title="PID namespace"></a>PID namespace</h2><p>我们能看到同一个进程，在容器内外的 PID 是不同的：</p>
 <ul>
 <li>在容器内 PID 是 1，PPID 是 0。</li>
@@ -129,6 +133,7 @@
 <p>这也能看出来，pid namespace 通过将 host 上 PID 映射为容器内的 PID， 使得容器内的进程看起来有个独立的 PID 空间。</p>
 <h2 id="UTS-namespace"><a href="#UTS-namespace" class="headerlink" title="UTS namespace"></a>UTS namespace</h2><p>类似地，容器可以有自己的 hostname 和 domainname：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@devstack:/home/sammy# hostname</span><br><span class="line">devstack</span><br><span class="line">root@devstack:/home/sammy# docker exec -it web31 hostname</span><br><span class="line">8b7dd09fbcae</span><br></pre></td></tr></table></figure>
+<h2 id="IPC-Namespace"><a href="#IPC-Namespace" class="headerlink" title="IPC Namespace"></a>IPC Namespace</h2><p>IPC全称 Inter-Process Communication，是Unix/Linux下进程间通信的一种方式，IPC有共享内存、信号量、消息队列等方法。所以，为了隔离，我们也需要把IPC给隔离开来，这样，只有在同一个Namespace下的进程才能相互通信。如果你熟悉IPC的原理的话，你会知道，IPC需要有一个全局的ID，即然是全局的，那么就意味着我们的Namespace需要对这个ID隔离，不能让别的Namespace的进程看到。</p>
 <h2 id="user-namespace"><a href="#user-namespace" class="headerlink" title="user namespace"></a>user namespace</h2><p>在 Docker 1.10 版本之前，Docker 是不支持 user namespace。也就是说，默认地，容器内的进程的运行用户就是 host 上的 root 用户，这样的话，当 host 上的文件或者目录作为 volume 被映射到容器以后，容器内的进程其实是有 root 的几乎所有权限去修改这些 host 上的目录的，这会有很大的安全问题。</p>
 <p>举例：</p>
 <ul>
@@ -282,6 +287,8 @@
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://www.cnblogs.com/sammyliu/p/5875470.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5875470.html</a></p>
 <p><a href="http://www.cnblogs.com/sammyliu/p/5878973.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5878973.html</a></p>
 <p><a href="http://www.cnblogs.com/sammyliu/p/5886833.html" target="_blank" rel="noopener">http://www.cnblogs.com/sammyliu/p/5886833.html</a></p>
+<p><a href="https://segmentfault.com/a/1190000006912742" target="_blank" rel="noopener">https://segmentfault.com/a/1190000006912742</a></p>
+<p><a href="https://coolshell.cn/articles/17010.html" target="_blank" rel="noopener">https://coolshell.cn/articles/17010.html</a></p>
 ]]></content>
     
     <summary type="html">
