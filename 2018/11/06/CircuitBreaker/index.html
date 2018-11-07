@@ -113,7 +113,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.top/images3/CircuitBreaker-1.png">
 <meta property="og:image" content="http://idiotsky.top/images3/CircuitBreaker-2.png">
-<meta property="og:updated_time" content="2018-11-06T14:55:53.025Z">
+<meta property="og:updated_time" content="2018-11-07T14:30:12.117Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="熔断器概念">
 <meta name="twitter:description" content="前言分布式系统中经常会出现某个基础服务不可用造成整个系统不可用的情况, 这种现象被称为服务雪崩效应. 为了应对服务雪崩, 一种常见的做法是手动服务降级. 而Hystrix的出现,给我们提供了另一种选择. 服务雪崩效应的定义服务雪崩效应是一种因 服务提供者 的不可用导致 服务调用者 的不可用,并将不可用 逐渐放大 的过程.如果所示:  上图中, A为服务提供者, B为A的服务调用者, C和D是B的服">
@@ -448,6 +448,25 @@
 <li>服务调用者不可用</li>
 </ol>
 <p><a href="http://idiotsky.top/images3/CircuitBreaker-2.png"><img src="http://idiotsky.top/images3/CircuitBreaker-2.png" alt=""></a></p>
+<p>服务雪崩的每个阶段都可能由不同的原因造成, 比如造成<strong>服务不可用</strong>的原因有:</p>
+<ul>
+<li>硬件故障</li>
+<li>程序Bug</li>
+<li>缓存击穿</li>
+<li>用户大量请求</li>
+</ul>
+<p>硬件故障可能为硬件损坏造成的服务器主机宕机, 网络硬件故障造成的服务提供者的不可访问.<br>缓存击穿一般发生在缓存应用重启, 所有缓存被清空时,以及短时间内大量缓存失效时. 大量的缓存不命中, 使请求直击后端,造成服务提供者超负荷运行,引起服务不可用.<br>在秒杀和大促开始前,如果准备不充分,用户发起大量请求也会造成服务提供者的不可用.</p>
+<p>而形成<strong>重试加大流量</strong>的原因有:</p>
+<ul>
+<li>用户重试</li>
+<li>代码逻辑重试</li>
+</ul>
+<p>在服务提供者不可用后, 用户由于忍受不了界面上长时间的等待,而不断刷新页面甚至提交表单.<br>服务调用端的会存在大量服务异常后的重试逻辑.<br>这些重试都会进一步加大请求流量.</p>
+<p>最后, <strong>服务调用者不可用</strong>产生的主要原因是:</p>
+<ul>
+<li>同步等待造成的资源耗尽</li>
+</ul>
+<p>当服务调用者使用<strong>同步调用</strong>时, 会产生大量的等待线程占用系统资源. 一旦线程资源被耗尽,服务调用者提供的服务也将处于不可用状态, 于是服务雪崩效应产生了.</p>
 <blockquote>
 <p>to be continue…</p>
 </blockquote>
