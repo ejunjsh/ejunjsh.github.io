@@ -80,7 +80,7 @@
     <link href="http://idiotsky.top/2018/10/24/docker-summary/"/>
     <id>http://idiotsky.top/2018/10/24/docker-summary/</id>
     <published>2018-10-24T14:50:22.000Z</published>
-    <updated>2018-11-10T04:34:02.833Z</updated>
+    <updated>2018-11-10T04:34:41.277Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>不想分几章了，所以很长很长👿</p>
@@ -106,14 +106,14 @@
 <li>Docker registry：Docker 镜像仓库，用于保存镜像，并提供镜像上传和下载</li>
 </ul>
 <h1 id="Host-OS-VS-Guest-OS-VS-Base-image"><a href="#Host-OS-VS-Guest-OS-VS-Base-image" class="headerlink" title="Host OS VS Guest OS VS Base image"></a>Host OS VS Guest OS VS Base image</h1><p>比如，一台主机安装的是 Centos 操作系统，现在在上面跑一个 Ubuntu 容器。此时，Host OS 是 Centos，Guest OS 是 Ubuntu。Guest OS 也被成为容器的 Base Image。</p>
-<p><a href="http://idiotsky.top/images3/docker-summary-9.jpg"><img src="http://idiotsky.top/images3/docker-summary-9.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/docker-summary-9.png"><img src="http://idiotsky.top/images3/docker-summary-9.png" alt=""></a></p>
 <p>一些说明：</p>
 <ul>
 <li>关于 linux 内核和版本：所有 Linux 发行版都采用相同的 Linux 内核（kernel），然后所有发行版对内核都有轻微改动。这些改动都会上传回 linux 社区，并被合并。</li>
 <li>关于Linux 容器环境：因为所有Linux发行版都包含同一个linux 内核（有轻微修改），以及不同的自己的软件，因此，会很容易地将某个 userland 软件安装在linux 内核上，来模拟不同的发行版环境。比如说，在 Ubuntu 上运行 Centos 容器，这意味着从 Centos 获取 userland 软件，运行在 Ubuntu 内核上。因此，这就像在同一个操作系统（linux 内核）上运行不同的 userland 软件（发行版的）。这就是为什么Docker 不支持在 Linux 主机上运行 FreeBSD 或者windows 容器。</li>
 </ul>
 <p>可见，容器的 base image 并不真的是 base OS。Base image 会远远比 base OS 更轻量。它只安装发行版特殊的部分（userland 软件）。</p>
-<p><a href="http://idiotsky.top/images3/docker-summary-10.jpg"><img src="http://idiotsky.top/images3/docker-summary-10.jpg" alt=""></a></p>
+<p><a href="http://idiotsky.top/images3/docker-summary-10.png"><img src="http://idiotsky.top/images3/docker-summary-10.png" alt=""></a></p>
 <p>那为什么还需要 base image 呢？这是因为，docker 容器文件系统与 host OS 是隔离的。容器镜像中的应用软件无法看到主机文件系统，除非将主机文件系统挂载为容器的卷。因此，可以想像一下，你容器中的应用依赖于各种操作系统库，因此我们不得不将这些库打包到镜像之中。另外，base image 会让我们使用到各个发行版的包管理系统，比如 yum 和 apt-get。而且，各个linux 发行版的 base image 也不是普通的发行版，而是一个简化了的版本。而且，base image 并不带有 linux 内核，因为容器会使用主机的内核。</p>
 <p>因此，需要注重理解 image 和 OS 这两个概念。之所以成为 base image，而不是 base OS，是因为 base image 中并不包括完整的 OS。而这一点，是容器与虚拟机之前的本质区别之一。那就是，容器并没有虚拟化，而是共享主机上的linux 内核。</p>
 <h1 id="Docker-镜像分层-COW-和-镜像大小（size）"><a href="#Docker-镜像分层-COW-和-镜像大小（size）" class="headerlink" title="Docker 镜像分层,COW 和 镜像大小（size）"></a>Docker 镜像分层,COW 和 镜像大小（size）</h1><h2 id="镜像分层和容器层"><a href="#镜像分层和容器层" class="headerlink" title="镜像分层和容器层"></a>镜像分层和容器层</h2><p>一个 Docker 镜像是基于基础镜像的多层叠加，最终构成和容器的 rootfs （根文件系统）。当 Docker 创建一个容器时，它会在基础镜像的容器层之上添加一层新的薄薄的可写容器层。接下来，所有对容器的变化，比如写新的文件，修改已有文件和删除文件，都只会作用在这个容器层之中。因此，通过不拷贝完整的 rootfs，Docker 减少了容器所占用的空间，以及减少了容器启动所需时间。</p>
