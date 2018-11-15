@@ -113,7 +113,8 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.top/images3/CircuitBreaker-1.png">
 <meta property="og:image" content="http://idiotsky.top/images3/CircuitBreaker-2.png">
-<meta property="og:updated_time" content="2018-11-07T14:30:12.117Z">
+<meta property="og:image" content="http://idiotsky.top/images3/CircuitBreaker-3.png">
+<meta property="og:updated_time" content="2018-11-15T15:30:12.195Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="熔断器概念">
 <meta name="twitter:description" content="前言分布式系统中经常会出现某个基础服务不可用造成整个系统不可用的情况, 这种现象被称为服务雪崩效应. 为了应对服务雪崩, 一种常见的做法是手动服务降级. 而Hystrix的出现,给我们提供了另一种选择. 服务雪崩效应的定义服务雪崩效应是一种因 服务提供者 的不可用导致 服务调用者 的不可用,并将不可用 逐渐放大 的过程.如果所示:  上图中, A为服务提供者, B为A的服务调用者, C和D是B的服">
@@ -467,6 +468,15 @@
 <li>同步等待造成的资源耗尽</li>
 </ul>
 <p>当服务调用者使用<strong>同步调用</strong>时, 会产生大量的等待线程占用系统资源. 一旦线程资源被耗尽,服务调用者提供的服务也将处于不可用状态, 于是服务雪崩效应产生了.</p>
+<h2 id="使用Hystrix预防服务雪崩"><a href="#使用Hystrix预防服务雪崩" class="headerlink" title="使用Hystrix预防服务雪崩"></a>使用Hystrix预防服务雪崩</h2><h3 id="熔断器模式"><a href="#熔断器模式" class="headerlink" title="熔断器模式"></a>熔断器模式</h3><p>熔断器模式定义了熔断器开关相互转换的逻辑:</p>
+<p><a href="http://idiotsky.top/images3/CircuitBreaker-3.png"><img src="http://idiotsky.top/images3/CircuitBreaker-3.png" alt=""></a></p>
+<p>服务的健康状况 = 请求失败数 / 请求总数.<br>熔断器开关由关闭到打开的状态转换是通过当前服务健康状况和设定阈值比较决定的.</p>
+<ol>
+<li>当熔断器开关关闭时, 请求被允许通过熔断器. 如果当前健康状况高于设定阈值, 开关继续保持关闭. 如果当前健康状况低于设定阈值, 开关则切换为打开状态.</li>
+<li>当熔断器开关打开时, 请求被禁止通过.</li>
+<li>当熔断器开关处于打开状态, 经过一段时间后, 熔断器会自动进入半开状态, 这时熔断器只允许一个请求通过. 当该请求调用成功时, 熔断器恢复到关闭状态. 若该请求失败, 熔断器继续保持打开状态, 接下来的请求被禁止通过.</li>
+</ol>
+<p>熔断器的开关能保证服务调用者在调用异常服务时, 快速返回结果, 避免大量的同步等待. 并且熔断器能在一段时间后继续侦测请求执行结果, 提供恢复服务调用的可能.</p>
 <blockquote>
 <p>to be continue…</p>
 </blockquote>
@@ -696,7 +706,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务雪崩效应的定义"><span class="nav-number">2.</span> <span class="nav-text">服务雪崩效应的定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务雪崩效应形成的原因"><span class="nav-number">3.</span> <span class="nav-text">服务雪崩效应形成的原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务雪崩效应的定义"><span class="nav-number">2.</span> <span class="nav-text">服务雪崩效应的定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#服务雪崩效应形成的原因"><span class="nav-number">3.</span> <span class="nav-text">服务雪崩效应形成的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Hystrix预防服务雪崩"><span class="nav-number">3.1.</span> <span class="nav-text">使用Hystrix预防服务雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#熔断器模式"><span class="nav-number">3.1.1.</span> <span class="nav-text">熔断器模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
