@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-11-15T15:30:12.195Z</updated>
+  <updated>2018-11-16T14:50:45.011Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://idiotsky.top/2018/11/06/CircuitBreaker/"/>
     <id>http://idiotsky.top/2018/11/06/CircuitBreaker/</id>
     <published>2018-11-06T14:41:21.000Z</published>
-    <updated>2018-11-15T15:30:12.195Z</updated>
+    <updated>2018-11-16T14:50:45.011Z</updated>
     
     <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>分布式系统中经常会出现某个基础服务不可用造成整个系统不可用的情况, 这种现象被称为服务雪崩效应. 为了应对服务雪崩, 一种常见的做法是手动服务降级. 而Hystrix的出现,给我们提供了另一种选择.</p>
 <h1 id="服务雪崩效应的定义"><a href="#服务雪崩效应的定义" class="headerlink" title="服务雪崩效应的定义"></a>服务雪崩效应的定义</h1><p>服务雪崩效应是一种因 服务提供者 的不可用导致 服务调用者 的不可用,并将不可用 逐渐放大 的过程.如果所示:</p>
@@ -53,7 +53,40 @@
 <li>同步等待造成的资源耗尽</li>
 </ul>
 <p>当服务调用者使用<strong>同步调用</strong>时, 会产生大量的等待线程占用系统资源. 一旦线程资源被耗尽,服务调用者提供的服务也将处于不可用状态, 于是服务雪崩效应产生了.</p>
-<h2 id="使用Hystrix预防服务雪崩"><a href="#使用Hystrix预防服务雪崩" class="headerlink" title="使用Hystrix预防服务雪崩"></a>使用Hystrix预防服务雪崩</h2><h3 id="熔断器模式"><a href="#熔断器模式" class="headerlink" title="熔断器模式"></a>熔断器模式</h3><p>熔断器模式定义了熔断器开关相互转换的逻辑:</p>
+<h1 id="服务雪崩的应对策略"><a href="#服务雪崩的应对策略" class="headerlink" title="服务雪崩的应对策略"></a>服务雪崩的应对策略</h1><p>针对造成服务雪崩的不同原因, 可以使用不同的应对策略:</p>
+<ol>
+<li>流量控制</li>
+<li>改进缓存模式</li>
+<li>服务自动扩容</li>
+<li>服务调用者降级服务</li>
+</ol>
+<p><strong>流量控制</strong>的具体措施包括:</p>
+<ul>
+<li>网关限流</li>
+<li>用户交互限流</li>
+<li>关闭重试</li>
+</ul>
+<p>因为Nginx的高性能, 目前一线互联网公司大量采用Nginx+Lua的网关进行流量控制, 由此而来的OpenResty也越来越热门.</p>
+<p>用户交互限流的具体措施有: 1. 采用加载动画,提高用户的忍耐等待时间. 2. 提交按钮添加强制等待时间机制.</p>
+<p><strong>改进缓存模式</strong>的措施包括:</p>
+<ul>
+<li>缓存预加载</li>
+<li>同步改为异步刷新</li>
+</ul>
+<p><strong>服务自动扩容</strong>的措施主要有:</p>
+<ul>
+<li>AWS的auto scaling</li>
+</ul>
+<p><strong>服务调用者降级服务</strong>的措施包括:</p>
+<ul>
+<li>资源隔离</li>
+<li>对依赖服务进行分类</li>
+<li>不可用服务的调用快速失败</li>
+</ul>
+<p>资源隔离主要是对调用服务的线程池进行隔离.</p>
+<p>我们根据具体业务,将依赖服务分为: 强依赖和若依赖. 强依赖服务不可用会导致当前业务中止,而弱依赖服务的不可用不会导致当前业务的中止.</p>
+<p>不可用服务的调用快速失败一般通过<strong>超时机制</strong>, <strong>熔断器</strong>和熔断后的<strong>降级方法</strong>来实现.</p>
+<h1 id="使用Hystrix预防服务雪崩"><a href="#使用Hystrix预防服务雪崩" class="headerlink" title="使用Hystrix预防服务雪崩"></a>使用Hystrix预防服务雪崩</h1><h2 id="熔断器模式"><a href="#熔断器模式" class="headerlink" title="熔断器模式"></a>熔断器模式</h2><p>熔断器模式定义了熔断器开关相互转换的逻辑:</p>
 <p><a href="http://idiotsky.top/images3/CircuitBreaker-3.png"><img src="http://idiotsky.top/images3/CircuitBreaker-3.png" alt=""></a></p>
 <p>服务的健康状况 = 请求失败数 / 请求总数.<br>熔断器开关由关闭到打开的状态转换是通过当前服务健康状况和设定阈值比较决定的.</p>
 <ol>
@@ -657,9 +690,9 @@
       <category term="c" scheme="http://idiotsky.top/categories/c/"/>
     
     
-      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
-    
       <category term="c" scheme="http://idiotsky.top/tags/c/"/>
+    
+      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
     
   </entry>
   
@@ -2613,9 +2646,9 @@
     
       <category term="linux" scheme="http://idiotsky.top/tags/linux/"/>
     
-      <category term="nio" scheme="http://idiotsky.top/tags/nio/"/>
-    
       <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
+    
+      <category term="nio" scheme="http://idiotsky.top/tags/nio/"/>
     
       <category term="select" scheme="http://idiotsky.top/tags/select/"/>
     
