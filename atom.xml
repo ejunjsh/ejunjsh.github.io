@@ -690,9 +690,9 @@
       <category term="c" scheme="http://idiotsky.top/categories/c/"/>
     
     
-      <category term="c" scheme="http://idiotsky.top/tags/c/"/>
-    
       <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
+    
+      <category term="c" scheme="http://idiotsky.top/tags/c/"/>
     
   </entry>
   
@@ -2646,9 +2646,9 @@
     
       <category term="linux" scheme="http://idiotsky.top/tags/linux/"/>
     
-      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
-    
       <category term="nio" scheme="http://idiotsky.top/tags/nio/"/>
+    
+      <category term="epoll" scheme="http://idiotsky.top/tags/epoll/"/>
     
       <category term="select" scheme="http://idiotsky.top/tags/select/"/>
     
