@@ -125,7 +125,7 @@
 <meta property="og:image" content="http://idiotsky.top/images1/java-hashmap-12.png">
 <meta property="og:image" content="http://idiotsky.top/images1/java-hashmap-13.png">
 <meta property="og:image" content="http://idiotsky.top/images1/java-hashmap-14.png">
-<meta property="og:updated_time" content="2018-07-17T11:39:16.534Z">
+<meta property="og:updated_time" content="2018-11-25T09:39:54.853Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java数据结构-hashmap">
 <meta name="twitter:description" content="摘要HashMap是Java程序员使用频率最高的用于映射(键值对)处理的数据类型。随着JDK（Java Developmet Kit）版本的更新，JDK1.8对HashMap底层的实现进行了优化，例如引入红黑树的数据结构和扩容的优化等。本文结合JDK1.7和JDK1.8的区别，深入探讨HashMap的结构实现和功能原理。 简介Java为数据结构中的映射定义了一个接口java.util.Map，此接">
@@ -514,7 +514,9 @@
 <li>JDK1.8引入红黑树大程度优化了HashMap的性能。</li>
 <li>还没升级JDK1.8的，现在开始升级吧。HashMap的性能提升仅仅是JDK1.8的冰山一角。</li>
 </ol>
-<p>参考 <a href="https://tech.meituan.com/java-hashmap.html" target="_blank" rel="noopener">https://tech.meituan.com/java-hashmap.html</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://tech.meituan.com/java-hashmap.html" target="_blank" rel="noopener">https://tech.meituan.com/java-hashmap.html</a></li>
+</ul>
 
       
     </div>
@@ -638,7 +640,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">155</span>
+                <span class="site-state-item-count">156</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -660,7 +662,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">150</span>
+                <span class="site-state-item-count">151</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -748,7 +750,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内部实现"><span class="nav-number">3.</span> <span class="nav-text">内部实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储结构-字段"><span class="nav-number">3.1.</span> <span class="nav-text">存储结构-字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能实现-方法"><span class="nav-number">3.2.</span> <span class="nav-text">功能实现-方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确定哈希桶数组索引位置"><span class="nav-number">3.2.1.</span> <span class="nav-text">确定哈希桶数组索引位置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析HashMap的put方法"><span class="nav-number">3.3.</span> <span class="nav-text">分析HashMap的put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容机制"><span class="nav-number">3.4.</span> <span class="nav-text">扩容机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程安全性"><span class="nav-number">4.</span> <span class="nav-text">线程安全性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK1-8与JDK1-7的性能对比"><span class="nav-number">5.</span> <span class="nav-text">JDK1.8与JDK1.7的性能对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash较均匀的情况"><span class="nav-number">5.1.</span> <span class="nav-text">Hash较均匀的情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash极不均匀的情况"><span class="nav-number">5.2.</span> <span class="nav-text">Hash极不均匀的情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内部实现"><span class="nav-number">3.</span> <span class="nav-text">内部实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#存储结构-字段"><span class="nav-number">3.1.</span> <span class="nav-text">存储结构-字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#功能实现-方法"><span class="nav-number">3.2.</span> <span class="nav-text">功能实现-方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#确定哈希桶数组索引位置"><span class="nav-number">3.2.1.</span> <span class="nav-text">确定哈希桶数组索引位置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析HashMap的put方法"><span class="nav-number">3.3.</span> <span class="nav-text">分析HashMap的put方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩容机制"><span class="nav-number">3.4.</span> <span class="nav-text">扩容机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程安全性"><span class="nav-number">4.</span> <span class="nav-text">线程安全性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK1-8与JDK1-7的性能对比"><span class="nav-number">5.</span> <span class="nav-text">JDK1.8与JDK1.7的性能对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash较均匀的情况"><span class="nav-number">5.1.</span> <span class="nav-text">Hash较均匀的情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash极不均匀的情况"><span class="nav-number">5.2.</span> <span class="nav-text">Hash极不均匀的情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
