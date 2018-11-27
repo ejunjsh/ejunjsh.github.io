@@ -344,6 +344,164 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/07/16/java-arraylist/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/16/java-arraylist/" itemprop="url">java数据结构-arraylist</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-16T18:03:15+08:00">
+                16 Jul 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a href="http://calvin1978.blogcn.com/articles/collection.html" target="_blank" rel="noopener">关于Java集合的小抄</a>中是这样描述的：</p>
+<blockquote>
+<p>以数组实现。节约空间，但数组有容量限制。超出限制时会增加50%容量，用System.arraycopy()复制到新的数组，因此最好能给出数组大小的预估值。默认第一次插入元素时创建大小为10的数组。</p>
+</blockquote>
+<blockquote>
+<p>按数组下标访问元素—get(i)/set(i,e) 的性能很高，这是数组的基本优势。</p>
+</blockquote>
+<blockquote>
+<p>直接在数组末尾加入元素—add(e)的性能也高，但如果按下标插入、删除元素—add(i,e), remove(i), remove(e)，则要用System.arraycopy()来移动部分受影响的元素，性能就变差了，这是基本劣势。</p>
+</blockquote>
+<p>ArrayList是一个相对来说比较简单的数据结构，最重要的一点就是它的自动扩容，可以认为就是我们常说的“动态数组”。</p>
+<p>来看一段简单的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">list.add(<span class="string">"语文: 99"</span>);</span><br><span class="line">list.add(<span class="string">"数学: 98"</span>);</span><br><span class="line">list.add(<span class="string">"英语: 100"</span>);</span><br><span class="line">list.remove(<span class="number">0</span>);</span><br></pre></td></tr></table></figure></p>
+<p>在执行这四条语句时，是这么变化的：<br><a href="http://idiotsky.top/images1/java-arraylist-3.png"><img src="http://idiotsky.top/images1/java-arraylist-3.png" alt=""></a><br>接下来看看几个常用的方法的源码分析。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/16/java-arraylist/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/07/15/java-hashset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1697,158 +1855,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2016/12/29/linux-ar/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/12/29/linux-ar/" itemprop="url">linux命令-ar</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-29T11:31:23+08:00">
-                29 Dec 16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux命令/" itemprop="url" rel="index">
-                    <span itemprop="name">linux命令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>备忘，mark 👿</p>
-</blockquote>
-<h1 id="用途说明"><a href="#用途说明" class="headerlink" title="用途说明"></a>用途说明</h1><p>创建静态库.a文件。用C/C++开发程序时经常用到，但我很少单独在命令行中使用ar命令，一般写在makefile中，有时也会在shell脚 本中用到。</p>
-<h1 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h1><p>格式：ar rcs  libxxx.a xx1.o xx2.o<br>参数r：在库中插入模块(替换)。当插入的模块名已经在库中存在，则替换同名的模块。如果若干模块中有一个模块在库中不存在，ar显示一个错误消息，并不替换其他同名模块。默认的情况下，新的成员增加在库的结尾处，可以使用其他任选项来改变增加的位置。【1】<br>参数c：创建一个库。不管库是否存在，都将创建。<br>参数s：创建目标文件索引，这在创建较大的库时能加快时间。（补充：如果不需要创建索引，可改成大写S参数；如果.a文件缺少索引，可以使用ranlib命令添加）</p>
-<p>格式：ar t libxxx.a<br>显示库文件中有哪些目标文件，只显示名称。</p>
-<p>格式：ar tv libxxx.a<br>显示库文件中有哪些目标文件，显示文件名、时间、大小等详细信息。</p>
-<p>格式：nm -s libxxx.a<br>显示库文件中的索引表。</p>
-<p>格式：ranlib libxxx.a<br>为库文件创建索引表。</p>
-<h1 id="创建并使用静态库"><a href="#创建并使用静态库" class="headerlink" title="创建并使用静态库"></a>创建并使用静态库</h1><p>第一步：编辑源文件，test.h test.c main.c。其中main.c文件中包含main函数，作为程序入口；test.c中包含main函数中需要用到的函数。<br>vi test.h test.c main.c<br>第二步：将test.c编译成目标文件。<br>gcc -c test.c<br>如果test.c无误，就会得到test.o这个目标文件。<br>第三步：由.o文件创建静态库。<br>ar rcs libtest.a test.o<br>第四步：在程序中使用静态库。<br>gcc -o main main.c -L. -ltest<br>因为是静态编译，生成的执行文件可以独立于.a文件运行。<br>第五步：执行。<br>./main</p>
-<h1 id="创建并使用动态库"><a href="#创建并使用动态库" class="headerlink" title="创建并使用动态库"></a>创建并使用动态库</h1><p>第一步：编辑源文件，test.h test.c main.c。其中main.c文件中包含main函数，作为程序入口；test.c中包含main函数中需要用到的函数。<br>vi test.h test.c main.c<br>第二步：将test.c编译成目标文件。<br>gcc -c test.c<br>前面两步与创建静态库一致。<br>第三步：由.o文件创建动态库文件。<br>gcc -shared -fPIC -o libtest.so test.o<br>第四步：在程序中使用动态库。<br>gcc -o main main.c -L. -ltest<br>当静态库和动态库同名时， gcc命令将优先使用动态库。<br>第五步：执行。<br>LD_LIBRARY_PATH=. ./main</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1899,7 +1905,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">156</span>
+                <span class="site-state-item-count">157</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
