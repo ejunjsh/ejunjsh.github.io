@@ -344,6 +344,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/18/go-basic-iota/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/18/go-basic-iota/" itemprop="url">go基础-iota</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T15:44:21+08:00">
+                18 Sep 17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>iota这个关键字，用来实现枚举的功能，但是用起来很奇怪，其实最后表示的还是常量。</p>
+</blockquote>
+<h1 id="先上代码"><a href="#先上代码" class="headerlink" title="先上代码"></a>先上代码</h1><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span>(</span><br><span class="line">    a= <span class="number">10</span>+<span class="literal">iota</span></span><br><span class="line">    b</span><br><span class="line">    c</span><br><span class="line">    d</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	fmt.Println(a)</span><br><span class="line">	fmt.Println(b)</span><br><span class="line">	fmt.Println(c)</span><br><span class="line">	fmt.Println(d)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td></tr></table></figure></p>
+<p>其实上面代码等价于<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span>(</span><br><span class="line">    a= <span class="number">10</span>+<span class="number">0</span></span><br><span class="line">    b= <span class="number">10</span>+<span class="number">1</span></span><br><span class="line">    c= <span class="number">10</span>+<span class="number">2</span></span><br><span class="line">    d= <span class="number">10</span>+<span class="number">3</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>看出规律了吧，只要iota出现一次，就累加一次，而且一旦出现一次，就算后面不使用这个iota关键字，接下来的变量都会套用前面的表达式来计算，所以b,c,d用的就是a的表达式<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/18/go-basic-iota/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/18/redis-object/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1730,163 +1882,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2017/09/13/redis-string/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="ejunjsh">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="IdiotSky">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/13/redis-string/" itemprop="url">redis数据结构-简单动态字符串</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-13T12:07:30+08:00">
-                13 Sep 17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index">
-                    <span itemprop="name">redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>Redis 没有直接使用 C 语言传统的字符串表示（以空字符结尾的字符数组，以下简称 C 字符串）， 而是自己构建了一种名为简单动态字符串（simple dynamic string，SDS）的抽象类型， 并将 SDS 用作 Redis 的默认字符串表示。例如键（key）底层就是SDS，而值如果是字符串对象，那这个对象的底层也是个SDS</p>
-</blockquote>
-<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>每个 sds.h/sdshdr 结构表示一个 SDS 值：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录 buf 数组中已使用字节的数量</span></span><br><span class="line">    <span class="comment">// 等于 SDS 所保存字符串的长度</span></span><br><span class="line">    <span class="keyword">int</span> len;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录 buf 数组中未使用字节的数量</span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 字节数组，用于保存字符串</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-<p>图 2-1 展示了一个 SDS 示例：</p>
-<ul>
-<li>free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间。</li>
-<li>len 属性的值为 5 ， 表示这个 SDS 保存了一个五字节长的字符串。</li>
-<li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’ 。<br><a href="http://idiotsky.top/images/redis-string-1.png"><img src="http://idiotsky.top/images/redis-string-1.png" alt=""></a><br>SDS 遵循 C 字符串以空字符结尾的惯例， 保存空字符的 1 字节空间不计算在 SDS 的 len 属性里面， 并且为空字符分配额外的 1 字节空间， 以及添加空字符到字符串末尾等操作都是由 SDS 函数自动完成的， 所以这个空字符对于 SDS 的使用者来说是完全透明的。</li>
-</ul>
-<p>遵循空字符结尾这一惯例的好处是， SDS 可以直接重用一部分 C 字符串函数库里面的函数。</p>
-<p>举个例子， 如果我们有一个指向图 2-1 所示 SDS 的指针 s ， 那么我们可以直接使用 stdio.h/printf 函数， 通过执行以下语句：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span>(<span class="string">"%s"</span>, s-&gt;buf);</span><br></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/13/redis-string/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1937,7 +1932,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">157</span>
+                <span class="site-state-item-count">158</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1959,7 +1954,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">151</span>
+                <span class="site-state-item-count">152</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>

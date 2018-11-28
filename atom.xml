@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://idiotsky.top/"/>
-  <updated>2018-11-27T13:55:00.218Z</updated>
+  <updated>2018-11-28T15:12:22.578Z</updated>
   <id>http://idiotsky.top/</id>
   
   <author>
@@ -14,6 +14,51 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入Linux proc文件系统</title>
+    <link href="http://idiotsky.top/2018/11/28/linux-proc/"/>
+    <id>http://idiotsky.top/2018/11/28/linux-proc/</id>
+    <published>2018-11-28T14:38:53.000Z</published>
+    <updated>2018-11-28T15:12:22.578Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>继续学习Linux👿</p>
+</blockquote>
+<p>在Linux上，proc是一个伪文件系统，提供了访问内核数据的方法，一般挂载在“/proc”目录，其中的大部分内容是只读的，挂载（mount）信息可能为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)</span><br></pre></td></tr></table></figure>
+<p>下面列举“/proc”文件系统下的文件和目录。</p>
+<h1 id="pid目录"><a href="#pid目录" class="headerlink" title="pid目录"></a>pid目录</h1><p><code>/proc/[pid]</code>目录，pid为进程的数字ID，是个数值，每个运行着的进程都有这么一个目录。</p>
+<h2 id="cmdline"><a href="#cmdline" class="headerlink" title="cmdline"></a>cmdline</h2><p><code>/proc/[pid]/cmdline</code>是一个只读文件，包含进程的完整命令行信息。如果这个进程是zombie进程，则这个文件没有任何内容。举例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># ps -ef | grep 2948</span><br><span class="line">root       2948      1  0 Nov05 ?        00:00:04 /usr/sbin/libvirtd --listen</span><br><span class="line"></span><br><span class="line"># cat /proc/2948/cmdline</span><br><span class="line">/usr/sbin/libvirtd--listen</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<blockquote>
+<p>to be continue…</p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;继续学习Linux👿&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在Linux上，proc是一个伪文件系统，提供了访问内核数据的方法，一般挂载在“/proc”目录，其中的大部分内容是只读的，挂载（mount）信息可能为：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;下面列举“/proc”文件系统下的文件和目录。&lt;/p&gt;
+&lt;h1 id=&quot;pid目录&quot;&gt;&lt;a href=&quot;#pid目录&quot; class=&quot;headerlink&quot; title=&quot;pid目录&quot;&gt;&lt;/a&gt;pid目录&lt;/h1&gt;&lt;p&gt;&lt;code&gt;/proc/[pid]&lt;/code&gt;目录，pid为进程的数字ID，是个数值，每个运行着的进程都有这么一个目录。&lt;/p&gt;
+&lt;h2 id=&quot;cmdline&quot;&gt;&lt;a href=&quot;#cmdline&quot; class=&quot;headerlink&quot; title=&quot;cmdline&quot;&gt;&lt;/a&gt;cmdline&lt;/h2&gt;&lt;p&gt;&lt;code&gt;/proc/[pid]/cmdline&lt;/code&gt;是一个只读文件，包含进程的完整命令行信息。如果这个进程是zombie进程，则这个文件没有任何内容。举例如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;# ps -ef | grep 2948&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;root       2948      1  0 Nov05 ?        00:00:04 /usr/sbin/libvirtd --listen&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;# cat /proc/2948/cmdline&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;/usr/sbin/libvirtd--listen&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="http://idiotsky.top/categories/linux/"/>
+    
+    
+      <category term="linux" scheme="http://idiotsky.top/tags/linux/"/>
+    
+      <category term="proc" scheme="http://idiotsky.top/tags/proc/"/>
+    
+  </entry>
   
   <entry>
     <title>说说c的volatile</title>
@@ -2635,47 +2680,6 @@
       <category term="Unicode" scheme="http://idiotsky.top/tags/Unicode/"/>
     
       <category term="UTF-8" scheme="http://idiotsky.top/tags/UTF-8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>linux的写时复制</title>
-    <link href="http://idiotsky.top/2018/03/13/linux-copy-on-write/"/>
-    <id>http://idiotsky.top/2018/03/13/linux-copy-on-write/</id>
-    <published>2018-03-13T15:32:23.000Z</published>
-    <updated>2018-07-17T11:39:16.529Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>前面一篇文章又给自己挖坑，所以必须再mark一篇，这篇文章很好的说了关于写时复制的原理。</p>
-</blockquote>
-<p>当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所以为子进程复制父进程的物理内存内容是一件徒劳无功的事情。</p>
-<p>所以Linux的做法就是：父子进程共用同一物理内存。如下图：</p>
-<p><a href="http://idiotsky.top/images2/linux-copy-on-write-1.png"><img src="http://idiotsky.top/images2/linux-copy-on-write-1.png" alt=""></a><br><a id="more"></a></p>
-<p>但操作系统的要求是：进程之间的内存应该要独立，就是读写A进程的内存空间不应该影响B进程的内存内容。读操作是不会改变内存中的内容，所以对于读操作来说，共享物理内存是安全的。但是对于写操作就不一样，如果父子进程共用了相同的物理内存，那么对子进程的内存进行写操作同时会影响到父进程，所以违反了操作系统的要求。</p>
-<p>Linux的解决方案是：把共用的物理内存设置为只读，因为读操作不会改变内存的内容，所以对于父子进程都是允许的。而当父子进程其中一个进行写操作时，因为内存被设置为只读，所以CPU会触发 “page fault” 的错误，从而调用内核的<code>do_page_fault()</code>函数。而<code>do_page_fault()</code>函数又会调用<code>do_wp_page()</code>函数去进行复制父进程内存的内容。</p>
-<p><code>do_wp_page()</code>函数先进行一些安全监测，然后调用<code>__do_wp_page()</code>函数做最后的复制操作。去掉一些监测后，<code>__do_wp_page()</code>函数的代码如下图：</p>
-<p><a href="http://idiotsky.top/images2/linux-copy-on-write-3.jpg"><img src="http://idiotsky.top/images2/linux-copy-on-write-3.jpg" alt=""></a> </p>
-<p><code>__do_wp_page()</code>首先会申请一块新的物理内存，然后复制旧的物理内存页的内容到新的物理内存也中，然后设置虚拟内存与物理内存的映射关系。最后把父子进程的物理内存设置可读写，这样父子进程相同的虚拟内存都指向不同的物理内存，所以达到进程之间内存隔离的目的。如下图：</p>
-<p><a href="http://idiotsky.top/images2/linux-copy-on-write-2.png"><img src="http://idiotsky.top/images2/linux-copy-on-write-2.png" alt=""></a> </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;前面一篇文章又给自己挖坑，所以必须再mark一篇，这篇文章很好的说了关于写时复制的原理。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;当调用fork()系统调用创建一个子进程时，Linux并不会为子进程创建新的物理内存空间，而是公用父进程的物理内存。这是因为Linux的内核开发者觉得，调用者调用fork()系统调用后会立刻调用exec()系统调用执行新的程序，这样旧的物理内存内容就没有什么作用了（因为新的程序与旧的程序完全没有关联），所以为子进程复制父进程的物理内存内容是一件徒劳无功的事情。&lt;/p&gt;
-&lt;p&gt;所以Linux的做法就是：父子进程共用同一物理内存。如下图：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;http://idiotsky.top/images2/linux-copy-on-write-1.png&quot;&gt;&lt;img src=&quot;http://idiotsky.top/images2/linux-copy-on-write-1.png&quot; alt=&quot;&quot;&gt;&lt;/a&gt;&lt;br&gt;
-    
-    </summary>
-    
-      <category term="linux" scheme="http://idiotsky.top/categories/linux/"/>
-    
-    
-      <category term="linux" scheme="http://idiotsky.top/tags/linux/"/>
-    
-      <category term="linux内核" scheme="http://idiotsky.top/tags/linux%E5%86%85%E6%A0%B8/"/>
     
   </entry>
   
