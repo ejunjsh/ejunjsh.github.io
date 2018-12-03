@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,netstat," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="mark and index for searching 👿  简介Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。 输出信息含义执行netstat后，其输出结果为 1234567891011# netstat|moreActiv">
+<meta name="keywords" content="linux,netstat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux netstat命令详解">
+<meta property="og:url" content="http://idiotsky.top/2018/12/02/linux-netstat/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="mark and index for searching 👿  简介Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。 输出信息含义执行netstat后，其输出结果为 1234567891011# netstat|moreActiv">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-12-03T02:55:38.143Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux netstat命令详解">
+<meta name="twitter:description" content="mark and index for searching 👿  简介Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。 输出信息含义执行netstat后，其输出结果为 1234567891011# netstat|moreActiv">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.top/2018/12/02/linux-netstat/"/>
+
+
+
+
+
+  <title>Linux netstat命令详解 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/12/02/linux-netstat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux netstat命令详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-02T22:04:11+08:00">
+                02 Dec 18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>mark and index for searching 👿</p>
+</blockquote>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。</p>
+<h1 id="输出信息含义"><a href="#输出信息含义" class="headerlink" title="输出信息含义"></a>输出信息含义</h1><p>执行netstat后，其输出结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># netstat|more</span><br><span class="line">Active Internet connections (w/o servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address               Foreign Address             State</span><br><span class="line">tcp        0      0 10.0.2.15:ssh               10.0.2.2:52091              ESTABLISHED</span><br><span class="line">Active UNIX domain sockets (w/o servers)</span><br><span class="line">Proto RefCnt Flags       Type       State         I-Node Path</span><br><span class="line">unix  11     [ ]         DGRAM                    11021  /dev/log</span><br><span class="line">unix  2      [ ]         DGRAM                    11556  @/org/freedesktop/hal/udev_event</span><br><span class="line">unix  2      [ ]         DGRAM                    8986   @/org/kernel/udev/udevd</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17777</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17776</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>从整体上看，netstat的输出结果可以分为两个部分：</p>
+<p>一个是Active Internet connections，称为有源TCP连接，其中”Recv-Q”和”Send-Q”指的是接收队列和发送队列。这些数字一般都应该是0。如果不是则表示包正在队列中堆积。这种情况只能在服务器网络繁忙的情况见到。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Active Internet connections (TCP, UDP, raw)</span><br><span class="line">Proto</span><br><span class="line">    The protocol (tcp, udp, raw) used by the socket.</span><br><span class="line"></span><br><span class="line">Recv-Q</span><br><span class="line">    The count of bytes not copied by the user program connected to this socket.</span><br><span class="line"></span><br><span class="line">Send-Q</span><br><span class="line">    The count of bytes not acknowledged by the remote host.</span><br></pre></td></tr></table></figure>
+<p>另一个是Active UNIX domain sockets，称为有源Unix域套接口(和网络套接字一样，但是只能用于本机通信，性能可以提高一倍)。</p>
+<ul>
+<li>Proto显示连接使用的协议，</li>
+<li>RefCnt表示连接到本套接口上的进程数量，</li>
+<li>Types显示套接口的类型，</li>
+<li>State显示套接口当前的状态，</li>
+<li>Path表示连接到套接口的其它进程使用的路径名。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Active UNIX domain Sockets</span><br><span class="line">  Proto</span><br><span class="line">      The protocol (usually unix) used by the socket.</span><br><span class="line"></span><br><span class="line">  RefCnt</span><br><span class="line">      The reference count (i.e. attached processes via this socket).</span><br><span class="line"></span><br><span class="line">  Flags</span><br><span class="line">      The  flags  displayed  is  SO_ACCEPTON  (displayed as ACC), SO_WAITDATA (W) or SO_NOSPACE (N).  SO_ACCECPTON is used on</span><br><span class="line">      unconnected sockets if their corresponding processes are waiting for a connect request. The other flags are not of nor-</span><br><span class="line">      mal interest.</span><br><span class="line"></span><br><span class="line">  Type</span><br><span class="line">      There are several types of socket access:</span><br><span class="line"></span><br><span class="line">      SOCK_DGRAM</span><br><span class="line">             The socket is used in Datagram (connectionless) mode.</span><br><span class="line"></span><br><span class="line">      SOCK_STREAM</span><br><span class="line">             This is a stream (connection) socket.</span><br><span class="line"></span><br><span class="line">      SOCK_RAW</span><br><span class="line">             The socket is used as a raw socket.</span><br></pre></td></tr></table></figure>
+<h1 id="常见参数"><a href="#常见参数" class="headerlink" title="常见参数"></a>常见参数</h1><p>-a (all)显示所有选项，默认不显示LISTEN相关<br>-t (tcp)仅显示tcp相关选项<br>-u (udp)仅显示udp相关选项<br>-n 拒绝显示别名，能显示数字的全部转化成数字。<br>-l 仅列出有在 Listen (监听) 的服務状态</p>
+<p>-p 显示建立相关链接的程序名<br>-r 显示路由信息，路由表<br>-e 显示扩展信息，例如uid等<br>-s 按各个协议进行统计<br>-c 每隔一个固定时间，执行该netstat命令。</p>
+<p>提示：LISTEN和LISTENING的状态只有用-a或者-l才能看到</p>
+<h1 id="实用命令实例"><a href="#实用命令实例" class="headerlink" title="实用命令实例"></a>实用命令实例</h1><h2 id="列出所有端口-包括监听和未监听的"><a href="#列出所有端口-包括监听和未监听的" class="headerlink" title="列出所有端口 (包括监听和未监听的)"></a>列出所有端口 (包括监听和未监听的)</h2><h3 id="列出所有端口-netstat-a"><a href="#列出所有端口-netstat-a" class="headerlink" title="列出所有端口 netstat -a"></a>列出所有端口 netstat -a</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -a | more</span></span><br><span class="line"> Active Internet connections (servers and established)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> tcp        0      0 localhost:30037         *:*                     LISTEN</span><br><span class="line"> udp        0      0 *:bootpc                *:*</span><br><span class="line"> </span><br><span class="line">Active UNIX domain sockets (servers and established)</span><br><span class="line"> Proto RefCnt Flags       Type       State         I-Node   Path</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     6135     /tmp/.X11-unix/X0</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     5140     /var/run/acpid.socket</span><br></pre></td></tr></table></figure>
+<h3 id="列出所有-tcp-端口-netstat-at"><a href="#列出所有-tcp-端口-netstat-at" class="headerlink" title="列出所有 tcp 端口 netstat -at"></a>列出所有 tcp 端口 netstat -at</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -at</span></span><br><span class="line"> Active Internet connections (servers and established)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> tcp        0      0 localhost:30037         *:*                     LISTEN</span><br><span class="line"> tcp        0      0 localhost:ipp           *:*                     LISTEN</span><br><span class="line"> tcp        0      0 *:smtp                  *:*                     LISTEN</span><br><span class="line"> tcp6       0      0 localhost:ipp           [::]:*                  LISTEN</span><br></pre></td></tr></table></figure>
+<h3 id="列出所有-udp-端口-netstat-au"><a href="#列出所有-udp-端口-netstat-au" class="headerlink" title="列出所有 udp 端口 netstat -au"></a>列出所有 udp 端口 netstat -au</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -au</span></span><br><span class="line"> Active Internet connections (servers and established)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> udp        0      0 *:bootpc                *:*</span><br><span class="line"> udp        0      0 *:49119                 *:*</span><br><span class="line"> udp        0      0 *:mdns                  *:*</span><br></pre></td></tr></table></figure>
+<h2 id="列出所有处于监听状态的-Sockets"><a href="#列出所有处于监听状态的-Sockets" class="headerlink" title="列出所有处于监听状态的 Sockets"></a>列出所有处于监听状态的 Sockets</h2><h3 id="只显示监听端口-netstat-l"><a href="#只显示监听端口-netstat-l" class="headerlink" title="只显示监听端口 netstat -l"></a>只显示监听端口 netstat -l</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -l</span></span><br><span class="line"> Active Internet connections (only servers)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> tcp        0      0 localhost:ipp           *:*                     LISTEN</span><br><span class="line"> tcp6       0      0 localhost:ipp           [::]:*                  LISTEN</span><br><span class="line"> udp        0      0 *:49119                 *:*</span><br></pre></td></tr></table></figure>
+<h3 id="只列出所有监听-tcp-端口-netstat-lt"><a href="#只列出所有监听-tcp-端口-netstat-lt" class="headerlink" title="只列出所有监听 tcp 端口 netstat -lt"></a>只列出所有监听 tcp 端口 netstat -lt</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -lt</span></span><br><span class="line"> Active Internet connections (only servers)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> tcp        0      0 localhost:30037         *:*                     LISTEN</span><br><span class="line"> tcp        0      0 *:smtp                  *:*                     LISTEN</span><br><span class="line"> tcp6       0      0 localhost:ipp           [::]:*                  LISTEN</span><br></pre></td></tr></table></figure>
+<h3 id="只列出所有监听-udp-端口-netstat-lu"><a href="#只列出所有监听-udp-端口-netstat-lu" class="headerlink" title="只列出所有监听 udp 端口 netstat -lu"></a>只列出所有监听 udp 端口 netstat -lu</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -lu</span></span><br><span class="line"> Active Internet connections (only servers)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> udp        0      0 *:49119                 *:*</span><br><span class="line"> udp        0      0 *:mdns                  *:*</span><br></pre></td></tr></table></figure>
+<h3 id="只列出所有监听-UNIX-端口-netstat-lx"><a href="#只列出所有监听-UNIX-端口-netstat-lx" class="headerlink" title="只列出所有监听 UNIX 端口 netstat -lx"></a>只列出所有监听 UNIX 端口 netstat -lx</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -lx</span></span><br><span class="line"> Active UNIX domain sockets (only servers)</span><br><span class="line"> Proto RefCnt Flags       Type       State         I-Node   Path</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     6294     private/maildrop</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     6203     public/cleanup</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     6302     private/ifmail</span><br><span class="line"> unix  2      [ ACC ]     STREAM     LISTENING     6306     private/bsmtp</span><br></pre></td></tr></table></figure>
+<h2 id="显示每个协议的统计信息"><a href="#显示每个协议的统计信息" class="headerlink" title="显示每个协议的统计信息"></a>显示每个协议的统计信息</h2><h3 id="显示所有端口的统计信息-netstat-s"><a href="#显示所有端口的统计信息-netstat-s" class="headerlink" title="显示所有端口的统计信息 netstat -s"></a>显示所有端口的统计信息 netstat -s</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -s</span></span><br><span class="line"> Ip:</span><br><span class="line"> 11150 total packets received</span><br><span class="line"> 1 with invalid addresses</span><br><span class="line"> 0 forwarded</span><br><span class="line"> 0 incoming packets discarded</span><br><span class="line"> 11149 incoming packets delivered</span><br><span class="line"> 11635 requests sent out</span><br><span class="line"> Icmp:</span><br><span class="line"> 0 ICMP messages received</span><br><span class="line"> 0 input ICMP message failed.</span><br><span class="line"> Tcp:</span><br><span class="line"> 582 active connections openings</span><br><span class="line"> 2 failed connection attempts</span><br><span class="line"> 25 connection resets received</span><br><span class="line"> Udp:</span><br><span class="line"> 1183 packets received</span><br><span class="line"> 4 packets to unknown port received.</span><br><span class="line"> .....</span><br></pre></td></tr></table></figure>
+<h3 id="显示-TCP-或-UDP-端口的统计信息-netstat-st-或-su"><a href="#显示-TCP-或-UDP-端口的统计信息-netstat-st-或-su" class="headerlink" title="显示 TCP 或 UDP 端口的统计信息 netstat -st 或 -su"></a>显示 TCP 或 UDP 端口的统计信息 netstat -st 或 -su</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -st </span></span><br><span class="line"><span class="meta">#</span><span class="bash"> netstat -su</span></span><br></pre></td></tr></table></figure>
+<h2 id="在-netstat-输出中显示-PID-和进程名称-netstat-p"><a href="#在-netstat-输出中显示-PID-和进程名称-netstat-p" class="headerlink" title="在 netstat 输出中显示 PID 和进程名称 netstat -p"></a>在 netstat 输出中显示 PID 和进程名称 netstat -p</h2><p>netstat -p 可以与其它开关一起使用，就可以添加 “PID/进程名称” 到 netstat 输出中，这样 debugging 的时候可以很方便的发现特定端口运行的程序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># netstat -pt</span><br><span class="line"> Active Internet connections (w/o servers)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name</span><br><span class="line"> tcp        1      0 ramesh-laptop.loc:47212 192.168.185.75:www        CLOSE_WAIT  2109/firefox</span><br><span class="line"> tcp        0      0 ramesh-laptop.loc:52750 lax:www ESTABLISHED 2109/firefox</span><br></pre></td></tr></table></figure>
+<h2 id="在-netstat-输出中不显示主机，端口和用户名-host-port-or-user"><a href="#在-netstat-输出中不显示主机，端口和用户名-host-port-or-user" class="headerlink" title="在 netstat 输出中不显示主机，端口和用户名 (host, port or user)"></a>在 netstat 输出中不显示主机，端口和用户名 (host, port or user)</h2><p>当你不想让主机，端口和用户名显示，使用 netstat -n。将会使用数字代替那些名称。</p>
+<p>同样可以加速输出，因为不用进行比对查询。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -an</span></span><br></pre></td></tr></table></figure>
+<p>如果只是不想让这三个名称中的一个被显示，使用以下命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netsat -a --numeric-ports</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> netsat -a --numeric-hosts</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> netsat -a --numeric-users</span></span><br></pre></td></tr></table></figure>
+<h2 id="持续输出-netstat-信息"><a href="#持续输出-netstat-信息" class="headerlink" title="持续输出 netstat 信息"></a>持续输出 netstat 信息</h2><p>netstat 将每隔一秒输出网络信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -c</span></span><br><span class="line"> Active Internet connections (w/o servers)</span><br><span class="line"> Proto Recv-Q Send-Q Local Address           Foreign Address         State</span><br><span class="line"> tcp        0      0 ramesh-laptop.loc:36130 101-101-181-225.ama:www ESTABLISHED</span><br><span class="line"> tcp        1      1 ramesh-laptop.loc:52564 101.11.169.230:www      CLOSING</span><br><span class="line"> tcp        0      0 ramesh-laptop.loc:43758 server-101-101-43-2:www ESTABLISHED</span><br><span class="line"> tcp        1      1 ramesh-laptop.loc:42367 101.101.34.101:www      CLOSING</span><br><span class="line"> ^C</span><br></pre></td></tr></table></figure>
+<h2 id="显示系统不支持的地址族-Address-Families"><a href="#显示系统不支持的地址族-Address-Families" class="headerlink" title="显示系统不支持的地址族 (Address Families)"></a>显示系统不支持的地址族 (Address Families)</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat --verbose</span><br></pre></td></tr></table></figure>
+<p>在输出的末尾，会有如下的信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netstat: no support for `AF IPX' on this system.</span><br><span class="line">netstat: no support for `AF AX25' on this system.</span><br><span class="line">netstat: no support for `AF X25' on this system.</span><br><span class="line">netstat: no support for `AF NETROM' on this system.</span><br></pre></td></tr></table></figure>
+<h2 id="显示核心路由信息-netstat-r"><a href="#显示核心路由信息-netstat-r" class="headerlink" title="显示核心路由信息 netstat -r"></a>显示核心路由信息 netstat -r</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -r</span></span><br><span class="line"> Kernel IP routing table</span><br><span class="line"> Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface</span><br><span class="line"> 192.168.1.0     *               255.255.255.0   U         0 0          0 eth2</span><br><span class="line"> link-local      *               255.255.0.0     U         0 0          0 eth2</span><br><span class="line"> default         192.168.1.1     0.0.0.0         UG        0 0          0 eth2</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>： 使用 netstat -rn 显示数字格式，不查询主机名称。</p>
+<h2 id="找出程序运行的端口"><a href="#找出程序运行的端口" class="headerlink" title="找出程序运行的端口"></a>找出程序运行的端口</h2><p>并不是所有的进程都能找到，没有权限的会不显示，使用 root 权限查看所有的信息。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -ap | grep ssh</span></span><br><span class="line"> tcp        1      0 dev-db:ssh           101.174.100.22:39213        CLOSE_WAIT  -</span><br><span class="line"> tcp        1      0 dev-db:ssh           101.174.100.22:57643        CLOSE_WAIT  -</span><br></pre></td></tr></table></figure>
+<p>找出运行在指定端口的进程</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -an | grep <span class="string">':80'</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="显示网络接口列表"><a href="#显示网络接口列表" class="headerlink" title="显示网络接口列表"></a>显示网络接口列表</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -i</span></span><br><span class="line"> Kernel Interface table</span><br><span class="line"> Iface   MTU Met   RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg</span><br><span class="line"> eth0       1500 0         0      0      0 0             0      0      0      0 BMU</span><br><span class="line"> eth2       1500 0     26196      0      0 0         26883      6      0      0 BMRU</span><br><span class="line"> lo        16436 0         4      0      0 0             4      0      0      0 LRU</span><br></pre></td></tr></table></figure>
+<p>显示详细信息，像是 ifconfig 使用 netstat -ie:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> netstat -ie</span></span><br><span class="line"> Kernel Interface table</span><br><span class="line"> eth0      Link encap:Ethernet  HWaddr 00:10:40:11:11:11</span><br><span class="line"> UP BROADCAST MULTICAST  MTU:1500  Metric:1</span><br><span class="line"> RX packets:0 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line"> TX packets:0 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line"> collisions:0 txqueuelen:1000</span><br><span class="line"> RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)</span><br><span class="line"> Memory:f6ae0000-f6b00000</span><br></pre></td></tr></table></figure>
+<h2 id="IP和TCP分析"><a href="#IP和TCP分析" class="headerlink" title="IP和TCP分析"></a>IP和TCP分析</h2><h3 id="查看连接某服务最多的的IP地址"><a href="#查看连接某服务最多的的IP地址" class="headerlink" title="查看连接某服务最多的的IP地址"></a>查看连接某服务最多的的IP地址</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -nat | grep <span class="string">"192.168.1.15:22"</span> |awk <span class="string">'&#123;print $5&#125;'</span>|awk -F: <span class="string">'&#123;print $1&#125;'</span>|sort|uniq -c|sort -nr|head -20</span></span><br><span class="line">18 221.136.168.36</span><br><span class="line">3 154.74.45.242</span><br><span class="line">2 78.173.31.236</span><br><span class="line">2 62.183.207.98</span><br><span class="line">2 192.168.1.14</span><br><span class="line">2 182.48.111.215</span><br><span class="line">2 124.193.219.34</span><br><span class="line">2 119.145.41.2</span><br><span class="line">2 114.255.41.30</span><br><span class="line">1 75.102.11.99</span><br></pre></td></tr></table></figure>
+<h3 id="TCP各种状态列表"><a href="#TCP各种状态列表" class="headerlink" title="TCP各种状态列表"></a>TCP各种状态列表</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat -nat |awk <span class="string">'&#123;print $6&#125;'</span>|sort|uniq -c|sort -rn</span></span><br><span class="line">143 ESTABLISHED</span><br><span class="line">113 TIME_WAIT</span><br><span class="line">36 LISTEN</span><br><span class="line">6 SYN_SENT</span><br><span class="line">1 LAST_ACK</span><br><span class="line">1 Foreign</span><br><span class="line">1 FIN_WAIT1</span><br><span class="line">1 established)</span><br></pre></td></tr></table></figure>
+<p>基本可以利用<code>sort|uniq -c|sort -rn|head -20</code>,来找到一些排序列表，如下面，可以通过nginx的access.log找到访问前10位的ip地址</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk '&#123;print $1&#125;' access.log |sort|uniq -c|sort -nr|head -10</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316661.html" target="_blank" rel="noopener">https://www.cnblogs.com/ggjucheng/archive/2012/01/08/2316661.html</a></p>
+<p><a href="https://www.cnblogs.com/echo1937/p/6677325.html" target="_blank" rel="noopener">https://www.cnblogs.com/echo1937/p/6677325.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/netstat/" rel="tag"># netstat</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/28/linux-proc/" rel="next" title="深入Linux proc文件系统">
+                <i class="fa fa-chevron-left"></i> 深入Linux proc文件系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">159</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#输出信息含义"><span class="nav-number">2.</span> <span class="nav-text">输出信息含义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见参数"><span class="nav-number">3.</span> <span class="nav-text">常见参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实用命令实例"><span class="nav-number">4.</span> <span class="nav-text">实用命令实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#列出所有端口-包括监听和未监听的"><span class="nav-number">4.1.</span> <span class="nav-text">列出所有端口 (包括监听和未监听的)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#列出所有端口-netstat-a"><span class="nav-number">4.1.1.</span> <span class="nav-text">列出所有端口 netstat -a</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#列出所有-tcp-端口-netstat-at"><span class="nav-number">4.1.2.</span> <span class="nav-text">列出所有 tcp 端口 netstat -at</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#列出所有-udp-端口-netstat-au"><span class="nav-number">4.1.3.</span> <span class="nav-text">列出所有 udp 端口 netstat -au</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列出所有处于监听状态的-Sockets"><span class="nav-number">4.2.</span> <span class="nav-text">列出所有处于监听状态的 Sockets</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#只显示监听端口-netstat-l"><span class="nav-number">4.2.1.</span> <span class="nav-text">只显示监听端口 netstat -l</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#只列出所有监听-tcp-端口-netstat-lt"><span class="nav-number">4.2.2.</span> <span class="nav-text">只列出所有监听 tcp 端口 netstat -lt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#只列出所有监听-udp-端口-netstat-lu"><span class="nav-number">4.2.3.</span> <span class="nav-text">只列出所有监听 udp 端口 netstat -lu</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#只列出所有监听-UNIX-端口-netstat-lx"><span class="nav-number">4.2.4.</span> <span class="nav-text">只列出所有监听 UNIX 端口 netstat -lx</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示每个协议的统计信息"><span class="nav-number">4.3.</span> <span class="nav-text">显示每个协议的统计信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#显示所有端口的统计信息-netstat-s"><span class="nav-number">4.3.1.</span> <span class="nav-text">显示所有端口的统计信息 netstat -s</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示-TCP-或-UDP-端口的统计信息-netstat-st-或-su"><span class="nav-number">4.3.2.</span> <span class="nav-text">显示 TCP 或 UDP 端口的统计信息 netstat -st 或 -su</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-netstat-输出中显示-PID-和进程名称-netstat-p"><span class="nav-number">4.4.</span> <span class="nav-text">在 netstat 输出中显示 PID 和进程名称 netstat -p</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-netstat-输出中不显示主机，端口和用户名-host-port-or-user"><span class="nav-number">4.5.</span> <span class="nav-text">在 netstat 输出中不显示主机，端口和用户名 (host, port or user)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持续输出-netstat-信息"><span class="nav-number">4.6.</span> <span class="nav-text">持续输出 netstat 信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示系统不支持的地址族-Address-Families"><span class="nav-number">4.7.</span> <span class="nav-text">显示系统不支持的地址族 (Address Families)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示核心路由信息-netstat-r"><span class="nav-number">4.8.</span> <span class="nav-text">显示核心路由信息 netstat -r</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出程序运行的端口"><span class="nav-number">4.9.</span> <span class="nav-text">找出程序运行的端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示网络接口列表"><span class="nav-number">4.10.</span> <span class="nav-text">显示网络接口列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP和TCP分析"><span class="nav-number">4.11.</span> <span class="nav-text">IP和TCP分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看连接某服务最多的的IP地址"><span class="nav-number">4.11.1.</span> <span class="nav-text">查看连接某服务最多的的IP地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP各种状态列表"><span class="nav-number">4.11.2.</span> <span class="nav-text">TCP各种状态列表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
