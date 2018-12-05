@@ -111,7 +111,7 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="mark and index for searching 👿  简介Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。 输出信息含义执行netstat后，其输出结果为 1234567891011# netstat|moreActiv">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-12-03T02:55:38.143Z">
+<meta property="og:updated_time" content="2018-12-03T03:12:20.899Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux netstat命令详解">
 <meta name="twitter:description" content="mark and index for searching 👿  简介Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。 输出信息含义执行netstat后，其输出结果为 1234567891011# netstat|moreActiv">
@@ -438,7 +438,7 @@
 </blockquote>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Netstat 命令用于显示各种网络相关信息，如网络连接，路由表，接口状态 (Interface Statistics)，masquerade 连接，多播成员 (Multicast Memberships) 等等。</p>
 <h1 id="输出信息含义"><a href="#输出信息含义" class="headerlink" title="输出信息含义"></a>输出信息含义</h1><p>执行netstat后，其输出结果为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># netstat|more</span><br><span class="line">Active Internet connections (w/o servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address               Foreign Address             State</span><br><span class="line">tcp        0      0 10.0.2.15:ssh               10.0.2.2:52091              ESTABLISHED</span><br><span class="line">Active UNIX domain sockets (w/o servers)</span><br><span class="line">Proto RefCnt Flags       Type       State         I-Node Path</span><br><span class="line">unix  11     [ ]         DGRAM                    11021  /dev/log</span><br><span class="line">unix  2      [ ]         DGRAM                    11556  @/org/freedesktop/hal/udev_event</span><br><span class="line">unix  2      [ ]         DGRAM                    8986   @/org/kernel/udev/udevd</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17777</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17776</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> netstat|more</span></span><br><span class="line">Active Internet connections (w/o servers)</span><br><span class="line">Proto Recv-Q Send-Q Local Address               Foreign Address             State</span><br><span class="line">tcp        0      0 10.0.2.15:ssh               10.0.2.2:52091              ESTABLISHED</span><br><span class="line">Active UNIX domain sockets (w/o servers)</span><br><span class="line">Proto RefCnt Flags       Type       State         I-Node Path</span><br><span class="line">unix  11     [ ]         DGRAM                    11021  /dev/log</span><br><span class="line">unix  2      [ ]         DGRAM                    11556  @/org/freedesktop/hal/udev_event</span><br><span class="line">unix  2      [ ]         DGRAM                    8986   @/org/kernel/udev/udevd</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17777</span><br><span class="line">unix  3      [ ]         STREAM     CONNECTED     17776</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>从整体上看，netstat的输出结果可以分为两个部分：</p>
 <p>一个是Active Internet connections，称为有源TCP连接，其中”Recv-Q”和”Send-Q”指的是接收队列和发送队列。这些数字一般都应该是0。如果不是则表示包正在队列中堆积。这种情况只能在服务器网络繁忙的情况见到。</p>
@@ -533,6 +533,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/12/05/go-init/" rel="prev" title="Go init函数详解">
+                Go init函数详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -608,7 +612,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">159</span>
+                <span class="site-state-item-count">160</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
