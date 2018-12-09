@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,ps," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="这个命令用到烂了，凑数吧👿  准备知识Linux进程状态 运行(正在运行或在运行队列中等待) 中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号) 不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生) 僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放) 停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运">
+<meta name="keywords" content="linux,ps">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux的ps详解">
+<meta property="og:url" content="http://idiotsky.top/2014/02/20/linux-ps/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="这个命令用到烂了，凑数吧👿  准备知识Linux进程状态 运行(正在运行或在运行队列中等待) 中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号) 不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生) 僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放) 停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-12-09T11:26:27.221Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux的ps详解">
+<meta name="twitter:description" content="这个命令用到烂了，凑数吧👿  准备知识Linux进程状态 运行(正在运行或在运行队列中等待) 中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号) 不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生) 僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放) 停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.top/2014/02/20/linux-ps/"/>
+
+
+
+
+
+  <title>linux的ps详解 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2014/02/20/linux-ps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux的ps详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-02-20T18:23:33+08:00">
+                20 Feb 14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux命令/" itemprop="url" rel="index">
+                    <span itemprop="name">linux命令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这个命令用到烂了，凑数吧👿</p>
+</blockquote>
+<h1 id="准备知识"><a href="#准备知识" class="headerlink" title="准备知识"></a>准备知识</h1><h2 id="Linux进程状态"><a href="#Linux进程状态" class="headerlink" title="Linux进程状态"></a>Linux进程状态</h2><ol>
+<li>运行(正在运行或在运行队列中等待)</li>
+<li>中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号)</li>
+<li>不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)</li>
+<li>僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放)</li>
+<li>停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运行运行)</li>
+</ol>
+<a id="more"></a>
+<h2 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h2><ul>
+<li>ps a 显示现行终端机下的所有程序，包括其他用户的程序。</li>
+<li>ps -A 显示所有进程。</li>
+<li>ps c 列出程序时，显示每个程序真正的指令名称，而不包含路径，参数或常驻服务的标示。</li>
+<li>ps -e 此参数的效果和指定”A”参数相同。</li>
+<li>ps e 列出程序时，显示每个程序所使用的环境变量。</li>
+<li>ps f 用ASCII字符显示树状结构，表达程序间的相互关系。</li>
+<li>ps -f 全格式</li>
+<li>ps -H 显示树状结构，表示程序间的相互关系。</li>
+<li>ps -N 显示所有的程序，除了执行ps指令终端机下的程序之外。</li>
+<li>ps s 采用程序信号的格式显示程序状况。</li>
+<li>ps S 列出程序时，包括已中断的子程序资料。</li>
+<li>ps -t&lt;终端机编号&gt; 　指定终端机编号，并列出属于该终端机的程序的状况。</li>
+<li>ps u 　以用户为主的格式来显示程序状况。</li>
+<li>ps x 　显示所有程序，不以终端机来区分。</li>
+<li>ps l  较长、较详细的将该PID 的的信息列出；</li>
+</ul>
+<h2 id="常用输出列说明"><a href="#常用输出列说明" class="headerlink" title="常用输出列说明"></a>常用输出列说明</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps aux</span></span><br><span class="line">USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND</span><br><span class="line">root 1 0.0 0.0 10368 176 Ss May25 0:24 init [3]</span><br><span class="line">root 2 0.0 0.0 0 0 S May25 0:00 [kthreadd/2336]</span><br><span class="line">root 3 0.0 0.0 0 0 S May25 0:00 [khelper/2336]</span><br><span class="line">root 135 0.0 0.0 12636 320 S&lt;s May25 0:00 /sbin/udevd -d</span><br><span class="line">root 569 0.0 0.0 5928 464 Ss May25 1:07 syslogd -m 0</span><br><span class="line">root 580 0.0 0.1 62684 640 Ss May25 0:48 /usr/sbin/sshd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>USER：该 process 属于那个使用者账号的</li>
+<li>PID ：该 process 的号码。</li>
+<li>%CPU：该 process 使用掉的 CPU 资源百分比；</li>
+<li>%MEM：该 process 所占用的物理内存百分比；</li>
+<li>VSZ ：该 process 使用掉的虚拟内存量 (Kbytes)</li>
+<li>RSS ：该 process 占用的固定的内存量 (Kbytes)</li>
+<li>TTY ：该 process 是在那个终端机上面运作，若与终端机无关，则显示 ，另外， tty1-tty6 是本机上面的登入者程序，若为 pts/0 等等的，则表示为由网络连接进主机的程序。</li>
+<li>STAT：该程序目前的状态，主要的状态有：<ul>
+<li>D      //无法中断的休眠状态（通常 IO 的进程）； </li>
+<li>R      //正在运行可中在队列中可过行的； </li>
+<li>S      //处于休眠状态； </li>
+<li>T      //停止或被追踪； </li>
+<li>W      //进入内存交换 （从内核2.6开始无效）；</li>
+<li>X      //死掉的进程 （基本很少见）； </li>
+<li>Z      //僵尸进程； </li>
+<li>&lt;      //优先级高的进程 </li>
+<li>N      //优先级较低的进程 </li>
+<li>L      //有些页被锁进内存； </li>
+<li>s      //进程的领导者（在它之下有子进程）； </li>
+<li>l      //多线程，克隆线程（使用 CLONE_THREAD, 类似 NPTL pthreads）； </li>
+<li><ul>
+<li>//位于后台的进程组；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>START：该 process 被触发启动的时间；</li>
+<li>TIME ：该 process 实际使用 CPU 运作的时间。</li>
+<li>COMMAND：该程序的实际指令为何？</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ps l</span></span><br><span class="line">F   UID    PID   PPID PRI  NI    VSZ   RSS WCHAN  STAT TTY        TIME COMMAND</span><br><span class="line">4     0   1885      1  20   0  15936  1772 poll_s Ss+  tty1       0:00 /sbin/agetty --noclear tty1 linux</span><br><span class="line">4     0   3355   3234  20   0  52936  3980 poll_s S    pts/0      0:00 sudo -i</span><br><span class="line">4     0   3356   3355  20   0  22564  5100 wait   S    pts/0      0:00 -bash</span><br><span class="line">0     0   3369   3356  20   0  28916  1448 -      R+   pts/0      0:00 ps l</span><br></pre></td></tr></table></figure>
+<ul>
+<li>F 代表这个程序的旗标 (flag)， 4 代表使用者为 superuser；</li>
+<li>STAT 代表这个程序的状态；</li>
+<li>UID 代表执行者身份</li>
+<li>PID 进程的ID号！</li>
+<li>PPID 父进程的ID；</li>
+<li>PRI指进程的执行优先权(Priority的简写)，其值越小越早被执行；</li>
+<li>NI 这个进程的nice值，其表示进程可被执行的优先级的修正数值。</li>
+<li>WCHAN 目前这个程序是否正在运作当中，若为 - 表示正在运作；</li>
+<li>TTY 登入者的终端机位置；</li>
+<li>TIME 使用掉的 CPU 时间。</li>
+<li>CMD 所下达的指令名称</li>
+</ul>
+<h1 id="常用例子"><a href="#常用例子" class="headerlink" title="常用例子"></a>常用例子</h1><h2 id="根据用户过滤进程"><a href="#根据用户过滤进程" class="headerlink" title="根据用户过滤进程"></a>根据用户过滤进程</h2><p>在需要查看特定用户进程的情况下，我们可以使用 -u 参数。比如我们要查看用户’sky’的进程，可以通过下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -u sky</span></span><br><span class="line">   PID TTY          TIME CMD</span><br><span class="line">  3171 ?        00:00:00 systemd</span><br><span class="line">  3174 ?        00:00:00 (sd-pam)</span><br><span class="line">  3273 ?        00:00:00 sshd</span><br><span class="line">  3274 pts/0    00:00:00 bash</span><br><span class="line">  3361 pts/0    00:00:00 ps</span><br></pre></td></tr></table></figure>
+<h2 id="通过cpu和内存使用来过滤进程"><a href="#通过cpu和内存使用来过滤进程" class="headerlink" title="通过cpu和内存使用来过滤进程"></a>通过cpu和内存使用来过滤进程</h2><p>也许你希望把结果按照 CPU 或者内存用量来筛选，这样你就找到哪个进程占用了你的资源。要做到这一点，我们可以使用 aux 参数，来显示全面的信息:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -aux</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root          1  0.8  0.0  37676  5692 ?        Ss   04:43   0:03 /sbin/init</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    04:43   0:00 [kthreadd]</span><br><span class="line">root          3  0.0  0.0      0     0 ?        S    04:43   0:00 [ksoftirqd/0]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S&lt;   04:43   0:00 [kworker/0:0H]</span><br><span class="line">root          7  0.0  0.0      0     0 ?        S    04:43   0:00 [rcu_sched]</span><br><span class="line">root          8  0.0  0.0      0     0 ?        S    04:43   0:00 [rcu_bh]</span><br><span class="line">root          9  0.0  0.0      0     0 ?        S    04:43   0:00 [migration/0]</span><br><span class="line">root         10  0.0  0.0      0     0 ?        S    04:43   0:00 [watchdog/0]</span><br><span class="line">root         11  0.0  0.0      0     0 ?        S    04:43   0:00 [watchdog/1]</span><br><span class="line">root         12  0.0  0.0      0     0 ?        S    04:43   0:00 [migration/1]</span><br><span class="line">root         13  0.0  0.0      0     0 ?        S    04:43   0:00 [ksoftirqd/1]</span><br><span class="line">root         14  0.0  0.0      0     0 ?        S    04:43   0:00 [kworker/1:0]</span><br><span class="line">root         15  0.0  0.0      0     0 ?        S&lt;   04:43   0:00 [kworker/1:0H]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>默认的结果集是未排好序的。可以通过 –sort命令来排序。</p>
+<p>根据 CPU 使用来升序排序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pcpu</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root          1  0.7  0.0  37676  5692 ?        Ss   04:41   0:03 /sbin/init</span><br><span class="line">root       1632  0.7  0.6 567304 49336 ?        Ssl  04:41   0:03 /usr/bin/dockerd -H fd://</span><br><span class="line">root         84  0.2  0.0      0     0 ?        S    04:41   0:00 [kworker/2:1]</span><br><span class="line">root        579  0.1  0.0  46552  5960 ?        Ss   04:41   0:00 /lib/systemd/systemd-udevd</span><br><span class="line">root        905  0.1  0.1 189980  9892 ?        Ssl  04:41   0:00 /usr/bin/vmtoolsd</span><br><span class="line">root       1917  0.1  0.2 302464 16640 ?        Ssl  04:41   0:00 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-conta</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    04:41   0:00 [kthreadd]</span><br><span class="line">root          3  0.0  0.0      0     0 ?        S    04:41   0:00 [ksoftirqd/0]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S&lt;   04:41   0:00 [kworker/0:0H]</span><br><span class="line">root          7  0.0  0.0      0     0 ?        S    04:41   0:00 [rcu_sched]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>根据 内存使用 来升序排序</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pmem</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root       1632  0.6  0.6 567304 49336 ?        Ssl  04:41   0:03 /usr/bin/dockerd -H fd://</span><br><span class="line">root       1056  0.0  0.3 300408 29972 ?        Ssl  04:41   0:00 /usr/lib/snapd/snapd</span><br><span class="line">root       1917  0.1  0.2 302464 16640 ?        Ssl  04:41   0:00 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-conta</span><br><span class="line">root        905  0.1  0.1 189980  9892 ?        Ssl  04:41   0:00 /usr/bin/vmtoolsd</span><br><span class="line">root       1082  0.0  0.1  85436  9172 ?        Ss   04:41   0:00 /usr/bin/VGAuthService</span><br><span class="line">root       3169  0.0  0.0  92800  6784 ?        Ss   04:41   0:00 sshd: sky [priv]</span><br><span class="line">root       1043  0.0  0.0 275868  6236 ?        Ssl  04:41   0:00 /usr/lib/accountsservice/accounts-daemon</span><br><span class="line">root       1189  0.0  0.0 277180  6004 ?        Ssl  04:41   0:00 /usr/lib/policykit-1/polkitd --no-debug</span><br><span class="line">root        579  0.1  0.0  46552  5960 ?        Ss   04:41   0:00 /lib/systemd/systemd-udevd</span><br><span class="line">root          1  0.6  0.0  37676  5692 ?        Ss   04:41   0:03 /sbin/init</span><br><span class="line">root       1630  0.0  0.0  65508  5380 ?        Ss   04:41   0:00 /usr/sbin/sshd -D</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>我们也可以将它们合并到一个命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pcpu,+pmem</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root       1632  0.6  0.6 567304 49336 ?        Ssl  04:41   0:03 /usr/bin/dockerd -H fd://</span><br><span class="line">root          1  0.5  0.0  37676  5692 ?        Ss   04:41   0:03 /sbin/init</span><br><span class="line">root         84  0.2  0.0      0     0 ?        S    04:41   0:01 [kworker/2:1]</span><br><span class="line">root        905  0.1  0.1 189980  9892 ?        Ssl  04:41   0:00 /usr/bin/vmtoolsd</span><br><span class="line">root       1917  0.1  0.2 302464 16640 ?        Ssl  04:41   0:00 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-conta</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    04:41   0:00 [kthreadd]</span><br><span class="line">root          3  0.0  0.0      0     0 ?        S    04:41   0:00 [ksoftirqd/0]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S&lt;   04:41   0:00 [kworker/0:0H]</span><br><span class="line">root          7  0.0  0.0      0     0 ?        S    04:41   0:00 [rcu_sched]</span><br><span class="line">root          8  0.0  0.0      0     0 ?        S    04:41   0:00 [rcu_bh]</span><br><span class="line">root          9  0.0  0.0      0     0 ?        S    04:41   0:00 [migration/0]</span><br><span class="line">root         10  0.0  0.0      0     0 ?        S    04:41   0:00 [watchdog/0]</span><br><span class="line">root         11  0.0  0.0      0     0 ?        S    04:41   0:00 [watchdog/1]</span><br><span class="line">root         12  0.0  0.0      0     0 ?        S    04:41   0:00 [migration/1]</span><br><span class="line">root         13  0.0  0.0      0     0 ?        S    04:41   0:00 [ksoftirqd/1]</span><br><span class="line">root         14  0.0  0.0      0     0 ?        S    04:41   0:00 [kworker/1:0]</span><br><span class="line">root         15  0.0  0.0      0     0 ?        S&lt;   04:41   0:00 [kworker/1:0H]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="通过进程的命令来查找进程"><a href="#通过进程的命令来查找进程" class="headerlink" title="通过进程的命令来查找进程"></a>通过进程的命令来查找进程</h2><p>使用 -C 参数，后面跟你要找的进程的命令的名字。比如想显示一个名为docker-containerd的进程的信息，就可以使用下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -C docker-containerd</span></span><br><span class="line">   PID TTY          TIME CMD</span><br><span class="line">  1917 ?        00:00:00 docker-containe</span><br></pre></td></tr></table></figure>
+<p>如果想要看到更多的细节，我们可以使用-f参数来查看格式化的信息列表：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -f -C docker-containerd</span></span><br><span class="line">UID         PID   PPID  C STIME TTY          TIME CMD</span><br><span class="line">root       1917   1632  0 04:41 ?        00:00:00 docker-containerd -l unix:///var/run/docker/libcontainerd/docker-containerd.sock --met</span><br></pre></td></tr></table></figure>
+<h2 id="树形显示进程"><a href="#树形显示进程" class="headerlink" title="树形显示进程"></a>树形显示进程</h2><p>有时候我们希望以树形结构显示进程，可以使用 -axjf 参数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -axjf</span></span><br><span class="line">  PPID    PID   PGID    SID TTY       TPGID STAT   UID   TIME COMMAND</span><br><span class="line">     0      2      0      0 ?            -1 S        0   0:00 [kthreadd]</span><br><span class="line">     2      3      0      0 ?            -1 S        0   0:00  \_ [ksoftirqd/0]</span><br><span class="line">     2      5      0      0 ?            -1 S&lt;       0   0:00  \_ [kworker/0:0H]</span><br><span class="line">     2      7      0      0 ?            -1 S        0   0:00  \_ [rcu_sched]</span><br><span class="line">     2      8      0      0 ?            -1 S        0   0:00  \_ [rcu_bh]</span><br><span class="line">     2      9      0      0 ?            -1 S        0   0:00  \_ [migration/0]</span><br><span class="line">     2     10      0      0 ?            -1 S        0   0:00  \_ [watchdog/0]</span><br><span class="line">     2     11      0      0 ?            -1 S        0   0:00  \_ [watchdog/1]</span><br><span class="line">     2     12      0      0 ?            -1 S        0   0:00  \_ [migration/1]</span><br><span class="line">     2     13      0      0 ?            -1 S        0   0:00  \_ [ksoftirqd/1]</span><br><span class="line">     2     14      0      0 ?            -1 S        0   0:00  \_ [kworker/1:0]</span><br><span class="line">     2     15      0      0 ?            -1 S&lt;       0   0:00  \_ [kworker/1:0H]</span><br><span class="line">     2     16      0      0 ?            -1 S        0   0:00  \_ [watchdog/2]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="显示安全信息"><a href="#显示安全信息" class="headerlink" title="显示安全信息"></a>显示安全信息</h2><p>如果想要查看现在有谁登入了你的服务器。可以使用ps命令加上相关参数:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -eo pid,user,args</span></span><br><span class="line">   PID USER     COMMAND</span><br><span class="line">     1 root     /sbin/init</span><br><span class="line">     2 root     [kthreadd]</span><br><span class="line">     3 root     [ksoftirqd/0]</span><br><span class="line">     5 root     [kworker/0:0H]</span><br><span class="line">     7 root     [rcu_sched]</span><br><span class="line">     8 root     [rcu_bh]</span><br><span class="line">     9 root     [migration/0]</span><br><span class="line">    10 root     [watchdog/0]</span><br><span class="line">    11 root     [watchdog/1]</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>参数 -e 显示所有进程信息，-o 参数控制输出。Pid,User 和 Args参数显示PID，运行应用的用户和该应用的命令行参数。</p>
+<p>能够与-e 参数 一起使用的关键字是args, cmd, comm, command, fname, ucmd, ucomm, lstart, bsdstart 和 start。</p>
+<h2 id="格式化输出root用户（真实的或有效的UID）创建的进程"><a href="#格式化输出root用户（真实的或有效的UID）创建的进程" class="headerlink" title="格式化输出root用户（真实的或有效的UID）创建的进程"></a>格式化输出root用户（真实的或有效的UID）创建的进程</h2><p>系统管理员想要查看由root用户运行的进程和这个进程的其他相关信息时，可以通过下面的命令:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -U root -u root u</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root          1  0.0  0.0  37676  5692 ?        Ss   04:41   0:03 /sbin/init</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    04:41   0:00 [kthreadd]</span><br><span class="line">root          3  0.0  0.0      0     0 ?        S    04:41   0:00 [ksoftirqd/0]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S&lt;   04:41   0:00 [kworker/0:0H]</span><br><span class="line">root          7  0.0  0.0      0     0 ?        S    04:41   0:00 [rcu_sched]</span><br><span class="line">root          8  0.0  0.0      0     0 ?        S    04:41   0:00 [rcu_bh]</span><br><span class="line">root          9  0.0  0.0      0     0 ?        S    04:41   0:00 [migration/0]</span><br><span class="line">root         10  0.0  0.0      0     0 ?        S    04:41   0:00 [watchdog/0]</span><br><span class="line">root         11  0.0  0.0      0     0 ?        S    04:41   0:00 [watchdog/1]</span><br><span class="line">root         12  0.0  0.0      0     0 ?        S    04:41   0:00 [migration/1]</span><br><span class="line">root         13  0.0  0.0      0     0 ?        S    04:41   0:00 [ksoftirqd/1]</span><br><span class="line">root         15  0.0  0.0      0     0 ?        S&lt;   04:41   0:00 [kworker/1:0H]</span><br><span class="line">root         16  0.0  0.0      0     0 ?        S    04:41   0:00 [watchdog/2]</span><br><span class="line">root         17  0.0  0.0      0     0 ?        S    04:41   0:00 [migration/2]</span><br></pre></td></tr></table></figure>
+<p>-U 参数按真实用户ID(RUID)筛选进程，它会从用户列表中选择真实用户名或 ID。真实用户即实际创建该进程的用户。</p>
+<p>-u 参数用来筛选有效用户ID（EUID）。</p>
+<p>最后的u参数用来决定以针对用户的格式输出，由User, PID, %CPU, %MEM, VSZ, RSS, TTY, STAT, START, TIME 和 COMMAND这几列组成。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://yanue.net/post-87.html" target="_blank" rel="noopener">http://yanue.net/post-87.html</a><br><a href="https://www.cnblogs.com/wxgblogs/p/6591980.html" target="_blank" rel="noopener">https://www.cnblogs.com/wxgblogs/p/6591980.html</a><br><a href="https://linux.cn/article-4743-1.html" target="_blank" rel="noopener">https://linux.cn/article-4743-1.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/ps/" rel="tag"># ps</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/02/20/linux-kill/" rel="next" title="Linux中Kill进程的N种方法">
+                <i class="fa fa-chevron-left"></i> Linux中Kill进程的N种方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/02/20/linux-netstat/" rel="prev" title="Linux netstat命令详解">
+                Linux netstat命令详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">162</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#准备知识"><span class="nav-number">1.</span> <span class="nav-text">准备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux进程状态"><span class="nav-number">1.1.</span> <span class="nav-text">Linux进程状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用参数"><span class="nav-number">1.2.</span> <span class="nav-text">常用参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用输出列说明"><span class="nav-number">1.3.</span> <span class="nav-text">常用输出列说明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用例子"><span class="nav-number">2.</span> <span class="nav-text">常用例子</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根据用户过滤进程"><span class="nav-number">2.1.</span> <span class="nav-text">根据用户过滤进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过cpu和内存使用来过滤进程"><span class="nav-number">2.2.</span> <span class="nav-text">通过cpu和内存使用来过滤进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过进程的命令来查找进程"><span class="nav-number">2.3.</span> <span class="nav-text">通过进程的命令来查找进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#树形显示进程"><span class="nav-number">2.4.</span> <span class="nav-text">树形显示进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显示安全信息"><span class="nav-number">2.5.</span> <span class="nav-text">显示安全信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#格式化输出root用户（真实的或有效的UID）创建的进程"><span class="nav-number">2.6.</span> <span class="nav-text">格式化输出root用户（真实的或有效的UID）创建的进程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
