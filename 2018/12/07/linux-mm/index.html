@@ -111,10 +111,14 @@
 <meta property="og:site_name" content="IdiotSky">
 <meta property="og:description" content="《深入理解LINUX内核》第二章就难到飞起，这篇文章很好的解释了些知识，mark之👿  概念物理地址(physical address) 用于内存芯片级的单元寻址，与处理器和CPU连接的地址总线相对应。——这个概念应该是这几个概念中最好理解的一个，但是值得一提的是，虽然可以直接把物理地址理解成插在机器上那根内存本身，把内存看成一个从0字节一直到最大空量逐字节的编号的大数组，然后把这个数组叫做物">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-12-12T15:40:18.186Z">
+<meta property="og:image" content="http://idiotsky.top/images4/linux-mm-1.jpg">
+<meta property="og:image" content="http://idiotsky.top/images4/linux-mm-2.jpg">
+<meta property="og:image" content="http://idiotsky.top/images4/linux-mm-3.jpg">
+<meta property="og:updated_time" content="2018-12-14T15:19:59.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux内存寻址">
 <meta name="twitter:description" content="《深入理解LINUX内核》第二章就难到飞起，这篇文章很好的解释了些知识，mark之👿  概念物理地址(physical address) 用于内存芯片级的单元寻址，与处理器和CPU连接的地址总线相对应。——这个概念应该是这几个概念中最好理解的一个，但是值得一提的是，虽然可以直接把物理地址理解成插在机器上那根内存本身，把内存看成一个从0字节一直到最大空量逐字节的编号的大数组，然后把这个数组叫做物">
+<meta name="twitter:image" content="http://idiotsky.top/images4/linux-mm-1.jpg">
 
 
 
@@ -446,6 +450,23 @@
 <hr>
 <p>CPU将一个虚拟内存空间中的地址转换为物理地址，需要进行两步：首先将给定一个逻辑地址（其实是段内偏移量，这个一定要理解！！！），CPU要利用其段式内存管理单元，先将为个逻辑地址转换成一个线程地址，再利用其页式内存管理单元，转换为最终物理地址。</p>
 <p>这样做两次转换，的确是非常麻烦而且没有必要的，因为直接可以把线性地址抽像给进程。之所以这样冗余，Intel完全是为了兼容而已。</p>
+<h1 id="CPU段式内存管理，逻辑地址如何转换为线性地址"><a href="#CPU段式内存管理，逻辑地址如何转换为线性地址" class="headerlink" title="CPU段式内存管理，逻辑地址如何转换为线性地址"></a>CPU段式内存管理，逻辑地址如何转换为线性地址</h1><p>一个逻辑地址由两部份组成，段标识符: 段内偏移量。段标识符是由一个16位长的字段组成，称为段选择符。其中前13位是一个索引号。后面3位包含一些硬件细节，如图：</p>
+<p><a href="http://idiotsky.top/images4/linux-mm-1.jpg"><img src="http://idiotsky.top/images4/linux-mm-1.jpg" alt=""></a></p>
+<p>最后两位涉及权限检查，本贴中不包含。</p>
+<p>索引号，或者直接理解成数组下标——那它总要对应一个数组吧，它又是什么东东的索引呢？这个东东就是“段描述符(segment descriptor)”，呵呵，段描述符具体地址描述了一个段（对于“段”这个字眼的理解，我是把它想像成，拿了一把刀，把虚拟内存，砍成若干的截——段）。这样，很多个段描述符，就组了一个数组，叫“段描述符表”，这样，可以通过段标识符的前13位，直接在段描述符表中找到一个具体的段描述符，这个描述符就描述了一个段，我刚才对段的抽像不太准确，因为看看描述符里面究竟有什么东东——也就是它究竟是如何描述的，就理解段究竟有什么东东了，每一个段描述符由8个字节组成，如下图：</p>
+<p><a href="http://idiotsky.top/images4/linux-mm-2.jpg"><img src="http://idiotsky.top/images4/linux-mm-2.jpg" alt=""></a></p>
+<p>这些东东很复杂，虽然可以利用一个数据结构来定义它，不过，我这里只关心一样，就是Base字段，它描述了一个段的开始位置的线性地址。</p>
+<p>Intel设计的本意是，一些全局的段描述符，就放在“全局段描述符表(GDT)”中，一些局部的，例如每个进程自己的，就放在所谓的“局部段描述符表(LDT)”中。那究竟什么时候该用GDT，什么时候该用LDT呢？这是由段选择符中的T1字段表示的，=0，表示用GDT，=1表示用LDT。</p>
+<p>GDT在内存中的地址和大小存放在CPU的gdtr控制寄存器中，而LDT则在ldtr寄存器中。</p>
+<p>好多概念，像绕口令一样。这张图看起来要直观些：</p>
+<p><a href="http://idiotsky.top/images4/linux-mm-3.jpg"><img src="http://idiotsky.top/images4/linux-mm-3.jpg" alt=""></a></p>
+<p>首先，给定一个完整的逻辑地址[段选择符：段内偏移地址]，</p>
+<ol>
+<li>看段选择符的T1=0还是1，知道当前要转换是GDT中的段，还是LDT中的段，再根据相应寄存器，得到其地址和大小。我们就有了一个数组了。</li>
+<li>拿出段选择符中前13位，可以在这个数组中，查找到对应的段描述符，这样，它了Base，即基地址就知道了。</li>
+<li>把Base + offset，就是要转换的线性地址了。</li>
+</ol>
+<p>还是挺简单的，对于软件来讲，原则上就需要把硬件转换所需的信息准备好，就可以让硬件来完成这个转换了。OK，来看看Linux怎么做的。</p>
 <blockquote>
 <p>to be continue…</p>
 </blockquote>
@@ -675,7 +696,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU段式内存管理，逻辑地址如何转换为线性地址"><span class="nav-number">2.</span> <span class="nav-text">CPU段式内存管理，逻辑地址如何转换为线性地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
