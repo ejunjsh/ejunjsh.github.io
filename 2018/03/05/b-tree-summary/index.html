@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="B树,B+树,数据结构," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="IdiotSky" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="b树b树（balance tree）和b+树应用在数据库索引，可以认为是m叉的多路平衡查找树，但是从理论上讲，二叉树查找速度和比较次数都是最小的，为什么不用二叉树呢？因为我们要考虑磁盘IO的影响，它相对于内存来说是很慢的。数据库索引是存储在磁盘上的，当数据量大时，就不能把整个索引全部加载到内存了，只能逐一加载每一个磁盘页（对应索引树的节点）。所以我们要减少IO次数，对于树来说，IO次数就是树的高度">
+<meta name="keywords" content="B树,B+树,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="b树和b+树总结">
+<meta property="og:url" content="http://idiotsky.top/2018/03/05/b-tree-summary/index.html">
+<meta property="og:site_name" content="IdiotSky">
+<meta property="og:description" content="b树b树（balance tree）和b+树应用在数据库索引，可以认为是m叉的多路平衡查找树，但是从理论上讲，二叉树查找速度和比较次数都是最小的，为什么不用二叉树呢？因为我们要考虑磁盘IO的影响，它相对于内存来说是很慢的。数据库索引是存储在磁盘上的，当数据量大时，就不能把整个索引全部加载到内存了，只能逐一加载每一个磁盘页（对应索引树的节点）。所以我们要减少IO次数，对于树来说，IO次数就是树的高度">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-1.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-2.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-3.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-4.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-5.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-6.gif">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-7.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-8.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-9.png">
+<meta property="og:image" content="http://idiotsky.top/images4/b-tree-summary-10.gif">
+<meta property="og:updated_time" content="2018-12-20T00:40:18.916Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="b树和b+树总结">
+<meta name="twitter:description" content="b树b树（balance tree）和b+树应用在数据库索引，可以认为是m叉的多路平衡查找树，但是从理论上讲，二叉树查找速度和比较次数都是最小的，为什么不用二叉树呢？因为我们要考虑磁盘IO的影响，它相对于内存来说是很慢的。数据库索引是存储在磁盘上的，当数据量大时，就不能把整个索引全部加载到内存了，只能逐一加载每一个磁盘页（对应索引树的节点）。所以我们要减少IO次数，对于树来说，IO次数就是树的高度">
+<meta name="twitter:image" content="http://idiotsky.top/images4/b-tree-summary.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '4C652JRMON',
+      apiKey: 'ef468e206fb85903f33c4fc8b4bb2cd6',
+      indexName: 'myblog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://idiotsky.top/2018/03/05/b-tree-summary/"/>
+
+
+
+
+
+  <title>b树和b+树总结 | IdiotSky</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c2da852ee703ae71196b173fd6edef51";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">IdiotSky</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            Books
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://idiotsky.top/2018/03/05/b-tree-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="ejunjsh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="IdiotSky">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">b树和b+树总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-05T22:23:29+08:00">
+                05 Mar 18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="b树"><a href="#b树" class="headerlink" title="b树"></a>b树</h1><p>b树（balance tree）和b+树应用在数据库索引，可以认为是m叉的多路平衡查找树，但是从理论上讲，二叉树查找速度和比较次数都是最小的，为什么不用二叉树呢？<br>因为我们要考虑磁盘IO的影响，它相对于内存来说是很慢的。数据库索引是存储在磁盘上的，当数据量大时，就不能把整个索引全部加载到内存了，只能逐一加载每一个磁盘页（对应索引树的节点）。所以我们要减少IO次数，对于树来说，IO次数就是树的高度，而“矮胖”就是b树的特征之一，它的每个节点最多包含m个孩子，m称为b树的阶，m的大小取决于磁盘页的大小。</p>
+<a id="more"></a>
+<h2 id="一个M阶的b树具有如下几个特征："><a href="#一个M阶的b树具有如下几个特征：" class="headerlink" title="一个M阶的b树具有如下几个特征："></a>一个M阶的b树具有如下几个特征：</h2><ol>
+<li>定义任意非叶子结点最多只有M个儿子，且M&gt;2；</li>
+<li>根结点的儿子数为[2, M]；</li>
+<li>除根结点以外的非叶子结点的儿子数为[M/2, M]，向上取整；</li>
+<li>非叶子结点的关键字个数=儿子数-1；</li>
+<li>所有叶子结点位于同一层；</li>
+<li>k个关键字把节点拆成k+1段，分别指向k+1个儿子，同时满足查找树的大小关系。</li>
+</ol>
+<h2 id="有关b树的一些特性，注意与后面的b-树区分："><a href="#有关b树的一些特性，注意与后面的b-树区分：" class="headerlink" title="有关b树的一些特性，注意与后面的b+树区分："></a>有关b树的一些特性，注意与后面的b+树区分：</h2><ol>
+<li>关键字集合分布在整颗树中；</li>
+<li>任何一个关键字出现且只出现在一个结点中；</li>
+<li>搜索有可能在非叶子结点结束；</li>
+<li>其搜索性能等价于在关键字全集内做一次二分查找；</li>
+</ol>
+<h2 id="如图是一个3阶b树，顺便讲一下查询元素5的过程："><a href="#如图是一个3阶b树，顺便讲一下查询元素5的过程：" class="headerlink" title="如图是一个3阶b树，顺便讲一下查询元素5的过程："></a>如图是一个3阶b树，顺便讲一下查询元素5的过程：</h2><p><a href="http://idiotsky.top/images4/b-tree-summary.png"><img src="http://idiotsky.top/images4/b-tree-summary.png" alt=""></a></p>
+<p>1，第一次磁盘IO，把9所在节点读到内存，把目标数5和9比较，小，找小于9对应的节点；</p>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-1.png"><img src="http://idiotsky.top/images4/b-tree-summary-1.png" alt=""></a></p>
+<p>2，第二次磁盘IO，还是读节点到内存，在内存中把5依次和2、6比较，定位到2、6中间区域对应的节点；<br>3，第三次磁盘IO就不上图了，跟第二步一样，然后就找到了目标5。</p>
+<p>可以看到，b树在查询时的比较次数并不比二叉树少，尤其是节点中的数非常多时，但是内存的比较速度非常快，耗时可以忽略，所以只要树的高度低，IO少，就可以提高查询性能，这是b树的优势之一。</p>
+<h2 id="b树的插入删除元素操作"><a href="#b树的插入删除元素操作" class="headerlink" title="b树的插入删除元素操作"></a>b树的插入删除元素操作</h2><p>比如我们要在下图中插入元素4： </p>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-2.png"><img src="http://idiotsky.top/images4/b-tree-summary-2.png" alt=""></a></p>
+<ol>
+<li>首先自顶向下查询找到4应该在的位置，即3、5之间； </li>
+<li>但是3阶b树的节点最多只能有2个元素，所以把3、4、5里面的中间元素4上移（中间元素上移是插入操作的关键）； </li>
+<li>上一层节点加入4之后也超载了，继续中间元素上移的操作，现在根节点变成了4、9； </li>
+<li>还要满足查找树的性质，所以对元素进行调整以满足大小关系，始终维持多路平衡也是b树的优势，最后变成这样： </li>
+</ol>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-3.png"><img src="http://idiotsky.top/images4/b-tree-summary-3.png" alt=""></a></p>
+<p>再比如我们要删除元素11： </p>
+<ol>
+<li>自顶向下查询到11，删掉它； </li>
+<li>然后不满足b树的条件了，因为元素12所在的节点只有一个孩子了，所以我们要“左旋”，元素12下来，元素13上去： </li>
+</ol>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-4.png"><img src="http://idiotsky.top/images4/b-tree-summary-4.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-5.png"><img src="http://idiotsky.top/images4/b-tree-summary-5.png" alt=""></a></p>
+<p>这时如果再删除15呢？很简单，当元素个数太少以至于不能再旋转时，12直接上去就行了。</p>
+<h2 id="b树操作动图"><a href="#b树操作动图" class="headerlink" title="b树操作动图"></a>b树操作动图</h2><p><a href="http://idiotsky.top/images4/b-tree-summary-6.gif"><img src="http://idiotsky.top/images4/b-tree-summary-6.gif" alt=""></a></p>
+<h1 id="b-树"><a href="#b-树" class="headerlink" title="b+树"></a>b+树</h1><p>b+树，是b树的一种变体，查询性能更好。</p>
+<h2 id="m阶的b-树的特征"><a href="#m阶的b-树的特征" class="headerlink" title="m阶的b+树的特征"></a>m阶的b+树的特征</h2><ol>
+<li>有n棵子树的非叶子结点中含有n个关键字（b树是n-1个），这些关键字不保存数据，只用来索引，所有数据都保存在叶子节点（b树是每个关键字都保存数据）。</li>
+<li>所有的叶子结点中包含了全部关键字的信息，及指向含这些关键字记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。</li>
+<li>所有的非叶子结点可以看成是索引部分，结点中仅含其子树中的最大（或最小）关键字。</li>
+<li>通常在b+树上有两个头指针，一个指向根结点，一个指向关键字最小的叶子结点。</li>
+<li>同一个数字会在不同节点中重复出现，根节点的最大元素就是b+树的最大元素。</li>
+</ol>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-7.png"><img src="http://idiotsky.top/images4/b-tree-summary-7.png" alt=""></a></p>
+<h2 id="b-树相比于b树的查询优势"><a href="#b-树相比于b树的查询优势" class="headerlink" title="b+树相比于b树的查询优势"></a>b+树相比于b树的查询优势</h2><ol>
+<li>b+树的中间节点不保存数据，所以磁盘页能容纳更多节点元素，更“矮胖”；</li>
+<li>b+树查询必须查找到叶子节点，b树只要匹配到即可不用管元素位置，因此b+树查找更稳定（并不慢）；</li>
+<li>对于范围查找来说，b+树只需遍历叶子节点链表即可，b树却需要重复地中序遍历，如下两图：</li>
+</ol>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-8.png"><img src="http://idiotsky.top/images4/b-tree-summary-8.png" alt=""></a></p>
+<p><a href="http://idiotsky.top/images4/b-tree-summary-9.png"><img src="http://idiotsky.top/images4/b-tree-summary-9.png" alt=""></a></p>
+<h2 id="b-树操作动图"><a href="#b-树操作动图" class="headerlink" title="b+树操作动图"></a>b+树操作动图</h2><p><a href="http://idiotsky.top/images4/b-tree-summary-10.gif"><img src="http://idiotsky.top/images4/b-tree-summary-10.gif" alt=""></a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cnblogs.com/vincently/p/4526560.html" target="_blank" rel="noopener">https://www.cnblogs.com/vincently/p/4526560.html</a><br><a href="https://blog.csdn.net/login_sonata/article/details/75268075" target="_blank" rel="noopener">https://blog.csdn.net/login_sonata/article/details/75268075</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/B树/" rel="tag"># B树</a>
+          
+            <a href="/tags/B-树/" rel="tag"># B+树</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/04/b-tree/" rel="next" title="MySQL索引背后的数据结构及算法原理">
+                <i class="fa fa-chevron-left"></i> MySQL索引背后的数据结构及算法原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/12/epoll-easy-understanding/" rel="prev" title="linux epoll通俗理解">
+                linux epoll通俗理解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars7.githubusercontent.com/u/22493186?v=4&s=460"
+               alt="ejunjsh" />
+          <p class="site-author-name" itemprop="name">ejunjsh</p>
+           
+              <p class="site-description motion-element" itemprop="description">code freak</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">163</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ejunjsh" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/339238080" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                    
+                      Weibo
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:sjj050121014@163.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                    
+                      Email
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.facebook.com/junjie.shao.9" target="_blank" title="FB Page">
+                  
+                    <i class="fa fa-fw fa-facebook"></i>
+                  
+                    
+                      FB Page
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#b树"><span class="nav-number">1.</span> <span class="nav-text">b树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个M阶的b树具有如下几个特征："><span class="nav-number">1.1.</span> <span class="nav-text">一个M阶的b树具有如下几个特征：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有关b树的一些特性，注意与后面的b-树区分："><span class="nav-number">1.2.</span> <span class="nav-text">有关b树的一些特性，注意与后面的b+树区分：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如图是一个3阶b树，顺便讲一下查询元素5的过程："><span class="nav-number">1.3.</span> <span class="nav-text">如图是一个3阶b树，顺便讲一下查询元素5的过程：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b树的插入删除元素操作"><span class="nav-number">1.4.</span> <span class="nav-text">b树的插入删除元素操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b树操作动图"><span class="nav-number">1.5.</span> <span class="nav-text">b树操作动图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#b-树"><span class="nav-number">2.</span> <span class="nav-text">b+树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#m阶的b-树的特征"><span class="nav-number">2.1.</span> <span class="nav-text">m阶的b+树的特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-树相比于b树的查询优势"><span class="nav-number">2.2.</span> <span class="nav-text">b+树相比于b树的查询优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-树操作动图"><span class="nav-number">2.3.</span> <span class="nav-text">b+树操作动图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <a href="/mylove" style="border-bottom:none">
+    <i class="fa fa-heart"></i>
+    </a>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ejunjsh</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+    Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  </div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">
+    Theme &mdash;
+    <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+      NexT.Gemini
+    </a>
+  </div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

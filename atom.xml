@@ -1741,9 +1741,9 @@
       <category term="java" scheme="http://idiotsky.top/categories/java/"/>
     
     
-      <category term="java" scheme="http://idiotsky.top/tags/java/"/>
-    
       <category term="数据结构" scheme="http://idiotsky.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+      <category term="java" scheme="http://idiotsky.top/tags/java/"/>
     
       <category term="conccurenthashmap" scheme="http://idiotsky.top/tags/conccurenthashmap/"/>
     
