@@ -112,7 +112,7 @@
 <meta property="og:description" content="tcpdump采用命令行方式对接口的数据包进行筛选抓取，其丰富特性表现在灵活的表达式上。 不带任何选项的tcpdump，默认会抓取第一个网络接口，且只有将tcpdump进程终止才会停止抓包。 例如： 1$ tcpdump -nn -i eth0 icmp 下面是详细的tcpdump用法。 tcpdump选项它的命令格式为： tcpdump [ -DenNqvX ] [ -c count ] [ -">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://idiotsky.top/images3/tcpdump.png">
-<meta property="og:updated_time" content="2018-07-31T23:54:40.835Z">
+<meta property="og:updated_time" content="2018-12-25T11:36:36.460Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="linux命令-tcpdump">
 <meta name="twitter:description" content="tcpdump采用命令行方式对接口的数据包进行筛选抓取，其丰富特性表现在灵活的表达式上。 不带任何选项的tcpdump，默认会抓取第一个网络接口，且只有将tcpdump进程终止才会停止抓包。 例如： 1$ tcpdump -nn -i eth0 icmp 下面是详细的tcpdump用法。 tcpdump选项它的命令格式为： tcpdump [ -DenNqvX ] [ -c count ] [ -">
@@ -498,7 +498,13 @@
 <p>(14) 解析包数据</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tcpdump -c 2 -q -XX -vvv -nn -i eth0 tcp dst port 22</span></span><br><span class="line"></span><br><span class="line">tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes</span><br><span class="line">12:15:54.788812 IP (tos 0x0, ttl 64, id 19303, offset 0, flags [DF], proto TCP (6), length 40)</span><br><span class="line">    192.168.100.1.5788 &gt; 192.168.100.62.22: tcp 0</span><br><span class="line">        0x0000:  000c 2908 9234 0050 56c0 0008 0800 4500  ..)..4.PV.....E.</span><br><span class="line">        0x0010:  0028 4b67 4000 4006 a5d8 c0a8 6401 c0a8  .(Kg@.@.....d...</span><br><span class="line">        0x0020:  643e 169c 0016 2426 5fd6 1fec 2b62 5010  d&gt;....$&amp;_...+bP.</span><br><span class="line">        0x0030:  0803 7844 0000 0000 0000 0000            ..xD........</span><br><span class="line">12:15:54.842641 IP (tos 0x0, ttl 64, id 19304, offset 0, flags [DF], proto TCP (6), length 40)</span><br><span class="line">    192.168.100.1.5788 &gt; 192.168.100.62.22: tcp 0</span><br><span class="line">        0x0000:  000c 2908 9234 0050 56c0 0008 0800 4500  ..)..4.PV.....E.</span><br><span class="line">        0x0010:  0028 4b68 4000 4006 a5d7 c0a8 6401 c0a8  .(Kh@.@.....d...</span><br><span class="line">        0x0020:  643e 169c 0016 2426 5fd6 1fec 2d62 5010  d&gt;....$&amp;_...-bP.</span><br><span class="line">        0x0030:  0801 7646 0000 0000 0000 0000            ..vF........</span><br><span class="line">2 packets captured</span><br><span class="line">2 packets received by filter</span><br><span class="line">0 packets dropped by kernel</span><br></pre></td></tr></table></figure>
 <p>总的来说，tcpdump对基本的数据包抓取方法还是较简单的。只要掌握有限的几个选项(-nn -XX -vvv -i -c -q)，再组合表达式即可。</p>
-<p>ref <a href="https://www.cnblogs.com/f-ck-need-u/p/7064286.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7064286.html</a></p>
+<h1 id="解决tcpdump-“drop-by-kernel”-问题"><a href="#解决tcpdump-“drop-by-kernel”-问题" class="headerlink" title="解决tcpdump “drop by kernel” 问题"></a>解决tcpdump “drop by kernel” 问题</h1><p>经常用tcpdump的人都会遇到”drop by kernel”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">579204 packets captured</span><br><span class="line">579346 packets received by filter</span><br><span class="line">142 packets dropped by kernel</span><br></pre></td></tr></table></figure></p>
+<p>原因：Tcpdump 通过网络接口捕获原始数据包，数据包必须解析和执行过滤条件，执行过滤条件需要耗费一些时间，因此传入数据包必须排队（数据缓存）进行处理，当数据包过多时（处理速度跟不上缓存速度），缓存区就会被撑爆（缓存区大小默认是2M），此时就会丢弃新近的数据包，直到缓存区有空间保存新到数据。</p>
+<p>解决很简单，就是在tcpdump命令加<code>-B &lt;size&gt;</code>,size的单位是KiB.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tcpdump -i eth1 -B 20000 <span class="comment">#20M</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="flags"><a href="#flags" class="headerlink" title="flags"></a>flags</h1><p>Flags are some combination  of  S  (SYN),  F(FIN), P (PUSH), R (RST), U (URG),</p>
+<p>W (ECN CWR), E (ECN-Echo) or <code>.&#39; (ACK), or</code>none’ if no flags are set. </p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.cnblogs.com/f-ck-need-u/p/7064286.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7064286.html</a><br><a href="https://blog.csdn.net/kuaidfkuai/article/details/45752329" target="_blank" rel="noopener">https://blog.csdn.net/kuaidfkuai/article/details/45752329</a><br><a href="http://blog.51cto.com/990487026/1846517" target="_blank" rel="noopener">http://blog.51cto.com/990487026/1846517</a></p>
 
       
     </div>
@@ -622,7 +628,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">163</span>
+                <span class="site-state-item-count">164</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -633,7 +639,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">25</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -644,7 +650,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-count">154</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -732,7 +738,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump选项"><span class="nav-number">1.</span> <span class="nav-text">tcpdump选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump表达式"><span class="nav-number">2.</span> <span class="nav-text">tcpdump表达式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump示例"><span class="nav-number">3.</span> <span class="nav-text">tcpdump示例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump选项"><span class="nav-number">1.</span> <span class="nav-text">tcpdump选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump表达式"><span class="nav-number">2.</span> <span class="nav-text">tcpdump表达式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tcpdump示例"><span class="nav-number">3.</span> <span class="nav-text">tcpdump示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决tcpdump-“drop-by-kernel”-问题"><span class="nav-number">4.</span> <span class="nav-text">解决tcpdump “drop by kernel” 问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#flags"><span class="nav-number">5.</span> <span class="nav-text">flags</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
